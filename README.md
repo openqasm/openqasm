@@ -1,12 +1,12 @@
-# IBMQASM
-Specs, examples and tools for the IBMQASM language.
+# OPENQASM
+Specs, examples and tools for the OPENQASM language.
 
 ## Current version
 
 The latest version is: __2.0__
 
 ## About this project
-On this repository you'll find all the documentation related to the IBMQASM in PDF, including the sources to generate it. Also some useful IBMQASM examples.
+On this repository you'll find all the documentation related to the OPENQASM in PDF, including the sources to generate it. Also some useful OPENQASM examples.
 
 ### Language specs
 
@@ -19,7 +19,7 @@ The examples can be found under the [examples folder](https://github.com/IBMQuan
 They are QASM files, i.e.:
 ```
 // Repetition code syndrome measurement
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[3];
 qreg a[2];
@@ -52,5 +52,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgments
 
-* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the IBMQASM
+* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OPENQASM
 
