@@ -1,5 +1,5 @@
 // quantum teleportation example
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[3];
 creg c0[1];

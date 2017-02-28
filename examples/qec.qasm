@@ -1,5 +1,5 @@
 // Repetition code syndrome measurement
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[3];
 qreg a[2];

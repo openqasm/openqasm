@@ -1,7 +1,7 @@
 // quantum Fourier transform for the Quantum Experience
 // on the first 3 qubits
 
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 
 // Register declarations

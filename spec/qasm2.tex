@@ -40,7 +40,7 @@
 \newcommand*{\code}{\texttt}
 \begin{document}
 
-\title{IBM Quantum Assembly Language}
+\title{Open Quantum Assembly Language}
 \author{Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta}
 \date{January 10th, 2017}
 
@@ -73,15 +73,15 @@ We specify part of a quantum circuit intermediate representation based on the qu
 
 The human-readable form of our quantum circuit IR is based on ``quantum assembly language'' \cite{qasm2circ,qasmtools,svore06,quale,dousti16} or QASM (pronounced {\it kazm}). QASM is a simple text language that describes generic quantum circuits. QASM can represent a completely “unrolled” quantum program whose parameters have all been specified. Most QASM variants assume a discrete set of quantum gates, but our IR is designed to control a physical system with a parameterized gate set. While we use the term ``quantum assembly language'', this is merely an analogy and should not be taken too far.
 
-IBM QASM represents universal physical circuits, so we propose a built-in gate basis of arbitrary single-qubit gates and a two-qubit entangling gate (CNOT) \cite{barenco95}. We choose a simple language without higher level programming primitives. We define different gate sets using a subroutine-like mechanism that hierarchically specifies new unitary gates in terms of built-in gates and previously defined gate subroutines. In this way, the built-in basis is used to define hardware-supported operations via standard header files. The subroutine mechanism allows limited code reuse by hierarchically defining more complex operations \cite{scaffold,dousti16}. We also add instructions that model a quantum-classical interface, specifically measurement, state reset, and the most elemental classical feedback.
+Open QASM represents universal physical circuits, so we propose a built-in gate basis of arbitrary single-qubit gates and a two-qubit entangling gate (CNOT) \cite{barenco95}. We choose a simple language without higher level programming primitives. We define different gate sets using a subroutine-like mechanism that hierarchically specifies new unitary gates in terms of built-in gates and previously defined gate subroutines. In this way, the built-in basis is used to define hardware-supported operations via standard header files. The subroutine mechanism allows limited code reuse by hierarchically defining more complex operations \cite{scaffold,dousti16}. We also add instructions that model a quantum-classical interface, specifically measurement, state reset, and the most elemental classical feedback.
 
-The remaining sections of this document specify IBM QASM and provide examples.
+The remaining sections of this document specify Open QASM and provide examples.
 
 \section{Language}\label{sec:spec}
 
-The syntax of the human-readable form of IBM QASM has elements of C and assembly languages. The first (non-comment) line of an IBM QASM program must be \code{IBMQASM M.m;} indicating a major version~M and minor version~m. Version 2.0 is described in this document. The version keyword cannot occur multiple times in a file. Statements are separated by semicolons. Whitespace is ignored. The language is case sensitive. Comments begin with a pair of forward slashes and end with a new line. The statement \code{include "filename";} continues parsing \code{filename} as if the contents of the file were pasted at the location of the \code{include} statement. The path is specified relative to the current working directory.
+The syntax of the human-readable form of Open QASM has elements of C and assembly languages. The first (non-comment) line of an Open QASM program must be \code{OPENQASM M.m;} indicating a major version~M and minor version~m. Version 2.0 is described in this document. The version keyword cannot occur multiple times in a file. Statements are separated by semicolons. Whitespace is ignored. The language is case sensitive. Comments begin with a pair of forward slashes and end with a new line. The statement \code{include "filename";} continues parsing \code{filename} as if the contents of the file were pasted at the location of the \code{include} statement. The path is specified relative to the current working directory.
 
-The only storage types of IBM QASM (version 2.0) are classical and quantum registers, which are one-dimensional arrays of bits and qubits, respectively. The statement \code{qreg name[size];} declares an array of qubits (quantum register) with the given name and size. Identifiers, such as \code{name}, must start with a lowercase letter and can contain alpha-numeric characters and underscores. The label \code{name[j]} refers to a qubit of this register, where $j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}$. The qubits are initialized to $|0\rangle$. Likewise, \code{creg name[size];} declares an array of bits (register) with the given name and size. The label \code{name[j]} refers to a bit of this register, where $j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}$. The bits are initialized to $0$.
+The only storage types of Open QASM (version 2.0) are classical and quantum registers, which are one-dimensional arrays of bits and qubits, respectively. The statement \code{qreg name[size];} declares an array of qubits (quantum register) with the given name and size. Identifiers, such as \code{name}, must start with a lowercase letter and can contain alpha-numeric characters and underscores. The label \code{name[j]} refers to a qubit of this register, where $j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}$. The qubits are initialized to $|0\rangle$. Likewise, \code{creg name[size];} declares an array of bits (register) with the given name and size. The label \code{name[j]} refers to a bit of this register, where $j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}$. The bits are initialized to $0$.
 
 \begin{figure}
 \begin{minipage}{.2\textwidth}
@@ -127,7 +127,7 @@ All of the single-qubit unitary gates are also built in (Fig.~\ref{fig:utpl}) an
 U(\theta,\phi,\lambda) := R_z(\phi)R_y(\theta)R_z(\lambda) = \left(\begin{array}{cc} e^{-i(\phi+\lambda)/2}\cos(\theta/2) & -e^{-i(\phi-\lambda)/2}\sin(\theta/2) \\
 e^{i(\phi-\lambda)/2}\sin(\theta/2) & e^{i(\phi+\lambda)/2}\cos(\theta/2) \end{array}\right).
 \end{equation}
-Here $R_y(\theta)=\mathrm{exp}(-i\theta Y/2)$ and $R_z(\phi)=\mathrm{exp}(-i\theta Z/2)$. This specifies any element of $SU(2)$. When \code{a} is a quantum register, the statement \code{U(theta,phi,lambda) a;} means apply \code{U(theta,phi,lambda) a[j];} for each index \code{j} into register \code{a}. The real parameters $\theta\in [0,4\pi)$, $\phi\in [0,4\pi)$, and $\lambda\in [0,4\pi)$ are given by {\it parameter expressions} constructed using in-fix notation. These support scientific calculator features with arbitrary precision real numbers\footnote{Features include scientific notation; real arithmetic; logarithmic, trigonometic, and exponential functions; square roots; and the built-in constant $\pi$.}. For example, \code{U(pi/2,0,pi) q[0];} applies a Hadamard gate to qubit \code{q[0]}. IBM QASM (version 2.0) does not provide a mechanism for computing parameters based on measurement outcomes.
+Here $R_y(\theta)=\mathrm{exp}(-i\theta Y/2)$ and $R_z(\phi)=\mathrm{exp}(-i\theta Z/2)$. This specifies any element of $SU(2)$. When \code{a} is a quantum register, the statement \code{U(theta,phi,lambda) a;} means apply \code{U(theta,phi,lambda) a[j];} for each index \code{j} into register \code{a}. The real parameters $\theta\in [0,4\pi)$, $\phi\in [0,4\pi)$, and $\lambda\in [0,4\pi)$ are given by {\it parameter expressions} constructed using in-fix notation. These support scientific calculator features with arbitrary precision real numbers\footnote{Features include scientific notation; real arithmetic; logarithmic, trigonometic, and exponential functions; square roots; and the built-in constant $\pi$.}. For example, \code{U(pi/2,0,pi) q[0];} applies a Hadamard gate to qubit \code{q[0]}. Open QASM (version 2.0) does not provide a mechanism for computing parameters based on measurement outcomes.
 
 New gates can be defined as unitary subroutines using the built-in gates, as shown in Fig.~\ref{fig:gate}. These can be viewed as macros whose expansion we defer until run-time. Gates are defined by statements of the form
 \begin{minted}{c}
@@ -268,17 +268,17 @@ CX r[0],r[1];
 \end{minted}
 will prevent an attempt to combine the CNOT gates but will allow the pair of \code{h s[0];} gates to cancel.
 
-IBM QASM statements are summarized in Table~\ref{tab:qasm:new}. The grammar is presented in Appendix~\ref{app:grammar}.
+Open QASM statements are summarized in Table~\ref{tab:qasm:new}. The grammar is presented in Appendix~\ref{app:grammar}.
 
 \begin{landscape}
 \begin{table}[htbp]
 \begin{threeparttable}
-\caption{IBM QASM language statements (version 2.0)\label{tab:qasm:new}}
+\caption{Open QASM language statements (version 2.0)\label{tab:qasm:new}}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Statement & Description & Example \\
 \midrule
-\code{IBMQASM 2.0;} & Denotes a file in IBM QASM format\tnote{a} & \code{IBMQASM 2.0;}\\
+\code{OpenQASM 2.0;} & Denotes a file in Open QASM format\tnote{a} & \code{OpenQASM 2.0;}\\
 \code{qreg name[size];} & Declare a named register of qubits & \code{qreg q[5];} \\
 \code{creg name[size];} & Declare a named register of bits & \code{creg c[5];} \\
 \code{include "filename";} & Open and parse another source file & \code{include "qelib1.inc";} \\ 
@@ -305,11 +305,11 @@ Statement & Description & Example \\
 \end{landscape}
 \section{Examples}
 
-This section gives several examples of quantum circuits expressed in IBM QASM (version 2.0). The circuits use a gate basis defined for the Quantum Experience.
+This section gives several examples of quantum circuits expressed in Open QASM (version 2.0). The circuits use a gate basis defined for the Quantum Experience.
 
 \subsection{Quantum Experience standard header}
 
-The Quantum Experience standard header defines the gates that are implemented by the hardware, gates that appear in the Quantum Experience composer, and a hierarchy of additional user-defined gates. Our approach is to define physical gates that the hardware implements in terms of the abstract gates \code{U} and \code{CX}. The current physical gates supported by the Quantum Experience are a superset of the abstract gates, but this is not true of all physical gate sets and devices. Choosing to use abstract gates merely to define physical gates gives some flexibility to add or change physical gates at a later time without changing IBM QASM. We believe this approach is preferable to invisibly compiling abstract gates to physical gates or to changing the underlying set of abstract gates whenever the hardware changes.
+The Quantum Experience standard header defines the gates that are implemented by the hardware, gates that appear in the Quantum Experience composer, and a hierarchy of additional user-defined gates. Our approach is to define physical gates that the hardware implements in terms of the abstract gates \code{U} and \code{CX}. The current physical gates supported by the Quantum Experience are a superset of the abstract gates, but this is not true of all physical gate sets and devices. Choosing to use abstract gates merely to define physical gates gives some flexibility to add or change physical gates at a later time without changing Open QASM. We believe this approach is preferable to invisibly compiling abstract gates to physical gates or to changing the underlying set of abstract gates whenever the hardware changes.
 
 The Quantum Experience currently implements the controlled-NOT gate via the cross-resonance interaction and implements three distinct types of single-qubit gates. The one-parameter gate
 \begin{equation}
@@ -392,7 +392,7 @@ Each circuit is a sequence of random Clifford gates composed from a set of basic
 
 \subsection{Quantum process tomography}
 
-As in randomized benchmarking, a high-level program describes a quantum process tomography (QPT) experiment. Each program compiles to intermediate code with several independent quantum circuits that can each be described using IBM QASM (version 2.0). Fig.~\ref{fig:example:qpt} shows QPT of a Hadamard gate. Each circuit is identical except for the definitions of the \code{pre} and \code{post} gates. The empty definitions in the current example are placeholders that define identity gates. For textbook QPT, the \code{pre} and \code{post} gates are both taken from the set $\{I,H,SH\}$ to prepare $|0\rangle$, $|+\rangle$, and $|+i\rangle$ and measure in the $Z$, $X$, and $Y$ basis.
+As in randomized benchmarking, a high-level program describes a quantum process tomography (QPT) experiment. Each program compiles to intermediate code with several independent quantum circuits that can each be described using Open QASM (version 2.0). Fig.~\ref{fig:example:qpt} shows QPT of a Hadamard gate. Each circuit is identical except for the definitions of the \code{pre} and \code{post} gates. The empty definitions in the current example are placeholders that define identity gates. For textbook QPT, the \code{pre} and \code{post} gates are both taken from the set $\{I,H,SH\}$ to prepare $|0\rangle$, $|+\rangle$, and $|+i\rangle$ and measure in the $Z$, $X$, and $Y$ basis.
 
 \begin{figure}
 \centering
@@ -403,7 +403,7 @@ As in randomized benchmarking, a high-level program describes a quantum process 
 
 \subsection{Quantum error-correction}
 
-This example of the 3-bit quantum repetition code (Fig.~\ref{fig:example:qec3}) demonstrates how IBM QASM (version 2.0) can express simple quantum error-correction circuits.
+This example of the 3-bit quantum repetition code (Fig.~\ref{fig:example:qec3}) demonstrates how Open QASM (version 2.0) can express simple quantum error-correction circuits.
 
 \begin{figure}
 \centering
@@ -419,11 +419,11 @@ This document represents ideas and contributions from the IBM Quantum Computing 
 
 \appendix
 
-\section{IBM QASM Grammar}\label{app:grammar}
+\section{Open QASM Grammar}\label{app:grammar}
 
 \begin{bnf*}
 \bnfprod{mainprogram}
-{\begin{bnfsplit}\bnfts{IBMQASM} \bnfsp \bnfpn{real} \bnfsp \bnfts{;} \bnfsp \bnfpn{program}
+{\begin{bnfsplit}\bnfts{OpenQASM} \bnfsp \bnfpn{real} \bnfsp \bnfts{;} \bnfsp \bnfpn{program}
 \end{bnfsplit}
 }\\
 \bnfprod{program}
@@ -529,13 +529,13 @@ This document represents ideas and contributions from the IBM Quantum Computing 
 }\\
 \end{bnf*}
 
-This is a simplified grammar for IBM QASM presented in Backus-Naur form. The unlisted productions $\langle\mathrm{id}\rangle$, $\langle\mathrm{real}\rangle$ and $\langle\mathrm{nninteger}\rangle$ are defined by the regular expressions:
+This is a simplified grammar for Open QASM presented in Backus-Naur form. The unlisted productions $\langle\mathrm{id}\rangle$, $\langle\mathrm{real}\rangle$ and $\langle\mathrm{nninteger}\rangle$ are defined by the regular expressions:
 \begin{verbatim}
 id        := [a-z][A-Za-z0-9_]*
 real      := ([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?
 nninteger := [1-9]+[0-9]*|0
 \end{verbatim}
-Not all programs produced using this grammar are valid IBM QASM circuits. As explained in Section~\ref{sec:spec}, there are additional rules concerning valid arguments, parameters, declarations, and identifiers, as well as the standard operator precedence rules in the parameter expressions.
+Not all programs produced using this grammar are valid Open QASM circuits. As explained in Section~\ref{sec:spec}, there are additional rules concerning valid arguments, parameters, declarations, and identifiers, as well as the standard operator precedence rules in the parameter expressions.
              
 \bibliographystyle{unsrt}
 \bibliography{qasm2}

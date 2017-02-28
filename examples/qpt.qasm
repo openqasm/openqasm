@@ -1,4 +1,4 @@
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 gate pre q { }   // pre-rotation
 gate post q { }  // post-rotation

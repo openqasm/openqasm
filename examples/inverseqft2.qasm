@@ -1,5 +1,5 @@
 // QFT and measure, version 2
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[4];
 creg c0[1];

@@ -1,7 +1,7 @@
 // quantum ripple-carry adder
 // 8-bit adder made out of 2 4-bit adders from adder.qasm
 // Cuccaro et al, quant-ph/0410184
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 gate majority a,b,c 
 { 

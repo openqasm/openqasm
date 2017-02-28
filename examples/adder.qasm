@@ -1,5 +1,5 @@
 // quantum ripple-carry adder from Cuccaro et al, quant-ph/0410184
-IBMQASM 2.0;
+OPENQASM 2.0;
 include "qelib1.inc";
 gate majority a,b,c 
 { 
