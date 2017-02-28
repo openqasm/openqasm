@@ -278,7 +278,7 @@ Open QASM statements are summarized in Table~\ref{tab:qasm:new}. The grammar is 
 \toprule
 Statement & Description & Example \\
 \midrule
-\code{OpenQASM 2.0;} & Denotes a file in Open QASM format\tnote{a} & \code{OpenQASM 2.0;}\\
+\code{OPENQASM 2.0;} & Denotes a file in Open QASM format\tnote{a} & \code{OPENQASM 2.0;}\\
 \code{qreg name[size];} & Declare a named register of qubits & \code{qreg q[5];} \\
 \code{creg name[size];} & Declare a named register of bits & \code{creg c[5];} \\
 \code{include "filename";} & Open and parse another source file & \code{include "qelib1.inc";} \\ 
@@ -423,7 +423,7 @@ This document represents ideas and contributions from the IBM Quantum Computing 
 
 \begin{bnf*}
 \bnfprod{mainprogram}
-{\begin{bnfsplit}\bnfts{OpenQASM} \bnfsp \bnfpn{real} \bnfsp \bnfts{;} \bnfsp \bnfpn{program}
+{\begin{bnfsplit}\bnfts{OPENQASM} \bnfsp \bnfpn{real} \bnfsp \bnfts{;} \bnfsp \bnfpn{program}
 \end{bnfsplit}
 }\\
 \bnfprod{program}
