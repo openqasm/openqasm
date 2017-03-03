@@ -1,5 +1,5 @@
 # OPENQASM
-Specs, examples and tools for the OPENQASM language.
+Specs, examples and tools for the OPENQASM intermediate representation.
 
 ## Current version
 
