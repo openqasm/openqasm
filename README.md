@@ -10,11 +10,12 @@ On this repository you'll find all the documentation related to the OPENQASM in 
 
 ### Language specs
 
-The language documentation is available under the [spec folder](https://github.com/IBMQuantum/QASM/tree/master/spec).
+The language documentation is available under the [spec folder](https://github.com/IBM/qiskit-openqasm/tree/master/spec).
+https://github.com/IBMQuantum/QASM/tree/master/spec ->
 
 ### Examples
 
-The examples can be found under the [examples folder](https://github.com/IBMQuantum/QASM/tree/master/examples).
+The examples can be found under the [examples folder](https://github.com/IBM/qiskit-openqasm/tree/master/examples).
 
 They are QASM files, i.e.:
 ```
