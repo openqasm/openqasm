@@ -2,5 +2,5 @@ This directory is the start of a list of examples that can run on the IBM Quantu
 
 The connectivity map for the CNOTS in this device are 
 
-    gates_map = {0: [1,2], 1: [2], 3: [2,4], 4: [2]}
+    gates_map = {0: [1, 2], 1: [2], 3: [2, 4], 4: [2]}
 
