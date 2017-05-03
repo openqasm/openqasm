@@ -127,7 +127,7 @@ All of the single-qubit unitary gates are also built in (Fig.~\ref{fig:utpl}) an
 U(\theta,\phi,\lambda) := R_z(\phi)R_y(\theta)R_z(\lambda) = \left(\begin{array}{cc} e^{-i(\phi+\lambda)/2}\cos(\theta/2) & -e^{-i(\phi-\lambda)/2}\sin(\theta/2) \\
 e^{i(\phi-\lambda)/2}\sin(\theta/2) & e^{i(\phi+\lambda)/2}\cos(\theta/2) \end{array}\right).
 \end{equation}
-Here $R_y(\theta)=\mathrm{exp}(-i\theta Y/2)$ and $R_z(\phi)=\mathrm{exp}(-i\theta Z/2)$. This specifies any element of $SU(2)$. When \code{a} is a quantum register, the statement \code{U(theta,phi,lambda) a;} means apply \code{U(theta,phi,lambda) a[j];} for each index \code{j} into register \code{a}. The real parameters $\theta\in [0,4\pi)$, $\phi\in [0,4\pi)$, and $\lambda\in [0,4\pi)$ are given by {\it parameter expressions} constructed using in-fix notation. These support scientific calculator features with arbitrary precision real numbers\footnote{Features include scientific notation; real arithmetic; logarithmic, trigonometic, and exponential functions; square roots; and the built-in constant $\pi$.}. For example, \code{U(pi/2,0,pi) q[0];} applies a Hadamard gate to qubit \code{q[0]}. Open QASM (version 2.0) does not provide a mechanism for computing parameters based on measurement outcomes.
+Here $R_y(\theta)=\mathrm{exp}(-i\theta Y/2)$ and $R_z(\phi)=\mathrm{exp}(-i\theta Z/2)$. This specifies any element of $SU(2)$. When \code{a} is a quantum register, the statement \code{U(theta,phi,lambda) a;} means apply \code{U(theta,phi,lambda) a[j];} for each index \code{j} into register \code{a}. The real parameters $\theta\in [0,4\pi)$, $\phi\in [0,4\pi)$, and $\lambda\in [0,4\pi)$ are given by {\it parameter expressions} constructed using in-fix notation. These support scientific calculator features with arbitrary precision real numbers\footnote{Features include scientific notation; real arithmetic; logarithmic, trigonometic, and exponential functions; square roots; and the built-in constant $\pi$. The Quantum Experience uses a double precision floating point type for real numbers.}. For example, \code{U(pi/2,0,pi) q[0];} applies a Hadamard gate to qubit \code{q[0]}. Open QASM (version 2.0) does not provide a mechanism for computing parameters based on measurement outcomes.
 
 New gates can be defined as unitary subroutines using the built-in gates, as shown in Fig.~\ref{fig:gate}. These can be viewed as macros whose expansion we defer until run-time. Gates are defined by statements of the form
 \begin{minted}{c}
@@ -180,7 +180,7 @@ We provide this so that user-defined gates can be applied in parallel like the b
 \hspace{.3\textwidth}
 \begin{minipage}{.3\textwidth}
 \begin{minted}{c}
-gate crz(theta) a,b
+gate cu1(lambda) a,b
 {
   U(0,0,theta/2) a;
   CX a,b;
@@ -188,11 +188,11 @@ gate crz(theta) a,b
   CX a,b;
   U(0,0,theta/2) b;
 }
-crz(pi/2) q[0],q[1];
+cu1(pi/2) q[0],q[1];
 \end{minted}
 \end{minipage}
 
-\caption{New gates are defined as unitary subroutines. The gates are applied using the statement \code{name(params) qargs;} just like the built-in gates. The parentheses are optional if there are no parameters. The gate $\mathrm{crz}(\theta)$ corresponds to the unitary matrix $\mathrm{diag}(1,1,1,e^{i\theta})$ up to a global phase. Note that gate names must be distinct from one another, so we choose the name $\mathrm{crz}(\theta)$ for this gate to distinguish it from the standard controlled-Phase gate $\mathrm{cz}:=\mathrm{crz}(\pi)$.
+\caption{New gates are defined as unitary subroutines. The gates are applied using the statement \code{name(params) qargs;} just like the built-in gates. The parentheses are optional if there are no parameters. The gate $\mathrm{cu1}(\theta)$ corresponds to the unitary matrix $\mathrm{diag}(1,1,1,e^{i\theta})$ up to a global phase.
 \label{fig:gate}}
 \end{figure}
 
@@ -313,9 +313,9 @@ The Quantum Experience standard header defines the gates that are implemented by
 
 The Quantum Experience currently implements the controlled-NOT gate via the cross-resonance interaction and implements three distinct types of single-qubit gates. The one-parameter gate
 \begin{equation}
-u_1(\lambda) := U(0,0,\lambda) = R_z(\lambda)
+u_1(\lambda) := \mathrm{diag}(1,e^{i\lambda}) \sim U(0,0,\lambda) = R_z(\lambda)
 \end{equation}
-changes the phase of a carrier without applying any pulses. The gate
+changes the phase of a carrier without applying any pulses. The symbol ``$\sim$'' denotes equivalence up to a global phase. The gate
 \begin{equation}
 u_2(\phi,\lambda) := U(\pi/2,\phi,\lambda) = R_z(\phi+\frac{\pi}{2})R_x(\pi/2)R_z(\lambda-\frac{\pi}{2})
 \end{equation}
