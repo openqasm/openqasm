@@ -7,7 +7,7 @@ Where a: [b] means a CNOT with qubit a as control and b as target can be impleme
 
 The connectivity is provided by two coplanar waveguide (CPW) resonators with resonances around 6.0 GHz (coupling Q2, Q3 and Q4) and 6.5 GHz (coupling Q0, Q1 and Q2). Each qubit has a dedicated CPW for control and readout. The following picture shows the chip layout.
 
-![MacDown Screenshot] (/Users/adcorcol/Desktop/Pictures/5qubitQXlabeled.png)
+![MacDown Screenshot] (5qubitQXlabeled.png)
 
 The readout CPW resonators are probed at the following frequencies
 
