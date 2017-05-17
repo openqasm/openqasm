@@ -1,5 +1,7 @@
 // Name of Experiment: W3test v1
-//example of W-state found by user lukasknips 
+// example of W-state |001> + |010> + |100> 
+// found by user lukasknips at http://ibm.biz/qiskit-W3-Example
+
 OPENQASM 2.0;
 include "qelib1.inc";
 
