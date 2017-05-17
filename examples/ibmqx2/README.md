@@ -8,34 +8,7 @@ Where a: [b] means a CNOT with qubit a as control and b as target can be impleme
 The connectivity is provided by two coplanar waveguide (CPW) resonators with resonances around 6.0 GHz (coupling Q2, Q3 and Q4) and 6.5 GHz (coupling Q0, Q1 and Q2). Each qubit has a dedicated CPW for control and readout. The following picture shows the chip layout.
 
 
-<img src="https://github.com/adcorcol/qiskit-openqasm/blob/master/examples_5Qv2/5qubitQXlabeled.png?raw=true" width="320">
-
-
-The readout CPW resonators are probed at the following frequencies
-
-R0: 6.530350 GHz  
-R1: 6.481848 GHz  
-R2: 6.436229 GHz  
-R3: 6.579431 GHz  
-R4: 6.530225 GHz
-
-The qubits have the following fundamental resonance frequencies
-
-Q0: 5.2723 GHz  
-Q1: 5.2145 GHz  
-Q2: 5.0289 GHz  
-Q3: 5.2971 GHz  
-Q4: 5.0561 GHz  
-
-With anharmonicities
-
-D0: -330.3 MHz  
-D1: -331.9 MHz  
-D2: -331.2 MHz  
-D3: -329.4 MHz  
-D4: -335.5 MHz  
-
-The coupling energy of the qubits to their CPW readout resonator is around 60 MHz, whereas the couplings to the buses are around 80 MHz.
+<img src="images/5qubitQXlabeled.png?raw=true" width="320">
 
 
 The circuits listed below, which you can find in this directory, are a few examples of experiments that can be ran in this device.
