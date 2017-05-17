@@ -1,12 +1,12 @@
 # OpenQASM
-Specs, examples and tools for the OPENQASM intermediate representation.
+Specs, examples and tools for the OpenQASM intermediate representation.
 
 ## Current version
 
 The latest version is: __2.0__
 
 ## About this project
-On this repository you'll find all the documentation related to the OPENQASM in PDF, including the sources to generate it. Also some useful OpenQASM examples.
+On this repository you'll find all the documentation related to the OpenQASM in PDF, including the sources to generate it. Also some useful OpenQASM examples.
 
 ### Language specs
 
