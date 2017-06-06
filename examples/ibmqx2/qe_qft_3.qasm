@@ -31,10 +31,10 @@ cx q[0],q[2];
 u1(pi/8) q[2];
 // end cu1
 // cu1(pi/2) q[1],q[2];
-u1(pi/4) q[0];
-cx q[0],q[2];
+u1(pi/4) q[1];
+cx q[1],q[2];
 u1(-pi/4) q[2];
-cx q[0],q[2];
+cx q[1],q[2];
 u1(pi/4) q[2];
 // end cu1
 h q[2];
