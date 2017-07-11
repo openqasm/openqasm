@@ -1,0 +1,57 @@
+\begin{tikzpicture}[scale=1.000000,x=1pt,y=1pt]
+\filldraw[color=white] (0.000000, -7.500000) rectangle (68.000000, 37.500000);
+% Drawing wires
+% Line 1: q0 W q0
+\draw[color=black] (0.000000,30.000000) -- (32.000000,30.000000);
+%\draw[color=black] (32.000000,29.500000) -- (68.000000,29.500000);
+\draw[color=black] (32.000000,30.00000) -- (68.000000,30.00000);
+\draw[color=black] (0.000000,30.000000) node[left] {$q[0]$};
+% Line 2: q1 W q1
+\draw[color=black] (0.000000,15.000000) -- (56.000000,15.000000);
+%\draw[color=black] (56.000000,14.500000) -- (68.000000,14.500000);
+\draw[color=black] (56.000000,15.00000) -- (68.000000,15.00000);
+\draw[color=black] (0.000000,15.000000) node[left] {$q[1]$};
+% Line 3: c W c
+\draw[color=black] (0.000000,0.000000) -- (68.000000,0.000000);
+\draw[color=black] (0.000000,0.000000) node[left] {$c$};
+% Done with wires; drawing gates
+% Line 4: c / 2
+\draw (6.000000, -6.000000) -- (14.000000, 6.000000);
+\draw (11.000000, 3.000000) node[right] {$\scriptstyle{2}$};
+% Line 5: q0:cwire +c %% 0
+\draw (28.000000, 10.00000) node[text width=144pt,below,text centered] {\scriptsize 0};
+%\draw (31.500000,30.000000) -- (31.500000,0.000000);
+\draw (32.00000,30.000000) -- (32.00000,0.000000);
+\filldraw (32.000000, 30.000000) circle(1.500000pt);
+\begin{scope}
+%\draw[fill=white] (32.000000, 0.000000) circle(3.000000pt);
+\clip (32.000000, 0.000000) circle(3.000000pt);
+\draw (29.000000, 0.000000) -- (35.000000, 0.000000);
+%\draw (32.000000, -3.000000) -- (32.000000, 3.000000);
+\end{scope}
+\draw[fill=white] (26.000000, 24.000000) rectangle (38.000000, 36.000000);
+\draw[very thin] (32.000000, 30.600000) arc (90:150:6.000000pt);
+\draw[very thin] (32.000000, 30.600000) arc (90:30:6.000000pt);
+\draw[->,>=stealth] (32.000000, 24.600000) -- +(80:10.392305pt);
+% Line 6: q1:cwire +c %% 1
+\draw (53.000000, 10.00000) node[text width=144pt,below,text centered] {\scriptsize 1};
+%\draw (55.500000,15.000000) -- (55.500000,0.000000);
+\draw (56.00000,15.000000) -- (56.00000,0.000000);
+\filldraw (56.000000, 15.000000) circle(1.500000pt);
+\begin{scope}
+%\draw[fill=white] (56.000000, 0.000000) circle(3.000000pt);
+\clip (56.000000, 0.000000) circle(3.000000pt);
+\draw (53.000000, 0.000000) -- (59.000000, 0.000000);
+%\draw (56.000000, -3.000000) -- (56.000000, 3.000000);
+\end{scope}
+\draw[fill=white] (50.000000, 9.000000) rectangle (62.000000, 21.000000);
+\draw[very thin] (56.000000, 15.600000) arc (90:150:6.000000pt);
+\draw[very thin] (56.000000, 15.600000) arc (90:30:6.000000pt);
+\draw[->,>=stealth] (56.000000, 9.600000) -- +(80:10.392305pt);
+\draw[color=black] (0.000000,-1.5000000) -- (68.000000,-1.5000000);
+\draw[->,>=stealth] (56.000000, 10.00000)  -- +(270:10.392305pt); % arrowhead
+\draw[->,>=stealth] (32.000000, 10.00000)  -- +(270:10.392305pt); % arrowhead
+% Done with gates; drawing ending labels
+% Done with ending labels; drawing cut lines and comments
+% Done with comments
+\end{tikzpicture}
