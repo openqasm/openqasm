@@ -23,4 +23,6 @@ This is a directory with examples that cannot necessarily be executed on any exi
 
 - teleport.qasm: Quantum Teleportation example
 
+- teleportv2.qasm: Quantum Teleportation example (one classical register)
+
 - W-state.qasm: Generating a 3-qubit W-state using Toffoli gates
