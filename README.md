@@ -40,11 +40,23 @@ if(syn==3) x q[1];
 measure q -> c;
 ```
 
-## Authors
-* **Andrew W. Cross** 
-* **Lev S. Bishop**
-* **John A. Smolin**
-* **Jay M. Gambetta**
+## Authors (alphabetical)
+
+Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, and John A. Smolin
+
+In future releases, anyone who contributes code to this project can include their name here.
+
+## Citation format
+
+For research papers, we encourage authors to reference 
+
+* Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
+
+## Other QISKit projects
+
+* [Python SDK](https://github.com/IBM/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+* [Python API](https://github.com/IBM/qiskit-api-py) API Client to use IBM Q experience in Python.
+* [QX Information](https://github.com/IBM/qiskit-qx-info) Information about the different IBM Q experience backends.
 
 ## License
 
