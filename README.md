@@ -44,7 +44,7 @@ measure q -> c;
 
 Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, and John A. Smolin
 
-In future releases, anyone who contributes code to this project can include their name here.
+Anyone who contributes to this project can include their name here.
 
 ## Citation format
 
