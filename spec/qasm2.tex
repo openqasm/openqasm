@@ -182,11 +182,11 @@ We provide this so that user-defined gates can be applied in parallel like the b
 \begin{minted}{c}
 gate cu1(lambda) a,b
 {
-  U(0,0,theta/2) a;
+  U(0,0,lambda/2) a;
   CX a,b;
-  U(0,0,-theta/2) b;
+  U(0,0,-lambda/2) b;
   CX a,b;
-  U(0,0,theta/2) b;
+  U(0,0,lambda/2) b;
 }
 cu1(pi/2) q[0],q[1];
 \end{minted}
