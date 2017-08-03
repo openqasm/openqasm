@@ -54,9 +54,9 @@ For research papers, we encourage authors to reference
 
 ## Other QISKit projects
 
-* [Python SDK](https://github.com/IBM/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
-* [Python API](https://github.com/IBM/qiskit-api-py) API Client to use IBM Q experience in Python.
-* [QX Information](https://github.com/IBM/qiskit-qx-info) Information about the different IBM Q experience backends.
+* [Python SDK](https://github.com/QISKit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+* [Python API](https://github.com/QISKit/qiskit-api-py) API Client to use IBM Q experience in Python.
+* [QX Information](https://github.com/QISKit/qiskit-qx-info) Information about the different IBM Q experience backends.
 
 ## License
 
@@ -64,5 +64,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgments
 
-* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OPENQASM
+* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM
 
