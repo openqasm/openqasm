@@ -10,11 +10,11 @@ On this repository you'll find all the documentation related to the OpenQASM in 
 
 ### Language specs
 
-The language documentation is available under the [spec folder](https://github.com/IBM/qiskit-openqasm/tree/master/spec).
+The language documentation is available under the [spec folder](https://github.com/QISKit/openqasm/tree/master/spec).
 
 ### Examples
 
-The examples can be found under the [examples folder](https://github.com/IBM/qiskit-openqasm/tree/master/examples).
+The examples can be found under the [examples folder](https://github.com/QISKit/openqasm/tree/master/examples).
 
 They are OpenQASM files, i.e.:
 ```
@@ -54,11 +54,11 @@ For research papers, we encourage authors to reference
 
 ## Other QISKit projects
 
-* [Python SDK](https://github.com/QISKit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+* [ibmqx backend information](https://github.com/QISKit/ibmqx-backend-information) Information about the different IBM Q experience backends.
+* [ibmqx user guide](https://github.com/QISKit/ibmqx-user-guides) The users guides for the IBM Q experience.
 * [Python API](https://github.com/QISKit/qiskit-api-py) API Client to use IBM Q experience in Python.
-* [Tutorial](https://github.com/QISKit/qiskit-tutorial) Jupyter notebooks for using QISKit. 
-* [QX Information](https://github.com/QISKit/qiskit-qx-info) Information about the different IBM Q experience backends.
-* [QX User Guide](https://github.com/QISKit/qiskit-qx-user-guides) The users guides for the IBM Q experience.
+* [Python SDK](https://github.com/QISKit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+* [Tutorials](https://github.com/QISKit/qiskit-tutorial) Jupyter notebooks for using QISKit.
 
 ## License
 
