@@ -56,7 +56,7 @@ Please follow the next rules for the commit messages:
 
 ## Versions
 
-:clock: Due to the fast-changing nature of the quantum computing environment the idea is provide a new version of the specification per year, over June. The previous monthly meetings should include the next tasks:
+:watch: Due to the fast-changing nature of the quantum computing environment the idea is provide a new version of the specification per year, over June. The previous monthly meetings should include the next tasks:
 
 * April: All the accepted proposals (already merged to `develop`) are re-confirmed by the assistants. The dev team have this month to resolve possible conflicts here.
 * May: From here, the unique accepted commits will be editorial ones.

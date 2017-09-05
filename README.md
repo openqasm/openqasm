@@ -12,7 +12,7 @@ On this repository you'll find all the documentation related to the OpenQASM in 
 
 ### Language specs
 
-The language documentation is available under the [spec] folder in [LaTex](https://www.latex-project.org/about) language. [Here](spec-human) we provide a human-readable version of it in PDF format.
+The language documentation is available under the [spec](spec) folder in [LaTex](https://www.latex-project.org/about) language. [Here](spec-human) we provide a human-readable version of it in PDF format.
 
 ### Examples
 
