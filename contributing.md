@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a goog point to start, when you find a problem please add it to the [issue traker](https://github.com/IBMResearch/v/issues). Please, use [this template](https://github.com/IBMResearch/contributing/tree/master/templates/issues.md) to add them.
+:fire: This is a goog point to start, when you find a problem please add it to the [issue traker](https://github.com/IBMResearch/openqasm/issues). Please, use [this template](https://github.com/IBMResearch/contributing/blob/master/templates/issue.md) to add them.
 
 ## Doubts solving
 
@@ -35,7 +35,7 @@ Please follow the next rules for the commit messages:
 ### Pull requests
 
 * We use [GitHub pull requests](https://help.github.com/articles/about-pull-requests) to accept the contributions.
-* Except for proposals (see next point), please, use [this template](https://github.com/IBMResearch/contributing/tree/master/templates/pr.md) to add them :smile:.
+* Except for proposals (see next point), please, use [this template](https://github.com/IBMResearch/contributing/blob/master/templates/pr.md) to add them :smile:.
 * Review the parts of the documentation regarding the new changes and update it if it's needed.
 * New features often imply changes in the existent tests or new ones are needed. Once they're updated/added please be sure they keep passing.
 
