@@ -44,11 +44,8 @@ Please follow the next rules for the commit messages:
 :bulb: All new ideas go throught next stages to become a new feature of the language.
 
 * Draft: Backlog items with different level of abstraction. Anybody can add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm). Please label it as `draft`.
-* Proposal: An idea with the correct form. The commiter have to:
-  * Fork [the template repo](https://github.ibm.com/IBMResearch/openqasm-proposal-template).
-  * Rename it with sense depending of the nature of the changes, ie: `openqasm-proposal-whatever`.
-  * Complete it, note than some sections are optional for now.
-  * Add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm) labeled as `proposal` and include a link to the repo implementing it.
+* Proposal: An idea with the correct form:
+  * Add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
 * Candidate: During each [monthly meeting](https://github.ibm.com/IBMResearch/meetings/README.md#monthly) the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting the issue to guide the owner into the next steps, including:
   * Fork [the main repo](https://github.ibm.com/IBMResearch/openqasm).
   * Add the content of the proposal, note that [**tests are mandatory**](test) at this point.
