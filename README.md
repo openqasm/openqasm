@@ -43,9 +43,13 @@ if(syn==3) x q[1];
 measure q -> c;
 ```
 
+## Tests
+
+This repository also includes [the official OpenQASM conformance test suite](test).
+
 ## Authors (alphabetical)
 
-Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, and John A. Smolin.
+Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, Jesús Pérez and John A. Smolin.
 
 Anyone who contributes to this project can include their name here.
 
