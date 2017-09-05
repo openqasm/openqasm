@@ -12,11 +12,11 @@ On this repository you'll find all the documentation related to the OpenQASM in 
 
 ### Language specs
 
-The language documentation is available under the [spec folder](spec).
+The language documentation is available under the [spec] folder in [LaTex](https://www.latex-project.org/about) language. [Here](spec-human) we provide a human-readable version of it in PDF format.
 
 ### Examples
 
-The examples can be found under the [examples folder](examples).
+The examples can be found under the [examples] folder.
 
 They are OpenQASM files, i.e.:
 
@@ -65,8 +65,12 @@ For research papers, we encourage authors to reference.
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
 
 ## Acknowledgments
 
 * Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
+
+## Contributing
+
+If you'd like to help please take a look to our [contribution guidelines](contributing.md).
