@@ -45,7 +45,7 @@ measure q -> c;
 
 ## Tests
 
-This repository also includes [the official OpenQASM conformance test suite](test).
+The official OpenQASM [conformance test](https://en.wikipedia.org/wiki/Conformance_testing) suite is also [in this repo](test).
 
 ## Authors (alphabetical)
 

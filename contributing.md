@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a goog point to start, when you find a problem please add it to the [issue traker](https://github.com/IBMResearch/openqasm/issues). Please, use [this template](https://github.com/IBMResearch/contributing/blob/master/templates/issue.md) to add them.
+:fire: This is a good point to start, when you find a problem please add it to the [issue traker](https://github.com/IBMResearch/openqasm/issues). Please, use [this template](https://github.com/IBMResearch/contributing/blob/master/templates/issue.md) to add them.
 
 ## Doubts solving
 
