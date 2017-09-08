@@ -48,11 +48,26 @@ Please follow the next rules for the commit messages:
   * Add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
 * Candidate: During each [monthly meeting](https://github.ibm.com/IBMResearch/meetings/README.md#monthly) the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting the issue to guide the owner into the next steps, including:
   * Fork [the main repo](https://github.ibm.com/IBMResearch/openqasm).
-  * Add the content of the proposal, note that [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) are mandatory at this point.
-  * The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
+  * Add the content of the proposal, note that conformance tests are mandatory at this point.
   * Make a pull request.
   * The core dev can ask for changes before reaching the next stage.
 * Accepted: When the PR is merged into master.
+
+## Tests
+
+The official [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) suite is located under the [test](test) folder.
+
+For convenience this projects uses the [QISKit](https://github.com/QISKit/qiskit-sdk-py) parser.
+
+The test runner uses all the circuit files in the [examples](examples) folder:
+
+* The `invalid` folder includes not valid files which need specific tests (including the raised regular expression).
+* The rest include valid circuits that are run automatically to check they keep passing the parser without raising any exception. The test runner allows to drop more files in those folders, even to add new ones.
+
+### Run
+
+* Install [QISKit depedencies](https://github.com/QISKit/qiskit-sdk-py#1-get-the-tools).
+* The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
 
 ## Versions
 
