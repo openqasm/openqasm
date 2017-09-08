@@ -179,5 +179,10 @@ TSWLatexianTemp*
 # KBibTeX
 *~[0-9]*
 
+
 # Tests
 __pycache__
+*.py[cod]
+*$py.class
+pip-log.txt
+pip-delete-this-directory.txt

@@ -48,7 +48,7 @@ Please follow the next rules for the commit messages:
   * Add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
 * Candidate: During each [monthly meeting](https://github.ibm.com/IBMResearch/meetings/README.md#monthly) the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting the issue to guide the owner into the next steps, including:
   * Fork [the main repo](https://github.ibm.com/IBMResearch/openqasm).
-  * Add the content of the proposal, note that [**tests are mandatory**](test) at this point.
+  * Add the content of the proposal, note that [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) are mandatory at this point.
   * The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
   * Make a pull request.
   * The core dev can ask for changes before reaching the next stage.
