@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-.PHONY: install lint
+.PHONY: install lint test
 
 install:
 	pip install -r requires.txt
 
-lint:
+lint: install
 	pylint test
 
 test: lint
