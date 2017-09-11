@@ -18,7 +18,6 @@
 """Helpers."""
 
 import os
-import unittest
 
 from qiskit import qasm
 
@@ -48,9 +47,13 @@ def parse(file_path, prec=15):
         return False
 
 
-class TestCaseQasm(unittest.TestCase):
-
+class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
+    """
+    Provides an "assertFile" assertion that checks for the parseability of
+    the provided file.
+    """
     @staticmethod
-    def assert_file(file_path):
+    def assertFile(file_path):  # pylint: disable=invalid-name
+        """Asserts that "file_path" can be parsed correctly."""
         if not parse(file_path):
             raise AssertionError("TODO: Parse from QASM file")
