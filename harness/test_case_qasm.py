@@ -18,19 +18,9 @@
 """Helpers."""
 
 import os
+import unittest
 
 from qiskit import qasm
-
-
-def parse(file_path, prec=15):
-    """
-      - file_path: Path to the OpenQASM file
-      - prec: Precision for the returned string
-    """
-
-    qiskit_qasm = qasm.Qasm(file_path)
-
-    return qiskit_qasm.parse().qasm(prec)
 
 
 def get_file_path(category, file_name):
@@ -41,3 +31,26 @@ def get_file_path(category, file_name):
     """
 
     return os.path.join(os.path.dirname(__file__), "../examples", category, file_name + ".qasm")
+
+
+def parse(file_path, prec=15):
+    """
+      - file_path: Path to the OpenQASM file
+      - prec: Precision for the returned string
+    """
+
+    qiskit_qasm = qasm.Qasm(file_path)
+
+    try:
+        qiskit_qasm.parse().qasm(prec)
+        return True
+    except qasm.QasmError:
+        return False
+
+
+class TestCaseQasm(unittest.TestCase):
+
+    @staticmethod
+    def assert_file(file_path):
+        if not parse(file_path):
+            raise AssertionError("TODO: Parse from QASM file")
