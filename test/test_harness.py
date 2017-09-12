@@ -29,7 +29,7 @@ CATEGORIES = next(os.walk(PATH_BASE))[1]
 class TestHarness(unittest.TestCase, AssertFileMixin):
     "Valid circuits"
 
-    def test_valid_circuits(self):  # pylint: disable=no-self-use
+    def test_circuits(self):  # pylint: disable=no-self-use
         "Starting for valid circuits"
 
         for category in CATEGORIES:
@@ -38,9 +38,13 @@ class TestHarness(unittest.TestCase, AssertFileMixin):
             for filename in filenames:
                 split = len(filename) - 5
                 ext = filename[split + 1:]
+                invalid = False
+
+                if category == "invalid":
+                    invalid = True
 
                 if ext == "qasm":
                     filename_no_ext = filename[:split]
                     print("- " + filename_no_ext + ".qasm")
 
-                    self.assertFile(get_file_path(category, filename_no_ext))
+                    self.assertFile(get_file_path(category, filename_no_ext), invalid)

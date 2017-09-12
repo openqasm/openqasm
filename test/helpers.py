@@ -53,7 +53,11 @@ class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
     the provided file.
     """
     @staticmethod
-    def assertFile(file_path):  # pylint: disable=invalid-name
-        """Asserts that "file_path" can be parsed correctly."""
-        if not parse(file_path):
-            raise AssertionError("TODO: Parse from QASM file")
+    def assertFile(file_path, invalid=False):  # pylint: disable=invalid-name
+        """
+        Custom asserts for QASM files.
+        - file_path: Path to the OpenQASM file
+        - invalid: If we´re checking an invalid files
+        """
+        if not parse(file_path) and not invalid:
+            raise AssertionError("TODO: Parse from QASM file:" + file_path)
