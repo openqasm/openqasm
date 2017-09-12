@@ -29,9 +29,10 @@ CATEGORIES = next(os.walk(PATH_BASE))[1]
 class TestHarness(unittest.TestCase, AssertFileMixin):
     "Valid circuits"
 
-    def test_circuits(self):  # pylint: disable=no-self-use
-        "Starting for valid circuits"
+    def test_suite(self):  # pylint: disable=no-self-use
+        """OpenQASM conformance tests suite"""
 
+        print("\n")
         for category in CATEGORIES:
             filenames = os.listdir(os.path.join(PATH_BASE, category))
 
@@ -41,6 +42,5 @@ class TestHarness(unittest.TestCase, AssertFileMixin):
 
                 if ext == "qasm":
                     filename_no_ext = filename[:split]
-                    print("- " + filename_no_ext + ".qasm")
 
                     self.assertFile(get_file_path(category, filename_no_ext), category == "invalid")

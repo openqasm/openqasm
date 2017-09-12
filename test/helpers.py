@@ -18,7 +18,6 @@
 """Helpers."""
 
 import os
-
 from qiskit import qasm
 
 
@@ -47,6 +46,13 @@ def parse(file_path, prec=15):
         return False
 
 
+def get_value(line):
+    """
+      - line: Line with QASM code to inspect
+    """
+    return line.split(":")[1].strip()
+
+
 class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
     """
     Provides an "assertFile" assertion that checks for the parseability of
@@ -57,7 +63,42 @@ class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
         """
         Custom asserts for QASM files.
         - file_path: Path to the OpenQASM file
-        - invalid: If we´re checking an invalid files
+        - invalid: If we´re checking an invalid file
         """
-        if not parse(file_path) and not invalid:
-            raise AssertionError("TODO: Parse from QASM file:" + file_path)
+        # TODO: We need to read the file twice because the parser still does not
+        # support to receive strings. But we need the header here.
+        src = open(file_path, "r")
+        lines = src.readlines()
+        src.close()
+
+        name = None
+        section = None
+
+        for line in lines:
+            if "//" in line:
+                if "name:" in line:
+                    name = get_value(line)
+                if "section:" in line:
+                    section = get_value(line)
+                    # We can stop looking for metadata at this point
+                    break
+
+        category = os.path.basename(os.path.dirname(file_path))
+        msg = " - "
+        # If the file doesn´t include metadata we use the real name
+        # to get some info
+        if not name:
+            msg = msg + os.path.splitext(os.path.basename(file_path))[0]
+        else:
+            msg = msg + name
+            if section:
+                msg = msg + ", section: " + section
+
+        if invalid:
+            msg = msg + " (" + category + ")"
+
+        print(msg)
+
+        res = parse(file_path)
+        if (not res and not invalid) or (res and invalid):
+            raise AssertionError(msg)
