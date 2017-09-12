@@ -20,17 +20,17 @@
 import os
 import unittest
 
-from .helpers import get_file_path, AssertFileMixin
+from .harness import get_file_path, AssertFileMixin
 
 PATH_BASE = os.path.join(os.path.dirname(__file__), "..", "examples")
 CATEGORIES = next(os.walk(PATH_BASE))[1]
 
 
-class TestHarness(unittest.TestCase, AssertFileMixin):
+class TestSuite(unittest.TestCase, AssertFileMixin):
     "Valid circuits"
 
     def test_suite(self):  # pylint: disable=no-self-use
-        """OpenQASM conformance tests suite"""
+        """OpenQASM conformance test suite"""
 
         print("\n")
         for category in CATEGORIES:
