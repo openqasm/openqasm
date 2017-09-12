@@ -21,4 +21,4 @@ lint: install
 	pylint test
 
 test: lint
-	python -m unittest discover -v
+	python -m unittest discover
