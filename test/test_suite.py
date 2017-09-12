@@ -15,7 +15,7 @@
 # limitations under the License.
 # =============================================================================
 
-"""Conformance tests for valid circuits."""
+"OpenQASM conformance test suit. It includes valid and invalid circuits"
 
 import os
 import unittest
@@ -27,12 +27,13 @@ CATEGORIES = next(os.walk(PATH_BASE))[1]
 
 
 class TestSuite(unittest.TestCase, AssertFileMixin):
-    "Valid circuits"
+    "Test suite"
 
     def test_suite(self):  # pylint: disable=no-self-use
-        """OpenQASM conformance test suite"""
+        "Test runner"
 
-        print("\n")
+        print("\nOpenQASM conformance test suite\n")
+
         for category in CATEGORIES:
             filenames = os.listdir(os.path.join(PATH_BASE, category))
 

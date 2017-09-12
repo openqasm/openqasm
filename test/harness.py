@@ -94,8 +94,7 @@ class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
             if section:
                 msg = msg + ", section: " + section
 
-        if invalid:
-            msg = msg + " (" + category + ")"
+        msg = msg + " (" + category + ")"
 
         print(msg)
 
