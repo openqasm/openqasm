@@ -46,7 +46,7 @@ Please follow the next rules for the commit messages:
 * Draft: Backlog items with different level of abstraction. Anybody can add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm). Please label it as `draft`.
 * Proposal: An idea with the correct form:
   * Add one issue in the [main repo](https://github.ibm.com/IBMResearch/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
-* Candidate: During each [monthly meeting](https://github.ibm.com/IBMResearch/meetings/README.md#monthly) the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting the issue to guide the owner into the next steps, including:
+* Candidate: During each monthly meeting the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting the issue to guide the owner into the next steps, including:
   * Fork [the main repo](https://github.ibm.com/IBMResearch/openqasm).
   * Add the content of the proposal, note that conformance tests are mandatory at this point.
   * Make a pull request.
@@ -59,10 +59,13 @@ The official [conformance tests](https://en.wikipedia.org/wiki/Conformance_testi
 
 For convenience this projects uses the [QISKit](https://github.com/QISKit/qiskit-sdk-py) parser.
 
-The test runner uses all the circuit files in the [examples](examples) folder:
+The test runner uses all the circuit files in the [examples](examples) folder. They are run automatically to check they keep passing the parser. It allows to drop more files in those folders, even to add new ones.
 
-* The `invalid` folder includes not valid files which need specific tests (including the raised regular expression).
-* The rest include valid circuits that are run automatically to check they keep passing the parser without raising any exception. The test runner allows to drop more files in those folders, even to add new ones.
+* The `invalid` folder includes circuits which should raise a `QasmException`.
+* The rest include valid circuits.
+* Optionally, they can include metadata in the header (inside comments, like [this one](examples/invalid/gate_no_found.qasm)):
+  * name: Descriptive name for the check this example is covering.
+  * section: Link to the related part of the specification.
 
 ### Run
 

@@ -45,7 +45,7 @@ measure q -> c;
 
 ## Tests
 
-The official OpenQASM official [conformance test](contributing.md#tests) suite is included in this repo.
+The official OpenQASM [conformance test](contributing.md#tests) suite is included in this repo.
 
 ## Authors (alphabetical)
 
