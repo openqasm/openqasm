@@ -24,7 +24,8 @@ from .harness import get_file_path, AssertFileMixin
 
 PATH_BASE = os.path.join(os.path.dirname(__file__), "..", "examples")
 CATEGORIES = next(os.walk(PATH_BASE))[1]
-
+# To print also the raised errors.
+VERBOSE = False
 
 class TestSuite(unittest.TestCase, AssertFileMixin):
     "Test suite"
@@ -44,4 +45,5 @@ class TestSuite(unittest.TestCase, AssertFileMixin):
                 if ext == "qasm":
                     filename_no_ext = filename[:split]
 
-                    self.assertFile(get_file_path(category, filename_no_ext), category == "invalid")
+                    self.assertFile(get_file_path(category, filename_no_ext),
+                                    VERBOSE, category == "invalid")

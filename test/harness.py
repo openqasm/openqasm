@@ -31,7 +31,7 @@ def get_file_path(category, file_name):
     return os.path.join(os.path.dirname(__file__), "../examples", category, file_name + ".qasm")
 
 
-def parse(file_path, prec=15):
+def parse(file_path, verbose=False, prec=15):
     """
       - file_path: Path to the OpenQASM file
       - prec: Precision for the returned string
@@ -42,7 +42,10 @@ def parse(file_path, prec=15):
     try:
         qiskit_qasm.parse().qasm(prec)
         return True
-    except qasm.QasmError:
+    except qasm.QasmError as err:
+        if verbose:
+            print("Error:")
+            print(err)
         return False
 
 
@@ -59,7 +62,7 @@ class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
     the provided file.
     """
     @staticmethod
-    def assertFile(file_path, invalid=False):  # pylint: disable=invalid-name
+    def assertFile(file_path, verbose=False, invalid=False):  # pylint: disable=invalid-name
         """
         Custom asserts for QASM files.
         - file_path: Path to the OpenQASM file
@@ -98,6 +101,6 @@ class AssertFileMixin(object):  # pylint: disable=too-few-public-methods
 
         print(msg)
 
-        res = parse(file_path)
+        res = parse(file_path, verbose)
         if (not res and not invalid) or (res and invalid):
             raise AssertionError(msg)
