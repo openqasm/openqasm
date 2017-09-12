@@ -57,7 +57,7 @@ Please follow the next rules for the commit messages:
 
 The official [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) suite is located under the [test](test) folder.
 
-For convenience this projects uses the [QISKit](https://github.com/QISKit/qiskit-sdk-py) parser.
+For convenience this project uses the [QISKit](https://github.com/QISKit/qiskit-sdk-py) parser.
 
 The test runner uses all the circuit files in the [examples](examples) folder. They are run automatically to check they keep passing the parser. It allows to drop more files in those folders, even to add new ones.
 
