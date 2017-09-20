@@ -1,23 +1,26 @@
 # OpenQASM
+
 Specs, examples and tools for the OpenQASM intermediate representation.
 
 ## Current version
 
-The latest version is: __2.0__
+The latest version is: __2.0__.
 
 ## About this project
+
 On this repository you'll find all the documentation related to the OpenQASM in PDF, including the sources to generate it. Also some useful OpenQASM examples.
 
 ### Language specs
 
-The language documentation is available under the [spec folder](https://github.com/QISKit/openqasm/tree/master/spec).
+The language documentation is available under the [spec](spec) folder in [LaTex](https://www.latex-project.org/about) language. [Here](spec-human) we provide a human-readable version of it in PDF format.
 
 ### Examples
 
-The examples can be found under the [examples folder](https://github.com/QISKit/openqasm/tree/master/examples).
+The examples can be found under the [examples] folder.
 
 They are OpenQASM files, i.e.:
-```
+
+```text
 // Repetition code syndrome measurement
 OPENQASM 2.0;
 include "qelib1.inc";
@@ -25,10 +28,10 @@ qreg q[3];
 qreg a[2];
 creg c[3];
 creg syn[2];
-gate syndrome d1,d2,d3,a1,a2 
-{ 
-  cx d1,a1; cx d2,a1; 
-  cx d2,a2; cx d3,a2; 
+gate syndrome d1,d2,d3,a1,a2
+{
+  cx d1,a1; cx d2,a1;
+  cx d2,a2; cx d3,a2;
 }
 x q[0]; // error
 barrier q;
@@ -40,15 +43,19 @@ if(syn==3) x q[1];
 measure q -> c;
 ```
 
+## Tests
+
+The official OpenQASM [conformance test](contributing.md#tests) suite is included in this repo.
+
 ## Authors (alphabetical)
 
-Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, and John A. Smolin
+Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, Jesús Pérez and John A. Smolin.
 
 Anyone who contributes to this project can include their name here.
 
 ## Citation format
 
-For research papers, we encourage authors to reference 
+For research papers, we encourage authors to reference.
 
 * Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
@@ -62,9 +69,12 @@ For research papers, we encourage authors to reference
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details
+This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
 
 ## Acknowledgments
 
-* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM
+* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
 
+## Contributing
+
+If you'd like to help please take a look to our [contribution guidelines](contributing.md).
