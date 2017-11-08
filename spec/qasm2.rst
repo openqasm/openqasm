@@ -524,7 +524,7 @@ uses a pair of :math:`\pi/2`-pulses.
 Quantum teleportation
 ---------------------
 
-.. figure:: _static/teleport.*
+.. figure:: _static/teleport.png
 	 :name: teleport
 
 	 Example of quantum teleportation. Qubit q[0] is prepared by
@@ -537,7 +537,7 @@ outcomes.
 Quantum Fourier transform
 -------------------------
 
-.. figure:: _static/fft4q.*
+.. figure:: _static/fft4q.png
 	 :name: fft4q
 
 	 Example of a 4-qubit quantum Fourier transform. The circuit applies
@@ -553,7 +553,7 @@ the computational basis.
 Inverse QFT followed by measurement
 -----------------------------------
 
-.. figure:: _static/ifft4q.*
+.. figure:: _static/ifft4q.png
 	 :name: ifft4q
 
 	 Example of a 4-qubit inverse quantum Fourier transform followed by
@@ -575,7 +575,7 @@ example is shown in :numref:`ifft4q`.
 Ripple-carry adder
 ------------------
 
-.. figure:: _static/ripple_adder.*
+.. figure:: _static/ripple_adder.png
 	 :name: ripple_adder
 
 	 Example of a quantum ripple-carry adder from [CDKM04]_. This circuit
@@ -588,7 +588,7 @@ The ripple-carry adder [CDKM04]_ (Cuccaro et al. 2004) shown in
 Randomized benchmarking
 -----------------------
 
-.. figure:: _static/rb2q.*
+.. figure:: _static/rb2q.png
 	 :name: rb2q
 
 	 Example of a two-qubit randomized benchmarking (RB) sequence over
@@ -614,7 +614,7 @@ a result of subsequent transformations.
 Quantum process tomography
 --------------------------
 
-.. figure:: _static/tomography1q.*
+.. figure:: _static/tomography1q.png
 	 :name: tomography1q
 
 	 Example of a single-qubit quantum process tomography circuit. The
@@ -640,7 +640,7 @@ textbook QPT, the pre and post gates are both taken from the set
 Quantum error-correction
 ------------------------
 
-.. figure:: _static/bit_flip_repetition_code.*
+.. figure:: _static/bit_flip_repetition_code.png
 	 :name: bit_flip_repetition_code
 
 	 Example of a quantum bit-flip repetition code. The circuit begins
