@@ -246,7 +246,7 @@ All of the single-qubit unitary gates are also built in
 	\end{array}\right).
 
 Here :math:`R_y(\theta)=\mathrm{exp}(-i\theta Y/2)` and
-:math:`R_z(\phi)=\mathrm{exp}(-i\theta Z/2)`. This specifies any
+:math:`R_z(\phi)=\mathrm{exp}(-i\phi Z/2)`. This specifies any
 element of :math:`SU(2)`. When a is a quantum register, the statement
 :code:`U(theta,phi,lambda) a;` means apply :code:`U(theta,phi,lambda)
 a[j];` for each index j into register a. The real parameters
