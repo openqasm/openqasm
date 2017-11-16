@@ -36,14 +36,13 @@ which has the formulation:
 
 which essentially says: This is a problem in cnf format, with 2 variables and 3 clauses, having the form
 
-.. math::
+::
 
- (-v_1 + -v_2)*(-v_1 + v_2)*(v_2)
+ (-v1 + -v2)*(-v1 + v2)*(v2)
 
 where ``*``, ``+``, ``-`` can be seen as logical ``AND``, ``OR``, ``NOT``, respectively, where ``0`` marks clause endings.
 
-It can be easily seen that :math:`v_1=F, v_2=T` is the unique satisfying solution.
-
+It can be easily seen that ``v1 = F, v2 = T`` is the unique satisfying solution.
 
 OpenQASM Program
 ================
@@ -114,4 +113,4 @@ A sample run of this program using IBMQuantumExperience (with 128 shots) yields 
 
  'counts': {'10': 108, '11': 5, '00': 8, '01': 7}
 
-which clearly indicates that the measurement ``10`` dominates, coinciding with our expected SAT solution of :math:`v_1=F, v_2=T`.
+which clearly indicates that the measurement ``10`` dominates, coinciding with our expected SAT solution of ``v1 = F`` and ``v2 = T``.
