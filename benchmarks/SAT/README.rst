@@ -107,7 +107,7 @@ with the content
  measure v[1] -> m[0];
  measure v[2] -> m[1];
 
-A sample run of this program using IBMQuantumExperience (with 128 shots) yields the outcome
+A sample run of this program using IBM Q experience (with 128 shots) yields the outcome
 
 ::
 
