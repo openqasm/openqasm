@@ -1,7 +1,6 @@
 ==============================
 Open Quantum Assembly Language
 ==============================
-Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta
 
 
 Background
