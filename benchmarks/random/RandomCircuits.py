@@ -1,5 +1,5 @@
 """
-Generate randomized circuits for Quantum Volume Analysis.
+Generate randomized circuits for Quantum Volume analysis.
 
 Example run:
   python RandomCircuits.py -n 5 -d 5
