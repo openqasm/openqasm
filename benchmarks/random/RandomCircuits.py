@@ -1,22 +1,21 @@
-# Checking the version of PYTHON; we only support 3 at the moment
+"""
+Generate randomized circuits for Quantum Volume Analysis.
+
+Example run:
+  python RandomCircuits.py -n 5 -d 5
+"""
+
 import sys
 import math
 import time
-if sys.version_info < (3,0):
-    raise Exception("Please use Python version 3 or greater.")
-    
-# useful additional packages
-#import matplotlib.pyplot as plt
-#%matplotlib inline
+import argparse
 import numpy as np
 from scipy.linalg import qr
-sys.path.append("../../qiskit-sdk-py")
-# importing the QISKit
 from qiskit import QuantumProgram
-#import Qconfig
 from qiskit.mapper import two_qubit_kak
-# import basic plot tools
-#from qiskit.tools.visualization import plot_histogram
+
+if sys.version_info < (3,0):
+    raise Exception("Please use Python version 3 or greater.")
  
 def random_unitary(n):
     """Return an n x n Haar distributed unitary matrix.
@@ -75,7 +74,6 @@ def build_model_circuits(name, n, depth, num_circ=1):
                                      gate["params"][2], q[i0])
                     elif gate["name"] == "id":
                         pass  # do nothing
-            # Remove barriers
             # circuit_i.barrier(q)  # barriers between layers
         circuit_i.barrier(q)  # barrier before measurement
         # Create circuit with final measurement
@@ -83,8 +81,21 @@ def build_model_circuits(name, n, depth, num_circ=1):
     return qp
 
 def main():
-  qp = build_model_circuits(name="test", n=40, depth=40)
-  print(qp.get_qasm("test_0_meas"))  
+  parser = argparse.ArgumentParser(
+      description="Create randomized circuits for quantum volume analysis.")
+  parser.add_argument('--name', default='random', help='circuit name')  
+  parser.add_argument('-n', '--qubits', default=5, type=int, help='number of circuit qubits')
+  parser.add_argument('-d', '--depth', default=5, type=int, help='SU(4) circuit depth')
+  parser.add_argument('--num-circ', default=1, type=int, help='how many circuits?')    
+  args = parser.parse_args()
+
+  qp = build_model_circuits(name=args.name, n=args.qubits, depth=args.depth, num_circ=args.num_circ)
+
+  for i in range(args.num_circ):
+    circuit_name = args.name+str(i)+'_n'+str(args.qubits)+'_d'+str(args.depth)
+    f = open(circuit_name+'.qasm', 'w')
+    f.write(qp.get_qasm(args.name+'_'+str(i)+'_meas'))
+    f.close()
 
 if __name__ == "__main__":
   main()
