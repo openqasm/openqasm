@@ -12,7 +12,7 @@ On this repository you'll find all the documentation related to OpenQASM and som
 
 ### Language specs
 
-The language documentation is available [here](specs/qasm.rst).
+The language documentation is available [here](spec/qasm2.rst).
 
 ### Examples
 
