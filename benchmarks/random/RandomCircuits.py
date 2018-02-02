@@ -11,22 +11,21 @@ import time
 import argparse
 import numpy as np
 from scipy.linalg import qr
+from scipy.linalg import det
 from qiskit import QuantumProgram
 from qiskit.mapper import two_qubit_kak
 
 if sys.version_info < (3,0):
     raise Exception("Please use Python version 3 or greater.")
  
-def random_unitary(n):
+def random_SU(n):
     """Return an n x n Haar distributed unitary matrix.
     Return numpy array.
     """
-    X = (1.0/math.sqrt(2.0))*(np.random.randn(n, n) +
-                              1j*np.random.randn(n, n))
-    Q, R = qr(X)
-    R = np.diag(np.diag(R)/np.abs(np.diag(R)))
-    U = np.dot(Q, R)
-    return U
+    X = (np.random.randn(n, n) + 1j*np.random.randn(n, n))
+    Q, R = qr(X)            # Q is a unitary matrix
+    Q /= pow(det(Q), 1/n)   # make Q a special unitary
+    return Q
 
 def build_model_circuits(name, n, depth, num_circ=1):
     """Create a quantum program containing model circuits.
@@ -58,8 +57,8 @@ def build_model_circuits(name, n, depth, num_circ=1):
             # Decompose each SU(4) into CNOT + SU(2) and add to Ci
             for k in range(math.floor(n/2)):
                 qubits = [int(perm[2*k]), int(perm[2*k+1])]
-                U = random_unitary(4)
-                for gate in two_qubit_kak(U):
+                SU = random_SU(4)
+                for gate in two_qubit_kak(SU):
                     i0 = qubits[gate["args"][0]]
                     if gate["name"] == "cx":
                         i1 = qubits[gate["args"][1]]
