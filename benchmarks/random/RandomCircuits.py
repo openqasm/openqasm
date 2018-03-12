@@ -91,7 +91,10 @@ def main():
   qp = build_model_circuits(name=args.name, n=args.qubits, depth=args.depth, num_circ=args.num_circ)
 
   for i in range(args.num_circ):
-    circuit_name = args.name+str(i)+'_n'+str(args.qubits)+'_d'+str(args.depth)
+    if i == 0:
+        circuit_name = args.name+'_n'+str(args.qubits)+'_d'+str(args.depth)
+    else:
+        circuit_name = args.name+str(i)+'_n'+str(args.qubits)+'_d'+str(args.depth)
     f = open(circuit_name+'.qasm', 'w')
     f.write(qp.get_qasm(args.name+'_'+str(i)+'_meas'))
     f.close()
