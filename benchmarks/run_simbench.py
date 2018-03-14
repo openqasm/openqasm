@@ -4,6 +4,8 @@ import sys
 import re
 import time
 import json
+import glob
+import operator
 
 import qiskit
 
@@ -13,42 +15,59 @@ if sys.version_info < (3,0):
 def runBenchmark(name, qubit, backend, depth, verify):
     
     if depth > 0 : 
-        qasm = name + "/" + name + "_n" + str(qubit) + "_d" + str(depth) + ".qasm"
-    else:
-        qasm = name + "/" + name + "_n" + str(qubit) + ".qasm"
-    
-    if not os.path.exists(qasm):
-        return False
-    
-    qp = qiskit.QuantumProgram()
-    
-    if backend.startswith("ibmqx"):
-        import Qconfig
-        qp.set_api(Qconfig.APItoken, Qconfig.config['url'])
-    elif not backend.startswith("local"):
-        raise Exception('only ibmqx or local simulators are supported')
+        qasm_files = name + "/" + name + "_n" + str(qubit) + "_d" + str(depth) + "*.qasm"
+        pattern1 = name + "_n" + str(qubit) + "_d" + str(depth) + "[^0-9]*\.qasm"
+        pattern2 = name + "_n" + str(qubit) + "_d" + str(depth) + "\D.*\.qasm"
         
-    qp.load_qasm_file(qasm, name=name)
+    else:
+        qasm_files = name + "/" + name + "_n" + str(qubit) + "*.qasm"
+        pattern1 = name + "_n" + str(qubit) +  "[^0-9]*\.qasm"
+        pattern2 = name + "_n" + str(qubit) +  "\D.*\.qasm"
     
-    start = time.time() 
-    ret = qp.execute([name], backend=backend, shots=1, max_credits=5, hpc=None, timeout=60*60*24)
-    elapsed = time.time() - start
+    file_list = glob.glob(qasm_files)
     
-    if not ret.get_circuit_status(0) == "DONE":
-        return False
-    
-    if backend.startswith("ibmqx"):
-        elapsed = ret.get_data(name)["time"]
-    
-    print(name + "," + backend + "," + str(qubit) + "," + str(depth) + "," + str(elapsed), flush=True)
-    #print(ret.get_counts(name))
+    if not file_list:
+        raise Exception("No qasm file")
 
-    if verify:
-        verfy_result(ret, name, qasm)
-    
+    for qasm in file_list:
+
+        ret = None
+        if not ((re.search(pattern1, os.path.basename(qasm))) or
+               (re.search(pattern2, os.path.basename(qasm)))):
+           continue
+
+        qp = qiskit.QuantumProgram()
+        
+        if backend.startswith("ibmqx"):
+            import Qconfig
+            qp.set_api(Qconfig.APItoken, Qconfig.config['url'])
+        elif not backend.startswith("local"):
+            raise Exception('only ibmqx or local simulators are supported')
+            
+        qp.load_qasm_file(qasm, name=name)
+        
+        start = time.time() 
+        ret = qp.execute([name], backend=backend, shots=1, max_credits=5, hpc=None, timeout=60*60*24)
+        elapsed = time.time() - start
+        
+        if not ret.get_circuit_status(0) == "DONE":
+            return False
+        
+        if backend.startswith("ibmqx"):
+            elapsed = ret.get_data(name)["time"]
+        
+        print(name + "," + backend + "," + str(qubit) + "," + str(depth) + "," + str(elapsed), flush=True)
+        #print(ret.get_counts(name))
+
+        if verify:
+            verify_result(ret, name, qasm)
+        
+    if not ret:
+        raise Exception("No qasm file")
+
     return True
 
-def verfy_result(ret, name, qasm):
+def verify_result(ret, name, qasm):
     if not os.path.exists(name + "/ref"):
         raise Exception("Verification not support for " + name)
         return False
@@ -74,23 +93,90 @@ def verfy_result(ret, name, qasm):
         if ref_count != count:
             raise Exception(" Count is differ: " + str(count) + " and " + str(ref_count))
 
+def print_qasm_sum(app_name):
+    dir_name = app_name[0]
+
+    if not os.path.exists(dir_name):
+        raise Exception("Not find :" + dir_name)
+
+    file_list = glob.glob(dir_name + "/*.qasm")
+    qasm_list = []
+
+    for each_file in file_list:
+        file_name = os.path.basename(each_file)
+        match_q = re.search("_n([0-9]*)", file_name)
+        match_d = re.search("n[0-9]*_d([0-9]*)", file_name)
+
+        if not match_q: 
+            raise Exception("Not find file:" + dir_name)
+        qubit = int(match_q.group(1))
+
+
+        val = filter(lambda bit: bit['qubit'] == qubit, qasm_list)
+        val_list = list(val)
+
+        if not len(val_list):
+            if match_d: 
+                depth = int(match_d.group(1))
+                qasm_list.append({"qubit": qubit, "depth":depth, "count" : 1})
+            else:
+                qasm_list.append({"qubit": qubit, "count" : 1})
+        else:
+            if match_d: 
+                depth = int(match_d.group(1))
+                depth_val = list(filter(lambda dep: dep["depth"] == depth, val_list))
+                if not len(depth_val):
+                    qasm_list.append({"qubit": qubit, "depth":depth, "count" : 1})
+                else:
+                    depth_val[0]["count"] += 1
+            else:
+                val_list[0]["count"] +=1
+
+
+    if "depth" in qasm_list[0]:
+        tmp_list = sorted(qasm_list, key=operator.itemgetter("qubit", "depth"))
+    else:
+        tmp_list = sorted(qasm_list, key=operator.itemgetter("qubit"))
+
+    print("Application : " + dir_name)
+    for each_list in tmp_list:
+        print_line = "qubit : "+ str(each_list["qubit"])
+        if "depth" in each_list:
+            print_line += " \t  depth : " + str(each_list["depth"])
+
+        print_line += " \t  file : "+str(each_list["count"])
+
+        print(print_line)
+   
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description=("Evaluate the performance of simulator with and prints a report."))
     
     parser.add_argument('-a', '--name', default='qft', help='benchmark name')
     parser.add_argument('-s', '--start', default='4', help='minimum qubits for evaluation')
-    parser.add_argument('-e', '--end', default='10', help='maximum qubits for evaluation')
+    parser.add_argument('-e', '--end', default='0', help='maximum qubits for evaluation')
     parser.add_argument('-d', '--depth', default='0', help='depth')
     parser.add_argument('-b', '--backend', default='local_qasm_simulator', help='backend name')
     parser.add_argument('-v', '--verify', action='store_true', help='verify simulation results')
+    parser.add_argument('-l', '--list', nargs=1, metavar='APP', help='summerize qasm file')
     
     return parser.parse_args();
 
 def _main():
     args = parse_args()
+
+    if args.list:
+      print_qasm_sum(args.list)
+      return
+
+    start_qubit = int(args.start)
+    end_qubit = int(args.end)
+
+    if not end_qubit:
+        end_qubit = start_qubit
     
-    for qubit in range(int(args.start), int(args.end) + 1):
+    for qubit in range(int(args.start), end_qubit + 1):
         if not runBenchmark(name=args.name, qubit=qubit, backend=args.backend, depth=int(args.depth), verify=args.verify):
             break
 

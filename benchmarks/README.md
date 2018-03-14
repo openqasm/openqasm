@@ -30,6 +30,8 @@ You can run benchmark `run_simbench.py` with following options.
 * `-s`: specify a qubit number to start evaluation
 * `-e`: specify a qubit number to end evaluation
 * `-d`: specify a depth to be evaluated (optional)
+* `-v`: verify simulation results (optional)
+* `-l`: specify a application to list benchmark scenario (optional)
 
 For example, the following commands run qft from 10 to 20 qubit with local_qiskit_simulator.
 ```
