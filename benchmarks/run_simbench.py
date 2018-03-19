@@ -12,8 +12,11 @@ import qiskit
 if sys.version_info < (3,0):
     raise Exception("Please use Python version 3 or greater.")
 
-def runBenchmark(name, qubit, backend, depth, verify):
+def runBenchmark(name, qubit, backend, depth, verify, seed):
     
+    if seed:
+        seed = int(seed)
+
     if depth > 0 : 
         qasm_files = name + "/" + name + "_n" + str(qubit) + "_d" + str(depth) + "*.qasm"
         pattern1 = name + "_n" + str(qubit) + "_d" + str(depth) + "[^0-9]*\.qasm"
@@ -47,8 +50,9 @@ def runBenchmark(name, qubit, backend, depth, verify):
         qp.load_qasm_file(qasm, name=name)
         
         start = time.time() 
-        ret = qp.execute([name], backend=backend, shots=1, max_credits=5, hpc=None, timeout=60*60*24)
+        ret = qp.execute([name], backend=backend, shots=1, max_credits=5, hpc=None, timeout=60*60*24, seed=seed)
         elapsed = time.time() - start
+        #print(ret.get_data(name))
         
         if not ret.get_circuit_status(0) == "DONE":
             return False
@@ -93,8 +97,7 @@ def verify_result(ret, name, qasm):
         if ref_count != count:
             raise Exception(" Count is differ: " + str(count) + " and " + str(ref_count))
 
-def print_qasm_sum(app_name):
-    dir_name = app_name[0]
+def print_qasm_sum(dir_name):
 
     if not os.path.exists(dir_name):
         raise Exception("Not find :" + dir_name)
@@ -158,8 +161,9 @@ def parse_args():
     parser.add_argument('-e', '--end', default='0', help='maximum qubits for evaluation')
     parser.add_argument('-d', '--depth', default='0', help='depth')
     parser.add_argument('-b', '--backend', default='local_qasm_simulator', help='backend name')
+    parser.add_argument('-sd', '--seed', default=None, help='the initial seed (int)')
     parser.add_argument('-v', '--verify', action='store_true', help='verify simulation results')
-    parser.add_argument('-l', '--list', nargs=1, metavar='APP', help='summerize qasm file')
+    parser.add_argument('-l', '--list', action='store_true', help='show qasm file')
     
     return parser.parse_args();
 
@@ -167,7 +171,7 @@ def _main():
     args = parse_args()
 
     if args.list:
-      print_qasm_sum(args.list)
+      print_qasm_sum(args.name)
       return
 
     start_qubit = int(args.start)
@@ -177,7 +181,7 @@ def _main():
         end_qubit = start_qubit
     
     for qubit in range(int(args.start), end_qubit + 1):
-        if not runBenchmark(name=args.name, qubit=qubit, backend=args.backend, depth=int(args.depth), verify=args.verify):
+        if not runBenchmark(name=args.name, qubit=qubit, backend=args.backend, depth=int(args.depth), verify=args.verify, seed=args.seed):
             break
 
 def main():

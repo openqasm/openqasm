@@ -31,7 +31,7 @@ You can run benchmark `run_simbench.py` with following options.
 * `-e`: specify a qubit number to end evaluation
 * `-d`: specify a depth to be evaluated (optional)
 * `-v`: verify simulation results (optional)
-* `-l`: specify a application to list benchmark scenario (optional)
+* `-l`: show the list of benchmark scenario (optional)
 
 For example, the following commands run qft from 10 to 20 qubit with local_qiskit_simulator.
 ```
@@ -44,6 +44,15 @@ $ python3 run_simbench.py -a qft -b local_qiskit_simulator -s 10 -e 20
 
 https://github.com/QISKit/qiskit-tutorial/blob/master/2_quantum_information/fourier_transform.ipynb
 
-### Random Circuite
+### Quantum Volume
+Generate randomized circuits for Quantum Volume analysis.
 
 ### SAT
+This is a set of SAT (satisfiability) problem instances of [DIMACS](http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html) CNF (conjunctive normal form) format with corresponding quantum Grover's search programs. Please note that all SAT instances are randomly generated, with no guarantee of having satisfying solutions.
+
+### Bernstein-Vazirani algorithm
+This program is based on the Bernstein-Vazirani algorithm in the [QISKit-tutorial](https://nbviewer.jupyter.org/github/QISKit/qiskit-tutorial/blob/stable/index.ipynb).
+
+### Counterfeit-Coin Finding algorithm
+This program is based on the Counterfeit-Coin Finding algorithm in the [QISKit-tutorial](https://nbviewer.jupyter.org/github/QISKit/qiskit-tutorial/blob/stable/index.ipynb).
+
