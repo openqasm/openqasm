@@ -82,7 +82,7 @@ def build_model_circuits(name, n, depth, num_circ=1):
 def main():
   parser = argparse.ArgumentParser(
       description="Create randomized circuits for quantum volume analysis.")
-  parser.add_argument('--name', default='random', help='circuit name')  
+  parser.add_argument('--name', default='quantum_volume', help='circuit name')  
   parser.add_argument('-n', '--qubits', default=5, type=int, help='number of circuit qubits')
   parser.add_argument('-d', '--depth', default=5, type=int, help='SU(4) circuit depth')
   parser.add_argument('--num-circ', default=1, type=int, help='how many circuits?')    
