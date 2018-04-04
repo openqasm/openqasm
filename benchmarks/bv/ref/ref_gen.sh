@@ -1,4 +1,4 @@
-for num in `seq 4 31`
+for num in `seq 10 19`
 do
   filenum=`expr $num + 1`
   filename=bv_n$filenum.qasm.ref 

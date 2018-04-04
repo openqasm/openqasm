@@ -1,5 +1,6 @@
 """
-To generate a circuit for counterfeit-coin finding algorithm using 15 coins and the false coin is the third coin,
+To generate a circuit for counterfeit-coin finding
+algorithm using 15 coins and the false coin is the third coin,
 type the following.
 
 python cc_gen.py -c 15 -f 3
@@ -7,13 +8,15 @@ python cc_gen.py -c 15 -f 3
 @author Raymond Harry Rudy rudyhar@jp.ibm.com
 """
 import sys
-if sys.version_info < (3,5):
-    raise Exception("Please use Python 3.5 or later")
-
 import numpy as np
-import argparse, random
+import argparse
+import random
 from qiskit import QuantumProgram
 from qiskit.tools.visualization import latex_drawer
+
+if sys.version_info < (3, 5):
+    raise Exception("Please use Python 3.5 or later")
+
 
 def print_qasm(aCircuit, comments=[], outname=None):
     """
@@ -53,7 +56,8 @@ def gen_cc_main(nCoins, indexOfFalseCoin):
         generate a circuit of the counterfeit coin problem
     """
     Q_program = QuantumProgram()
-    nQubits = nCoins + 1 #using the last qubit for storing the oracle's answer
+    # using the last qubit for storing the oracle's answer
+    nQubits = nCoins + 1
     # Creating registers
     # qubits for querying coins and storing the balance result
     qr = Q_program.create_quantum_register("qr", nQubits)
@@ -63,78 +67,81 @@ def gen_cc_main(nCoins, indexOfFalseCoin):
     circuitName = "CounterfeitCoinProblem"
     ccCircuit = Q_program.create_circuit(circuitName, [qr], [cr])
 
-    #Apply Hadamard gates to the first nCoins quantum register
-    #create uniform superposition
+    # Apply Hadamard gates to the first nCoins quantum register
+    # create uniform superposition
     for i in range(nCoins):
         ccCircuit.h(qr[i])
 
-    #check if there are even number of coins placed on the pan
+    # check if there are even number of coins placed on the pan
     for i in range(nCoins):
         ccCircuit.cx(qr[i], qr[nCoins])
 
-    #perform intermediate measurement to check if the last qubit is zero
+    # perform intermediate measurement to check if the last qubit is zero
     ccCircuit.measure(qr[nCoins], cr[nCoins])
 
-    #proceed to query the quantum beam balance if cr is zero
+    # proceed to query the quantum beam balance if cr is zero
     ccCircuit.x(qr[nCoins]).c_if(cr, 0)
     ccCircuit.h(qr[nCoins]).c_if(cr, 0)
 
-    #we rewind the computation when cr[N] is not zero
+    # we rewind the computation when cr[N] is not zero
     for i in range(nCoins):
         ccCircuit.h(qr[i]).c_if(cr, 2**nCoins)
 
-    #apply barrier for marking the beginning of the oracle
+    # apply barrier for marking the beginning of the oracle
     ccCircuit.barrier()
 
     ccCircuit.cx(qr[indexOfFalseCoin], qr[nCoins]).c_if(cr, 0)
 
-    #apply barrier for marking the end of the oracle
+    # apply barrier for marking the end of the oracle
     ccCircuit.barrier()
 
-    #apply Hadamard gates to the first nCoins qubits
+    # apply Hadamard gates to the first nCoins qubits
     for i in range(nCoins):
         ccCircuit.h(qr[i]).c_if(cr, 0)
 
-    #measure qr and store the result to cr
+    # measure qr and store the result to cr
     for i in range(nCoins):
         ccCircuit.measure(qr[i], cr[i])
 
-    return Q_program, [circuitName,]
-
+    return Q_program, [circuitName, ]
 
 
 def main(nCoins, falseIndex, draw, outname):
-    comments = ["Counterfeit coin finding with "+str(nCoins)+ " coins.",
-                "The false coin is "+str(falseIndex)]
+    comments = ["Counterfeit coin finding with " + str(nCoins) + " coins.",
+                "The false coin is " + str(falseIndex)]
+    if outname is None:
+        outname = "cc_n" + str(nCoins + 1)
     qp, names = gen_cc_main(nCoins, falseIndex)
     for each in names:
         print_qasm(qp.get_qasm(each), comments, outname)
         if draw:
             if outname is None:
                 midfix = "_"+str(nCoins)+"_"+str(falseIndex)
-                draw_circuit(qp.get_circuit(each), outfilename=each+midfix+".tex")
+                draw_circuit(qp.get_circuit(each),
+                             outfilename=each+midfix+".tex")
             else:
-                draw_circuit(qp.get_circuit(each), outfilename=outname+".tex")
-
+                draw_circuit(qp.get_circuit(each),
+                             outfilename=outname+".tex")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate qasm of the counterfeit-coin finding algorithm.")
+    parser = argparse.ArgumentParser(description="Generate qasm of \
+                                                  the counterfeit-coin \
+                                                  finding algorithm.")
     parser.add_argument("-c", "--coins", type=int, default=16,
                         help="number of coins")
     parser.add_argument("-f", "--false", type=int, default=None,
                         help="index of false coin")
     parser.add_argument("-s", "--seed", default=0,
                         help="the seed for random number generation")
-    parser.add_argument("-d", "--draw", default=True, type=bool,
+    parser.add_argument("-d", "--draw", default=False, type=bool,
                         help="flag to draw the circuit")
     parser.add_argument("-o", "--output", default=None, type=str,
                         help="output filename")
     args = parser.parse_args()
-    random.seed(args.seed) #initialize seed
-    #print(args.qubits, type(args.qubits))
+    # initialize seed
+    random.seed(args.seed)
+
     if args.false is None:
         args.false = generate_false(args.coins)
     main(args.coins, args.false, args.draw, args.output)
-
-    #print(args.echo)
