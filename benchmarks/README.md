@@ -49,6 +49,7 @@ Generate randomized circuits for Quantum Volume analysis.
 
 ### SAT
 This is a set of SAT (satisfiability) problem instances of [DIMACS](http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html) CNF (conjunctive normal form) format with corresponding quantum Grover's search programs. Please note that all SAT instances are randomly generated, with no guarantee of having satisfying solutions.
+Original script files to generate sat is https://github.com/hushaohan/cnf (Author: Shaohan Hu / shaohan.hu@ibm.com)
 
 ### Bernstein-Vazirani algorithm
 This program is based on the Bernstein-Vazirani algorithm in the [QISKit-tutorial](https://nbviewer.jupyter.org/github/QISKit/qiskit-tutorial/blob/stable/index.ipynb).
