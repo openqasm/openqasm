@@ -87,7 +87,7 @@ def main():
                         help='number of circuit qubits')
     parser.add_argument('-d', '--depth', default=5, type=int,
                         help='SU(4) circuit depth')
-    parser.add_argument('--num-circ', default=1, type=int,
+    parser.add_argument('--num_circ', default=1, type=int,
                         help='how many circuits?')
     parser.add_argument('-r', '--run', action='store_true',
                         help='execute circuit(s)')
@@ -110,8 +110,12 @@ def main():
         return
 
     # Save QASM representation of circuits
-    for i in range(num_circ):
-        f = open('quantum_volume_n%d_d%d_i.qasm' % (n, depth, i), 'w')
+    for i in range(args.num_circ):
+        if i == 0:
+            f = open('quantum_volume_n%d_d%d.qasm' % (args.qubits, args.depth), 'w')
+        else:
+            f = open('quantum_volume_n%d_d%d_%d.qasm' % (args.qubits, args.depth, i), 'w')
+
         f.write(circuits[i].qasm())
         f.close()
 
