@@ -87,6 +87,8 @@ def main():
                         help='number of circuit qubits')
     parser.add_argument('-d', '--depth', default=5, type=int,
                         help='SU(4) circuit depth')
+    parser.add_argument('-s', '--seed', default=17, type=int,
+                        help='random seed')
     parser.add_argument('--num_circ', default=1, type=int,
                         help='how many circuits?')
     parser.add_argument('-r', '--run', action='store_true',
@@ -95,6 +97,8 @@ def main():
                         help='backend to execute on')
 
     args = parser.parse_args()
+
+    random.seed(args.seed)
 
     circuits = build_model_circuits(n=args.qubits, depth=args.depth,
                                     num_circ=args.num_circ)
