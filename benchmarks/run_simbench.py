@@ -3,12 +3,14 @@ import argparse
 import os.path
 import sys
 import re
-import time
 import json
 import glob
 import operator
 
-import qiskit
+from qiskit_executor import QiskitExecutor
+from qsharp_executor import QsharpExecutor
+from projectq_executor import ProjectQExecutor
+from executor import Executor
 
 if sys.version_info < (3, 0):
     raise Exception("Please use Python version 3 or greater.")
@@ -27,20 +29,30 @@ def run_benchmark(args, qubit):
         seed = int(seed)
 
     if depth > 0:
-        qasm_files = name + "/" + name + "_n" + \
+        qasm_files = "qasm/" + name + "/" + name + "_n" + \
                      str(qubit) + "_d" + str(depth) + "*.qasm"
-        pattern1 = name + "_n" + str(qubit) + \
+        pattern1 =  name + "_n" + str(qubit) + \
                           "_d" + str(depth) + r"[^0-9]*\.qasm"
-        pattern2 = name + "_n" + str(qubit) + "_d" + str(depth) + r"\D.*\.qasm"
+        pattern2 =  name + "_n" + str(qubit) + "_d" + str(depth) + r"\D.*\.qasm"
     else:
-        qasm_files = name + "/" + name + "_n" + str(qubit) + "*.qasm"
-        pattern1 = name + "_n" + str(qubit) + r"[^0-9]*\.qasm"
-        pattern2 = name + "_n" + str(qubit) + r"\D.*\.qasm"
+        qasm_files = "qasm/" + name + "/" + name + "_n" + str(qubit) + "*.qasm"
+        pattern1 =  name + "_n" + str(qubit) + r"[^0-9]*\.qasm"
+        pattern2 =  name + "_n" + str(qubit) + r"\D.*\.qasm"
 
     qasm_files = glob.glob(qasm_files)
 
     if not qasm_files:
         raise Exception("No qasm file")
+
+    if backend == "local_qasm_simulator" or backend.startswith("ibmqx"):
+        executor = Executor( QiskitExecutor(), backend, name, seed);
+    elif backend ==  "Qsharp":
+        executor = Executor( QsharpExecutor(), backend, name, seed);
+    elif backend ==  "ProjectQ":
+        executor = Executor( ProjectQExecutor(), backend, name, seed);
+    #elif backend == "QuEST":
+    #    exector = Executor( QuESTxecutor() )
+
 
     for qasm in qasm_files:
 
@@ -48,71 +60,20 @@ def run_benchmark(args, qubit):
         if not ((re.search(pattern1, os.path.basename(qasm))) or
                 (re.search(pattern2, os.path.basename(qasm)))):
             continue
+        
+        elapsed = executor.run_simulation(qasm)
 
-        q_prog = qiskit.QuantumProgram()
-
-        if backend.startswith("ibmqx"):
-            import Qconfig
-            q_prog.set_api(Qconfig.APItoken, Qconfig.config['url'])
-        elif not backend.startswith("local"):
-            raise Exception('only ibmqx or local simulators are supported')
-
-        q_prog.load_qasm_file(qasm, name=name)
-
-        start = time.time()
-        ret = q_prog.execute([name], backend=backend, shots=1,
-                             max_credits=5, hpc=None,
-                             timeout=60*60*24, seed=seed)
-        elapsed = time.time() - start
-
-        if not ret.get_circuit_status(0) == "DONE":
-            return False
-
-        if backend.startswith("ibmqx"):
-            elapsed = ret.get_data(name)["time"]
+        if elapsed < 0:
+           print("Execution Failed"); 
+           return
 
         print(name + "," + backend + "," + str(qubit) +
               "," + str(depth) + "," + str(elapsed), flush=True)
 
         if args.verify:
-            verify_result(ret, name, qasm)
-
-    if not ret:
-        raise Exception("No qasm file")
+            executor.verify_result()
 
     return True
-
-
-def verify_result(ret, name, qasm):
-    """
-    Check simulation results
-    """
-
-    if not os.path.exists(name + "/ref"):
-        raise Exception("Verification not support for " + name)
-
-    ref_file_name = name + "/ref/" + os.path.basename(qasm)+".ref"
-    if not os.path.exists(ref_file_name):
-        raise Exception("Reference file not exist: " + ref_file_name)
-
-    ref_file = open(ref_file_name)
-    ref_data = ref_file.read()
-    ref_file.close()
-    ref_data = json.loads(ref_data)
-    sim_result = ret.get_counts(name)
-
-    sim_result_keys = sim_result.keys()
-
-    for key in sim_result_keys:
-        if key not in ref_data:
-            raise Exception(key + " not exist in " + ref_file_name)
-        ref_count = ref_data[key]
-        count = sim_result[key]
-
-        if ref_count != count:
-            raise Exception(" Count is differ: " + str(count) +
-                            " and " + str(ref_count))
-
 
 def print_qasm_sum(dir_name):
     """
@@ -199,7 +160,7 @@ def _main():
     args = parse_args()
 
     if args.list:
-        print_qasm_sum(args.name)
+        print_qasm_sum("qasm/"+args.name)
         return
 
     start_qubit = int(args.start)
