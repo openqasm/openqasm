@@ -698,7 +698,7 @@ Open QASM Grammar
 			:| id "(" explist ")" anylist ";"
 	 anylist: idlist | mixedlist
 	 idlist: id | idlist "," id
-	 mixedlist: id [ nninteger ] | miedlist "," id
+	 mixedlist: id [ nninteger ] | mixedlist "," id
 						:| mixedlist "," id [ nninteger ]
 						:| idlist "," id [ nninteger ]
 	 argument: id | id [ nninteger ]
