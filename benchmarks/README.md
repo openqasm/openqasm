@@ -26,7 +26,7 @@ $ cat qft_n30.qasm
 You can run benchmark `run_simbench.py` with following options.
 
 * `-a`: specify an appplication to be evaluated
-* `-b`: specify a backend supportted by QISKit
+* `-b`: specify a backend supportted by QISKit or ProjectQ and Qsharp
 * `-s`: specify a qubit number to start evaluation
 * `-e`: specify a qubit number to end evaluation
 * `-d`: specify a depth to be evaluated (optional)
@@ -36,6 +36,12 @@ You can run benchmark `run_simbench.py` with following options.
 For example, the following commands run qft from 10 to 20 qubit with local_qiskit_simulator.
 ```
 $ python3 run_simbench.py -a qft -b local_qiskit_simulator -s 10 -e 20
+``` 
+
+If you install Q# or ProjectQ on your host, you can run the benchmark on them.
+```
+$ python3 run_simbench.py -a qft -b Qsharp -s 10 -e 20
+$ python3 run_simbench.py -a qft -b ProjectQ -s 10 -e 20
 ``` 
 
 ## Applications

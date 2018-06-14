@@ -7,27 +7,13 @@ import json
 import glob
 import operator
 
-from qiskit_executor import QiskitExecutor
-from qsharp_executor import QsharpExecutor
-from projectq_executor import ProjectQExecutor
-from executor import Executor
+from backends.executor import Executor
+from application.application_gen import ApplicationGenerator
 
 if sys.version_info < (3, 0):
     raise Exception("Please use Python version 3 or greater.")
 
-
-def run_benchmark(args, qubit):
-    """
-    Run simulation by each qasm files
-    """
-    name = args.name
-    backend = args.backend
-    depth = int(args.depth)
-    seed = args.seed
-
-    if seed:
-        seed = int(seed)
-
+def run_from_file(depth, name, qubit, backend, verify):
     if depth > 0:
         qasm_files = "qasm/" + name + "/" + name + "_n" + \
                      str(qubit) + "_d" + str(depth) + "*.qasm"
@@ -44,15 +30,6 @@ def run_benchmark(args, qubit):
     if not qasm_files:
         raise Exception("No qasm file")
 
-    if backend == "local_qasm_simulator" or backend.startswith("ibmqx"):
-        executor = Executor( QiskitExecutor(), backend, name, seed);
-    elif backend ==  "Qsharp":
-        executor = Executor( QsharpExecutor(), backend, name, seed);
-    elif backend ==  "ProjectQ":
-        executor = Executor( ProjectQExecutor(), backend, name, seed);
-    #elif backend == "QuEST":
-    #    exector = Executor( QuESTxecutor() )
-
 
     for qasm in qasm_files:
 
@@ -61,17 +38,42 @@ def run_benchmark(args, qubit):
                 (re.search(pattern2, os.path.basename(qasm)))):
             continue
         
-        elapsed = executor.run_simulation(qasm)
+        elapsed = backend.run_simulation(qasm)
 
         if elapsed < 0:
            print("Execution Failed"); 
            return
 
-        print(name + "," + backend + "," + str(qubit) +
+        print(name + "," + backend.backend_name + "," + str(qubit) +
               "," + str(depth) + "," + str(elapsed), flush=True)
 
-        if args.verify:
-            executor.verify_result()
+        if verify:
+           backend.verify_result()
+
+#def run_from_script(app, name, backend, verify):
+
+def run_benchmark(args, qubit):
+    """
+    Run simulation by each qasm files
+    """
+    name = args.name
+    backend_name = args.backend
+    depth = int(args.depth)
+    seed = args.seed
+
+    if seed:
+        seed = int(seed)
+
+    executor = Executor(backend_name, name, seed);
+    backend = executor.get_backend(backend_name);
+
+    #app = ApplicationGenerator(seed);
+    #gen_app = app.get_app(name);
+
+    #if gen_app:
+    #  run_from_script(app, name, backend, verify);
+    #else: 
+    run_from_file(depth, name, qubit, backend, args.verify)
 
     return True
 
@@ -145,7 +147,7 @@ def parse_args():
                         help='maximum qubits for evaluation')
     parser.add_argument('-d', '--depth', default='0', help='depth')
     parser.add_argument('-b', '--backend',
-                        default='local_qasm_simulator', help='backend name')
+                        default='qiskit_local_qasm_simulator', help='backend name')
     parser.add_argument('-sd', '--seed', default=None,
                         help='the initial seed (int)')
     parser.add_argument('-v', '--verify', action='store_true',

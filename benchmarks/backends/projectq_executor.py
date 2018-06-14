@@ -6,11 +6,11 @@ from qiskit.unroll._backenderror import BackendError
 from qiskit.unroll._unrollerbackend import UnrollerBackend
 from qiskit.qasm import Qasm
 
-class PrintQsharp(UnrollerBackend):
+class PrintProjectQ(UnrollerBackend):
     """Backend for the unroller that prints Q# code.
     """
 
-    def __init__(self, namespace, operation, file, basis=None):
+    def __init__(self, file, basis=None):
         super().__init__(basis)
         self.prec = 15
         self.creg = None
@@ -22,10 +22,9 @@ class PrintQsharp(UnrollerBackend):
         else:
             self.basis = []
         self.listen = True
+        self.measure_flag = False
         self.in_gate = ""
         self.printed_gates = []
-        self.namespace = namespace
-        self.operation = operation
         self.file = file
         self.level = 0
         
@@ -54,30 +53,19 @@ class PrintQsharp(UnrollerBackend):
         """
         self.basis = basis
     
-    def _printHeaderIfNecessary(self):
-        if (not self.print_header and self.qreg_size != 0 and self.creg_size != 0):
-            self._printCode("mutable %s = new Result[%d];" % (self.creg_name, self.creg_size))
-            self._printCode("using (%s = Qubit[%d]) {" % (self.qreg_name, self.qreg_size))
-            self.level += 1
-            self.print_header = True
-
     def version(self, version):
         """Print the version string.
 
         v is a version number.
         """
-        self._printCode("namespace QasmBench." + self.namespace + " {")
-        self.level += 1
-        
-        self._printCode("open Microsoft.Quantum.Primitive;");
-        self._printCode("open Microsoft.Quantum.Canon;");
-        self._printCode("open Microsoft.Quantum.Extensions.Math;");
-        
-        self._printCode("operation " + self.operation + "() : Result[] {")
-        self.level += 1
-        
-        self._printCode("body {")
-        self.level += 1
+        self._printCode("import projectq");
+        self._printCode("import math");
+        self._printCode("import time");
+        self._printCode("import sys");
+        self._printCode("from projectq.backends import Simulator");
+        self._printCode("from projectq.ops import H, Rz, Ry, CNOT, Measure");
+        self._printCode("eng = projectq.MainEngine(Simulator(gate_fusion=False))");
+        self._printCode("start = time.time()");
 
     def new_qreg(self, name, size):
         if self.qreg_size != 0:
@@ -85,26 +73,22 @@ class PrintQsharp(UnrollerBackend):
         
         self.qreg_name = name;
         self.qreg_size = size;
-        self._printHeaderIfNecessary()
+
+        self._printCode("%s = eng.allocate_qureg(%d)" %(self.qreg_name, self.qreg_size))
 
     def new_creg(self, name, size):
         if self.creg_size != 0:
             raise Exception("support only one classical register array")
         self.creg_name = name;
         self.creg_size = size;
-        self._printHeaderIfNecessary()
+        self._printCode("%s = [0] * %d" % (self.creg_name, self.creg_size));
     
     def printFooter(self):
-        self._printCode("ResetAll(%s);" % self.qreg_name);
-        self.level -= 1
-        self._printCode("}")
-        self._printCode("return %s;" % self.creg_name)
-        self.level -= 1
-        self._printCode("}")
-        self.level -= 1
-        self._printCode("}")
-        self.level -= 1
-        self._printCode("}")
+        self._printCode("eng.flush()");
+        #self._printCode("print(%s)" % (self.creg_name));
+        self._printCode("elapsed_time = time.time() - start");
+        #self._printCode("print(\"elapsed_time:{0}\".format(elapsed_time))");
+        self._printCode("print(format(elapsed_time))");
 
     def define_gate(self, name, gatedata):
         """Define a new quantum gate.
@@ -120,24 +104,28 @@ class PrintQsharp(UnrollerBackend):
         pass
     
     def _resolve(self, line):
-        return line.replace("pi", "PI()")
+        return line.replace("pi", "math.pi")
     
     def _printStartIf(self):
+
+        if self.measure_flag:
+           self._printCode("eng.flush()");
+           self.measure_flag = False;
+
         for i in range(self.creg_size):
             if (i == 0):
-                self._printCode("if (", end="")
+                self._printCode("if ", end="")
             else:
-                self._printCode(" && ", end="", withIndent=False)
+                self._printCode(" and ", end="", withIndent=False)
             if (1 << i & self.cval == 0):
-                self._printCode("(%s[%d]==Zero)" % (self.creg_name, i), end="", withIndent=False)
+                self._printCode("%s[%d] == 0 " % (self.creg_name, i), end="", withIndent=False)
             else:
-                self._printCode("(%s[%d]==One)" % (self.creg_name, i), end="", withIndent=False)
-        self._printCode(") {", withIndent=False)
+                self._printCode("%s[%d] == 1" % (self.creg_name, i), end="", withIndent=False)
+        self._printCode(":", withIndent=False)
         self.level += 1
         
     def _printEndIf(self):
         self.level -= 1
-        self._printCode("}")
 
     def u(self, arg, qubit, nested_scope=None):
         if self.listen:
@@ -147,17 +135,19 @@ class PrintQsharp(UnrollerBackend):
             if self.creg is not None:
                 self._printStartIf()
                 
-            self._printCode("//U(%s,%s,%s) %s[%d];" % (arg[0].sym(nested_scope),
+            self._printCode("#U(%s,%s,%s) %s[%d];" % (arg[0].sym(nested_scope),
                                            arg[1].sym(nested_scope),
                                            arg[2].sym(nested_scope),
                                            qubit[0],
                                            qubit[1]))
+            if (abs(arg[0].sym(nested_scope) - 3.14159265358979323846 / 2) < 0.000001 and arg[1].sym(nested_scope) == 0 and arg[2].sym(nested_scope) - 3.14159265358979323846 < 0.000001):
+                self._printCode("H | %s[%s]" % ( self.qreg_name, qubit[1]));
             if (arg[0].sym(nested_scope) != 0):
-                self._printCode("Rz(%s, %s[%d]);" % (self._resolve(str(arg[0].sym(nested_scope))), qubit[0], qubit[1]))
+                self._printCode("Rz(%s) | %s[%s];" % ( self._resolve(str(arg[0].sym(nested_scope))), self.qreg_name, qubit[1]));
             if (arg[1].sym(nested_scope) != 0):
-                self._printCode("Ry(%s, %s[%d]);" % (self._resolve(str(arg[1].sym(nested_scope))), qubit[0], qubit[1]))
+                self._printCode("Ry(%s) | %s[%s];" % ( self._resolve(str(arg[1].sym(nested_scope))), self.qreg_name, qubit[1]));
             if (arg[2].sym(nested_scope) != 0):
-                self._printCode("Rz(%s, %s[%d]);" % (self._resolve(str(arg[2].sym(nested_scope))), qubit[0], qubit[1]))
+                self._printCode("Rz(%s) | %s[%s];" % ( self._resolve(str(arg[2].sym(nested_scope))), self.qreg_name, qubit[1]));
             
             if self.creg is not None:
                 self._printEndIf()
@@ -175,8 +165,8 @@ class PrintQsharp(UnrollerBackend):
             if self.creg is not None:
                 self._printStartIf()
             
-            self._printCode("//CX %s[%d],%s[%d];" % (qubit0[0], qubit0[1], qubit1[0], qubit1[1]))
-            self._printCode("CNOT (%s[%d], %s[%d]);"  % (qubit0[0], qubit0[1], qubit1[0], qubit1[1]))
+            self._printCode("#CX %s[%d],%s[%d];" % (qubit0[0], qubit0[1], qubit1[0], qubit1[1]))
+            self._printCode("CNOT | (%s[%d], %s[%d])"  % (qubit0[0], qubit0[1], qubit1[0], qubit1[1]))
             
             if self.creg is not None:
                 self._printEndIf()
@@ -190,11 +180,13 @@ class PrintQsharp(UnrollerBackend):
         if "measure" not in self.basis:
             self.basis.append("measure")
         if self.creg is not None:
-            self._printCode("//if(%s==%d) " % (self.creg, self.cval), end="")
+            self._printCode("#if(%s==%d) " % (self.creg, self.cval), end="")
             self._printStartIf()
             
-        self._printCode("//measure %s[%d] -> %s[%d];" % (qubit[0], qubit[1], bit[0], bit[1]))
-        self._printCode("set %s[%d] = M(%s[%d]);" % (bit[0], bit[1], qubit[0], qubit[1]));
+        self._printCode("#measure %s[%d] -> %s[%d];" % (qubit[0], qubit[1], bit[0], bit[1]))
+        self._printCode("Measure | %s[%d]" % (qubit[0], qubit[1]));
+        self._printCode("%s[%d] = int( %s[%d] )" % (bit[0], bit[1], qubit[0], qubit[1]));
+        self.measure_flag = True;
         if self.creg is not None:
             self._printEndIf()
 
@@ -212,18 +204,20 @@ class PrintQsharp(UnrollerBackend):
                     names.append("%s[%d]" % (qubitlist[0][0], qubitlist[0][1]))
                 else:
                     names.append("%s" % qubitlist[0][0])
-            self._printCode("//barrier %s;" % ",".join(names))
+            self._printCode("#barrier %s;" % ",".join(names))
 
     def reset(self, qubit):
         """Reset instruction.
 
         qubit is a (regname, idx) tuple.
         """
+        """
         if "reset" not in self.basis:
             self.basis.append("reset")
         if self.creg is not None:
             self._printCode("if(%s==%d) " % (self.creg, self.cval), end="")
         self._printCode("reset %s[%d];" % (qubit[0], qubit[1]))
+        """
 
     def set_condition(self, creg, cval):
         """Attach a current condition.
@@ -234,14 +228,14 @@ class PrintQsharp(UnrollerBackend):
         self.creg = creg
         self.cval = cval
         if self.comments:
-            self._printCode("// set condition %s, %s" % (creg, cval))
+            self._printCode("# set condition %s, %s" % (creg, cval))
 
     def drop_condition(self):
         """Drop the current condition."""
         self.creg = None
         self.cval = None
         if self.comments:
-            self._printCode("// drop condition")
+            self._printCode("# drop condition")
 
     def start_gate(self, name, args, qubits, nested_scope=None):
         """Begin a custom gate.
@@ -253,7 +247,7 @@ class PrintQsharp(UnrollerBackend):
         to Node expression objects in order of increasing nesting depth.
         """
         if self.listen and self.comments:
-            self._printCode("// start %s, %s, %s" % (name,
+            self._printCode("# start %s, %s, %s" % (name,
                                            list(map(lambda x:
                                                     str(x.sym(nested_scope)),
                                                     args)),
@@ -288,7 +282,7 @@ class PrintQsharp(UnrollerBackend):
             self.in_gate = ""
             self.listen = True
         if self.listen and self.comments:
-            self._printCode("// end %s, %s, %s" % (name,
+            self._printCode("# end %s, %s, %s" % (name,
                                          list(map(lambda x:
                                                   str(x.sym(nested_scope)),
                                                   args)),
@@ -299,24 +293,31 @@ class PrintQsharp(UnrollerBackend):
         written to screen"""
         pass
 
-class QsharpExecutor(object):
+class ProjectQExecutor(object):
+  def __init__(self, executor):
+    self.name = "ProjectQ";
+    self.seed = executor.seed;
+    self.application = executor.name;
+    self.backend_name = executor.backend_name;
+    self.result = None;
+    self.filename = None;
+
   def generator(self,filename):
     ast = Qasm(filename).parse()
-    qs = open("backends/Qsharp/benchmark/benchmark.qs", 'w')
-    name = "Bench"
-    operation = name
+    qs = open("backends/workspace/ProjectQ/benchmark.py", 'w')
 
-    printQS = PrintQsharp(name, operation, qs)
-    u = unroll.Unroller(ast, printQS)
+    printq = PrintProjectQ(qs)
+    u = unroll.Unroller(ast, printq)
     u.execute()
-    printQS.printFooter()
+    printq.printFooter()
+
     qs.close()
 
-  def run_simulation(self, executor, filename):
+  def run_simulation(self, filename):
+    self.file_name = filename;
     self.generator(filename);
-    ret = subprocess.check_output("dotnet run -c Release", shell=True, cwd="backends/Qsharp/benchmark")
+    ret = subprocess.check_output("python3.6 benchmark.py", shell=True, cwd="backends/workspace/ProjectQ")
     return float(ret);
-    
 
-  def verify_result(self, executor):
+  def verify_result(self):
     raise Exception("Not supported");

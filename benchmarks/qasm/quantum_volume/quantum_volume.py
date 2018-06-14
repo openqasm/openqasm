@@ -112,6 +112,7 @@ def main():
     # Save QASM representation of circuits
     for i in range(args.num_circ):
         f = open('quantum_volume_n%d_d%d_%d.qasm' % (args.qubits, args.depth, i), 'w')
+        #f = open('quantum_volume_n%d_d%d.qasm' % (args.qubits, args.depth), 'w')
         f.write(circuits[i].qasm())
         f.close()
 
