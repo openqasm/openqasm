@@ -110,10 +110,10 @@ def main():
         return
 
     # Save QASM representation of circuits
-    for i in range(num_circ):
-        f = open('quantum_volume_n%d_d%d_i.qasm' % (n, depth, i), 'w')
-        f.write(circuits[i].qasm())
-        f.close()
+    for i in range(args.num_circ):
+        filename = 'quantum_volume_n%d_d%d_i.qasm' % (args.qubits, args.depth, i)
+        with open(filename, 'w') as f:
+            f.write(circuits[i].qasm())
 
 
 if __name__ == "__main__":
