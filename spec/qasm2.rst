@@ -240,9 +240,8 @@ All of the single-qubit unitary gates are also built in
 .. math::
 
 	U(\theta,\phi,\lambda) := R_z(\phi)R_y(\theta)R_z(\lambda) = \left(\begin{array}{cc}
-	e^{-i(\phi+\lambda)/2}\cos(\theta/2) & -e^{-i(\phi-\lambda)/2}\sin(\theta/2) \\
-	e^{i(\phi-\lambda)/2}\sin(\theta/2) & e^{i(\phi+\lambda)/2}\cos(\theta/2)
-	\end{array}\right).
+	\cos(\theta/2) & -e^{i\lambda}\sin(\theta/2) \\
+	e^{i\phi}\sin(\theta/2) & e^{i(\phi+\lambda)}\cos(\theta/2)
 
 Here :math:`R_y(\theta)=\mathrm{exp}(-i\theta Y/2)` and
 :math:`R_z(\phi)=\mathrm{exp}(-i\phi Z/2)`. This specifies any
