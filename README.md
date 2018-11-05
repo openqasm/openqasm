@@ -64,7 +64,7 @@ For research papers, we encourage authors to reference.
 - [ibmqx backend information](https://github.com/Qiskit/ibmqx-backend-information) Information about the different IBM Q experience backends.
 - [ibmqx user guide](https://github.com/Qiskit/ibmqx-user-guides) The users guides for the IBM Q experience.
 - [Python API](https://github.com/Qiskit/qiskit-api-py) API Client to use IBM Q experience in Python.
-- [Python SDK](https://github.com/Qiskit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+- [Python SDK](https://github.com/Qiskit/qiskit-terra) Software development kit for working with quantum programs in Python.
 - [Tutorials](https://github.com/Qiskit/qiskit-tutorial) Jupyter notebooks for using Qiskit.
 
 ## License

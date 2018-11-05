@@ -57,7 +57,7 @@ Please follow the next rules for the commit messages:
 
 The official [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) suite is located under the [test](test) folder.
 
-For convenience this project uses the [Qiskit](https://github.com/Qiskit/qiskit-sdk-py) parser.
+For convenience this project uses the [Qiskit](https://github.com/Qiskit/qiskit-terra) parser.
 
 The test runner uses all the circuit files in the [examples](examples) folder. They are run automatically to check they keep passing the parser. It allows to drop more files in those folders, even to add new ones.
 
@@ -69,7 +69,7 @@ The test runner uses all the circuit files in the [examples](examples) folder. T
 
 ### Run
 
-- Install [Qiskit depedencies](https://github.com/Qiskit/qiskit-sdk-py#1-get-the-tools).
+- Install [Qiskit depedencies](https://github.com/Qiskit/qiskit-terra#1-get-the-tools).
 - The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
 
 ## Versions

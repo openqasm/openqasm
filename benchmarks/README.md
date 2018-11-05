@@ -8,7 +8,7 @@ QSAM-Bench is a quantum-software bencmark suite that helps evaluate quantum volu
 
 ### Setup Qiskit
 
-see https://github.com/Qiskit/qiskit-sdk-py/#installation
+see https://github.com/Qiskit/qiskit-terra/#installation
 
 ### Generate QASM files
 
