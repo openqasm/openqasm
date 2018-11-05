@@ -69,7 +69,7 @@ The test runner uses all the circuit files in the [examples](examples) folder. T
 
 ### Run
 
-- Install [Qiskit depedencies](https://github.com/Qiskit/qiskit-terra#1-get-the-tools).
+- Install [Qiskit depedencies](https://github.com/Qiskit/qiskit-terra#installation).
 - The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
 
 ## Versions
