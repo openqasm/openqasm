@@ -73,7 +73,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE] file f
 
 ## Acknowledgments
 
-- Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
+- Thanks to the awesome [IBM Q Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
 
 ## Contributing
 
