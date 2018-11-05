@@ -4,7 +4,7 @@ Specs, examples and tools for the OpenQASM intermediate representation.
 
 ## Current version
 
-The latest version is: __2.0__.
+The latest version is: **2.0**.
 
 ## About this project
 
@@ -57,15 +57,15 @@ Anyone who contributes to this project can include their name here.
 
 For research papers, we encourage authors to reference.
 
-* Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
+- Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
-## Other QISKit projects
+## Other Qiskit projects
 
-* [ibmqx backend information](https://github.com/QISKit/ibmqx-backend-information) Information about the different IBM Q experience backends.
-* [ibmqx user guide](https://github.com/QISKit/ibmqx-user-guides) The users guides for the IBM Q experience.
-* [Python API](https://github.com/QISKit/qiskit-api-py) API Client to use IBM Q experience in Python.
-* [Python SDK](https://github.com/QISKit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
-* [Tutorials](https://github.com/QISKit/qiskit-tutorial) Jupyter notebooks for using QISKit.
+- [ibmqx backend information](https://github.com/Qiskit/ibmqx-backend-information) Information about the different IBM Q experience backends.
+- [ibmqx user guide](https://github.com/Qiskit/ibmqx-user-guides) The users guides for the IBM Q experience.
+- [Python API](https://github.com/Qiskit/qiskit-api-py) API Client to use IBM Q experience in Python.
+- [Python SDK](https://github.com/Qiskit/qiskit-sdk-py) Software development kit for working with quantum programs in Python.
+- [Tutorials](https://github.com/Qiskit/qiskit-tutorial) Jupyter notebooks for using Qiskit.
 
 ## License
 
@@ -73,7 +73,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE] file f
 
 ## Acknowledgments
 
-* Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
+- Thanks to the awesome [Quantum Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
 
 ## Contributing
 
