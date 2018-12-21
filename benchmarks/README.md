@@ -2,7 +2,7 @@
 
 ## OVERVIEW
 
-QSAM-Bench is a quantum-software bencmark suite that helps evaluate quantum volumes and performance of quntum computers and simulators registered as backends in Qiskit API.
+QSAM-Bench is a quantum-software bencmark suite that helps evaluate quantum volumes and performance of quantum computers and simulators registered as backends in Qiskit API.
 
 ## Getting Started
 
