@@ -44,7 +44,7 @@ $ python3 run_simbench.py -a qft -b local_qiskit_simulator -s 10 -e 20
 
 ### Fourier Transform
 
-https://github.com/Qiskit/qiskit-tutorial/blob/master/2_quantum_information/fourier_transform.ipynb
+https://github.com/Qiskit/qiskit-tutorials/blob/master/community/terra/qis_adv/fourier_transform.ipynb
 
 ### Quantum Volume
 
