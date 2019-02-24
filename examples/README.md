@@ -18,7 +18,7 @@ This is a directory with examples that cannot necessarily be executed on any exi
 - `teleportv2.qasm`: Quantum Teleportation example (one classical register).
 - `W-state.qasm`: Generating a 3-qubit W-state using Toffoli gates
 
-## Quantum Experience
+## IBM Q Experience
 
 This directory is the start of a list of examples that can run on the IBM Quantum Experience **ibmqx2** device. This device went online January 24th 2017.
 
