@@ -12,8 +12,7 @@ import argparse
 import numpy as np
 from scipy.linalg import qr
 from scipy.linalg import det
-from qiskit import QuantumProgram
-from qiskit.mapper import two_qubit_kak
+from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
 if sys.version_info < (3, 0):
     raise Exception("Please use Python version 3 or greater.")
@@ -37,18 +36,14 @@ def qft(circ, q, n):
 
 
 def build_model_circuits(name, n):
-    qp = QuantumProgram()
-    q = qp.create_quantum_register("q", n)
-    c = qp.create_classical_register("c", n)
+    q = QuantumRegister(n)
+    c = ClassicalRegister(n)
+    qp = QuantumCircuit(q, c)
 
-    qftcirc = qp.create_circuit("meas", [q], [c])
+    qftcirc = qp
 
     qft(qftcirc, q, n)
-    qftcirc.barrier(q)
-    for j in range(n):
-        qftcirc.measure(q[j], c[j])
-
-    qp.add_circuit("%s_%d" % (name, n), qftcirc)
+    qftcirc.measure(q, c)
 
     return qp
 
@@ -67,7 +62,7 @@ def main():
 
     circuit_name = args.name+'_n'+str(args.qubits)
     f = open(circuit_name+'.qasm', 'w')
-    f.write(qp.get_qasm(name="%s_%d" % (args.name, args.qubits)))
+    f.write(qp.qasm())
     f.close()
 
 
