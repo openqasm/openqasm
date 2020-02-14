@@ -18,13 +18,13 @@ This is a directory with examples that cannot necessarily be executed on any exi
 - `teleportv2.qasm`: Quantum Teleportation example (one classical register).
 - `W-state.qasm`: Generating a 3-qubit W-state using Toffoli gates
 
-## Quantum Experience
+## IBM Q Experience
 
 This directory is the start of a list of examples that can run on the IBM Quantum Experience **ibmqx2** device. This device went online January 24th 2017.
 
 The connectivity map for the CNOTS in this device are `coupling_map = {0: [1, 2], 1: [2], 3: [2, 4], 4: [2]}`. Where a: [b] means a CNOT with qubit a as control and b as target can be implemented. It is provided by two coplanar waveguide (CPW) resonators with resonances around 6.0 GHz (coupling Q2, Q3 and Q4) and 6.5 GHz (coupling Q0, Q1 and Q2). Each qubit has a dedicated CPW for control and readout. The following picture shows the chip layout.
 
-<img src=ibmqx2/"images/5qubitQXlabeled.png?raw=true" width="320">
+<img src="ibmqx2/images/5qubitQXlabeled.png" width="320">
 
 The circuits listed below, which you can find in this directory, are a few examples of experiments that can be ran in this device.
 
