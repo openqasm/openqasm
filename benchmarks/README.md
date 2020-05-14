@@ -2,7 +2,7 @@
 
 ## OVERVIEW
 
-QSAM-Bench is a quantum-software bencmark suite that helps evaluate quantum volumes and performance of quantum computers and simulators registered as backends in Qiskit API.
+QASM-Bench is a quantum-software benchmark suite that helps evaluate quantum volumes and performance of quantum computers and simulators registered as backends in Qiskit API.
 
 ## Getting Started
 
@@ -26,8 +26,8 @@ $ cat qft_n30.qasm
 
 You can run benchmark `run_simbench.py` with following options.
 
-- `-a`: specify an appplication to be evaluated
-- `-b`: specify a backend supportted by Qiskit
+- `-a`: specify an application to be evaluated
+- `-b`: specify a backend supported by Qiskit
 - `-s`: specify a qubit number to start evaluation
 - `-e`: specify a qubit number to end evaluation
 - `-d`: specify a depth to be evaluated (optional)
