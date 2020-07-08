@@ -1,48 +1,43 @@
 """
 To generate a Bernstein-Vazirani algorithm using 5 qubits, type the following.
-
 python bv_gen.py -q 5 -o bv5
-The resulting circuit is stored at bv5.qasm and its drawing at bv5.tex.
-
+The resulting circuit is stored at bv5.qasm.
 For more details, run the above command with -h or --help argument.
-
 @author Raymond Harry Rudy rudyhar@jp.ibm.com
+updated by Kate Smith kns@uchicago.edu
 """
 import sys
 import numpy as np
 import argparse
 import random
-from qiskit import QuantumProgram
-from qiskit.tools.visualization import latex_drawer
+from qiskit import QuantumCircuit
 
 if sys.version_info < (3, 5):
     raise Exception("Please use Python 3.5 or later")
 
 
-def print_qasm(aCircuit, comments=[], outname=None):
+def print_qasm(circ_qasm,comments=[], outname=None):
     """
         print qasm string with comments
     """
     if outname is None:
-        for each in comments:
-            print("//"+each)
-        print(aCircuit)
+        for item in comments:
+            print("//" + item)
+        print(circ_qasm)
     else:
         if not outname.endswith(".qasm"):
             outfilename = outname + ".qasm"
+        
         outfile = open(outfilename, "w")
-        for each in comments:
-            outfile.write("//"+each)
+        
+        for item in comments:
+            outfile.write("//" + item)
             outfile.write("\n")
-        outfile.write(aCircuit)
+        
+        outfile.write(circ_qasm)
         outfile.close()
 
 
-def draw_circuit(aCircuit, outfilename="bv.tex"):
-    """
-        draw the circuit
-    """
-    latex_drawer(aCircuit, outfilename, basis="h,x,cx")
 
 
 def generate_astring(nqubits, prob=1.0):
@@ -90,25 +85,18 @@ def gen_bv_main(nQubits, hiddenString):
     """
         generate a circuit of the Bernstein-Vazirani algorithm
     """
-    Q_program = QuantumProgram()
-    # Creating registers
-    # qubits for querying the oracle and finding the hidden integer
-    qr = Q_program.create_quantum_register("qr", nQubits)
-    # for recording the measurement on qr
-    cr = Q_program.create_classical_register("cr", nQubits-1)
 
-    circuitName = "BernsteinVazirani"
-    bvCircuit = Q_program.create_circuit(circuitName, [qr], [cr])
+    bvCircuit = QuantumCircuit(nQubits,nQubits)
 
-    # Apply Hadamard gates to the first
-    # (nQubits - 1) before querying the oracle
+
     for i in range(nQubits-1):
-        bvCircuit.h(qr[i])
+        bvCircuit.h(i)
 
     # Apply 1 and Hadamard gate to the last qubit
     # for storing the oracle's answer
-    bvCircuit.x(qr[nQubits-1])
-    bvCircuit.h(qr[nQubits-1])
+    bvCircuit.x(nQubits-1)
+    bvCircuit.h(nQubits-1)
+
 
     # Apply barrier so that it is not optimized by the compiler
     bvCircuit.barrier()
@@ -117,43 +105,38 @@ def gen_bv_main(nQubits, hiddenString):
     hiddenString = hiddenString[::-1]
     for i in range(len(hiddenString)):
         if hiddenString[i] == "1":
-            bvCircuit.cx(qr[i], qr[nQubits-1])
+            bvCircuit.cx(i, nQubits-1)
     hiddenString = hiddenString[::-1]
     # Apply barrier
     bvCircuit.barrier()
 
     # Apply Hadamard gates after querying the oracle
     for i in range(nQubits-1):
-        bvCircuit.h(qr[i])
+        bvCircuit.h(i)
+        
 
     # Measurement
     for i in range(nQubits-1):
-        bvCircuit.measure(qr[i], cr[i])
+        bvCircuit.measure(i, i)
 
-    return Q_program, [circuitName, ]
+ 
+
+    return bvCircuit
 
 
-def main(nQubits, hiddenString, prob, draw, outname):
+def main(nQubits, hiddenString, prob, outname):
     if hiddenString is None:
         hiddenString = generate_astring(nQubits-1, prob)
     assert check_astring(hiddenString, nQubits-1) is True, "Invalid hidden str"
 
     comments = ["Bernstein-Vazirani with " + str(nQubits) + " qubits.",
                 "Hidden string is " + hiddenString]
-    qp, names = gen_bv_main(nQubits, hiddenString)
+    qc = gen_bv_main(nQubits, hiddenString)
 
     if outname is None:
         outname = "bv_n" + str(nQubits)
 
-    for each in names:
-        print_qasm(qp.get_qasm(each), comments, outname)
-        if draw:
-            if outname is None:
-                midfix = "_"+str(nQubits)+"_"+hiddenString
-                draw_circuit(qp.get_circuit(each),
-                             outfilename=each+midfix+".tex")
-            else:
-                draw_circuit(qp.get_circuit(each), outfilename=outname+".tex")
+    print_qasm(qc.qasm(), comments, outname)
 
 
 if __name__ == "__main__":
@@ -168,11 +151,9 @@ if __name__ == "__main__":
                         help="the hidden bitstring")
     parser.add_argument("-s", "--seed", default=0,
                         help="the seed for random number generation")
-    parser.add_argument("-d", "--draw", default=False, type=bool,
-                        help="flag to draw the circuit")
     parser.add_argument("-o", "--output", default=None, type=str,
                         help="output filename")
     args = parser.parse_args()
     # initialize seed
     random.seed(args.seed)
-    main(args.qubits, args.astring, args.prob, args.draw, args.output)
+    main(args.qubits, args.astring, args.prob, args.output)

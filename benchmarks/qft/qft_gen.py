@@ -2,7 +2,9 @@
 Generate circuits of Quantum Fourier Transform for Quantum Volume analysis.
 
 Example run:
-  python qft.py -n 5
+  python qft_gen.py -n 5
+updated by Kate Smith kns@uchicago.edu
+
 """
 
 import sys
@@ -12,8 +14,9 @@ import argparse
 import numpy as np
 from scipy.linalg import qr
 from scipy.linalg import det
-from qiskit import QuantumProgram
-from qiskit.mapper import two_qubit_kak
+from qiskit import QuantumCircuit
+
+
 
 if sys.version_info < (3, 0):
     raise Exception("Please use Python version 3 or greater.")
@@ -27,30 +30,26 @@ def cu1(circ, l, a, b):
     circ.u1(l/2, b)
 
 
-def qft(circ, q, n):
+def qft(circ, n):
     """n-qubit QFT on q in circ."""
     for j in range(n):
         for k in range(j):
-            cu1(circ, math.pi/float(2**(j-k)), q[j], q[k])
+            cu1(circ, math.pi/float(2**(j-k)), j, k)
 #            circ.cu1(math.pi/float(2**(j-k)), q[j], q[k])
-        circ.h(q[j])
+        
+        circ.h(j)
 
 
 def build_model_circuits(name, n):
-    qp = QuantumProgram()
-    q = qp.create_quantum_register("q", n)
-    c = qp.create_classical_register("c", n)
+    qftcirc = QuantumCircuit(n)
 
-    qftcirc = qp.create_circuit("meas", [q], [c])
+    qft(qftcirc, n)
+    qftcirc.barrier()
 
-    qft(qftcirc, q, n)
-    qftcirc.barrier(q)
-    for j in range(n):
-        qftcirc.measure(q[j], c[j])
+    qftcirc.measure_all()
 
-    qp.add_circuit("%s_%d" % (name, n), qftcirc)
 
-    return qp
+    return qftcirc
 
 
 def main():
@@ -63,11 +62,11 @@ def main():
                         type=int, help='number of circuit qubits')
     args = parser.parse_args()
 
-    qp = build_model_circuits(name=args.name, n=args.qubits)
+    qc = build_model_circuits(name=args.name, n=args.qubits)
 
     circuit_name = args.name+'_n'+str(args.qubits)
     f = open(circuit_name+'.qasm', 'w')
-    f.write(qp.get_qasm(name="%s_%d" % (args.name, args.qubits)))
+    f.write(qc.qasm())
     f.close()
 
 

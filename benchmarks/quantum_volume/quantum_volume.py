@@ -3,6 +3,7 @@ Generate (or run) randomized circuits for Quantum Volume analysis.
 
 Example run:
   python quantum_volume.py -n 5 -d 5
+updated by Kate Smith kns@uchicago.edu
 """
 
 import math
@@ -10,8 +11,8 @@ import argparse
 from numpy import random
 from scipy import linalg
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
-from qiskit.mapper import two_qubit_kak
-from qiskit.wrapper import register, execute, get_backend, compile
+from qiskit.quantum_info.synthesis import two_qubit_decompose
+
 
 
 def random_SU(n):
@@ -55,20 +56,20 @@ def build_model_circuits(n, depth, num_circ=1):
             for k in range(math.floor(n/2)):
                 qubits = [int(perm[2*k]), int(perm[2*k+1])]
                 SU = random_SU(4)
-                decomposed_SU = two_qubit_kak(SU)
+                decomposed_SU = two_qubit_decompose.two_qubit_cnot_decompose(SU)
                 for gate in decomposed_SU:
-                    i0 = qubits[gate["args"][0]]
-                    if gate["name"] == "cx":
-                        i1 = qubits[gate["args"][1]]
+                    i0 = qubits[gate[1][0].index]
+                    if gate[0].name == "cx":
+                        i1 = qubits[gate[1][1].index]
                         circuit.cx(q[i0], q[i1])
-                    elif gate["name"] == "u1":
-                        circuit.u1(gate["params"][2], q[i0])
-                    elif gate["name"] == "u2":
-                        circuit.u2(gate["params"][1], gate["params"][2], q[i0])
-                    elif gate["name"] == "u3":
-                        circuit.u3(gate["params"][0], gate["params"][1],
-                                   gate["params"][2], q[i0])
-                    elif gate["name"] == "id":
+                    elif gate[0].name == "u1":
+                        circuit.u1(gate[0].params[0], q[i0])
+                    elif gate[0].name == "u2":
+                        circuit.u2(gate[0].params[0], gate[0].params[1], q[i0])
+                    elif gate[0].name == "u3":
+                        circuit.u3(gate[0].params[0], gate[0].params[1],
+                                   gate[0].params[2], q[i0])
+                    elif gate.name == "id":
                         pass
         # Barrier before measurement to prevent reordering, then measure
         circuit.barrier(q)
@@ -89,29 +90,16 @@ def main():
                         help='SU(4) circuit depth')
     parser.add_argument('--num-circ', default=1, type=int,
                         help='how many circuits?')
-    parser.add_argument('-r', '--run', action='store_true',
-                        help='execute circuit(s)')
-    parser.add_argument('-b', '--backend', default='local_qasm_simulator',
-                        help='backend to execute on')
 
     args = parser.parse_args()
 
     circuits = build_model_circuits(n=args.qubits, depth=args.depth,
                                     num_circ=args.num_circ)
 
-    # Run the circuits
-    if args.run:
-        backend_name = args.backend
-        if backend_name.startswith("ibmq"):
-            import Qconfig
-            register(Qconfig.APItoken, Qconfig.config['url'])
-        result = execute(circuits, backend_name=backend_name)
-        print(result.get_counts(circuits[0]))
-        return
 
     # Save QASM representation of circuits
-    for i in range(num_circ):
-        f = open('quantum_volume_n%d_d%d_i.qasm' % (n, depth, i), 'w')
+    for i in range(args.num_circ):
+        f = open('quantum_volume_n%s_d%s_%s.qasm' % (args.qubits, args.depth, i), 'w')
         f.write(circuits[i].qasm())
         f.close()
 
