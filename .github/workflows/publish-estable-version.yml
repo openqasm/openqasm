@@ -1,0 +1,41 @@
+name: Publish Estable Version
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the live-doc branch
+on:
+  workflow_dispatch:
+    inputs:
+      version-tag:
+        description: 'Tag labeling the version to publish'
+        required: true
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.event.inputs.version-tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.version-tag }}
+          path: ${{ github.event.inputs.version-tag }}
+      
+      - uses: actions/setup-python@v2
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Generate HTML
+        run: make html
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ${{ github.event.inputs.version-tag }}/build/html
+          TARGET_FOLDER: ${{ github.event.inputs.version-tag }}
+          CLEAN: false
