@@ -9,6 +9,10 @@ on:
         description: 'Tag labeling the version to publish'
         required: true
 
+defaults:
+  run:
+    working-directory: ${{ github.event.inputs.version-tag }}
+
 jobs:
   build:
     
