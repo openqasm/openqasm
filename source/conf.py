@@ -10,7 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -49,6 +49,10 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# The URL which points to the root of the HTML documentation. It is used to
+# indicate the location of document like canonical_url.
+html_baseurl = os.getenv('HTML_BASEURL', '')
 
 # If True, figures, tables and code-blocks are automatically numbered
 # if they have a caption.

@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -21,7 +21,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.version-tag }}
           path: ${{ github.event.inputs.version-tag }}
-      
+
       - uses: actions/setup-python@v2
 
       - name: Install dependencies
@@ -30,6 +30,8 @@ jobs:
           pip install -r requirements.txt
       - name: Generate HTML
         run: make html
+        env:
+          HTML_BASEURL: ./${{ github.event.inputs.version-tag }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
