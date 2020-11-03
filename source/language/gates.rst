@@ -75,7 +75,7 @@ transformation by a sequence of built-in gates. For example, a CPHASE
 operation is shown schematically in Fig. `[fig:gate] <#fig:gate>`__. The
 corresponding OpenQASM code is
 
-.. code:: c
+.. code-block:: c
 
    gate cphase(angle[32]: θ) a, b
    {
@@ -95,7 +95,7 @@ gate set supported by a particular target.
 
 In general, new gates are defined by statements of the form
 
-.. code:: c
+.. code-block:: c
 
    // comment
    gate name(params) qargs
@@ -111,7 +111,7 @@ variable parameters, the parentheses are optional. At least one qubit
 argument is required. The arguments in cannot be indexed within the body
 of the gate definition.
 
-.. code:: c
+.. code-block:: c
 
    // this is ok:
    gate g a
@@ -136,7 +136,7 @@ expressions which are cast to angles. The gate can be applied to any
 combination of qubits and quantum registers *of the same size* as shown
 in the following example. The quantum circuit given by
 
-.. code:: c
+.. code-block:: c
 
    gate g qb0, qb1, qb2, qb3
    {
@@ -180,7 +180,7 @@ argument list for the controlled-:math:`U` gate. The modified gate does
 not use any additional scratch space. A target may or may not be able to
 execute the gate without further compilation.
 
-.. code:: c
+.. code-block:: c
 
    // Define a controlled Rz operation using the ctrl gatemodifier.
    gate crz(angle[20]: θ) q1, q2 {

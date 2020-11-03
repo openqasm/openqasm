@@ -53,11 +53,11 @@ Physical Qubits
 ~~~~~~~~~~~~~~~
 
 While program qubits can be named, hardware qubits are referenced only
-by integers with the syntax ``%``\ 0, %1, ..., %n. These qubit types are
+by integers with the syntax ``%0``, ``%1``, ..., ``%n``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 
-.. code:: c
+.. code-block:: c
 
    // Declare a qubit
    qubit gamma;
@@ -87,7 +87,7 @@ register. It is interpreted to assign each bit of the register to
 corresponding value 0 or 1 in the string, where the least-significant
 bit is on the right.
 
-.. code:: c
+.. code-block:: c
 
    // Declare an array of 20 bits
    bit bit_array[20]
@@ -107,7 +107,7 @@ bits can also be reinterpreted as an integer, and these types can be
 mutually cast to one another using the type name, e.g. . As noted, this
 conversion will be done assuming little-endian bit ordering.
 
-.. code:: c
+.. code-block:: c
 
    // Declare a 32-bit unsigned integer
    uint[32] my_uint;
@@ -120,7 +120,7 @@ Signed fixed-point numbers
 There are fixed-point numbers with integer bits, fractional bits, and 1
 sign bit. The statement declares a fixed-point number.
 
-.. code:: c
+.. code-block:: c
 
    // Declare a 32-bit fixed point number.
    // The number is signed, has 7 integer bits
@@ -134,7 +134,7 @@ IEEE 754 floating point registers may be declared with , where would
 indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
-.. code:: c
+.. code-block:: c
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -152,7 +152,7 @@ oscillators found in hardware platform. Note that defining gate
 parameters with types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
-.. code:: c
+.. code-block:: c
 
    // Declare an angle with 20 bits of precision
    angle[20] my_angle;
@@ -164,7 +164,7 @@ There is a Boolean type that takes values or . Qubit measurement results
 can be converted from a classical type to a Boolean using , where 1 will
 be true and 0 will be false.
 
-.. code:: c
+.. code-block:: c
 
    bit my_bit = 0;
    bool my_bool;
@@ -196,7 +196,7 @@ constants are permitted.
 A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__.
 
-.. code:: c
+.. code-block:: c
 
    // Declare a constant
    const my_const = 1234;
@@ -234,7 +234,7 @@ units. is a backend-dependent unit equivalent to one waveform sample on
 the backend. is an intrinsic function used to reference the duration of
 another part of the program or the duration of a calibrated gate.
 
-.. code:: c
+.. code-block:: c
 
    length one_second = 1000ms;
    length thousand_cycles = 1000dt;
@@ -287,7 +287,7 @@ empty set. If :math:`c` is not given, it is assumed to be one, and
 :math:`c` cannot be zero. Note the index sets can be defined by
 variables whose values may only be known at run time.
 
-.. code:: c
+.. code-block:: c
 
    qubit[2] one;
    qubit[10] two;

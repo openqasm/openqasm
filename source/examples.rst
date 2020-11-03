@@ -14,7 +14,7 @@ use abstract gates to define additional gates in the library gives some
 flexibility to add or change the gate library at a later time without
 changing OpenQASM.
 
-.. code:: c
+.. code-block:: c
 
    // Standard gate library
 
@@ -122,7 +122,7 @@ Quantum teleportation
 conditional application of future gates based on prior measurement
 outcomes.
 
-.. code:: c
+.. code-block:: c
 
    // quantum teleportation example
    OPENQASM 3;
@@ -157,7 +157,7 @@ passing to gate subroutines. This circuit applies the QFT to the state
 :math:`|q_0 q_1 q_2 q_3\rangle=|1010\rangle` and measures in the
 computational basis.
 
-.. code:: c
+.. code-block:: c
 
    // quantum Fourier transform
    OPENQASM 3;
@@ -186,7 +186,7 @@ Iterative phase estimation
 We can extend the two prior examples to iterative phase estimation. This
 example makes use of gate modifiers and fast-feedback.
 
-.. code:: c
+.. code-block:: c
 
    /*
     * Iterative phase estimation
@@ -234,7 +234,7 @@ The ripple-carry adder :cite:`cuccaro04` shown in
 Fig. `[fig:example:add] <#fig:example:add>`__ exhibits hierarchical use
 of gate subroutines.
 
-.. code:: c
+.. code-block:: c
 
    /*
     * quantum ripple-carry adder
@@ -297,7 +297,7 @@ randomly-chosen Clifford gates is separated from prior and future gates
 by barrier instructions to prevent the sequence from simplifying to the
 identity as a result of subsequent transformations.
 
-.. code:: c
+.. code-block:: c
 
    // One randomized benchmarking sequence
    OPENQASM 3;
@@ -335,7 +335,7 @@ taken from the set :math:`\{I,H,SH\}` to prepare :math:`|0\rangle`,
 :math:`|+\rangle`, and :math:`|+i\rangle` and measure in the :math:`Z`,
 :math:`X`, and :math:`Y` basis.
 
-.. code:: c
+.. code-block:: c
 
    OPENQASM 3;
    include "stdgates.inc";
@@ -361,7 +361,7 @@ This example of the 3-bit quantum repetition code
 OpenQASM (version 3.0) can express simple quantum error-correction
 circuits.
 
-.. code:: c
+.. code-block:: c
 
    // Repetition code syndrome measurement
    OPENQASM 3;
@@ -401,7 +401,7 @@ quantum memory with calls to kernel functions for logging and processing
 the measurement data. These kernel functions must run concurrently with
 quantum gates and may not have a deterministic running time (cite).
 
-.. code:: c
+.. code-block:: c
 
    /*
     * Surface code quantum memory.
@@ -517,7 +517,7 @@ very small number of iterations with high probability. This example from
 :cite:`NC00` applies a Z-rotation by an irrational angle
 using a discrete universal gate set.
 
-.. code:: c
+.. code-block:: c
 
    /*
     * Repeat-until-success circuit for Rz(theta),
@@ -573,7 +573,7 @@ there are other post-processing steps associated with this experiment,
 namely fitting the T1 exponential decay curve. This happens in the
 runtime environment of this experiment, and not on the controllers.
 
-.. code:: c
+.. code-block:: c
 
    /* Measuring the relaxation time of a qubit
     * This example demonstrates the repeated use of fixed delays.
@@ -626,7 +626,7 @@ Time alignment
 Flexible alignment of gates can be achieved using stretch, even on
 virtual qubits.
 
-.. code:: c
+.. code-block:: c
 
    /* CPMG XY4 decoupling
     * This example demonstrates the use of stretch to
@@ -659,7 +659,7 @@ defined on a generic qubit, not necessarily a physical one. Our use of
 stretch makes the delays adjust as appropriate whenever a concrete qubit
 is targetted.
 
-.. code:: c
+.. code-block:: c
 
    /* CPMG XY4 decoupling
     * This example demonstrates the use of referential delays
@@ -696,7 +696,7 @@ blocks is shown below. The particular example is sufficient to describe
 a typical implementation of with cross-resonance gates, where the
 implementation consists of an echo sequence and a lower-level primitive.
 
-.. code:: c
+.. code-block:: c
 
    defcalgrammar "openpulse";
 

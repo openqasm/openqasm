@@ -25,7 +25,7 @@ right-hand-side (RHS) of the assignment operator must be of the same
 type. For real-time values assignment is by copy of the RHS value to the
 assigned variable on the LHS.
 
-.. code:: c
+.. code-block:: c
 
    int[32] a;
    int[32] b = 10; // Combined declaration and assignment
@@ -45,7 +45,7 @@ integer, and the corresponding assignment operators. The shift operators
 shift bits off the end. They also support not ,  [1]_, and left and
 right circular shift, and , respectively.
 
-.. code:: c
+.. code-block:: c
 
    bit[8] a = "10001111";
    bit[8] b = "01110000";
@@ -64,7 +64,7 @@ be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 operators: and , or , not . The keyword tests if an integer belongs to
 an index set, for example returns if i equals 0 or 3 and otherwise.
 
-.. code:: c
+.. code-block:: c
 
    bool a = false;
    int[32] b = 1;
@@ -86,7 +86,7 @@ Integer types support addition , subtraction , multiplication, and
 division [2]_; the corresponding assignments , , , and ; as well as
 increment and decrement .
 
-.. code:: c
+.. code-block:: c
 
    int[32] a = 2;
    int[32] b = 3;
@@ -102,13 +102,13 @@ Fixed-point numbers and angles
 Fixed-point and angle types support addition, subtraction,
 multiplication, and division and the corresponding assignment operators.
 
-.. code:: c
+.. code-block:: c
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
    a + b; // 3/2 * pi
    angle[10] c;
-   c = angle(a + b); // cast to angle[10] 
+   c = angle(a + b); // cast to angle[10]
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
@@ -116,7 +116,7 @@ Looping and branching
 The statement branches to program if the Boolean evaluates to true and
 may optionally be followed by .
 
-.. code:: c
+.. code-block:: c
 
    bool target = false;
    qubit a;
@@ -134,7 +134,7 @@ The statement loops over integer values in the indexset, assigning them
 to . The for loop body is not permitted to modify the loop variable of
 the indexset.
 
-.. code:: c
+.. code-block:: c
 
    int[32] b;
    for i in {1, 5, 10} {
@@ -145,9 +145,9 @@ The statement executes program until the Boolean evaluates to
 false [3]_. Variables in the loop condition statement may be modified
 within the while loop body.
 
-.. code:: c
+.. code-block:: c
 
-   qubit q; 
+   qubit q;
    bit result;
 
    int i = 0;
@@ -166,7 +166,7 @@ the body of a for or while loop. It returns control to the loop
 condition. The statement terminates the program. In all of the
 preceding, can also be replaced by a statement without the braces.
 
-.. code:: c
+.. code-block:: c
 
    int[32] i = 0;
 
@@ -176,14 +176,14 @@ preceding, can also be replaced by a statement without the braces.
        if (i == 2) {
            continue;
        }
-       
+
        // some program
-       
+
        // break out of loop
        if (i == 4) {
            break;
        }
-       
+
        // more program
    }
 

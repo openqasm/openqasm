@@ -39,7 +39,7 @@ type of referential timing.
 
 Below are some examples of values of type .
 
-.. code:: c
+.. code-block:: c
 
        // fixed length, in standard units
        length a = 300ns;
@@ -68,7 +68,7 @@ For example, in order to ensure a sequence of gates between two barriers
 will be left-aligned (Figure `[fig:alignment] <#fig:alignment>`__\ a),
 whatever their actual durations may be, we can do the following:
 
-.. code:: c
+.. code-block:: c
 
        barrier q;
        cx q[0], q[1];
@@ -82,7 +82,7 @@ whatever their actual durations may be, we can do the following:
 We can further control the exact alignment by giving relative weights to
 the stretchy delays (Figure `[fig:alignment] <#fig:alignment>`__\ b):
 
-.. code:: c
+.. code-block:: c
 
        stretch g;
        barrier q;
@@ -105,7 +105,7 @@ not changed if arithmetic operations are done on it. This is most useful
 as a “don’t care" mechanism to specify delays that will just fill
 whatever gap is present.
 
-.. code:: c
+.. code-block:: c
 
        // stretchable length, with min=0 and max=inf
        stretch e;
@@ -137,7 +137,7 @@ We can add two lengths, or multiply them by a constant, to get new
 lengths. These are compile time operations since ultimately all lengths,
 including stretches, will be resolved to constants.
 
-.. code:: c
+.. code-block:: c
 
        length a = 300ns
        length b = lengthof({x %0})
@@ -172,7 +172,7 @@ are explicitly defined as such. They can be called by passing a valid as
 their duration. Consider for example a rotation called that is applied
 for the entire duration of some other gate.
 
-.. code:: c
+.. code-block:: c
 
        const amp = /* number */;
        stretch a;
@@ -186,7 +186,7 @@ time across all qubits, and ends simultaneously across all qubits. For
 this reason, a instruction is exactly equivalent to a of a length zero
 on the qubits involved.
 
-.. code:: c
+.. code-block:: c
 
        cx q[0], q[1];
        cx q[2], q[3];
@@ -202,7 +202,7 @@ where the \*centers\* of pulses are equidistant from each other. We
 specify correct lengths for the delays by using backtracking operations
 to properly take into account the finite length of each gate.
 
-.. code:: c
+.. code-block:: c
 
    stretch s, t;
    length start_stretch = s - .5 * lengthof({x %0;})
@@ -242,7 +242,7 @@ this because their contents are isolated and cannot be combined with
 gates outside the box. Therefore, no matter how the contents of the box
 get optimized, the has a well-defined meaning.
 
-.. code:: c
+.. code-block:: c
 
        boxas mybox {
            cx q[0], q[1];
@@ -259,7 +259,7 @@ otherwise a compile-time error will be raised. The stretch inside the
 box will always be set to fill the difference between the declared
 length and the natural length.
 
-.. code:: c
+.. code-block:: c
 
       // defines a 1ms box whose content is just a centered CNOT
        boxto 1ms {
@@ -276,7 +276,7 @@ The instruction of OpenQASM 2 prevents commutation and gate reordering
 on a set of qubits across its source line. The syntax is and can be seen
 in the following example
 
-.. code:: c
+.. code-block:: c
 
    cx r[0], r[1];
    h q[0];

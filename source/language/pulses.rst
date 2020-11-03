@@ -25,7 +25,7 @@ The entry point to such gate and measurement definitions is the keyword
 analogous to the keyword, but where the body specifies a pulse-level
 instruction sequence on *physical* qubits, e.g.
 
-.. code:: c
+.. code-block:: c
 
    defcal rz(angle[20]:theta) %q { ... }
    defcal measure %q -> bit { ... }
@@ -46,7 +46,7 @@ As a consequence of the need for specialization of operations on
 particular qubits, we expect the same symbol to be defined multiple
 times, e.g.
 
-.. code:: c
+.. code-block:: c
 
    defcal h %0 { ... }
    defcal h %1 { ... }
@@ -55,7 +55,7 @@ and so forth. Some operations require further specialization on
 parameter values, so we also allow multiple declarations on the same
 physical qubits with different parameter values, e.g.
 
-.. code:: c
+.. code-block:: c
 
    defcal rx(pi) %0 { ... }
    defcal rx(pi / 2) %0 { ... }
@@ -75,7 +75,7 @@ match (2), ``rx(pi/2) %1`` would match (1).
 Users specify the grammar used inside blocks with a declaration, or by
 an optional grammar string in a definition, e.g.
 
-.. code:: c
+.. code-block:: c
 
    defcalgrammar "openpulse";
    defcal "openpulse" measure %q -> bit { ... }

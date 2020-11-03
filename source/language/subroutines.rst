@@ -15,7 +15,7 @@ as . The type declarations are necessary if we want to mix qubit and
 register arguments. For example, we might define a parity check
 subroutine that takes qubits and registers
 
-.. code:: c
+.. code-block:: c
 
    def xcheck qubit[4]:d, qubit:a -> bit {
      reset a;
@@ -27,7 +27,7 @@ Naturally we can also use subroutines to define purely classical
 operations, such as methods we can implement using low-level classical
 instructions, like
 
-.. code:: c
+.. code-block:: c
 
    const n = /* some size, known at compile time */;
    def parity(bit[n]:cin) -> bit {
@@ -41,7 +41,7 @@ instructions, like
 We can make some measurements and call this subroutine on the results as
 follows
 
-.. code:: c
+.. code-block:: c
 
    c = measure q;
    c2 = measure r;
@@ -51,7 +51,7 @@ We require that we know the signature at compile time, as we do in this
 example. We could also just as easily have used a kernel function for
 this
 
-.. code:: c
+.. code-block:: c
 
    const n = /* size of c + size of c2 */;
    kernel parity bit[n] -> bit;
