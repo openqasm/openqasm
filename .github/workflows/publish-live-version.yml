@@ -27,12 +27,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate HTML
-        run: make html
+        run: make singlehtml
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: build/html
+          FOLDER: build/singlehtml
           CLEAN: false
