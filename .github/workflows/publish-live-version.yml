@@ -6,9 +6,9 @@ name: Publish Live Version
 # events but only for the live-doc branch
 on:
   push:
-    branches: [ live-doc ]
+    branches: [ master ]
   pull_request:
-    branches: [ live-doc ]
+    branches: [ master ]
 
 jobs:
   build:
