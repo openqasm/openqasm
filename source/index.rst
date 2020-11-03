@@ -6,7 +6,7 @@ OpenQASM Live Specification
 
   intro
   language/index
-  examples
+  grammar/index
 
 Bibliography
 ============
