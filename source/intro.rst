@@ -43,3 +43,18 @@ document also does not seek to define the execution environment that accepts Ope
 For the previous versions of OpenQASM please read arXiv:1707.03429_.
 
 .. _arXiv:1707.03429: https://arxiv.org/abs/1707.03429
+
+
+Contributors
+------------
+
+The following individuals contributed to the OpenQASM version 3.0 specification:
+
+Hossein Ajallooiean[1]_, Thomas Alexander[2]_, Lev Bishop[2]_, Yudong Cao[3]_, Andrew Cross[2]_,
+Jay Gambetta[2]_, Ali Javadi-Abhari[2]_, Blake Johnson[2]_, Moritz Kirste[1]_, Colm Ryan[4]_,
+John Smolin[2]_, Ntwali Bashige Toussaint[3]_
+
+.. [1] Zurich Instruments
+.. [2] IBM Quantum
+.. [3] Zapata Computing
+.. [4] Amazon AWS
