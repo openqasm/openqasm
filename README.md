@@ -10,7 +10,7 @@ On this repository, you'll find all the documentation related to OpenQASM and so
 
 ### Language specs
 
-The livee [language documentation](https://qiskit.github.io/openqasm) specification.
+The live [language documentation](https://qiskit.github.io/openqasm) specification.
 
 ### Examples
 
