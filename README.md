@@ -1,12 +1,8 @@
 # OpenQASM
 
-Specs, examples and tools for the OpenQASM intermediate representation.
-
-## Current version
-
-The latest version is: **3.0**.
-
-Consult [OpenQASM 2.0 specification in arxiv.org](https://arxiv.org/abs/1707.03429)
+OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
+describe universal quantum computing using the circuit model, measurement-based model, 
+and near-term quantum computing experiments.
 
 ## About this project
 
@@ -14,7 +10,7 @@ On this repository, you'll find all the documentation related to OpenQASM and so
 
 ### Language specs
 
-The [language documentation live specification](https://qiskit.github.io/openqasm).
+The live [language documentation](https://qiskit.github.io/openqasm) specification.
 
 ### Examples
 
@@ -65,11 +61,13 @@ h input;
 output = measure input;  // should get zero
 ```
 
-## Authors (alphabetical)
+## Current version
 
-Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, Jesús Pérez and John A. Smolin.
+The latest version is: **3.0**. 
 
-Anyone who contributes to this project can include their name here.
+For previous versions see 
+
+* [OpenQASM 2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## Citation format
 
@@ -77,21 +75,10 @@ For research papers, we encourage authors to reference.
 
 - Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
-## Other Qiskit projects
-
-- [ibmqx backend information](https://github.com/Qiskit/ibmqx-backend-information) Information about the different IBM Q experience backends.
-- [ibmqx user guide](https://github.com/Qiskit/ibmqx-user-guides) The users guides for the IBM Q experience.
-- [Python API](https://github.com/Qiskit/qiskit-api-py) API Client to use IBM Q experience in Python.
-- [Python SDK](https://github.com/Qiskit/qiskit-terra) Software development kit for working with quantum programs in Python.
-- [Tutorials](https://github.com/Qiskit/qiskit-tutorial) Jupyter notebooks for using Qiskit.
-
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
 
-## Acknowledgments
-
-- Thanks to the awesome [IBM Q Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
 
 ## Contributing
 
