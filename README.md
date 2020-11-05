@@ -65,9 +65,7 @@ output = measure input;  // should get zero
 
 The latest version is: **3.0**. 
 
-For previous versions see 
-
-* [OpenQASM 2.0](https://arxiv.org/abs/1707.03429v2)
+For previous versions see: [2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## Citation format
 
