@@ -57,4 +57,4 @@ John Smolin[2]_, Ntwali Bashige Toussaint[3]_
 .. [1] Zurich Instruments
 .. [2] IBM Quantum
 .. [3] Zapata Computing
-.. [4] Amazon AWS
+.. [4] AWS Center for Quantum Computing
