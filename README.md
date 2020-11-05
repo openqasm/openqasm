@@ -6,7 +6,7 @@ Specs, examples and tools for the OpenQASM intermediate representation.
 
 The latest version is: **3.0**.
 
-Consult [OpenQASM 2.0 specification in arxiv.org](https://arxiv.org/abs/1707.03429)
+For previous version see: [2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## About this project
 
