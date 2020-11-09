@@ -69,7 +69,6 @@ h input;
 output = measure input;  // should get zero
 ```
 
-
 ## Citation format
 
 For research papers, we encourage authors to reference.
