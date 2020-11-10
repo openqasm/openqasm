@@ -1,4 +1,4 @@
-OpenQASM 3.x Live Specification 
+OpenQASM 3.x Live Specification
 ===============================
 
 .. toctree::
