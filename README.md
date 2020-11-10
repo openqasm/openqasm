@@ -1,10 +1,6 @@
-# OpenQASM
+# OpenQASM **2.0**.
 
-Specs, examples and tools for the OpenQASM intermediate representation.
-
-## Current version
-
-The latest version is: **2.0**.
+Specs, examples and tools for the OpenQASM **2.0** intermediate representation.
 
 ## About this project
 
@@ -12,40 +8,32 @@ On this repository you'll find all the documentation related to OpenQASM and som
 
 ### Language specs
 
-The language documentation is available [here](spec/qasm2.rst).
+The language documentation is available [here](https://arxiv.org/abs/1707.03429v2).
 
 ### Examples
 
 The examples can be found under the [examples](examples) folder.
 
-They are OpenQASM files, i.e.:
+The examples that cannot necessarily be executed on any existing hardware. You can still run these circuits in a simulator.
 
-```text
-// Repetition code syndrome measurement
-OPENQASM 2.0;
-include "qelib1.inc";
-qreg q[3];
-qreg a[2];
-creg c[3];
-creg syn[2];
-gate syndrome d1,d2,d3,a1,a2
-{
-  cx d1,a1; cx d2,a1;
-  cx d2,a2; cx d3,a2;
-}
-x q[0]; // error
-barrier q;
-syndrome q[0],q[1],q[2],a[0],a[1];
-measure a -> syn;
-if(syn==1) x q[0];
-if(syn==2) x q[2];
-if(syn==3) x q[1];
-measure q -> c;
-```
+- `adder.qasm`: Adds two four-bit numbers.
+- `bigadder.qasm`: Quantum ripple-carry adder. 8-bit adder made out of 2 4-bit adders from adder.qasm.
+- `inverseqft1.qasm`: Inverse quantum Fourier transform using 4 qubits.
+- `inverseqft2.qasm`: Another version of the inverse quantum Fourier transform using 4 qubits.
+- `ipea_3_pi_8.qasm`: 4-bit Iterative Phase Estimation algorithm for phase 3\pi/8 using two qubits.ss
+- `pea_3_pi_8.qasm`: 4-bit Phase Estimation algorithm for a phase 3\pi/8 using 5 qubits.
+- `qec.qasm`: Repetition code to correct quantum errors.
+- `qft.qasm`: Quantum Fourier transform on 4 qubits.
+- `qpt.qasm`: Quantum Process Tomography example.
+- `rb.qasm`: Example of a single instance of two-qubits randomized benchmarking.
+- `teleport.qasm`: Quantum Teleportation example.
+- `teleportv2.qasm`: Quantum Teleportation example (one classical register).
+- `W-state.qasm`: Generating a 3-qubit W-state using Toffoli gates
 
-## Tests
+Examples of invalid code:
 
-The official OpenQASM [conformance test](contributing.md#tests) suite is included in this repo.
+- 'invalid_missing_semicolon.qasm'
+- 'invalid_gate_no_found.qasm'
 
 ## Authors (alphabetical)
 
@@ -59,21 +47,13 @@ For research papers, we encourage authors to reference.
 
 - Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
-## Other Qiskit projects
-
-- [ibmqx backend information](https://github.com/Qiskit/ibmqx-backend-information) Information about the different IBM Q experience backends.
-- [ibmqx user guide](https://github.com/Qiskit/ibmqx-user-guides) The users guides for the IBM Q experience.
-- [Python API](https://github.com/Qiskit/qiskit-api-py) API Client to use IBM Q experience in Python.
-- [Python SDK](https://github.com/Qiskit/qiskit-terra) Software development kit for working with quantum programs in Python.
-- [Tutorials](https://github.com/Qiskit/qiskit-tutorial) Jupyter notebooks for using Qiskit.
-
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
 
 ## Acknowledgments
 
-- Thanks to the awesome [IBM Q Experience Community](https://quantumexperience.ng.bluemix.net) who posted their thoughts and inputs to the OpenQASM.
+- Thanks to the awesome IBM Quantum Experience Community who posted their thoughts and inputs to the OpenQASM.
 
 ## Contributing
 
