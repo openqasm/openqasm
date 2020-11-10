@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/master/templates/issue.md) to add them.
+:fire: This is a good point to start, when you find a problem please add it to the [issue traker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/master/templates/issue.md) to add them.
 
 ## Doubts solving
 
@@ -41,7 +41,7 @@ Please follow the next rules for the commit messages:
 
 ## Spec proposals
 
-:bulb: All new ideas go through next stages to become a new feature of the language.
+:bulb: All new ideas go throught next stages to become a new feature of the language.
 
 - Draft: Backlog items with different level of abstraction. Anybody can add one issue in the [main repo](https://github.com/Qiskit/openqasm). Please label it as `draft`.
 - Proposal: An idea with the correct form:
@@ -69,7 +69,7 @@ The test runner uses all the circuit files in the [examples](examples) folder. T
 
 ### Run
 
-- Install [Qiskit dependencies](https://github.com/Qiskit/qiskit-terra#installation).
+- Install [Qiskit depedencies](https://github.com/Qiskit/qiskit-terra#installation).
 - The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
 
 ## Versions
