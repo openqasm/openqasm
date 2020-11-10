@@ -35,12 +35,6 @@ Examples of invalid code:
 - 'invalid_missing_semicolon.qasm'
 - 'invalid_gate_no_found.qasm'
 
-## Authors (alphabetical)
-
-Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, Jesús Pérez and John A. Smolin.
-
-Anyone who contributes to this project can include their name here.
-
 ## Citation format
 
 For research papers, we encourage authors to reference.
