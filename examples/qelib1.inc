@@ -1,15 +1,14 @@
 // Quantum Experience (QE) Standard Header
 // file: qelib1.inc
-// Updated to OpenQASM 3
 
 // --- QE Hardware primitives ---
 
 // 3-parameter 2-pulse single qubit gate
-gate u3(angle[32]:theta,angle[32]:phi,angle[32]:lambda) q { U(theta,phi,lambda) q; }
+gate u3(theta,phi,lambda) q { U(theta,phi,lambda) q; }
 // 2-parameter 1-pulse single qubit gate
-gate u2(angle[32]:phi,angle[32]:lambda) q { U(pi/2,phi,lambda) q; }
+gate u2(phi,lambda) q { U(pi/2,phi,lambda) q; }
 // 1-parameter 0-pulse single qubit gate
-gate u1(angle[32]:lambda) q { U(0,0,lambda) q; }
+gate u1(lambda) q { U(0,0,lambda) q; }
 // controlled-NOT
 gate cx c,t { CX c,t; }
 // idle gate (identity)
@@ -36,11 +35,11 @@ gate tdg a { u1(-pi/4) a; }
 
 // --- Standard rotations ---
 // Rotation around X-axis
-gate rx(angle[32]:theta) a { u3(theta,-pi/2,pi/2) a; }
+gate rx(theta) a { u3(theta,-pi/2,pi/2) a; }
 // rotation around Y-axis
-gate ry(angle[32]:theta) a { u3(theta,0,0) a; }
+gate ry(theta) a { u3(theta,0,0) a; }
 // rotation around Z axis
-gate rz(angle[32]:phi) a { u1(phi) a; }
+gate rz(phi) a { u1(phi) a; }
 
 // --- QE Standard User-Defined Gates  ---
 
@@ -68,7 +67,7 @@ gate ccx a,b,c
   cx a,b;
 }
 // controlled rz rotation
-gate crz(angle[32]:lambda) a,b
+gate crz(lambda) a,b
 {
   u1(lambda/2) b;
   cx a,b;
@@ -76,7 +75,7 @@ gate crz(angle[32]:lambda) a,b
   cx a,b;
 }
 // controlled phase rotation
-gate cu1(angle[32]:lambda) a,b
+gate cu1(lambda) a,b
 {
   u1(lambda/2) a;
   cx a,b;
@@ -85,7 +84,7 @@ gate cu1(angle[32]:lambda) a,b
   u1(lambda/2) b;
 }
 // controlled-U
-gate cu3(angle[32]:theta,angle[32]:phi,angle[32]:lambda) c, t
+gate cu3(theta,phi,lambda) c, t
 {
   // implements controlled-U(theta,phi,lambda) with  target t and control c
   u1((lambda-phi)/2) t;

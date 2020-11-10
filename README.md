@@ -1,73 +1,45 @@
-# OpenQASM
+# OpenQASM **2.0**.
 
-OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model, 
-and near-term quantum computing experiments.
+Specs, examples and tools for the OpenQASM **2.0** intermediate representation.
 
 ## About this project
 
-On this repository, you'll find all the documentation related to OpenQASM and some useful OpenQASM examples.
+On this repository you'll find all the documentation related to OpenQASM and some useful OpenQASM examples.
 
 ### Language specs
 
-The live [language documentation](https://qiskit.github.io/openqasm) specification.
+The language documentation is available [here](https://arxiv.org/abs/1707.03429v2).
 
 ### Examples
 
 The examples can be found under the [examples](examples) folder.
 
-They are OpenQASM files, i.e.:
+The examples that cannot necessarily be executed on any existing hardware. You can still run these circuits in a simulator.
 
-```text
-/*
- * Repeat-until-success circuit for Rz(theta),
- * cos(theta-pi)=3/5, from Nielsen and Chuang, Chapter 4.
- */
-OPENQASM 3;
-include "stdgates.inc";
+- `adder.qasm`: Adds two four-bit numbers.
+- `bigadder.qasm`: Quantum ripple-carry adder. 8-bit adder made out of 2 4-bit adders from adder.qasm.
+- `inverseqft1.qasm`: Inverse quantum Fourier transform using 4 qubits.
+- `inverseqft2.qasm`: Another version of the inverse quantum Fourier transform using 4 qubits.
+- `ipea_3_pi_8.qasm`: 4-bit Iterative Phase Estimation algorithm for phase 3\pi/8 using two qubits.ss
+- `pea_3_pi_8.qasm`: 4-bit Phase Estimation algorithm for a phase 3\pi/8 using 5 qubits.
+- `qec.qasm`: Repetition code to correct quantum errors.
+- `qft.qasm`: Quantum Fourier transform on 4 qubits.
+- `qpt.qasm`: Quantum Process Tomography example.
+- `rb.qasm`: Example of a single instance of two-qubits randomized benchmarking.
+- `teleport.qasm`: Quantum Teleportation example.
+- `teleportv2.qasm`: Quantum Teleportation example (one classical register).
+- `W-state.qasm`: Generating a 3-qubit W-state using Toffoli gates
 
-/*
- * Applies identity if out is 01, 10, or 11 and a Z-rotation by
- * theta + pi where cos(theta)=3/5 if out is 00.
- * The 00 outcome occurs with probability 5/8.
- */
-def segment qubit[2]:anc, qubit:psi -> bit[2] {
-  bit[2] b;
-  reset anc;
-  h anc;
-  ccx anc[0], anc[1], psi;
-  s psi;
-  ccx anc[0], anc[1], psi;
-  z psi;
-  h anc;
-  measure anc -> b;
-  return b;
-}
+Examples of invalid code:
 
-qubit input;
-qubit ancilla[2];
-bit flags[2] = "11";
-bit output;
+- 'invalid_missing_semicolon.qasm'
+- 'invalid_gate_no_found.qasm'
 
-reset input;
-h input;
+## Authors (alphabetical)
 
-// braces are optional in this case
-while(int(flags) != 0) {
-  flags = segment ancilla, input;
-}
-rz(pi - arccos(3 / 5)) input;
-h input;
-output = measure input;  // should get zero
-```
+Lev S. Bishop, Antonio Córcoles, Andrew W. Cross, Jay M. Gambetta, Jesús Pérez and John A. Smolin.
 
-## Current version
-
-The latest version is: **3.0**. 
-
-For previous versions see 
-
-* [OpenQASM 2.0](https://arxiv.org/abs/1707.03429v2)
+Anyone who contributes to this project can include their name here.
 
 ## Citation format
 
@@ -79,6 +51,9 @@ For research papers, we encourage authors to reference.
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
 
+## Acknowledgments
+
+- Thanks to the awesome IBM Quantum Experience Community who posted their thoughts and inputs to the OpenQASM.
 
 ## Contributing
 

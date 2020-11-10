@@ -1,42 +1,38 @@
-/*
- * quantum ripple-carry adder
- * Cuccaro et al, quant-ph/0410184
- */
-OPENQASM 3;
-include "stdgates.inc";
-
-gate majority a, b, c { 
-    cx c, b; 
-    cx c, a; 
-    ccx a, b, c; 
+// quantum ripple-carry adder from Cuccaro et al, quant-ph/0410184
+OPENQASM 2.0;
+include "qelib1.inc";
+gate majority a,b,c 
+{ 
+  cx c,b; 
+  cx c,a; 
+  ccx a,b,c; 
 }
-
-gate unmaj a, b, c { 
-    ccx a, b, c; 
-    cx c, a; 
-    cx a, b; 
+gate unmaj a,b,c 
+{ 
+  ccx a,b,c; 
+  cx c,a; 
+  cx a,b; 
 }
-
-qubit cin[1], a[4], b[4], cout[1];
-bit ans[5];
-uint[4] a_in = 1;  // a = 0001
-uint[4] b_in = 15; // b = 1111
-// initialize qubits
-reset cin;
-reset a;
-reset b;
-reset cout;
-
+qreg cin[1];
+qreg a[4];
+qreg b[4];
+qreg cout[1];
+creg ans[5];
 // set input states
-for i in [0: 3] {
-  if(bool(ain[i])) x a[i];
-  if(bool(bin[i])) x b[i]; 
-}
+x a[0]; // a = 0001
+x b;    // b = 1111
 // add a to b, storing result in b
-majority cin[0], b[0], a[0];
-for i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; }
-cx a[3], cout[0];
-for i in [2: -1: 0] { unmaj a[i],b[i+1],a[i+1]; }
-unmaj cin[0], b[0], a[0];
-measure b[0:3] -> ans[0:3];
+majority cin[0],b[0],a[0];
+majority a[0],b[1],a[1];
+majority a[1],b[2],a[2];
+majority a[2],b[3],a[3];
+cx a[3],cout[0];
+unmaj a[2],b[3],a[3];
+unmaj a[1],b[2],a[2];
+unmaj a[0],b[1],a[1];
+unmaj cin[0],b[0],a[0];
+measure b[0] -> ans[0];
+measure b[1] -> ans[1];
+measure b[2] -> ans[2];
+measure b[3] -> ans[3];
 measure cout[0] -> ans[4];

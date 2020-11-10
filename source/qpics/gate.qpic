@@ -1,9 +1,0 @@
-q0 W q[0]
-q1 W q[1]
-q0 q1 G {cphase$\left(\pi/2\right)$} width=70
-=
-q0 G {U(0,0,$\pi/4$)} width=70
-q0 +q1
-q1 G {U(0,0,$-\pi/4$)} width=70
-q0 +q1
-q1 G {U(0,0,$\pi/4$)} width=70
