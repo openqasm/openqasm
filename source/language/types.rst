@@ -12,28 +12,66 @@ Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
 Lu/Ll/Lt/Lm/Lo/NI :cite:`noauthorUnicodeNodate`.
 Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier. All qubits are global variables.
+not override a reserved identifier.
+
+All qubits are global variables.
+
 When qubits are declared, their state is initially undefined. Qubits
 cannot be declared within gates or subroutines. This simplifies OpenQASM
 significantly since there is no need for quantum memory management.
-However, it also means that users or compiler have to explicitly manage
-the quantum memory. In addition to being assigned values within a
-program, all of the classical types can be initialized on declaration.
+However, it also means that users or compilers have to explicitly manage
+the quantum memory.
+
+OpenQASM supports all scalar classical types as defined in the C99 Standard:
+http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
+
+Additionally, OpenQASM 3.0 supports compile-time fixed-size C-style bit
+arrays.  Variable-Length Arrays (VLA's) are not supported in OpenQASM 3.0.
+
+Missing - Needs Clarification:
+------------------------------
+Does an Array automatically decay to the pointer of its first element, as in C?
+-------------------------------------------------------------------------------
+Can an Array be passed as argument to a function or subroutine, as in C?
+------------------------------------------------------------------------
+Signed / Unsigned
+-----------------
+Overflow / Underflow
+--------------------
+Wrap-Around (unsigned)
+----------------------
+
+In addition to being assigned values within a program, all scalar classical
+types can be initialized at declaration.
+
+Missing - Needs Specfication:
+-----------------------------
+Full enumeration of supported scalar classical types and their sizes.
+---------------------------------------------------------------------
+
 Multiple comma-separated declarations can occur after the typename with
-optional assignment on declaration for each. Any classical variable or
-Boolean that is not explicitly initialized is undefined. Classical types
-can be mutually cast to one another using the typename . We use the
+optional assignment on declaration for each. The value of any scalar
+classical variable or Boolean that is not explicitly initialized is
+undefined.
+
+Classical types can be cast to one another using the typename. We use the
 notation to denote the width and precision of fixed point numbers, where
 is the number of sign bits, is the number of integer bits, and is the
 number of fractional bits. It is necessary to specify low-level
 classical representations since OpenQASM operates at the intersection of
 gates/analog control and digital feedback and we need to be able to
 explicitly transform types to cross these boundaries. Classical types
-are scoped to the braces within which they are declared.
+declared within a braced block are scoped to the braces within which they
+are declared. Globally-declared scalar classical types have Translation
+Unit scope.
+
+Missing - Needs clarification:
+------------------------------
+Casting and conversion rules for scalar classical types.
+--------------------------------------------------------
 
 Quantum types
 -------------
-
 Qubits
 ~~~~~~
 
@@ -114,6 +152,23 @@ conversion will be done assuming little-endian bit ordering.
    // Declare a 32 bit signed integer
    int[32] my_int;
 
+Needs clarification:
+--------------------
+If OpenQASM supports "classical types", then it implicitly declares
+-------------------------------------------------------------------
+support for normative, known fixed-size C types.  Paragraph above seems
+-----------------------------------------------------------------------
+inconsistent.
+-------------
+Can Bit Arrays be cast (implicitly or explicitly) to an Integer type
+--------------------------------------------------------------------
+or a Floating-Point type?
+-------------------------
+What happens during a cast between two scalar types of different bit width?
+---------------------------------------------------------------------------
+What is the bit width of the resulting type?
+--------------------------------------------
+
 Signed fixed-point numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -139,6 +194,16 @@ vendors may not support manipulating these values at run-time.
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
 
+Needs clarification:
+--------------------
+IEEE-754 implies support for implicit 32-bit float and 64-bit double.
+---------------------------------------------------------------------
+We can apply IEEE-754 rounding rules to fixed-width floating-point
+------------------------------------------------------------------
+types via GNU MPFR:
+-------------------
+https://www.mpfr.org/
+
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
@@ -157,6 +222,11 @@ compatible with run-time values on some platforms.
    // Declare an angle with 20 bits of precision
    angle[20] my_angle;
 
+Needs clarification:
+--------------------
+"angle" is a reserved keyword? (based on the example above, yes it is).
+-----------------------------------------------------------------------
+
 Boolean types
 ~~~~~~~~~~~~~
 
@@ -170,6 +240,20 @@ be true and 0 will be false.
    bool my_bool;
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
+
+Needs clarification:
+--------------------
+Wouldn't a C-style cast
+-----------------------
+
+.. code-block:: c
+  my_bool = (bool) my_bit;
+
+be more consistent with C? The cast example above is more like an
+-----------------------------------------------------------------
+explicit construction / conversion from C++.
+--------------------------------------------
+
 
 Real constants
 ~~~~~~~~~~~~~~
@@ -222,6 +306,24 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       | Euler’s number                | euler_gamma  | :math:`e`    | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
 
+Needs clarification:
+--------------------
+What is the default width of the my_const variable in the following
+-------------------------------------------------------------------
+declaration:
+------------
+
+.. code-block:: c
+   const my_const = 1234;
+
+What is the default width of the py_by_2 variable in the following
+-------------------------------------------------------------------
+declaration:
+------------
+
+.. code-block:: c
+   const pi_by_2 = π / 2;
+
 Types related to timing
 -----------------------
 
@@ -251,6 +353,13 @@ is an integer between 0 to 255. is an alias for the regular . At the
 timing resolution stage of the compiler, higher order stretches will
 suppress lower order stretches whenever they appear in the same scope on
 the same qubits.
+
+Needs clarification:
+--------------------
+'length' and 'stretch' are reserved keywords.
+---------------------------------------------
+What is the default width for 'length' and 'stretch' types?
+-----------------------------------------------------------
 
 Aliasing
 --------
@@ -303,3 +412,4 @@ variables whose values may only be known at run time.
    let sliced = concatenated[0:6];
    // Every second qubit
    let every_second = concatenated[0:2:12];
+
