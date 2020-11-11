@@ -10,7 +10,7 @@ Specs, examples and tools for the OpenQASM intermediate representation.
 
 Live doc: [**vesion 3.0**](https://qiskit.github.io/openqasm)
 
-For previous version see: [2.0](https://arxiv.org/abs/1707.03429v2)
+For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
