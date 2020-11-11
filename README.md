@@ -4,6 +4,14 @@ OpenQASM is an imperative programming language for describing quantum circuits. 
 describe universal quantum computing using the circuit model, measurement-based model, 
 and near-term quantum computing experiments.
 
+Specs, examples and tools for the OpenQASM intermediate representation.
+
+## Current version: **3.0**
+
+Live doc: [**vesion 3.0**](https://qiskit.github.io/openqasm)
+
+For previous version see: [2.0](https://arxiv.org/abs/1707.03429v2)
+
 ## About this project
 
 On this repository, you'll find all the documentation related to OpenQASM and some useful OpenQASM examples.
@@ -60,14 +68,6 @@ rz(pi - arccos(3 / 5)) input;
 h input;
 output = measure input;  // should get zero
 ```
-
-## Current version
-
-The latest version is: **3.0**. 
-
-For previous versions see 
-
-* [OpenQASM 2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## Citation format
 
