@@ -22,7 +22,7 @@ The first (non-comment) line of an OpenQASM program may optionally be
 indicating a major version M and minor version m. Version 3.0 is
 described in this document. Multiple occurrences of the version keyword
 are not permitted. The minor version number and decimal point are
-optional. If they are not present, they are assumed to be zero.
+optional. If they are not present, minor version number is assumed to be zero.
 
 Included files
 ==============
@@ -35,6 +35,6 @@ inserted at the location of the statement.
    // First non-comment is a version string
    OPENQASM 3.0;
 
-   #include "stdgates.qasm";
+   include "stdgates.qasm";
 
    // Rest of QASM program

@@ -1,7 +1,7 @@
-name: Publish Live Version
+name: Build Live Version
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
 
 jobs:
@@ -23,10 +23,7 @@ jobs:
       - name: Generate HTML
         run: make singlehtml
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+      - uses: actions/upload-artifact@v2
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: build/singlehtml
-          CLEAN: false
+          name: singlehtml
+          path: build/singlehtml
