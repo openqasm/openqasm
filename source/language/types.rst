@@ -12,19 +12,17 @@ Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
 Lu/Ll/Lt/Lm/Lo/NI :cite:`noauthorUnicodeNodate`.
 Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier. All qubits are global variables.
-When qubits are declared, their state is initially undefined. Qubits
-cannot be declared within gates or subroutines. This simplifies OpenQASM
-significantly since there is no need for quantum memory management.
-However, it also means that users or compiler have to explicitly manage
-the quantum memory. In addition to being assigned values within a
-program, all of the classical types can be initialized on declaration.
-Multiple comma-separated declarations can occur after the typename with
-optional assignment on declaration for each. Any classical variable or
-Boolean that is not explicitly initialized is undefined. Classical types
-can be mutually cast to one another using the typename . We use the
-notation to denote the width and precision of fixed point numbers, where
-is the number of sign bits, is the number of integer bits, and is the
+not override a reserved identifier. 
+
+In addition to being assigned values within a program, all of the classical
+types can be initialized on declaration. Multiple comma-separated declarations
+can occur after the typename with optional assignment on declaration for each. 
+Any classical variable or Boolean that is not explicitly initialized is 
+undefined. Classical types can be mutually cast to one another using the 
+typename. 
+
+We use the notation to denote the width and precision of fixed point numbers, 
+where is the number of sign bits, is the number of integer bits, and is the
 number of fractional bits. It is necessary to specify low-level
 classical representations since OpenQASM operates at the intersection of
 gates/analog control and digital feedback and we need to be able to
@@ -48,6 +46,12 @@ of this register, where
 :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
 Qubits are initially in an undefined state. A quantum operation is one
 way to initialize qubit states.
+
+All qubits are global variables.
+Qubits cannot be declared within gates or subroutines. This simplifies OpenQASM
+significantly since there is no need for quantum memory management.
+However, it also means that users or compiler have to explicitly manage
+the quantum memory. 
 
 Physical Qubits
 ~~~~~~~~~~~~~~~
@@ -303,7 +307,7 @@ variables whose values may only be known at run time.
    let sliced = concatenated[0:6];
    // Every second qubit
    let every_second = concatenated[0:2:12];
-   // example using negative ranges to take the last 3 elements
+   // Using negative ranges to take the last 3 elements
    let last_three = two[-4:-1];
-   // example how concatenate two alias in another one
+   // Concatenate two alias in another one
    let both = sliced || last_three;
