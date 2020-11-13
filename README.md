@@ -1,8 +1,17 @@
 # OpenQASM
 
+
 OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
 describe universal quantum computing using the circuit model, measurement-based model, 
 and near-term quantum computing experiments.
+
+Specs, examples and tools for the OpenQASM intermediate representation.
+
+## Current version
+
+The latest version is: **3.0**.
+
+For previous version see: [2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## About this project
 
