@@ -12,17 +12,17 @@ Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
 Lu/Ll/Lt/Lm/Lo/NI :cite:`noauthorUnicodeNodate`.
 Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier. 
+not override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
 types can be initialized on declaration. Multiple comma-separated declarations
-can occur after the typename with optional assignment on declaration for each. 
-Any classical variable or Boolean that is not explicitly initialized is 
-undefined. Classical types can be mutually cast to one another using the 
-typename. 
+can occur after the typename with optional assignment on declaration for each.
+Any classical variable or Boolean that is not explicitly initialized is
+undefined. Classical types can be mutually cast to one another using the
+typename.
 
-We use the notation to denote the width and precision of fixed point numbers, 
-where is the number of sign bits, is the number of integer bits, and is the
+We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers,
+where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the
 number of fractional bits. It is necessary to specify low-level
 classical representations since OpenQASM operates at the intersection of
 gates/analog control and digital feedback and we need to be able to
@@ -35,23 +35,23 @@ Quantum types
 Qubits
 ~~~~~~
 
-There is a quantum bit () type that is interpreted as a reference to a
+There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. Quantum registers are static
-arrays of qubits that cannot be dynamically resized. The statement
-declares a reference to a quantum bit. The statement or declares a
-quantum register with the given name identifier. The keyword is included
+arrays of qubits that cannot be dynamically resized. The statement ``qubit name;``
+declares a reference to a quantum bit. The statement ``qreg name[size];`` or ``qubit name[size];`` declares a
+quantum register with the given name identifier. The keyword ``qreg`` is included
 for backwards compatibility and will be removed in the future. Sizes
-must always be constant positive integers. The label refers to a qubit
+must always be constant positive integers. The label ``name[j]`` refers to a qubit
 of this register, where
 :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
-Qubits are initially in an undefined state. A quantum operation is one
+Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
 
 All qubits are global variables.
 Qubits cannot be declared within gates or subroutines. This simplifies OpenQASM
 significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
-the quantum memory. 
+the quantum memory.
 
 Physical Qubits
 ~~~~~~~~~~~~~~~
@@ -69,8 +69,8 @@ circuits.
    qubit γ;
    // Declare a qubit array with 20 qubits
    qubit qubit_array[20];
-   // Declare usage of physical qubit 0
-   qubit %0;
+   // CNOT gate between physical qubits 0 and 1
+   CX %0, %1;
 
 Classical types
 ---------------
@@ -81,9 +81,9 @@ Classical bits and registers
 There is a classical bit type that takes values 0 or 1. Classical
 registers are static arrays of bits. The classical registers model part
 of the controller state that is exposed within the OpenQASM program. The
-statement declares a classical bit, and or declares an array of bits
-(register). The keyword is deprecated and will be removed in the future.
-The label refers to a bit of this register, where :math:`j\in
+statement ``bit name;`` declares a classical bit, and ``creg name[size];`` or ``bit name[size];`` declares an array of bits
+(register). The keyword ``creg`` is deprecated and will be removed in the future.
+The label ``name[j]`` refers to a bit of this register, where :math:`j\in
 \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer. For
 convenience, classical registers can be assigned a text string
 containing zeros and ones of the same length as the size of the
@@ -101,40 +101,44 @@ bit is on the right.
 Integers
 ~~~~~~~~
 
-There are n-bit signed and unsigned integers. The statements and declare
+There are n-bit signed and unsigned integers. The statements ``int[size] name;`` and ``uint[size] name;`` declare
 signed 1:n-1:0 and unsigned 0:n:0 integers of the given size. The sizes
 are always explicitly part of the type; there is no implicit width for
 classical types in OpenQASM. Because register indices are integers, they
 can be cast from classical registers containing measurement outcomes and
 may only be known at run time. An n-bit classical register containing
 bits can also be reinterpreted as an integer, and these types can be
-mutually cast to one another using the type name, e.g. . As noted, this
-conversion will be done assuming little-endian bit ordering.
+mutually cast to one another using the type name, e.g. ``int[16](c)``. As noted, this
+conversion will be done assuming little-endian bit ordering. The example
+below demonstrates how to declare, assign and cast integer types amongst
+one another.
 
 .. code-block:: c
 
    // Declare a 32-bit unsigned integer
-   uint[32] my_uint;
-   // Declare a 32 bit signed integer
-   int[32] my_int;
+   uint[32] my_uint = 10;
+   // Declare a 16 bit signed integer
+   int[16] my_int;
+   my_int = int[16](my_uint);
 
 Signed fixed-point numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are fixed-point numbers with integer bits, fractional bits, and 1
-sign bit. The statement declares a fixed-point number.
+There are ``1:m:f`` fixed-point numbers with ``m`` integer bits, ``f`` fractional bits, and 1
+sign bit. The statement ``fixed[m, f] name;`` declares a ``1:m:f`` fixed-point number.
 
 .. code-block:: c
 
    // Declare a 32-bit fixed point number.
    // The number is signed, has 7 integer bits
-   // and 24 fractional bits.
-   fixed[7, 24] my_fixed;
+   // and 24 fractional bits. The decimal number
+   // assignment is implicitly cast.
+   fixed[7, 24] my_fixed = -7.0625;
 
 Floating point numbers
 ~~~~~~~~~~~~~~~~~~~~~~
 
-IEEE 754 floating point registers may be declared with , where would
+IEEE 754 floating point registers may be declared with ``float[size] name;``, where ``float[64]`` would
 indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
@@ -149,23 +153,26 @@ Fixed-point angles
 Fixed-point angles are interpreted as :math:`2\pi` times a 0:1:n-1
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
-:math:`2\pi`. The statement declares an n-bit angle. OpenQASM3
+:math:`2\pi`. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
 introduces this specialized type because of the ubiquity of this angle
 representation in phase estimation circuits and numerically controlled
 oscillators found in hardware platform. Note that defining gate
-parameters with types may be necessary for those parameters to be
+parameters with ``angle`` types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
 .. code-block:: c
 
-   // Declare an angle with 20 bits of precision
-   angle[20] my_angle;
+   // Declare an angle with 20 bits of precision and assign it a value of π/2
+   angle[20] my_angle = π / 2;
+   float[32] float_pi = π;
+   // equivalent to pi_by_2 up to rounding errors
+   angle[20](float_pi / 2);
 
 Boolean types
 ~~~~~~~~~~~~~
 
-There is a Boolean type that takes values or . Qubit measurement results
-can be converted from a classical type to a Boolean using , where 1 will
+There is a Boolean type ``bool name;`` that takes values ``true`` or ``false``. Qubit measurement results
+can be converted from a classical ``bit`` type to a Boolean using ``bool(c)``, where 1 will
 be true and 0 will be false.
 
 .. code-block:: c
@@ -184,8 +191,8 @@ declaration, they take their assigned value and cannot be redefined
 within the same scope. These are constructed using an in-fix notation
 and scientific calculator features such as scientific notation, real
 arithmetic, logarithmic, trigonometric, and exponential functions
-including , , , , , , and the built-in constant :math:`\pi`. The
-statement defines a new constant. The expression on the right hand side
+including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant :math:`\pi`. The
+statement ``const name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
 declarations. Real constants are compile-time constants, allowing the
@@ -232,10 +239,10 @@ Types related to timing
 length
 ~~~~~~
 
-We introduce a type and several keywords to express lengths of time.
-Lengths are positive numbers with a unit of time. are used for SI time
-units. is a backend-dependent unit equivalent to one waveform sample on
-the backend. is an intrinsic function used to reference the duration of
+We introduce a ``length`` type and several keywords to express lengths of time.
+Lengths are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
+units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
+the backend. ``lengthof()`` is an intrinsic function used to reference the duration of
 another part of the program or the duration of a calibrated gate.
 
 .. code-block:: c
@@ -246,12 +253,12 @@ another part of the program or the duration of a calibrated gate.
 stretch
 ~~~~~~~
 
-We further introduce a type which is a sub-type of . Stretchable lengths
+We further introduce a ``stretch`` type which is a sub-type of ``length``. Stretchable lengths
 have variable non-negative length that is permitted to grow as necessary
 to satisfy constraints. Stretch variables are resolved at compile time
 into target-appropriate durations that satisfy a user’s specified design
-intent. We distinguish different “orders" of stretch via types, where N
-is an integer between 0 to 255. is an alias for the regular . At the
+intent. We distinguish different “orders" of stretch via ``stretchN`` types, where N
+is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. At the
 timing resolution stage of the compiler, higher order stretches will
 suppress lower order stretches whenever they appear in the same scope on
 the same qubits.
@@ -259,10 +266,15 @@ the same qubits.
 Aliasing
 --------
 
-The keyword allows quantum bits and registers to be referred to by
-another name as long as the alias is in scope. For example, creates a
-new reference to the last 4 qubits of the register . The qubit refers to
-the qubit .
+The ``let`` keyword allows quantum bits and registers to be referred to by
+another name as long as the alias is in scope.
+
+.. code-block:: c
+
+  qubit q[5];
+  // myreg[0] refers to the qubit q[1]
+  let myreg = q[1:4];
+
 
 Register concatenation and slicing
 ----------------------------------
@@ -271,7 +283,7 @@ Two or more registers of the same type (i.e. classical or quantum) can
 be concatenated to form a register of the same type whose size is the
 sum of the sizes of the individual registers. The concatenated register
 is a reference to the bits or qubits of the original registers. The
-statement denotes the concatenation of registers. A register cannot
+statement ``a || b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
 be concatenated with any part of itself.
 
 Classical and quantum registers can be indexed in a way that selects a
@@ -282,7 +294,7 @@ cannot be indexed by an empty index set.
 
 An index set can be specified by a single unsigned integer, a
 comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
-range is written as or where , , and are integers (signed or unsigned).
+range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
 where :math:`m` is the largest integer such that :math:`a+mc\leq b` if
 :math:`c>0` and :math:`a+mc\geq b` if :math:`c<0`. If :math:`a=b` then
