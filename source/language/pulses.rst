@@ -21,8 +21,8 @@ will define a textualized representation of one such grammar, OpenPulse.
 Here we restrict ourselves to defining the necessary interfaces within
 OpenQASM to these pulse-level definitions of gates and measurement.
 
-The entry point to such gate and measurement definitions is the keyword
-analogous to the keyword, but where the body specifies a pulse-level
+The entry point to such gate and measurement definitions is the ``defcal`` keyword
+analogous to the ``gate`` keyword, but where the ``defcal`` body specifies a pulse-level
 instruction sequence on *physical* qubits, e.g.
 
 .. code-block:: c
@@ -72,23 +72,23 @@ the most specific definition found for a given operation. Thus, given,
 the operation ``rx(pi/2) %0`` would match to (3), ``rx(pi) %0`` would
 match (2), ``rx(pi/2) %1`` would match (1).
 
-Users specify the grammar used inside blocks with a declaration, or by
-an optional grammar string in a definition, e.g.
+Users specify the grammar used inside ``defcal`` blocks with a ``defcalgrammar "name"`` declaration, or by
+an optional grammar string in a ``defcal`` definition, e.g.
 
 .. code-block:: c
 
    defcalgrammar "openpulse";
    defcal "openpulse" measure %q -> bit { ... }
 
-are two equivalent ways to specify that the definition uses the grammar.
+are two equivalent ways to specify that the ``measure`` definition uses the ``"openpulse"`` grammar.
 
-Note that and communicate orthogonal information to the compiler. s
+Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
 define unitary transformation rules to the compiler. The compiler may
 freely invoke such rules on operations while preserving the structure of
-a circuit as a collection of s and s. The declarations instead define
-elements of a symbol lookup table. As soon as the compiler replaces a
-with a definition, we have changed the fundamental structure of the
-circuit. Most of the time symbols in the table will also have
-corresponding definitions. However, if a userprovides a for a symbol
-without a corresponding , then we treat such operations like the gates
+a circuit as a collection of ``gate``'s and ``subroutine``'s. The ``defcal`` declarations instead define
+elements of a symbol lookup table. As soon as the compiler replaces a ``gate``
+with a ``defcal`` definition, we have changed the fundamental structure of the
+circuit. Most of the time symbols in the ``defcal`` table will also have
+corresponding ``gate`` definitions. However, if a user provides a ``defcal`` for a symbol
+without a corresponding ``gate``, then we treat such operations like the ``opaque`` gates
 of prior versions of OpenQASM.
