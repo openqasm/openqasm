@@ -20,7 +20,7 @@ Low-level classical instructions
 Generalities
 ~~~~~~~~~~~~
 
-All types support the assignment operator . The left-hand-side (LHS) and
+All types support the assignment operator ``=``. The left-hand-side (LHS) and
 right-hand-side (RHS) of the assignment operator must be of the same
 type. For real-time values assignment is by copy of the RHS value to the
 assigned variable on the LHS.
@@ -40,10 +40,10 @@ Classical bits and registers
 
 Classical registers and bits support bitwise operators and the
 corresponding assignment operators between registers of the same size:
-and , or , xor . They support left shift and right shift by an unsigned
+and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift ``>>`` by an unsigned
 integer, and the corresponding assignment operators. The shift operators
-shift bits off the end. They also support not ,  [1]_, and left and
-right circular shift, and , respectively.
+shift bits off the end. They also support not ``~``, ``popcount``[1]_, and left and
+right circular shift, ``rotl`` and ``rotr``, respectively.
 
 .. code-block:: c
 
@@ -61,8 +61,8 @@ Comparison (Boolean) Instructions
 Integers, fixed-point numbers, angles, bits, and classical registers can
 be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 :math:`!=`) and yield Boolean values. Boolean values support logical
-operators: and , or , not . The keyword tests if an integer belongs to
-an index set, for example returns if i equals 0 or 3 and otherwise.
+operators: and ``&&``, or ``||``, not ``!``. The keyword ``in`` tests if an integer belongs to
+an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and ``false`` otherwise.
 
 .. code-block:: c
 
@@ -82,9 +82,9 @@ an index set, for example returns if i equals 0 or 3 and otherwise.
 Integers
 ~~~~~~~~
 
-Integer types support addition , subtraction , multiplication, and
-division [2]_; the corresponding assignments , , , and ; as well as
-increment and decrement .
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and
+division[2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
+increment ``++`` and decrement ``--``.
 
 .. code-block:: c
 
@@ -113,8 +113,8 @@ multiplication, and division and the corresponding assignment operators.
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
 
-The statement branches to program if the Boolean evaluates to true and
-may optionally be followed by .
+The statement ``if ( bool ) { program }`` branches to program if the Boolean evaluates to true and
+may optionally be followed by ``else { program }``.
 
 .. code-block:: c
 
@@ -130,18 +130,24 @@ may optionally be followed by .
       // do something else
    }
 
-The statement loops over integer values in the indexset, assigning them
-to . The for loop body is not permitted to modify the loop variable of
+The statement ``for name in indexset { program }`` loops over integer values in the indexset, assigning them
+to ``name``. The for loop body is not permitted to modify the loop variable of
 the indexset.
 
 .. code-block:: c
 
    int[32] b;
+   // loop over a discrete set of values
    for i in {1, 5, 10} {
        b += i;
    } // b == 16
 
-The statement executes program until the Boolean evaluates to
+   // loop over every positive number from 0 to 20 using an indexset
+   for i in [0:2:20] {
+      // do something
+   }
+
+The statement ``while ( bool ) { program }`` executes program until the Boolean evaluates to
 false [3]_. Variables in the loop condition statement may be modified
 within the while loop body.
 
@@ -161,10 +167,10 @@ within the while loop body.
        }
    }
 
-A block can be exited with the statement . The statement can appear in
+A block ``{ program }`` can be exited with the statement ``break;``. The statement ``continue;`` can appear in
 the body of a for or while loop. It returns control to the loop
-condition. The statement terminates the program. In all of the
-preceding, can also be replaced by a statement without the braces.
+condition. The statement ``end;`` terminates the program. In all of the
+preceding, ``{ program }`` can also be replaced by a statement without the braces.
 
 .. code-block:: c
 
@@ -191,7 +197,7 @@ Kernel function calls
 ---------------------
 
 Kernel functions are declared by giving their signature using the
-statement where inputs is a comma-separated list of type names and
+statement ``kernel name(inputs)-> output;`` where inputs is a comma-separated list of type names and
 output is a single type name. They can be functions of any number of
 arguments whose types correspond to the classical types of OpenQASM.
 Inputs are passed by value. They can return zero or one value whose type
@@ -201,16 +207,16 @@ The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
 how the kernel functions are defined and registered.
 
-Kernel functions are invoked using the statement The functions are not
+Kernel functions are invoked using the statement ``name(inputs) -> output;``. The functions are not
 required to be idempotent. They may change the state of the process
 providing the function. In our computational model, the kernel functions
 are assumed to run concurrently with other classical and quantum
 computations. The output of a kernel function can be assigned to a
 variable on declaration using the assignment operator rather than the
-arrow notation.
+``->`` arrow notation.
 
 .. [1]
-   computes the Hamming weight of the input register.
+   ``popcount`` computes the Hamming weight of the input register.
 
 .. [2]
    If multiplication and division instructions are not available in
