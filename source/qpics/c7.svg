@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 61 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+    <g transform="matrix(0,-1,-1,0,36.234,38.5981)">
+        <rect x="10.461" y="-17.933" width="14.944" height="35.866" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.301,20.6651)">
+        <path d="M0,0L8.966,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.301,20.6651)">
+        <path d="M33.873,0L39.851,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,27.2675,29.6316)">
+        <rect x="5.978" y="-2.989" width="5.978" height="5.978" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,24.2787,26.6428)">
+        <path d="M2.989,0L8.966,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,45.2005,47.5646)">
+        <rect x="23.911" y="-2.989" width="5.978" height="5.978" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-199.485,-127.914)">
+        <text x="198.945px" y="151.069px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q<tspan x="204.13px 206.285px 211.499px " y="151.069px 151.069px 151.069px ">[0]</tspan></text>
+    </g>
+    <g transform="matrix(1,0,0,1,-199.485,-127.914)">
+        <text x="202.552px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">r<tspan x="206.253px 211.428px 216.131px 221.306px 224.657px 230.552px 233.417px 239.341px 242.205px " y="135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px ">esetq[0];</tspan></text>
+        <text x="242.7px" y="150.829px" style="font-family:'Monaco';font-size:6.974px;">0</text>
+    </g>
+</svg>
