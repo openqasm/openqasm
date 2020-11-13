@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 83 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+    <g transform="matrix(0,-1,-1,0,56.6577,59.5196)">
+        <rect x="15.94" y="-23.413" width="29.888" height="61.769" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.301,6.21883)">
+        <path d="M0,14.944L61.769,14.944" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.301,36.1071)">
+        <path d="M0,0L61.769,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,64.1298,52.0476)">
+        <rect x="24.907" y="-9.963" width="11.955" height="49.814" style="fill:white;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,49.1856,66.9917)">
+        <rect x="24.907" y="-24.907" width="11.955" height="49.814" style="fill:white;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-174.579,-127.914)">
+        <text x="174.039px" y="151.568px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q<tspan x="179.224px 181.379px 186.593px " y="151.568px 151.568px 151.568px ">[0]</tspan></text>
+        <text x="174.039px" y="166.511px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q<tspan x="179.224px 181.379px 186.593px " y="166.511px 166.511px 166.511px ">[1]</tspan></text>
+    </g>
+    <g transform="matrix(1,0,0,1,-174.579,-127.914)">
+        <text x="199.362px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">U<tspan x="206.005px " y="135.595px ">(</tspan></text>
+        <text x="211.345px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">,</text>
+        <text x="216.597px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">,</text>
+        <text x="221.85px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">)<tspan x="224.829px 230.84px " y="135.595px 135.595px ">q;</tspan></text>
+        <text x="208.692px" y="150.819px" style="font-family:'Monaco';font-size:6.974px;">U<tspan x="212.105px " y="150.819px ">(</tspan></text>
+        <text x="216.581px" y="150.819px" style="font-family:'Monaco';font-size:6.974px;">,</text>
+        <text x="221.057px" y="150.819px" style="font-family:'Monaco';font-size:6.974px;">,</text>
+        <text x="225.533px" y="150.819px" style="font-family:'Monaco';font-size:6.974px;">)</text>
+        <text x="208.692px" y="165.763px" style="font-family:'Monaco';font-size:6.974px;">U<tspan x="212.105px " y="165.763px ">(</tspan></text>
+        <text x="216.581px" y="165.763px" style="font-family:'Monaco';font-size:6.974px;">,</text>
+        <text x="221.057px" y="165.763px" style="font-family:'Monaco';font-size:6.974px;">,</text>
+        <text x="225.533px" y="165.763px" style="font-family:'Monaco';font-size:6.974px;">)</text>
+    </g>
+</svg>

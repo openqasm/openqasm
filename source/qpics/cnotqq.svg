@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 54 76" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+    <g transform="matrix(1,0,0,1,-196.497,-127.914)">
+        <text x="195.957px" y="151.568px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q<tspan x="201.142px 203.297px 208.511px " y="151.568px 151.568px 151.568px ">[0]</tspan></text>
+        <text x="195.957px" y="166.511px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q<tspan x="201.142px 203.297px 208.511px " y="166.511px 166.511px 166.511px ">[1]</tspan></text>
+        <text x="195.99px" y="181.453px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">r<tspan x="199.702px 202.576px 208.511px " y="181.453px 181.453px 181.453px ">[0]</tspan></text>
+        <text x="195.99px" y="196.396px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">r<tspan x="199.702px 202.576px 208.511px " y="196.396px 196.396px 196.396px ">[1]</tspan></text>
+    </g>
+    <g transform="matrix(1,0,0,1,-196.497,-127.914)">
+        <text x="196.906px" y="135.595px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">C<tspan x="203.686px 209.81px 215.967px 219.094px 225.281px 228.408px 231.447px 235.411px 238.538px 244.725px 247.852px " y="135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px 135.595px ">Xq[0],r[0];</tspan></text>
+    </g>
+    <g transform="matrix(0,-1,-1,0,49.6827,52.5454)">
+        <rect x="-20.922" y="13.45" width="59.777" height="17.933" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.3,-23.6698)">
+        <path d="M0,44.832L17.933,44.832" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.3,6.21853)">
+        <path d="M0,29.888L17.933,29.888" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.3,36.1068)">
+        <path d="M0,14.944L17.933,14.944" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,18.3,65.9951)">
+        <path d="M0,0L17.933,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,1,1,0,-2.62178,27.1403)">
+        <path d="M-5.978,29.888L23.911,29.888" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,72.099,30.1292)">
+        <ellipse cx="8.966" cy="44.832" rx="1.494" ry="1.494" style="stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,42.2107,60.0175)">
+        <circle cx="8.966" cy="14.944" r="2.989" style="fill:white;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-196.497,-127.914)">
+        <clipPath id="_clip1">
+            <path d="M226.752,178.965C226.752,177.314 225.414,175.976 223.763,175.976C222.113,175.976 220.775,177.314 220.775,178.965C220.775,180.616 222.113,181.954 223.763,181.954C225.414,181.954 226.752,180.616 226.752,178.965Z" clip-rule="nonzero"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(1,0,0,1,214.797,164.021)">
+                <path d="M5.978,14.944L11.955,14.944" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+            </g>
+            <g transform="matrix(0,-1,-1,0,238.708,187.931)">
+                <path d="M5.978,14.944L11.955,14.944" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+            </g>
+        </g>
+    </g>
+</svg>
