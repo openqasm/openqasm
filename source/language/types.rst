@@ -150,10 +150,10 @@ vendors may not support manipulating these values at run-time.
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
-Fixed-point angles are interpreted as :math:`2\pi` times a 0:1:n-1
+Fixed-point angles are interpreted as 2π times a 0:1:n-1
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
-:math:`2\pi`. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
+2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
 introduces this specialized type because of the ubiquity of this angle
 representation in phase estimation circuits and numerically controlled
 oscillators found in hardware platform. Note that defining gate
@@ -191,7 +191,7 @@ declaration, they take their assigned value and cannot be redefined
 within the same scope. These are constructed using an in-fix notation
 and scientific calculator features such as scientific notation, real
 arithmetic, logarithmic, trigonometric, and exponential functions
-including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant :math:`\pi`. The
+including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant π. The
 statement ``const name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
@@ -226,9 +226,9 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       +-------------------------------+--------------+--------------+---------------------+
       | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |
       +-------------------------------+--------------+--------------+---------------------+
-      | (r)1-1(lr)2-2(rl)3-3(l)4-4 Pi | pi           | :math:`\pi`  | 3.1415926535...     |
+      | Pi                            | pi           | π            | 3.1415926535...     |
       +-------------------------------+--------------+--------------+---------------------+
-      | Tau                           | tau          | :math:`\tau` | 6.283185...         |
+      | Tau                           | tau          | τ            | 6.283185...         |
       +-------------------------------+--------------+--------------+---------------------+
       | Euler’s number                | euler_gamma  | :math:`e`    | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
