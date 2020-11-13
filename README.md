@@ -7,11 +7,11 @@ and near-term quantum computing experiments.
 
 Specs, examples and tools for the OpenQASM intermediate representation.
 
-## Current version
+## Current version: **3.0**
 
-The latest version is: **3.0**.
+Live doc: [**vesion 3.0**](https://qiskit.github.io/openqasm)
 
-For previous version see: [2.0](https://arxiv.org/abs/1707.03429v2)
+For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
@@ -69,14 +69,6 @@ rz(pi - arccos(3 / 5)) input;
 h input;
 output = measure input;  // should get zero
 ```
-
-## Current version
-
-The latest version is: **3.0**. 
-
-For previous versions see 
-
-* [OpenQASM 2.0](https://arxiv.org/abs/1707.03429v2)
 
 ## Citation format
 
