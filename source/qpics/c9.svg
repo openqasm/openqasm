@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 86 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+    <g transform="matrix(0,-1,-1,0,45.6426,61.6042)">
+        <rect x="30.386" y="-37.859" width="14.944" height="75.717" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,7.78403,23.7456)">
+        <path d="M0,0L28.892,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,7.78403,23.7456)">
+        <path d="M52.803,0L75.717,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0.554701,-0.83205,-0.83205,-0.554701,12.2205,32.0352)">
+        <path d="M2.779,0L17.147,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,36.6761,52.6377)">
+        <rect x="25.903" y="-2.989" width="5.978" height="5.978" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,33.6872,49.6488)">
+        <path d="M22.914,0L28.892,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0,-1,-1,0,54.609,70.5707)">
+        <rect x="43.836" y="-2.989" width="5.978" height="5.978" style="fill:white;stroke:white;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(0.5547,-0.83205,-0.83205,-0.5547,37.0644,78.4565)">
+        <path d="M58.57,0L72.939,0" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.4px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-191.073,-127.916)">
+        <text x="190.533px" y="152.839px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">q</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-191.073,-127.916)">
+        <text x="207.81px" y="134.25px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:9.963px;">r<tspan x="211.7px 217.065px 221.958px 227.322px 230.862px 236.947px " y="134.25px 134.25px 134.25px 134.25px 134.25px 134.25px ">esetq;</tspan></text>
+        <text x="214.332px" y="150.924px" style="font-family:'Monaco';font-size:6.974px;">2</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-191.073,-127.916)">
+        <text x="243.696px" y="153.91px" style="font-family:'Monaco';font-size:6.974px;">0</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-191.073,-127.916)">
+        <text x="270.123px" y="150.921px" style="font-family:'Monaco';font-size:6.974px;">2</text>
+    </g>
+</svg>
