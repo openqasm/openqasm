@@ -267,7 +267,7 @@ Two or more registers of the same type (i.e. classical or quantum) can
 be concatenated to form a register of the same type whose size is the
 sum of the sizes of the individual registers. The concatenated register
 is a reference to the bits or qubits of the original registers. The
-statement denotes the concatenation of registers and . A register cannot
+statement denotes the concatenation of registers. A register cannot
 be concatenated with any part of itself.
 
 Classical and quantum registers can be indexed in a way that selects a
@@ -303,3 +303,7 @@ variables whose values may only be known at run time.
    let sliced = concatenated[0:6];
    // Every second qubit
    let every_second = concatenated[0:2:12];
+   // example using negative ranges to take the last 3 elements
+   let last_three = two[-4:-1];
+   // example how concatenate two alias in another one
+   let both = sliced || last_three;
