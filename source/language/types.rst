@@ -16,6 +16,12 @@ not override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
 types can be initialized on declaration. Multiple comma-separated declarations
+
+Missing - Needs Specification:
+-----------------------------
+Full enumeration of supported scalar classical types and their sizes.
+---------------------------------------------------------------------
+
 can occur after the typename with optional assignment on declaration for each. 
 Any classical variable or Boolean that is not explicitly initialized is 
 undefined. Classical types can be mutually cast to one another using the 
@@ -27,7 +33,13 @@ number of fractional bits. It is necessary to specify low-level
 classical representations since OpenQASM operates at the intersection of
 gates/analog control and digital feedback and we need to be able to
 explicitly transform types to cross these boundaries. Classical types
-are scoped to the braces within which they are declared.
+declared within a braced block are scoped to the braces within which they
+are declared. Globally-declared scalar classical types have Translation
+Unit scope.
+
+Missing - Needs clarification:
+------------------------------
+Casting and conversion rules for scalar classical types
 
 Quantum types
 -------------
@@ -47,7 +59,28 @@ of this register, where
 Qubits are initially in an undefined state. A quantum operation is one
 way to initialize qubit states.
 
+
+OpenQASM supports all scalar classical types as defined in the C99 Standard:
+http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
+
+Additionally, OpenQASM 3.0 supports compile-time fixed-size C-style bit
+arrays.  Variable-Length Arrays (VLA's) are not supported in OpenQASM 3.0.
+
+Missing - Needs Clarification:
+------------------------------
+Does an Array automatically decay to the pointer of its first element, as in C?
+-------------------------------------------------------------------------------
+Can an Array be passed as argument to a function or subroutine, as in C?
+------------------------------------------------------------------------
+Signed / Unsigned
+-----------------
+Overflow / Underflow
+--------------------
+Wrap-Around (unsigned)
+----------------------
+
 All qubits are global variables.
+
 Qubits cannot be declared within gates or subroutines. This simplifies OpenQASM
 significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
@@ -118,6 +151,23 @@ conversion will be done assuming little-endian bit ordering.
    // Declare a 32 bit signed integer
    int[32] my_int;
 
+Needs clarification:
+--------------------
+If OpenQASM supports "classical types", then it implicitly declares
+-------------------------------------------------------------------
+support for normative, known fixed-size C types.  Paragraph above seems
+-----------------------------------------------------------------------
+inconsistent.
+-------------
+Can Bit Arrays be cast (implicitly or explicitly) to an Integer type
+--------------------------------------------------------------------
+or a Floating-Point type?
+-------------------------
+What happens during a cast between two scalar types of different bit width?
+---------------------------------------------------------------------------
+What is the bit width of the resulting type?
+--------------------------------------------
+
 Signed fixed-point numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -161,6 +211,20 @@ compatible with run-time values on some platforms.
    // Declare an angle with 20 bits of precision
    angle[20] my_angle;
 
+Needs clarification:
+--------------------
+IEEE-754 implies support for implicit 32-bit float and 64-bit double.
+---------------------------------------------------------------------
+We can apply IEEE-754 rounding rules to fixed-width floating-point
+------------------------------------------------------------------
+types via GNU MPFR:
+-------------------
+https://www.mpfr.org/
+
+Needs clarification:
+--------------------
+"angle" is a reserved keyword? (based on the example above, yes it is)
+
 Boolean types
 ~~~~~~~~~~~~~
 
@@ -174,6 +238,21 @@ be true and 0 will be false.
    bool my_bool;
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
+
+Needs clarification:
+--------------------
+Wouldn't a C-style cast
+-----------------------
+
+.. code-block:: c
+  my_bool = (bool) my_bit;
+
+be more consistent with C? The cast example above is more like an
+-----------------------------------------------------------------
+explicit construction / conversion from C++.
+--------------------------------------------
+
+
 
 Real constants
 ~~~~~~~~~~~~~~
@@ -225,6 +304,26 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       +-------------------------------+--------------+--------------+---------------------+
       | Euler’s number                | euler_gamma  | :math:`e`    | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
+
+Needs clarification:
+--------------------
+What is the default width of the my_const variable in the following
+-------------------------------------------------------------------
+declaration:
+------------
+
+.. code-block:: c
+   const my_const = 1234;
+
+What is the default width of the py_by_2 variable in the following
+-------------------------------------------------------------------
+declaration:
+------------
+
+.. code-block:: c
+   const pi_by_2 = π / 2;
+
+
 
 Types related to timing
 -----------------------
