@@ -5,8 +5,7 @@ This is a simplified grammar for Open QASM presented in Backus-Naur
 form. The unlisted productions :math:`\langle\mathrm{id}\rangle`,
 :math:`\langle\mathrm{real}\rangle` and
 :math:`\langle\mathrm{nninteger}\rangle` are defined by the regular
-expressions below (``?`` is zero/one, ``*`` is zero or more, ``+`` is one or more):
-::
+expressions below::
 
 		id        := [a-z][A-Za-z0-9_]*
 		real      := ([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([eE][-+]?[0-9]+)?
@@ -16,13 +15,13 @@ expressions below (``?`` is zero/one, ``*`` is zero or more, ``+`` is one or mor
 Production rules are defined with plain text and denoted by a colon ``production : rule``.
 Keywords are enclosed in quotations ``rule : "keyword"``. Whitespace denotes
 concatenation. Alternatives are denoted by ``|`` and may be grouped with 
-parentheses ``(rule1 | rule2 | ...)``. Optional items are enclosed in square 
-brackets ``[option]``, repetition is denoted by curly brackets ``{repeat}``. An underscore
-is used to match any token.
+parentheses ``(rule1 | rule2 | ...)``. Optional rules are terminated with a ``?`` (zero or one), 
+repetition is denoted by curly brackets ``+`` (one or more) and ``*`` (zero or more). An ellipses
+``...`` is used to match any series of token.
 
 .. productionlist::
-    program: header { generic_statement }
-    header: [ version ] { include }
+    program: header generic_statement*
+    header: version? include*
     version: "OPENQASM" real ";"
     include: "include" id ( ".inc" | ".qasm" ) ";"
     generic_statement: global_statement
@@ -39,10 +38,10 @@ is used to match any token.
         :| quantum_statement
         :| timing_box
         :| pragma
-    subroutine_declaration: "def" id args_declaration [ return_signature ] program_block
+    subroutine_declaration: "def" id args_declaration return_signature? program_block
     args_declaration : "(" type_and_id_list ")"
-    type_and_id_list: { ( classical_type_and_id_list | quantum_type_and_id_list ) }
-    classical_type_and_id_list: { declare_type association "," } declare_type association
+    type_and_id_list: ( classical_type_and_id_list | quantum_type_and_id_list )*
+    classical_type_and_id_list: ( declare_type association "," )* declare_type association
     declare_type: dependent_type_declaration 
         :| independent_type_specifier
     dependent_type_declaration: dependent_type_specifier designator
@@ -53,9 +52,9 @@ is used to match any token.
     association: ":" id
     return_signature: "->" classical_declaration
     constant_declaration: "const" ( dependent_type_declaration | independent_type ) assignment 
-    classical_declaration: ( dependent_type_declaration | independent_type ) [ assignment ]
+    classical_declaration: ( dependent_type_declaration | independent_type ) assignment?
     program_block: "{" ( program_block | statement ) "}"
-    kernel_declaration: "kernel" id classical_type_and_id_list [ return_signature ]";
+    kernel_declaration: "kernel" id classical_type_and_id_list return_signature? ";"
     expression_statement: expression ";"
         :| "return" expression ";
     expression: primary_expression 
@@ -63,7 +62,7 @@ is used to match any token.
         :| unary_operator expression 
         :| membership_test
         :| expression '[' expression ']'
-        :| call "(" [ expression_list ] ")"
+        :| call "(" expression_list? ")"
         :| expression incrementor
         :| quantum_measurement
         :| expression_terminator
@@ -71,7 +70,7 @@ is used to match any token.
         :| constant
         :| time_terminator
     constant: "pi" | "π" | "tau" | "𝜏" | "euler"
-    expression_list: { expression "," } expression 
+    expression_list: ( expression "," )* expression 
     unary_operator: "~" | "!"
     call: expression
         :| builtin_math
@@ -90,17 +89,17 @@ is used to match any token.
     membership_test: id "in" set_declaration
     index_set_declaration: "{" index_set_generators "}"
     index_set_generators: expression_list | range
-    range: [ expression ] ":" [ expression ] [ ":" expression ]
-    selection_statement: "if (" expression ")" program_block [ "else" program_block ]
+    range: expression? ":" expression? ( ":" expression )?
+    selection_statement: "if (" expression ")" program_block ( "else" program_block )?
     iteration_statement: "for" membership_test program_block | "while (" expression ")" program_block
     selection_directive_statement: selection_directive ";"
     selection_directive: "break" | "continue" | "exit"
     quantum_gate_definition: "gate" quantum_gate_signature quantum_gate_block
     quantum_gate_signature: id quantum_gate_args id_lis
-    quantum_gate_args: [ "(" [ classical_type_and_id_list ] ")" ]
-    quantum_gate_block: "{" { quantum_gate_call } "}"
-    quantum_type_and_id_list: { quantum_type_and_id "," } quantum_type_and_id
-    quantum_type_and_id: quantum_type [ designator ] association 
+    quantum_gate_args: ( "(" classical_type_and_id_list? ")" )?
+    quantum_gate_block: "{" quantum_gate_call* "}"
+    quantum_type_and_id_list: ( quantum_type_and_id "," )* quantum_type_and_id
+    quantum_type_and_id: quantum_type designator? association 
     quantum_statement: quantum_instruction ";"
     quantum_instruction: quantum_gate_call
         :| quantum_measurement
@@ -110,24 +109,24 @@ is used to match any token.
     quantum_gate_name: "CX" | "U" | "delay" | "reset" | id
         :| quantum_gate_modifier "@" quantum_gate_name
     quantum_gate_modifier: "inv" | "ctrl"
-        :| "pow" [ nninteger ]
-    quantum_gate_args: [ "(" [ expression_list ] ")" ]
+        :| "pow" nninteger?
+    quantum_gate_args: ( "(" expression_list? ")" )?
     quantum_declaration: quantum_type id designator
     quantum_type: "qubit" | "qreg"
-    qubit_id_list: { qubit_id "," } qubit_id
+    qubit_id_list: ( qubit_id "," )* qubit_id
     qubit_id: id | "%" [ "q" ] nninteger
     timing_box: "boxas" id gate_block
         :| "boxto" time_unit gate_block
-    timing_type: "length" | "stretch" [ nninteger ]
+    timing_type: "length" | "stretch" nninteger?
     time_terminator: time | "stretchinf"
     time: id time_unit
     time_unit: "dt" | "ns" | "us" | "ms" | "s"
     calibration: calibration_grammar_declaration | calibration_definition
     calibration_grammar_declaration: "defcalgrammar" id ";"
     calibration_definition: "defcal" grammar_type id calibration_args qubit_id_list return_signature calibration_body
-    calibration_grammar_type: { ( "openpulse" | id ) }
-    calibration_args: [ "(" [ id_const_list ] ")" ] 
+    calibration_grammar_type: ( "openpulse" | id )*
+    calibration_args: ( "(" [ id_const_list ] ")" )*
     mixed_type_specified_list: ( id_const_list | classical_type_and_id_list ) 
         :| mixed_type_specified_list
-    id_const_list: { expression_terminator "," } expression_terminator
+    id_const_list: ( expression_terminator "," )* expression_terminator
     calibration_body: "{" ... "}"
