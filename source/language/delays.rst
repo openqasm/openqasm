@@ -105,6 +105,11 @@ not changed if arithmetic operations are done on it. This is most useful
 as a “don’t care" mechanism to specify delays that will just fill
 whatever gap is present.
 
+Suggested Change
+----------------
+The stretch types should be dependent types like angle, rather than hardcoded.
+------------------------------------------------------------------------------
+
 .. code-block:: c
 
        // stretchable length, with min=0 and max=inf

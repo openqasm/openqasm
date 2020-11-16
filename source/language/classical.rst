@@ -201,6 +201,11 @@ The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
 how the kernel functions are defined and registered.
 
+Suggested Change
+----------------
+Calling a kernel should be done with ``output = kernel name(arg1, arg2)``. To make it explicit that 
+a possibly slow external call is being made.
+
 Kernel functions are invoked using the statement The functions are not
 required to be idempotent. They may change the state of the process
 providing the function. In our computational model, the kernel functions
