@@ -51,10 +51,11 @@ Contributors
 The following individuals contributed to the OpenQASM version 3.0 specification:
 
 Hossein Ajallooiean[1]_, Thomas Alexander[2]_, Lev Bishop[2]_, Yudong Cao[3]_, Andrew Cross[2]_,
-Jay Gambetta[2]_, Ali Javadi-Abhari[2]_, Blake Johnson[2]_, Moritz Kirste[1]_, Colm Ryan[4]_,
-John Smolin[2]_, Ntwali Bashige Toussaint[3]_
+Niel de Beaudrap[4]_, Jay Gambetta[2]_, Ali Javadi-Abhari[2]_, Blake Johnson[2]_,
+Moritz Kirste[1]_, Colm Ryan[5]_, John Smolin[2]_, Ntwali Bashige Toussaint[3]_
 
 .. [1] Zurich Instruments
 .. [2] IBM Quantum
 .. [3] Zapata Computing
-.. [4] AWS Center for Quantum Computing
+.. [4] University of Oxford
+.. [5] AWS Center for Quantum Computing
