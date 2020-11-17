@@ -21,9 +21,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate HTML
-        run: make singlehtml
+        run: make html
 
       - uses: actions/upload-artifact@v2
         with:
-          name: singlehtml
-          path: build/singlehtml
+          name: html
+          path: build/html
