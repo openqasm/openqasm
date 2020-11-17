@@ -1,17 +1,22 @@
 Subroutines
 ===========
 
-Subroutines are declared using the statement . Zero or more quantum bits
-and registers are passed to the subroutine by reference or name in .
-Classical types are passed by value in . The subroutines return up to
+Subroutines are declared using the statement ``def name(parameters) qargs -> output { body }``.
+Zero or more quantum bits
+and registers are passed to the subroutine by reference or name in ``qargs``.
+Classical types are passed by value in ``parameters``. The subroutines return up to
 one classical type. All arguments are declared together with their type,
-for example would define a quantum bit argument named . The output of a
+for example ``qubit: ancilla`` would define a quantum bit argument named ``ancilla``. The output of a
 subroutine can be assigned to a variable on declaration using the
-assignment operator rather than the arrow notation.
+assignment operator rather than the ``->`` arrow notation.
 
 Using subroutines, we can define an X-basis measurement with the program
-. We can also define more general classes of single-qubit measurements
-as . The type declarations are necessary if we want to mix qubit and
+``def xmeasure qubit:q -> bit { h q; return measure q; }``.
+We can also define more general classes of single-qubit measurements
+as
+``def pmeasure(angle[32]: theta) qubit:q -> bit { rz(theta) q; h q; return
+measure q; }``.
+The type declarations are necessary if we want to mix qubit and
 register arguments. For example, we might define a parity check
 subroutine that takes qubits and registers
 
