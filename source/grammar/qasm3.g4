@@ -1,98 +1,461 @@
+/**** ANTLRv4  grammar for OpenQASM3.0. ****/
+
 grammar qasm3;
 
+/** Parser grammar **/
+
 program
-    : header include* statement+ EOF
+    : header statement*
     ;
 
 header
-    : 'OPENQASM' Number (Dot Number)? SemiColon
+    : version? include*
+    ;
+
+version
+    : 'OPENQASM' Integer (DOT Integer)?
     ;
 
 include
-    : 'include' StringLiteral SemiColon
+    : 'include' Identifier '.qasm' SEMICOLON
     ;
 
 statement
-    : variableDeclarationStatement SemiColon
-    | gateDefinition
+    : globalStatement
+    | expressionStatement
+    | declarationStatement
+    | branchingStatement
+    | loopStatement
+    | controlDirectiveStatement
+    | aliasStatement
+    | quantumStatement
+    | timingBox
+    | pragma
+    | comment
     ;
 
-variableDeclarationStatement
-    : type variableDeclarationList
+globalStatement: subroutineDefinition
+    | kernelDeclaration
+    | quantumGateDefinition
+    | calibrationDefinition
     ;
 
-type
-    : varType (OpenBracket Number (Comma Number)? CloseBracket)?
+declarationStatement
+    : ( quantumDeclaration | classicalDeclaration | constantDeclaration) SEMICOLON
     ;
 
-variableDeclarationList
-    : variableDeclaration (Comma variableDeclaration)*
+comment
+    : '//' AnyString '\n'
+    | '/*' AnyString '*/'
     ;
 
-variableDeclaration
-    : Identifier (OpenBracket Number CloseBracket)? (Assign value)?
+returnSignature
+    : ARROW classicalDeclaration
     ;
 
-gateDefinition
-    : Gate Identifier (paramsList)? qargsList '{' expression+ '}'
+programBlock
+    : LBRACE ( programBlock | statement ) RBRACE
     ;
 
-paramsList
-    : paramDeclaration (Comma paramDeclaration)*
+/* Types and Casting */
+
+designator
+    : LBRACKET expression RBRACKET
     ;
 
-// Why does it only accept angle parameters?
-// Why are variables declared like angle[32] foo and params angle[32]:foo?
-paramDeclaration
-    : type OpenBracket Number CloseBracket Colon Identifier
+doubleDesignator
+    : LBRACKET expression COMMA expression RBRACKET
     ;
 
-qargsList
-    : qargDeclaration (Comma qargDeclaration)*
+identifierList
+    : ( Identifier COMMA )* Identifier
     ;
 
-qargDeclaration
-    : Identifier (Comma Identifier)*
+indexIdentifier
+    : Identifier ( designator )?
+    ;
+
+indexIdentifierList
+    : ( indexIdentifier COMMA )* indexIdentifier
+    ;
+
+association
+    : COLON Identifier
+    ;
+
+// Quantum Types
+quantumType
+    : 'qubit'
+    | 'qreg'
+    ;
+
+quantumDeclaration
+    : quantumType Identifier designator
+    ;
+
+quantumArgument
+    : quantumType designator? association
+    ;
+
+quantumArgumentList
+    : ( quantumArgument COMMA )* quantumArgument
+    ;
+
+// Classical Types and Timing Types
+bitType
+    : 'bit'
+    | 'creg'
+    ;
+
+singleDesignatorType
+    : 'int'
+    | 'uint'
+    | 'float'
+    | 'angle'
+    ;
+
+doubleDesignatorType
+    : 'fixed'
+    ;
+
+noDesignatorType
+    : 'bool'
+    | timingType
+    ;
+
+classicalType
+    : singleDesignatorType designator?
+    | doubleDesignatorType doubleDesignator?
+    | noDesignatorType
+    | bitType designator?
+    ;
+
+timingType
+    : 'length'
+    | 'stretch' Integer?
+    ;
+
+constantDeclaration
+    : 'const' Identifier ASSIGN expression
+    ;
+
+singleDesignatorDeclaration
+    : singleDesignatorType designator Identifier
+    ;
+
+doubleDesignatorDeclaration
+    : doubleDesignatorType doubleDesignator Identifier
+    ;
+
+noDesignatorDeclaration
+    : noDesignatorType Identifier
+    ;
+
+classicalVariableDeclaration
+    : singleDesignatorDeclaration
+    | doubleDesignatorDeclaration
+    | noDesignatorDeclaration
+    ;
+
+classicalDeclaration
+    : classicalVariableDeclaration assignmentExpression?
+    ;
+
+classicalTypeList
+    : ( classicalType COMMA )* classicalType
+    ;
+
+classicalArgument
+    : classicalType association
+    ;
+
+classicalArgumentList
+    : ( classicalArgument COMMA )* classicalArgument
+    ;
+
+// Aliasing
+aliasStatement
+    : 'let' Identifier ASSIGN concatenateExpression
+    ;
+
+// Register Concatenation and Slicing
+concatenateExpression
+    : ASSIGN
+    ( Identifier range
+    | Identifier '||' Identifier
+    | Identifier LBRACKET expressionList RBRACKET )
+    ;
+
+range
+    : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
+    ;
+
+/* Gates and Built-in Quantum Instructions */
+
+quantumGateDefinition
+    : 'gate' quantumGateSignature quantumBlock
+    ;
+
+quantumGateSignature
+    : Identifier ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    ;
+
+quantumBlock
+    : LBRACE ( quantumBlock | quantumStatement) RBRACE
+    ;
+
+quantumStatement
+    : ( quantumInstruction | quantumMeasurementDeclaration ) SEMICOLON
+    ;
+
+quantumInstruction
+    : quantumGateCall
+    | quantumMeasurement
+    | quantumBarrier
+    ;
+
+quantumMeasurement
+    : 'measure' indexIdentifierList
+    ;
+
+quantumMeasurementDeclaration
+    : quantumMeasurement ARROW indexIdentifierList
+    | indexIdentifierList ASSIGN quantumMeasurement
+    ;
+
+quantumBarrier
+    : 'barrier' indexIdentifierList
+    ;
+
+quantumGateModifier
+    : ( 'inv' | 'pow' LPAREN Integer RPAREN | 'ctrl' ) '@'
+    ;
+
+quantumGateCall
+    : quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    | delayCall
+    ;
+
+delayCall
+    : 'delay' designator? ( range | indexIdentifierList )
+    ;
+
+quantumGateName
+    : 'CX'
+    | 'U'
+    | 'reset'
+    | Identifier
+    | quantumGateModifier quantumGateName
+    ;
+
+/* Classical Instructions */
+
+unaryOperator
+    : '~' | '!' | builtInMath
+    ;
+
+binaryOperator
+    : '+' | '-' | '*' | '/' | '<<' | '>>' | 'rotl' | 'rotr' | '&&' | '||' | '&' | '|' | '^'
+    | '>' | '<' | '>=' | '<=' | '==' | '!='
+    ;
+
+expressionStatement
+    : expression SEMICOLON
+    | 'return' expressionStatement
     ;
 
 expression
-    : // TODO
+    : expression binaryOperator expression
+    | unaryOperator expression
+    | membershipTest
+    | expression LBRACKET expression RBRACKET
+    | call LPAREN expressionList? RPAREN
+    | expression incrementor
+    | quantumMeasurement
+    | expressionTerminator
     ;
 
-value
-    : Number
-    | StringLiteral
+expressionTerminator
+    : Constant
+    | Integer
+    | RealNumber
+    | Identifier
+    | timeTerminator
     ;
 
-// Lexer variables needs some refactor
-varType
-    : 'qubit' | 'qreg' | 'bit' | 'creg' | 'bool' | 'const' | 'int' | 'uint' | 'angle' | 'fixed'
+expressionList
+    : ( expression COMMA )* expression
     ;
 
-Gate
-    : 'gate'
+call
+    : Identifier
+    | builtInMath
+    | castOperator
     ;
 
-Assign : '=';
-
-StringLiteral
-    : '"' Identifier '"'
+builtInMath
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'popcount' | 'lengthof'
     ;
 
-OpenBracket : '[';
+castOperator
+    : classicalType
+    ;
 
-CloseBracket : ']';
+incrementor
+    : '++'
+    | '--'
+    ;
 
-Colon: ':';
+assignmentExpression
+    : assignmentOperator expression
+    ;
 
-SemiColon : ';';
+assignmentOperator
+    : ASSIGN
+    | ARROW
+    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
+    ;
 
-Dot : '.';
+membershipTest
+    : Identifier 'in' setDeclaration
+    ;
 
-Comma : ',';
+setDeclaration
+    : LBRACE expressionList RBRACE
+    | range
+    ;
+
+loopBranchBlock
+    : statement
+    | programBlock
+    ;
+
+branchingStatement
+    : 'if' LPAREN expression RPAREN loopBranchBlock ( 'else' loopBranchBlock )?
+    ;
+
+loopStatement: ( 'for' membershipTest | 'while' LPAREN expression RPAREN ) loopBranchBlock
+    ;
+
+controlDirectiveStatement
+    : controlDirective SEMICOLON
+    ;
+
+controlDirective
+    : 'break'
+    | 'continue'
+    | 'end'
+    ;
+
+kernelDeclaration
+    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature?
+    classicalType? SEMICOLON
+    ;
+
+/* Subroutines */
+
+subroutineDefinition
+    : 'def' Identifier ( LPAREN subroutineArgumentList? RPAREN )? returnSignature? programBlock
+    ;
+
+subroutineArgumentList
+    : classicalArgumentList | quantumArgumentList
+    ;
+
+/* Directives */
+
+pragma
+    : '#pragma' LPAREN AnyString RPAREN
+    ;
+
+/* Circuit Timing */
+
+timingBox
+    : 'boxas' Identifier quantumBlock
+    | 'boxto' timeUnit quantumBlock
+    ;
+
+timeTerminator
+    : timeIdentifier | 'stretchinf'
+    ;
+
+timeIdentifier
+    : Identifier timeUnit?
+    | 'lengthof' LPAREN Identifier RPAREN
+    ;
+
+timeUnit
+    : 'dt' | 'ns' | 'us' | 'ms' | 's' ;
+
+/* Pulse Level Descriptions of Gates and Measurement */
+
+physicalQubitIdentifier
+    : '%' 'q'? Integer
+    ;
+
+physicalQubitList
+    : ( physicalQubitIdentifier COMMA )* physicalQubitIdentifier
+    ;
+
+calibration
+    : calibrationGrammarDeclaration
+    | calibrationDefinition
+    ;
+
+calibrationGrammarDeclaration
+    : 'defcalgrammar' calibrationGrammar SEMICOLON
+    ;
+
+calibrationDefinition
+    : 'defcal' calibrationGrammar? Identifier
+    ( LPAREN calibrationArgumentList? RPAREN )? physicalQubitList
+    returnSignature calibrationBody
+    ;
+
+calibrationGrammar
+    : ( 'openpulse' | Identifier )*
+    ;
+
+calibrationArgumentList
+    : classicalArgumentList | expressionList
+    ;
+
+calibrationBody
+    : LBRACE AnyString RBRACE
+    ;
+
+/** Lexer grammar **/
+LBRACKET : '[' ;
+RBRACKET : ']' ;
+
+LBRACE : '{' ;
+RBRACE : '}' ;
+
+LPAREN : '(' ;
+RPAREN : ')' ;
+
+COLON: ':' ;
+SEMICOLON : ';' ;
+
+DOT : '.' ;
+COMMA : ',' ;
+
+AnyString : .*? ;
+
+ASSIGN : '=' ;
+ARROW : '->' ;
+
+Constant : 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' ;
 
 Identifier
-    : ('a' .. 'z' | 'A' .. 'Z') ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_')*
+    : [a-z] [A-Za-z0-9_]*
     ;
 
-Number : [0-9]+;
+RealNumber
+    : [0-9]* DOT [0-9]* ([eE] [-+]? [0-9]+)?
+    ;
+
+Integer
+    : [1-9]+ [0-9]*
+    | '0'
+    ;
