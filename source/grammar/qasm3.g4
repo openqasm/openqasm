@@ -45,8 +45,8 @@ declarationStatement
     ;
 
 comment
-    : '//' AnyString '\n'
-    | '/*' AnyString '*/'
+    : '//' AnyString? '\n'
+    | '/*' AnyString? '*/'
     ;
 
 returnSignature
@@ -181,12 +181,12 @@ aliasStatement
 // Register Concatenation and Slicing
 concatenateExpression
     : ASSIGN
-    ( Identifier range
+    ( Identifier rangeDefinition
     | Identifier '||' Identifier
     | Identifier LBRACKET expressionList RBRACKET )
     ;
 
-range
+rangeDefinition
     : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
     ;
 
@@ -237,7 +237,7 @@ quantumGateCall
     ;
 
 delayCall
-    : 'delay' designator? ( range | indexIdentifierList )
+    : 'delay' designator? ( rangeDefinition | indexIdentifierList )
     ;
 
 quantumGateName
@@ -322,7 +322,7 @@ membershipTest
 
 setDeclaration
     : LBRACE expressionList RBRACE
-    | range
+    | rangeDefinition
     ;
 
 loopBranchBlock
@@ -365,7 +365,7 @@ subroutineArgumentList
 /* Directives */
 
 pragma
-    : '#pragma' LPAREN AnyString RPAREN
+    : '#pragma' LBRACE AnyString? RBRACE
     ;
 
 /* Circuit Timing */
@@ -413,7 +413,7 @@ calibrationDefinition
     ;
 
 calibrationGrammar
-    : ( 'openpulse' | Identifier )*
+    : 'openpulse' | Identifier
     ;
 
 calibrationArgumentList
@@ -421,7 +421,7 @@ calibrationArgumentList
     ;
 
 calibrationBody
-    : LBRACE AnyString RBRACE
+    : LBRACE AnyString? RBRACE
     ;
 
 /** Lexer grammar **/
@@ -440,7 +440,7 @@ SEMICOLON : ';' ;
 DOT : '.' ;
 COMMA : ',' ;
 
-AnyString : .*? ;
+AnyString : ( . | '\n' )+? ;
 
 ASSIGN : '=' ;
 ARROW : '->' ;
