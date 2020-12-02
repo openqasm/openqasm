@@ -389,14 +389,6 @@ timeUnit
 
 /* Pulse Level Descriptions of Gates and Measurement */
 
-physicalQubitIdentifier
-    : '%' 'q'? Integer
-    ;
-
-physicalQubitList
-    : ( physicalQubitIdentifier COMMA )* physicalQubitIdentifier
-    ;
-
 calibration
     : calibrationGrammarDeclaration
     | calibrationDefinition
@@ -408,7 +400,7 @@ calibrationGrammarDeclaration
 
 calibrationDefinition
     : 'defcal' calibrationGrammar? Identifier
-    ( LPAREN calibrationArgumentList? RPAREN )? physicalQubitList
+    ( LPAREN calibrationArgumentList? RPAREN )? identifierList
     returnSignature calibrationBody
     ;
 
