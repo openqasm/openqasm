@@ -72,7 +72,7 @@ identifierList
     ;
 
 indexIdentifier
-    : Identifier ( designator )?
+    : Identifier designator?
     ;
 
 indexIdentifierList
