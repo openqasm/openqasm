@@ -29,12 +29,12 @@ statement
     | controlDirectiveStatement
     | aliasStatement
     | quantumStatement
-    | timingBox
+    | timeStatement
     | pragma
     | comment
     ;
 
-globalStatement: subroutineDefinition
+globalStatement: subroutine Definition
     | kernelDeclaration
     | quantumGateDefinition
     | calibrationDefinition
@@ -101,7 +101,7 @@ quantumArgumentList
     : ( quantumArgument COMMA )* quantumArgument
     ;
 
-// Classical Types and Timing Types
+// Classical Types
 bitType
     : 'bit'
     | 'creg'
@@ -128,11 +128,6 @@ classicalType
     | doubleDesignatorType doubleDesignator?
     | noDesignatorType
     | bitType designator?
-    ;
-
-timingType
-    : 'length'
-    | 'stretch' Integer?
     ;
 
 constantDeclaration
@@ -233,11 +228,6 @@ quantumGateModifier
 
 quantumGateCall
     : quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
-    | delayCall
-    ;
-
-delayCall
-    : 'delay' designator? ( rangeDefinition | indexIdentifierList )
     ;
 
 quantumGateName
@@ -370,6 +360,15 @@ pragma
 
 /* Circuit Timing */
 
+timeUnit
+    : 'dt' | 'ns' | 'us' | 'ms' | 's'
+    ;
+
+timingType
+    : 'length'
+    | 'stretch' Integer?
+    ;
+
 timingBox
     : 'boxas' Identifier quantumBlock
     | 'boxto' timeUnit quantumBlock
@@ -384,8 +383,21 @@ timeIdentifier
     | 'lengthof' LPAREN Identifier RPAREN
     ;
 
-timeUnit
-    : 'dt' | 'ns' | 'us' | 'ms' | 's' ;
+
+timeInstructionName
+    : 'delay'
+    | 'rotary'
+    ;
+
+timeInstruction
+    : timeInstructionName ( LPAREN expressionList? RPAREN )? designator
+    ( rangeDefinition | indexIdentifierList )
+    ;
+
+timeStatement
+    : timeInstruction SEMICOLON
+    | timingBox
+    ;
 
 /* Pulse Level Descriptions of Gates and Measurement */
 
