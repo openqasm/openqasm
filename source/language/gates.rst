@@ -39,10 +39,22 @@ arguments cannot refer to the same qubit. For convenience, gates automatically b
 register ``a``. If instead ``a`` is a qubit and ``b`` is a quantum register, the
 statement means apply ``CX a, b[j]`` for each index ``j`` into register ``b``. Finally, if ``a`` is a
 quantum register and ``b`` is a qubit, the statement means apply ``CX a[j], b;`` for each
-index ``j`` into register ``a``.
+index ``j`` into register ``a``. :numref:`fig_cnot-dist`
 
 .. _fig_cnot-dist:
-.. figure:: ../qpics/cnot-dist.svg
+.. multifig::
+
+   .. _fig_cnot-dist_a:
+   .. image:: ../qpics/cnotqq.svg
+
+   .. _fig_cnot-dist_b:
+   .. image:: ../qpics/cnotrr.svg
+
+   .. _fig_cnot-dist_c:
+   .. image:: ../qpics/cnotqr.svg
+
+   .. _fig_cnot-dist_d:
+   .. image:: ../qpics/cnotrq.svg
 
    The built-in two-qubit entangling gate is the
    controlled-NOT gate. If ``a`` and ``b`` are qubits, the statement ``CX a,b;`` applies a
@@ -82,6 +94,7 @@ global phase on circuits. ``gphase(γ);`` adds a global phase of :math:`e^{i\gam
 the circuit. e.g.:
 
 .. code-block:: c
+
    gphase(0.5*γ)
 
 
