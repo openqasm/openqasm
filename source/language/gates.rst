@@ -17,7 +17,7 @@ of single-qubit gates and a two-qubit entangling gate (CNOT)
 target but a mechanism to define other gates. For many gates of
 practical interest, there is a circuit representation with a polynomial
 number of one- and two-qubit gates, giving a more compact representation
-than requiring the programmer to express the full :math:`n \times n`
+than requiring the programmer to express the full :math:`2^n \times 2^n`
 matrix. However, a general :math:`n`-qubit gate can be defined using an
 exponential number of these gates.
 
