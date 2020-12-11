@@ -62,8 +62,7 @@ class MultiFigure(Directive):
         items = []
         row_item_count = min(
             len(images), self.options.get('rowitems', DEFAULT_ROW_ITEM_COUNT))
-        labels = self.options.get(
-            'labels', itertools.repeat(None, len(images)))
+        labels = self.options.get('labels', [])
         for img, label in itertools.zip_longest(images, labels):
             item_node = multifigure_item('', img)
             item_node['item-width'] = 100 // row_item_count
@@ -74,6 +73,7 @@ class MultiFigure(Directive):
         caption, legend = caption_and_legend[0], caption_and_legend[1:]
 
         resultnode = nodes.figure('', multifigure_content('', *items))
+        resultnode['labels'] = labels
         resultnode.append(nodes.caption(caption.rawsource, '', *caption))
         if legend:
             resultnode.append(nodes.legend('', *legend))
@@ -82,6 +82,7 @@ class MultiFigure(Directive):
 
 
 def visit_multifigure_content_html(self, node):
+    alignment = 'baseline' if node.parent.get('labels') else 'center'
     self.body.append(self.starttag(
         node,
         MULTIFIGURE_HTML_CONTENT_TAG,
@@ -91,7 +92,7 @@ def visit_multifigure_content_html(self, node):
             'gap: 2rem 0;',
             'flex-direction: row;',
             'justify-content: center;',
-            'align-items: center;'
+            'align-items: %s;' % alignment,
             'flex-wrap: wrap;'))
     ))
 
@@ -106,6 +107,7 @@ def visit_multifigure_item_html(self, node):
         MULTIFIGURE_HTML_ITEM_TAG,
         CLASS='figure-item',
         style=' '.join((
+            'max-height: 10rem;',
             'width: %i%%;' % node.get('item-width'),
             'display: flex;',
             'flex-direction: column;'))
