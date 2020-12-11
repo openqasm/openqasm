@@ -34,6 +34,9 @@ class MultiFigure(Directive):
     Options:
     --------
     ``rowitems``: maximum number of items per row. Default is 4.
+
+    ``labels``: a space separated list of labels for the items. Default is no
+    labels.
     """
 
     has_content = True
