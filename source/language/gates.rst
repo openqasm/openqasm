@@ -39,21 +39,18 @@ arguments cannot refer to the same qubit. For convenience, gates automatically b
 register ``a``. If instead ``a`` is a qubit and ``b`` is a quantum register, the
 statement means apply ``CX a, b[j]`` for each index ``j`` into register ``b``. Finally, if ``a`` is a
 quantum register and ``b`` is a qubit, the statement means apply ``CX a[j], b;`` for each
-index ``j`` into register ``a``. :numref:`fig_cnot-dist`
+index ``j`` into register ``a``.
 
 .. _fig_cnot-dist:
-.. multifig::
+.. multifigure::
+   :rowitems: 2
 
-   .. _fig_cnot-dist_a:
    .. image:: ../qpics/cnotqq.svg
 
-   .. _fig_cnot-dist_b:
    .. image:: ../qpics/cnotrr.svg
 
-   .. _fig_cnot-dist_c:
    .. image:: ../qpics/cnotqr.svg
 
-   .. _fig_cnot-dist_d:
    .. image:: ../qpics/cnotrq.svg
 
    The built-in two-qubit entangling gate is the
@@ -64,7 +61,11 @@ index ``j`` into register ``a``. :numref:`fig_cnot-dist`
    ``b`` is a quantum register and vice versa.
 
 .. _fig_u-dist:
-.. figure:: ../qpics/u-dist.svg
+.. multifigure::
+
+   .. image:: ../qpics/uq.svg
+
+   .. image:: ../qpics/ur.svg
 
    The single-qubit unitary gates are built-in. These gates are parameterized by three real
    parameters :math:`\theta`, :math:`\phi`, and :math:`\lambda$`. If the argument ``q`` is a quantum register, the

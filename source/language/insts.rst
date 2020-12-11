@@ -19,7 +19,13 @@ The statement ``reset qubit|qubit[];`` resets a qubit or quantum register to the
 
 
 .. _fig_prepare:
-.. figure:: ../qpics/reset-dist.svg
+.. multifigure::
+
+   .. image:: ../qpics/c7.svg
+
+   .. image:: ../qpics/c8.svg
+
+   .. image:: ../qpics/c9.svg
 
    The ``reset`` statement prepares a qubit or quantum register in the state :math:`|0\rangle`.
 
@@ -46,11 +52,24 @@ broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``.
    bits = measure qubits;
 
 .. _fig_measure:
-.. figure:: ../qpics/measure-dist.svg
+.. multifigure::
+   :rowitems: 3
+
+   .. image:: ../qpics/c1.svg
+
+   .. image:: ../qpics/c2.svg
+
+   .. image:: ../qpics/c3.svg
+
+   .. image:: ../qpics/c4.svg
+
+   .. image:: ../qpics/c5.svg
+
+   .. image:: ../qpics/c6.svg
 
    The ``measure`` statement projectively measures a qubit or each qubit of a quantum
    register. The measurement projects onto the $Z$-basis and leaves qubits available for further
    operations. The top row of circuits depicts single-qubit measurement using the statement
    ``c[0] = measure q[0];`` while the bottom depicts measurement of an entire register using the
    statement ``c = measure q;``. The center circuit of the top row depicts measurement as the
-   final operation on \code{q[0]
+   final operation on ``q[0]``.
