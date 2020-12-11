@@ -91,6 +91,7 @@ def visit_multifigure_content_html(self, node):
             'gap: 2rem 0;',
             'flex-direction: row;',
             'justify-content: center;',
+            'align-items: center;'
             'flex-wrap: wrap;'))
     ))
 
