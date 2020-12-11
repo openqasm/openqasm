@@ -1,5 +1,8 @@
-\documentclass{article}
+\documentclass{standalone}
 \usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
 
 \begin{document}
 
@@ -21,7 +24,7 @@
 \draw (30.5000000,30.000000) -- (30.5000000,0.000000);
 \draw (31.5000000,30.000000) -- (31.5000000,0.000000);
 \filldraw (31.000000, 15.000000) circle(1.500000pt); % extra dot
-\begin{scope} 
+\begin{scope}
 \draw[fill=white] (31.000000, 30.000000) +(-45.000000:35.355339pt and 8.485281pt) -- +(45.000000:35.355339pt and 8.485281pt) -- +(135.000000:35.355339pt and 8.485281pt) -- +(225.000000:35.355339pt and 8.485281pt) -- cycle;
 \clip (31.000000, 30.000000) +(-45.000000:35.355339pt and 8.485281pt) -- +(45.000000:35.355339pt and 8.485281pt) -- +(135.000000:35.355339pt and 8.485281pt) -- +(225.000000:35.355339pt and 8.485281pt) -- cycle;
 \draw (31.000000, 30.000000) node {\scriptsize{U($\theta$,$\phi$,$\lambda$)}};

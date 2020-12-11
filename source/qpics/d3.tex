@@ -1,0 +1,23 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+\input{utils}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{yquant}
+  [name=ypos]
+  qubit q[2];
+  cnot q[1] | q[0];
+  box {$R_Y(\pi/2)$} q[1];
+  cnot q[1] | q[0];
+  [name=rz] box {$R_Z(\pi/4)$} q[0];
+\end{yquant}
+\draw [line width=1pt, ->, dashed]
+([yshift=1mm, xshift=-2mm] rz-0.north west)
+to [bend right]
+(ypos-0);
+\end{tikzpicture}
+\end{document}

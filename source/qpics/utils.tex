@@ -1,0 +1,9 @@
+\newcommand{\spring}[3][0mm]{
+  % optional arg 1: vertical shift amount
+  % arg 2: box label in which to place spring
+  % arg 3: height of spring
+  \def \shiftamount {#1}
+  \draw[decoration={aspect=0.1, segment length=1.5mm, amplitude=#3, coil},decorate] ([yshift=-\shiftamount] #2.west) -- ([yshift=-\shiftamount] #2.east) ;
+  \draw [dashed] (#2.north west) -- (#2.south west);
+  \draw [dashed] (#2.north east) -- (#2.south east);
+}
