@@ -64,8 +64,19 @@ gate is in progress. Similarly, a ``gate`` whose definition contains stretchy
 delays will be perceived as a stretchy gate by other parts of the
 program.
 
+.. _fig_alignment:
+.. multifigure::
+   :labels: a b
+
+   .. image:: ../qpics/d1.svg
+
+   .. image:: ../qpics/d2.svg
+
+   Arbitrary alignment of gates in time using stretchy delays. a) left-justified
+   alignment b) alignment of a short gate at the 1/3 point of a longer gate.
+
 For example, in order to ensure a sequence of gates between two barriers
-will be left-aligned (Figure `[fig:alignment] <#fig:alignment>`__\ a),
+will be left-aligned (:numref:`fig_alignment`\a),
 whatever their actual durations may be, we can do the following:
 
 .. code-block:: c
@@ -80,7 +91,7 @@ whatever their actual durations may be, we can do the following:
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
-the stretchy delays (Figure `[fig:alignment] <#fig:alignment>`__\ b):
+the stretchy delays (:numref:`fig_alignment`\b):
 
 .. code-block:: c
 
@@ -91,10 +102,6 @@ the stretchy delays (Figure `[fig:alignment] <#fig:alignment>`__\ b):
        u q[2];
        delay[2*g];
        barrier q;
-
-[fig:leftalign]
-
-[fig:leftalignresolved]
 
 Lastly, we distinguish different “orders" of stretch via ``stretchN`` types, where N
 is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. Higher

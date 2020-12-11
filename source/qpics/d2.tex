@@ -1,0 +1,19 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+\input{utils}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{yquant}
+    qubit {$\%{\idx}$} q[5];
+    [x radius=39mm] box {$CX [300 ns]$} (q[0], q[1]);
+    [x radius=6.5mm] box {$U [50 ns]$} q[2];
+    [x radius=26mm] box {$CX [200 ns]$} (q[3], q[4]);
+    [x radius=31.5mm] box {$Delay [250 ns]$} q[2];
+    [x radius=12.5mm] box {$delay [100 ns]$} (q[3], q[4]);
+  \end{yquant}
+\end{tikzpicture}
+\end{document}
