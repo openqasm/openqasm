@@ -41,6 +41,37 @@ statement means apply ``CX a, b[j]`` for each index ``j`` into register ``b``. F
 quantum register and ``b`` is a qubit, the statement means apply ``CX a[j], b;`` for each
 index ``j`` into register ``a``.
 
+.. _fig_cnot-dist:
+.. multifigure::
+   :rowitems: 2
+
+   .. image:: ../qpics/cnotqq.svg
+
+   .. image:: ../qpics/cnotrr.svg
+
+   .. image:: ../qpics/cnotqr.svg
+
+   .. image:: ../qpics/cnotrq.svg
+
+   The built-in two-qubit entangling gate is the
+   controlled-NOT gate. If ``a`` and ``b`` are qubits, the statement ``CX a,b;`` applies a
+   controlled-NOT (CNOT) gate that flips the target qubit ``b`` iff the control qubit ``a``
+   is one. If ``a`` and ``b`` are quantum registers, the statement applies CNOT gates between
+   corresponding qubits of each register. There is a similar meaning when ``a`` is a qubit and
+   ``b`` is a quantum register and vice versa.
+
+.. _fig_u-dist:
+.. multifigure::
+
+   .. image:: ../qpics/uq.svg
+
+   .. image:: ../qpics/ur.svg
+
+   The single-qubit unitary gates are built-in. These gates are parameterized by three real
+   parameters :math:`\theta`, :math:`\phi`, and :math:`\lambda$`. If the argument ``q`` is a quantum register, the
+   statement applies ``size(q)`` gates in parallel to the qubits of the
+   register.
+
 All of the single-qubit unitary gates are also built-in and
 parameterized as
 
@@ -64,6 +95,7 @@ global phase on circuits. ``gphase(γ);`` adds a global phase of :math:`e^{i\gam
 the circuit. e.g.:
 
 .. code-block:: c
+
    gphase(0.5*γ)
 
 
@@ -74,7 +106,7 @@ Hierarchically defined unitary gates
 
 For new gates, we associate them with a corresponding unitary
 transformation by a sequence of built-in gates. For example, a CPHASE
-operation is shown schematically in Fig. `[fig:gate] <#fig:gate>`__. The
+operation is shown schematically in :numref:`fig_gate`
 corresponding OpenQASM code is
 
 .. code-block:: c
@@ -88,6 +120,14 @@ corresponding OpenQASM code is
      U(0, 0, θ / 2) b;
    }
    cphase(π / 2) q[0], q[1];
+
+.. _fig_gate:
+.. figure:: ../qpics/gate.svg
+
+   New gates are defined from previously defined gates. The gates are applied using the statement
+   ``name(params) qargs;`` just like the built-in gates. The parentheses are optional if there
+   are no parameters. The gate :math:`{cphase}(\theta)` corresponds to the unitary matrix
+   :math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
 
 Note that this definition does not imply that ``cphase`` must be implemented with
 this series of gates. Rather, we have specified the unitary
