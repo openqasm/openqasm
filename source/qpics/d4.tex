@@ -1,0 +1,22 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+\input{utils}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{yquant}
+    qubit q[2];
+    cnot q[1] | q[0];
+    hspace {3mm} q;
+    [name=del, x radius=12mm] box {$Delay [30ns]$} q[0];
+    [x radius=12mm] box {$R_Y(\pi/2)$} q[1];
+    hspace {3mm} q;
+    cnot q[1] | q[0];
+    [name=rz] box {$R_Z(\pi/4)$} q[0];
+  \end{yquant}
+  \draw [line width=1pt, ->, dashed] ([yshift=1mm, xshift=-2mm]rz-0.north west) to [bend right] ([yshift=1mm, xshift=2mm] del-0.north east);
+\end{tikzpicture}
+\end{document}

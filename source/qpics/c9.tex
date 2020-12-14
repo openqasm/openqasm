@@ -1,0 +1,36 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1.000000,x=1pt,y=1pt]
+\filldraw[color=white] (0.000000, -7.500000) rectangle (76.000000, 7.500000);
+% Drawing wires
+% Line 1: q W q
+\draw[color=black] (0.000000,0.000000) -- (29.000000,0.000000);
+\draw[color=black] (53.000000,0.000000) -- (76.000000,0.000000);
+\draw[color=black] (0.000000,0.000000) node[left] {$q$};
+% Done with wires; drawing gates
+\draw (25.000000, 12.000000) node[text width=144pt,above,text centered] {reset q;};
+% Line 2: q / 2
+\draw (6.000000, -6.000000) -- (14.000000, 6.000000);
+\draw (12.000000, 3.000000) node[right] {$\scriptstyle{2}$};
+% Line 3: q OUT 0
+\filldraw[color=white] (26.000000, -3.000000) rectangle (32.000000, 3.000000);
+\draw (26.000000, -3.000000) -- (26.000000, 3.000000);
+% \draw (29.000000, 0.000000) node {$\scriptstyle{0}$};
+% Line 4: q IN \ket{0}
+\filldraw[color=white] (44.000000, -3.000000) rectangle (50.000000, 3.000000);
+% \draw (50.000000, -3.000000) -- (50.000000, 3.000000);
+\draw (47.000000, 0.000000) node {$\scriptstyle{\ket{0}}$};
+% Line 5: q / 2
+\draw (62.000000, -6.000000) -- (70.000000, 6.000000);
+\draw (68.000000, 3.000000) node[right] {$\scriptstyle{2}$};
+% Done with gates; drawing ending labels
+% Done with ending labels; drawing cut lines and comments
+% Done with comments
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,30 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1.000000,x=1pt,y=1pt]
+\filldraw[color=white] (0.000000, -7.500000) rectangle (36.000000, 7.500000);
+% Drawing wires
+% Line 1: q0 W q[0]
+\draw[color=black] (0.000000,0.000000) -- (9.000000,0.000000);
+\draw[color=black] (34.000000,0.000000) -- (40.000000,0.000000);
+\draw[color=black] (0.000000,0.000000) node[left] {$q[0]$};
+% Done with wires; drawing gates
+\draw (6.000000, 7.000000) node[text width=144pt,above,text centered] {reset q[0];};
+% Line 2: q0 OUT 0
+\filldraw[color=white] (6.000000, -3.000000) rectangle (12.000000, 3.000000);
+\draw (6.000000, -3.000000) -- (6.000000, 3.000000);
+%\draw (9.000000, 0.000000) node {$\scriptstyle{0}$};
+% Line 3: q0 IN \ket{0}
+\filldraw[color=white] (24.000000, -3.000000) rectangle (30.000000, 3.000000);
+%\draw (30.000000, -3.000000) -- (30.000000, 3.000000);
+\draw (27.000000, 0.000000) node {$\scriptstyle{\ket{0}}$};
+% Done with gates; drawing ending labels
+% Done with ending labels; drawing cut lines and comments
+% Done with comments
+\end{tikzpicture}
+\end{document}

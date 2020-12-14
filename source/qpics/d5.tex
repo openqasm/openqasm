@@ -1,0 +1,21 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,decorations.pathmorphing}
+\usetikzlibrary{fit,quotes}
+\usepackage{yquant, braket}
+\input{utils}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{yquant}
+    qubit q[3];
+    cnot q[1] | q[0];
+    [name=boxa, x radius=4mm, y radius=6mm] box {$R^+$} q[2];
+    [name=boxb, x radius=8mm, y radius=6mm] box {$R^-$} q[2];
+    [name=boxc, x radius=4mm, y radius=6mm] box {$R^+$} q[2];
+  \end{yquant}
+  \spring[4mm]{boxa}{1mm};
+  \spring[4mm]{boxb}{1mm};
+  \spring[4mm]{boxc}{1mm};
+\end{tikzpicture}
+\end{document}

@@ -1,3 +1,6 @@
+# Build output
+build
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -179,10 +182,18 @@ TSWLatexianTemp*
 # KBibTeX
 *~[0-9]*
 
+# VSCode
+.vscode
 
-# Tests
+# Python
+.venv
 __pycache__
 *.py[cod]
 *$py.class
 pip-log.txt
 pip-delete-this-directory.txt
+
+# OS specific
+.DS_Store
+
+source/_build
