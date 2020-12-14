@@ -3,7 +3,7 @@
 // phase gate (Z-rotation by lambda)
 gate phase(angle[32]:lambda) q { U(0, 0, lambda) q; }
 // controlled-NOT
-gate CX c, t { control @ U(pi, 0, pi) c, t; }
+gate CX c, t { ctrl @ U(pi, 0, pi) c, t; }
 gate cx c, t { CX c, t; }
 // idle gate (identity)
 gate id a { U(0, 0, 0) a; }
