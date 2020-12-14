@@ -13,11 +13,11 @@ header
     ;
 
 version
-    : 'OPENQASM' Integer (DOT Integer)?
+    : 'OPENQASM' Integer (DOT Integer)? SEMICOLON
     ;
 
 include
-    : 'include' Identifier '.qasm' SEMICOLON
+    : 'include' StringLiteral SEMICOLON
     ;
 
 statement
@@ -34,7 +34,7 @@ statement
     | comment
     ;
 
-globalStatement: subroutine Definition
+globalStatement: subroutineDefinition
     | kernelDeclaration
     | quantumGateDefinition
     | calibrationDefinition
@@ -44,10 +44,7 @@ declarationStatement
     : ( quantumDeclaration | classicalDeclaration | constantDeclaration) SEMICOLON
     ;
 
-comment
-    : '//' AnyString? '\n'
-    | '/*' AnyString? '*/'
-    ;
+comment : LineComment | BlockComment ;
 
 returnSignature
     : ARROW classicalDeclaration
@@ -355,7 +352,7 @@ subroutineArgumentList
 /* Directives */
 
 pragma
-    : '#pragma' LBRACE AnyString? RBRACE
+    : '#pragma' AnyBlock
     ;
 
 /* Circuit Timing */
@@ -425,10 +422,11 @@ calibrationArgumentList
     ;
 
 calibrationBody
-    : LBRACE AnyString? RBRACE
+    : AnyBlock
     ;
 
 /** Lexer grammar **/
+
 LBRACKET : '[' ;
 RBRACKET : ']' ;
 
@@ -444,22 +442,44 @@ SEMICOLON : ';' ;
 DOT : '.' ;
 COMMA : ',' ;
 
-AnyString : ( . | '\n' )+? ;
-
 ASSIGN : '=' ;
 ARROW : '->' ;
 
 Constant : 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' ;
 
-Identifier
-    : [a-z] [A-Za-z0-9_]*
+Whitespace : [ \t]+ -> skip ;
+Newline : [\r\n]+ -> skip ;
+
+fragment Digit : [0-9] ;
+Integer : Digit+ ;
+
+fragment LowerCaseCharacter : [a-z] ;
+fragment UpperCaseCharacter : [A-Z] ;
+
+fragment SciNotation : [eE] ;
+fragment PlusMinus : [-+] ;
+
+Float : Integer* DOT Integer+ ;
+
+RealNumber : Float (SciNotation PlusMinus? Float)? ;
+
+fragment NumericalCharacter
+    : LowerCaseCharacter
+    | UpperCaseCharacter
+    | '_'
+    | Integer
     ;
 
-RealNumber
-    : [0-9]* DOT [0-9]* ([eE] [-+]? [0-9]+)?
-    ;
+Identifier : LowerCaseCharacter ( NumericalCharacter )* ;
 
-Integer
-    : [1-9]+ [0-9]*
-    | '0'
-    ;
+fragment Quotation : '"' | '\'' ;
+
+StringLiteral : Quotation Any Quotation ;
+
+fragment AnyString : ~[ \t\r\n]+? ;
+fragment Any : ( AnyString | Whitespace | Newline )+ ;
+
+LineComment : '//' Any -> skip ;
+BlockComment : '/*' Any '*/' -> skip ;
+
+AnyBlock : LBRACE Any? RBRACE ;
