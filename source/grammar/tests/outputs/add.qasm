@@ -1,0 +1,14 @@
+program
+ header
+ statement
+  expressionStatement
+   expression
+    expression
+     expressionTerminator
+      2
+    binaryOperator
+     +
+    expression
+     expressionTerminator
+      2
+   ;
