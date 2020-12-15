@@ -1,5 +1,2 @@
 
-
-
-OPENQASM 3;
-include "stdgates.inc";
+y=2+2;
