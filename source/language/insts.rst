@@ -68,7 +68,7 @@ broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``.
    .. image:: ../qpics/c6.svg
 
    The ``measure`` statement projectively measures a qubit or each qubit of a quantum
-   register. The measurement projects onto the $Z$-basis and leaves qubits available for further
+   register. The measurement projects onto the :math:`Z`-basis and leaves qubits available for further
    operations. The top row of circuits depicts single-qubit measurement using the statement
    ``c[0] = measure q[0];`` while the bottom depicts measurement of an entire register using the
    statement ``c = measure q;``. The center circuit of the top row depicts measurement as the
