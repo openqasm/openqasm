@@ -126,7 +126,7 @@ whatever gap is present.
 
 The concepts of ``box`` and ``stretch`` are inspired by the concept of “boxes and glues" in
 the TeX language :cite:`knuth1984texbook`. This similarity
-is natural; TeXaims to resolve the spacing between characters in order
+is natural; TeX aims to resolve the spacing between characters in order
 to typeset a page, and the size of characters depend on the backend
 font. In OpenQASM we intend to resolve the timing of different
 instructions in order to meet high-level design intents, while the true
@@ -146,13 +146,13 @@ including stretches, will be resolved to constants.
 
 .. code-block:: c
 
-       length a = 300ns
-       length b = lengthof({x %0})
+       length a = 300ns;
+       length b = lengthof({x %0});
        stretch c;
        // stretchy length with min=300ns
-       length d = a + 2 * c
+       length d = a + 2 * c;
        // stretchy length with backtracking by up to half b
-       length e = -0.5 * b + c
+       length e = -0.5 * b + c;
 
 Delays (and other lengthened instructions)
 ----------------------------------------
@@ -265,7 +265,7 @@ to properly take into account the finite length of each gate.
    x %0;
    delay[middle_stretch] %0;
    y %0;
-   delay[middle_stretch] %0;=
+   delay[middle_stretch] %0;
    x %0;
    delay[middle_stretch] %0;
    y %0;
