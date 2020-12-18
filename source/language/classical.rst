@@ -42,7 +42,7 @@ Classical registers and bits support bitwise operators and the
 corresponding assignment operators between registers of the same size:
 and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift ``>>`` by an unsigned
 integer, and the corresponding assignment operators. The shift operators
-shift bits off the end. They also support not ``~``, ``popcount``[1]_, and left and
+shift bits off the end. They also support not ``~``, ``popcount`` [1]_, and left and
 right circular shift, ``rotl`` and ``rotr``, respectively.
 
 .. code-block:: c
@@ -82,8 +82,8 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and
-division[2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and integer
+division [2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
 increment ``++`` and decrement ``--``.
 
 .. code-block:: c
@@ -92,9 +92,9 @@ increment ``++`` and decrement ``--``.
    int[32] b = 3;
 
    a * b; // 5
+   b / a; // 1
    a += 4; // a == 6
-   a /= b; // a == 2
-   a++; // a == 3
+   a++; // a == 7
 
 Fixed-point numbers and angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

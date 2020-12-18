@@ -64,8 +64,19 @@ gate is in progress. Similarly, a ``gate`` whose definition contains stretchy
 delays will be perceived as a stretchy gate by other parts of the
 program.
 
+.. _fig_alignment:
+.. multifigure::
+   :labels: a b
+
+   .. image:: ../qpics/d1.svg
+
+   .. image:: ../qpics/d2.svg
+
+   Arbitrary alignment of gates in time using stretchy delays. a) left-justified
+   alignment b) alignment of a short gate at the 1/3 point of a longer gate.
+
 For example, in order to ensure a sequence of gates between two barriers
-will be left-aligned (Figure `[fig:alignment] <#fig:alignment>`__\ a),
+will be left-aligned (:numref:`fig_alignment`\a),
 whatever their actual durations may be, we can do the following:
 
 .. code-block:: c
@@ -80,7 +91,7 @@ whatever their actual durations may be, we can do the following:
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
-the stretchy delays (Figure `[fig:alignment] <#fig:alignment>`__\ b):
+the stretchy delays (:numref:`fig_alignment`\b):
 
 .. code-block:: c
 
@@ -91,10 +102,6 @@ the stretchy delays (Figure `[fig:alignment] <#fig:alignment>`__\ b):
        u q[2];
        delay[2*g];
        barrier q;
-
-[fig:leftalign]
-
-[fig:leftalignresolved]
 
 Lastly, we distinguish different “orders" of stretch via ``stretchN`` types, where N
 is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. Higher
@@ -119,7 +126,7 @@ whatever gap is present.
 
 The concepts of ``box`` and ``stretch`` are inspired by the concept of “boxes and glues" in
 the TeX language :cite:`knuth1984texbook`. This similarity
-is natural; TeXaims to resolve the spacing between characters in order
+is natural; TeX aims to resolve the spacing between characters in order
 to typeset a page, and the size of characters depend on the backend
 font. In OpenQASM we intend to resolve the timing of different
 instructions in order to meet high-level design intents, while the true
@@ -139,13 +146,13 @@ including stretches, will be resolved to constants.
 
 .. code-block:: c
 
-       length a = 300ns
-       length b = lengthof({x %0})
+       length a = 300ns;
+       length b = lengthof({x %0});
        stretch c;
        // stretchy length with min=300ns
-       length d = a + 2 * c
+       length d = a + 2 * c;
        // stretchy length with backtracking by up to half b
-       length e = -0.5 * b + c
+       length e = -0.5 * b + c;
 
 Delays (and other lengthened instructions)
 ----------------------------------------
@@ -160,12 +167,57 @@ Even though a ``delay`` instruction implements the identity channel in the ideal
 case, it is intended to provide explicit timing. Therefore an explicit ``delay``
 instruction will prevent commutation of gates that would otherwise
 commute. For example in
-Figure `[fig:delaycommute] <#fig:delaycommute>`__\ a, there will be an
+:numref:`fig_delaycommute`\a , there will be an
 implicit delay between the ``cx`` gates on qubit 0. However, the ``rz`` gate is
 still free to commute on that qubit, because the delay is implicit. Once
 the delay becomes explicit (perhaps at lower stages of compilation),
-gate commutation is prohibited
-(Figure `[fig:delaycommute] <#fig:delaycommute>`__\ b).
+gate commutation is prohibited (Figure :numref:`fig_delaycommute`\b).
+
+.. _fig_delaycommute:
+.. multifigure::
+   :labels: a b
+
+   .. image:: ../qpics/d3.svg
+
+   .. image:: ../qpics/d4.svg
+
+   Implicit vs. explicit delay. a) An implicit delay exists on :math:`q[0]`, but it
+   is not part of the circuit description. Thus this circuit does not care about
+   timing and the :math:`RZ` gate is free to commute on the top wire. b) An explicit
+   delay is part of the circuit description. The timing is consistent and can
+   be resolved if and only if this delay is exactly the same length as :math:`RY` on
+   :math:`[1]`. The delay is like a barrier in that it prevents commutation on that
+   wire. However :math:`RZ` can still commute before the :math:`CNOT` if it has
+   length :math:`0`.
+
+
+.. _fig_dcg:
+.. multifigure::
+   :labels: a b
+
+   .. image:: ../qpics/d5.svg
+
+   .. image:: ../qpics/d6.svg
+
+   Dynamically corrected CNOT gate where the spectator has a rotary pulse. The
+   rotary gates are stretchy, and the design intent is to interleave a "winding"
+   and "unwinding" that is equal to the total duration of the CNOT. We do this
+   without knowledge of the CNOT duration, and the compiler resolves them to the
+   correct length during lowering to the target backend.
+
+.. _fig_dd:
+.. multifigure::
+
+   .. image:: ../qpics/d7.svg
+
+   Dynamical decoupling of a spectator qubit using finite-duration DD pulses.
+   The boxes are intentionally drawn to scale to give a sense of how finite gate
+   lengths affect circuit timing. This design intent can be expressed by
+   defining a single stretch variable "equal" that corresponds to the distance
+   between equidistant gate centers. The other lengths which correspond to
+   actual circuit delays are derived by simple arithmetic on lengths. Given a
+   target system with calibrated X and Y gates, the solution to the stretch
+   problem can be found.
 
 Instructions other than delay can also have variable duration, if they
 are explicitly defined as such. They can be called by passing a valid ``length`` as
@@ -213,7 +265,7 @@ to properly take into account the finite length of each gate.
    x %0;
    delay[middle_stretch] %0;
    y %0;
-   delay[middle_stretch] %0;=
+   delay[middle_stretch] %0;
    x %0;
    delay[middle_stretch] %0;
    y %0;
