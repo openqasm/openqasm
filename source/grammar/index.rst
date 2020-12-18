@@ -1,7 +1,7 @@
-Grammar
-=======
+OpenQasm 3.0 Grammar
+====================
 
-Grammar specification based in ANTLR_ parser generator
+OpenQasm 3.0 Grammar specification based in ANTLR_ parser generator
 
 .. _ANTLR: https://www.antlr.org/
 

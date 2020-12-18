@@ -69,7 +69,7 @@ identifierList
     ;
 
 indexIdentifier
-    : Identifier designator?
+    : Identifier ( designator | doubleDesignator | rangeDefinition )?
     ;
 
 indexIdentifierList
@@ -193,7 +193,7 @@ quantumGateSignature
     ;
 
 quantumBlock
-    : LBRACE ( quantumBlock | quantumStatement) RBRACE
+    : LBRACE quantumStatement* RBRACE
     ;
 
 quantumStatement
@@ -238,7 +238,7 @@ quantumGateName
 /* Classical Instructions */
 
 unaryOperator
-    : '~' | '!' | builtInMath
+    : '~' | '!'
     ;
 
 binaryOperator
@@ -352,7 +352,7 @@ subroutineArgumentList
 /* Directives */
 
 pragma
-    : '#pragma' AnyBlock
+    : Pragma
     ;
 
 /* Circuit Timing */
@@ -410,7 +410,7 @@ calibrationGrammarDeclaration
 calibrationDefinition
     : 'defcal' calibrationGrammar? Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
-    returnSignature calibrationBody
+    returnSignature CalibrationBody
     ;
 
 calibrationGrammar
@@ -419,10 +419,6 @@ calibrationGrammar
 
 calibrationArgumentList
     : classicalArgumentList | expressionList
-    ;
-
-calibrationBody
-    : AnyBlock
     ;
 
 /** Lexer grammar **/
@@ -477,9 +473,12 @@ fragment Quotation : '"' | '\'' ;
 StringLiteral : Quotation Any Quotation ;
 
 fragment AnyString : ~[ \t\r\n]+? ;
-fragment Any : ( AnyString | Whitespace | Newline )+ ;
+fragment Any : (AnyString | Whitespace | Newline )+ ;
+fragment AnyBlock : LBRACE Any? RBRACE ;
 
-LineComment : '//' Any -> skip ;
-BlockComment : '/*' Any '*/' -> skip ;
+LineComment : '//' Any -> skip ; // Token because Any matches all strings
+BlockComment : '/*' Any '*/' -> skip ; // Token because Any matches all strings
 
-AnyBlock : LBRACE Any? RBRACE ;
+Pragma : '#pragma' AnyBlock ;  // Token because AnyBlock matches all {...}
+
+CalibrationBody : AnyBlock ; // Token because AnyBlock matches all {...}
