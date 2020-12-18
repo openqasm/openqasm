@@ -11,8 +11,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+sys.path.insert(0, os.path.abspath('_extensions'))
 
 # -- Project information -----------------------------------------------------
 from typing import List
@@ -30,7 +30,8 @@ author = 'Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 extensions = [
   'sphinx.ext.mathjax',
   'sphinx.ext.githubpages',
-  'sphinxcontrib.bibtex'
+  'sphinxcontrib.bibtex',
+  'multifigure'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
