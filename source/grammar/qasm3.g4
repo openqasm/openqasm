@@ -87,7 +87,7 @@ quantumType
     ;
 
 quantumDeclaration
-    : quantumType Identifier designator
+    : quantumType indexIdentifierList
     ;
 
 quantumArgument
@@ -143,10 +143,15 @@ noDesignatorDeclaration
     : noDesignatorType Identifier
     ;
 
+bitDeclaration
+    : bitType Identifier designator
+    ;
+
 classicalVariableDeclaration
     : singleDesignatorDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
+    | bitDeclaration
     ;
 
 classicalDeclaration
@@ -267,6 +272,7 @@ expressionTerminator
     | Integer
     | RealNumber
     | Identifier
+    | StringLiteral
     | timeTerminator
     ;
 
@@ -352,7 +358,7 @@ subroutineArgumentList
 /* Directives */
 
 pragma
-    : Pragma
+    : '#pragma' LBRACE . RBRACE
     ;
 
 /* Circuit Timing */
@@ -410,7 +416,7 @@ calibrationGrammarDeclaration
 calibrationDefinition
     : 'defcal' calibrationGrammar? Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
-    returnSignature CalibrationBody
+    returnSignature? LBRACE . RBRACE
     ;
 
 calibrationGrammar
@@ -473,12 +479,8 @@ fragment Quotation : '"' | '\'' ;
 StringLiteral : Quotation Any Quotation ;
 
 fragment AnyString : ~[ \t\r\n]+? ;
-fragment Any : (AnyString | Whitespace | Newline )+ ;
+fragment Any : ( AnyString | Whitespace | Newline )+ ;
 fragment AnyBlock : LBRACE Any? RBRACE ;
 
-LineComment : '//' Any -> skip ; // Token because Any matches all strings
-BlockComment : '/*' Any '*/' -> skip ; // Token because Any matches all strings
-
-Pragma : '#pragma' AnyBlock ;  // Token because AnyBlock matches all {...}
-
-CalibrationBody : AnyBlock ; // Token because AnyBlock matches all {...}
+LineComment : '//' Any ; // Token because Any matches all strings
+BlockComment : '/*' Any '*/' ; // Token because Any matches all strings

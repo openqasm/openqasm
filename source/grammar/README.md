@@ -2,7 +2,8 @@
 
 Grammar specification in [ANTLR](https://www.antlr.org/).
 
-Generate parser in Python: `antlr4 -Dlanguage=Python3 source/grammar/qasm3.g4`
+Generate parser in Python (run from `openqasm/` root directory):
+`antlr4 -Dlanguage=Python3 source/grammar/qasm3.g4`
 
 Run Tests
     - From `openqasm/` root directory, run `python -m unittest source/grammar/tests/test_grammar.py`
