@@ -5,9 +5,9 @@
 OPENQASM 3.0;
 include "stdgates.inc";
 
-length start_stretch = -0.5 * lengthof({x %0;}) + stretch
-length middle_stretch = -0.5 * lengthof({x %0;}) - 5 * lengthof({y %0;} + stretch
-length end_stretch = -0.5 * lengthof({y %0;}) + stretch
+length start_stretch = -0.5 * lengthof({x %0;}) + stretch;
+length middle_stretch = -0.5 * lengthof({x %0;}) - 5 * lengthof({y %0;}) + stretch;
+length end_stretch = -0.5 * lengthof({y %0;}) + stretch;
 
 box {
   delay[start_stretch] %0;

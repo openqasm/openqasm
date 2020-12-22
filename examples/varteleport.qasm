@@ -27,7 +27,7 @@ rz(pi / 4) input;
 
 let io = input;
 for i in [0: n_pairs - 1] {
-  let bp = q[2 * i, 2 * i + 1];
+  let bp = q[2 * i: 2 * i + 1];
   bit pf[2];
   bellprep bp;
   cx io, bp[0];

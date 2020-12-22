@@ -6,7 +6,7 @@ qubit q[4];
 bit c[4];
 reset q;
 h q;
-barrier q
+barrier q;
 h q[0];
 c[0] = measure q[0];
 if(int(c) == 1) { rz(pi / 2) q[1]; }
