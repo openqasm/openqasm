@@ -16,10 +16,7 @@ instructions to the underlying microcoded
 :cite:`wilkesBestWayDesign1989` stimulus programs emitted by
 the controllers to implement each operation. In OpenQASM we expose
 access to this level of control with pulse-level definitions of gates
-and measurement with user-selectable pulse grammar. A future document
-will define a textualized representation of one such grammar, OpenPulse.
-Here we restrict ourselves to defining the necessary interfaces within
-OpenQASM to these pulse-level definitions of gates and measurement.
+and measurement using a text representation of OpenPulse.
 
 The entry point to such gate and measurement definitions is the ``defcal`` keyword
 analogous to the ``gate`` keyword, but where the ``defcal`` body specifies a pulse-level
@@ -72,16 +69,6 @@ the most specific definition found for a given operation. Thus, given,
 the operation ``rx(pi/2) %0`` would match to (3), ``rx(pi) %0`` would
 match (2), ``rx(pi/2) %1`` would match (1).
 
-Users specify the grammar used inside ``defcal`` blocks with a ``defcalgrammar "name"`` declaration, or by
-an optional grammar string in a ``defcal`` definition, e.g.
-
-.. code-block:: c
-
-   defcalgrammar "openpulse";
-   defcal "openpulse" measure %q -> bit { ... }
-
-are two equivalent ways to specify that the ``measure`` definition uses the ``"openpulse"`` grammar.
-
 Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
 define unitary transformation rules to the compiler. The compiler may
 freely invoke such rules on operations while preserving the structure of
@@ -92,3 +79,174 @@ circuit. Most of the time symbols in the ``defcal`` table will also have
 corresponding ``gate`` definitions. However, if a user provides a ``defcal`` for a symbol
 without a corresponding ``gate``, then we treat such operations like the ``opaque`` gates
 of prior versions of OpenQASM.
+
+OpenPulse instructions
+======================
+
+In addition to OpenQASM instructions, ``defcal`` blocks may contain OpenPulse 
+instructions using a text-based version of OpenPulse defined here. OpenPulse is 
+a JSON format described in the paper 
+`Qiskit Backend Specifications for OpenQASM and OpenPulse Experiments <https://arxiv.org/abs/1809.03452>`.
+
+The text format described here has several advantages over the equivalent JSON 
+format:
+- It is more readable
+- Absolute time is handled through built-in :ref:`Timing <delays>` instructions
+- Gates and classical instructions can be mixed in with the pulses to create far richer calibrations
+
+Channels
+--------
+
+Channels (sometimes referred to as "frames") describe the different forms of
+classically-controlled stimulus fields used to interact with a qubit. There are
+two kinds of channels: input channels, which send signal into the system to
+drive the qubit, and output channels, which measure signal from the system to
+measure qubits.
+
+Each channel has a user-specified local oscillator frequency which is assumed to
+have been specified outside of the context of OpenQASM.
+
+A value of type ``channel`` can be retrieved with the ``drive`` (input channels) 
+and ``acquire`` (output channels) functions, a reference to the physical qubit, 
+and the name of the channel. If the name of the channel is omitted then the
+names "drive" and "acquire" will be used respectively.
+
+.. code-block:: c
+
+       // Get the drive input channel for qubit 0
+       drive(%0)
+       // Get the acquire output channel for qubit 1
+       acquire(%1)
+       // Get an input channel named "measure" for qubit 1
+       // Could be used to specify the measurement stimulus channel
+       drive(%1, "measure")
+       // Get a custom input channel named "cr1" for qubit 0
+       drive(%0, "cr1")
+
+Play instruction
+----------------
+
+Pulses are scheduled using the ``play`` instruction. Play instructions have two
+required parameters:
+- the channel on which to play the pulse
+- an array of complex samples which define the amplitude points for the pulse envelope
+
+The length of the pulse will be the length of the array multiplied by the unit
+``dt``, which specifies the sample rate.
+
+.. code-block:: c
+
+       // Play a 3 sample pulse on qubit 0's drive channel
+       play drive(%0), [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
+
+Specifying a full list of samples for real-life pulses can be unwieldy, so we
+include several built-in pulse shape functions as well:
+
+.. code-block:: c
+       // amp is pulse amplitude at center
+       // center is the mean of pulse
+       // sigma is the standard deviation of pulse
+       gaussian(length:l, complex[float[32]]:amp, length:center, length:sigma)
+
+       // amp is pulse amplitude at center
+       // center is the mean of pulse
+       // sigma is the standard deviation of pulse
+       sech(length:l, complex[float[32]]:amp, length:center, length:sigma)
+
+       // amp is pulse amplitude at center
+       // center is the mean of pulse
+       // square_width is the width of the square pulse component
+       // sigma is the standard deviation of pulse
+       gaussian_square(length:l, complex[float[32]]:amp, length:center, length:square_width, length:sigma)
+
+       // amp is pulse amplitude at center
+       // center is the mean of pulse
+       // sigma is the standard deviation of pulse
+       // beta is the Y correction amplitude, see the DRAG paper
+       drag(length:l, complex[float[32]]:amp, length:center, length:sigma, float[32]:beta)
+
+Shift Phase Instruction
+-----------------------
+
+A ``shift_phase`` instruction schedules a phase advance for all the following
+pulses on that channel. This is equivalent to multiplying each pulse by
+:math:`e^{-i*\theta}`, where theta is the phase change in radians.
+
+The ``shift_phase`` instruction takes two parameters, a channel and the
+requested phase change of type angle. The exact precision of the implemented
+phase change will vary depending on hardware support.
+
+.. code-block:: c
+       // Shift phase of qubit 0 by pi/4, eg. an rz gate with angle -pi/4
+       shift_phase drive(%0), pi/4;
+
+       // Define a calibration for the rz gate on all physical qubits
+       defcal rz(angle[20]:theta) %q {
+         shift_phase drive(%q), -theta;
+       }
+
+Shift Frequency Instruction
+---------------------------
+
+A ``shift_freq`` instruction schedules a frequency advance for all the following
+pulses on that channel. This is useful for defining spectroscopy experiments.
+
+The ``shift_freq`` instruction takes two parameters, a channel and the
+requested frequency change of type float in units of GHz.
+
+Here's an example qubit spectroscopy experiment. Note that the starting
+frequency will be defined somewhere outside OpenQASM.
+
+.. code-block:: c
+       qubit q;
+
+       const shots = 1000;
+       const dfreq = 0.001; # 1MHz per point
+       const points = 50; # Sweep over 50MHz
+
+       complex[float[32]] iq, average;
+       complex[float[32]] output[points];
+
+       for p in [0 : points-1] {
+         average = 0;
+         for i in [0 : shots-1] {
+            // Assumes suitable calibrations for reset, x, and measure_iq
+            reset q;
+            x q;
+            measure_iq q -> iq;
+
+            average = (average * i + iq) / (i + 1);
+         }
+         shift q;
+         output[p] = average;
+       }
+
+       defcal shift %q {
+          shift_freq drive(%q) dfreq;
+       }
+
+Capture Instruction
+-------------------
+
+Acquisition is scheduled by a ``capture`` instruction.
+
+The ``capture`` instruction takes two parameters, a channel and the filter to
+apply to the returned signal. The length of the filter in dt will determine how
+long the capture channel is open. The ``capture`` instruction returns the dot
+product of the measured IQ values and the filter. (Note that the filter is
+sometimes referred to as "kernel" in other contexts, but this is not related in
+any way to the ``kernel`` instruction in OpenQASM).
+
+.. code-block:: c
+       complex[float[32]] filter = [1, 1, 1, 1, 1];
+       // Capture for 5 samples
+       iq = capture acquire(%0), filter;
+
+Specifying a full list of samples for real-life filters can be unwieldy, so we
+include several built-in filter functions as well. Note that these return the
+same type as pulse shape functions and therefore either can be used for pulse 
+shapes and filters.
+
+.. code-block:: c
+       // Define a boxcar (aka. constant) filter of length l
+       boxcar(l:length)

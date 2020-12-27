@@ -155,7 +155,7 @@ including stretches, will be resolved to constants.
        length e = -0.5 * b + c;
 
 Delays (and other lengthened instructions)
-----------------------------------------
+------------------------------------------
 
 OpenQASM and OpenPulse have a ``delay`` instruction, whose duration is defined by
 a ``length``. If the length passed to the delay contains stretch, it will become a
