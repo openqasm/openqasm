@@ -86,12 +86,13 @@ OpenPulse instructions
 In addition to OpenQASM instructions, ``defcal`` blocks may contain OpenPulse 
 instructions using a text-based version of OpenPulse defined here. OpenPulse is 
 a JSON format described in the paper 
-`Qiskit Backend Specifications for OpenQASM and OpenPulse Experiments <https://arxiv.org/abs/1809.03452>`.
+`Qiskit Backend Specifications for OpenQASM and OpenPulse Experiment <https://arxiv.org/abs/1809.03452>`_.
 
 The text format described here has several advantages over the equivalent JSON 
 format:
+
 - It is more readable
-- Absolute time is handled through built-in :ref:`Timing <delays>` instructions
+- Absolute time is handled through built-in timekeeping instructions
 - Gates and classical instructions can be mixed in with the pulses to create far richer calibrations
 
 Channels
@@ -111,17 +112,17 @@ and ``acquire`` (output channels) functions, a reference to the physical qubit,
 and the name of the channel. If the name of the channel is omitted then the
 names "drive" and "acquire" will be used respectively.
 
-.. code-block:: c
+.. code-block:: none
 
-       // Get the drive input channel for qubit 0
-       drive(%0)
-       // Get the acquire output channel for qubit 1
-       acquire(%1)
-       // Get an input channel named "measure" for qubit 1
-       // Could be used to specify the measurement stimulus channel
-       drive(%1, "measure")
-       // Get a custom input channel named "cr1" for qubit 0
-       drive(%0, "cr1")
+   // Get the drive input channel for qubit 0
+   drive(%0)
+   // Get the acquire output channel for qubit 1
+   acquire(%1)
+   // Get an input channel named "measure" for qubit 1
+   // Could be used to specify the measurement stimulus channel
+   drive(%1, "measure")
+   // Get a custom input channel named "cr1" for qubit 0
+   drive(%0, "cr1")
 
 Play instruction
 ----------------
@@ -134,36 +135,37 @@ required parameters:
 The length of the pulse will be the length of the array multiplied by the unit
 ``dt``, which specifies the sample rate.
 
-.. code-block:: c
+.. code-block:: none
 
-       // Play a 3 sample pulse on qubit 0's drive channel
-       play drive(%0), [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
+   // Play a 3 sample pulse on qubit 0's drive channel
+   play drive(%0), [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
 
 Specifying a full list of samples for real-life pulses can be unwieldy, so we
 include several built-in pulse shape functions as well:
 
-.. code-block:: c
-       // amp is pulse amplitude at center
-       // center is the mean of pulse
-       // sigma is the standard deviation of pulse
-       gaussian(length:l, complex[float[32]]:amp, length:center, length:sigma)
+.. code-block:: none
 
-       // amp is pulse amplitude at center
-       // center is the mean of pulse
-       // sigma is the standard deviation of pulse
-       sech(length:l, complex[float[32]]:amp, length:center, length:sigma)
+   // amp is pulse amplitude at center
+   // center is the mean of pulse
+   // sigma is the standard deviation of pulse
+   gaussian(length:l, complex[float[32]]:amp, length:center, length:sigma)
 
-       // amp is pulse amplitude at center
-       // center is the mean of pulse
-       // square_width is the width of the square pulse component
-       // sigma is the standard deviation of pulse
-       gaussian_square(length:l, complex[float[32]]:amp, length:center, length:square_width, length:sigma)
+   // amp is pulse amplitude at center
+   // center is the mean of pulse
+   // sigma is the standard deviation of pulse
+   sech(length:l, complex[float[32]]:amp, length:center, length:sigma)
 
-       // amp is pulse amplitude at center
-       // center is the mean of pulse
-       // sigma is the standard deviation of pulse
-       // beta is the Y correction amplitude, see the DRAG paper
-       drag(length:l, complex[float[32]]:amp, length:center, length:sigma, float[32]:beta)
+   // amp is pulse amplitude at center
+   // center is the mean of pulse
+   // square_width is the width of the square pulse component
+   // sigma is the standard deviation of pulse
+   gaussian_square(length:l, complex[float[32]]:amp, length:center, length:square_width, length:sigma)
+
+   // amp is pulse amplitude at center
+   // center is the mean of pulse
+   // sigma is the standard deviation of pulse
+   // beta is the Y correction amplitude, see the DRAG paper
+   drag(length:l, complex[float[32]]:amp, length:center, length:sigma, float[32]:beta)
 
 Shift Phase Instruction
 -----------------------
@@ -176,14 +178,15 @@ The ``shift_phase`` instruction takes two parameters, a channel and the
 requested phase change of type angle. The exact precision of the implemented
 phase change will vary depending on hardware support.
 
-.. code-block:: c
-       // Shift phase of qubit 0 by pi/4, eg. an rz gate with angle -pi/4
-       shift_phase drive(%0), pi/4;
+.. code-block:: none
 
-       // Define a calibration for the rz gate on all physical qubits
-       defcal rz(angle[20]:theta) %q {
-         shift_phase drive(%q), -theta;
-       }
+   // Shift phase of qubit 0 by pi/4, eg. an rz gate with angle -pi/4
+   shift_phase drive(%0), pi/4;
+
+   // Define a calibration for the rz gate on all physical qubits
+   defcal rz(angle[20]:theta) %q {
+     shift_phase drive(%q), -theta;
+   }
 
 Shift Frequency Instruction
 ---------------------------
@@ -197,33 +200,34 @@ requested frequency change of type float in units of GHz.
 Here's an example qubit spectroscopy experiment. Note that the starting
 frequency will be defined somewhere outside OpenQASM.
 
-.. code-block:: c
-       qubit q;
+.. code-block:: none
 
-       const shots = 1000;
-       const dfreq = 0.001; # 1MHz per point
-       const points = 50; # Sweep over 50MHz
+   qubit q;
 
-       complex[float[32]] iq, average;
-       complex[float[32]] output[points];
+   const shots = 1000;
+   const dfreq = 0.001; # 1MHz per point
+   const points = 50; # Sweep over 50MHz
 
-       for p in [0 : points-1] {
-         average = 0;
-         for i in [0 : shots-1] {
-            // Assumes suitable calibrations for reset, x, and measure_iq
-            reset q;
-            x q;
-            measure_iq q -> iq;
+   complex[float[32]] iq, average;
+   complex[float[32]] output[points];
 
-            average = (average * i + iq) / (i + 1);
-         }
-         shift q;
-         output[p] = average;
-       }
+   for p in [0 : points-1] {
+     average = 0;
+     for i in [0 : shots-1] {
+       // Assumes suitable calibrations for reset, x, and measure_iq
+       reset q;
+       x q;
+       measure_iq q -> iq;
 
-       defcal shift %q {
-          shift_freq drive(%q) dfreq;
-       }
+       average = (average * i + iq) / (i + 1);
+     }
+     shift q;
+     output[p] = average;
+   }
+
+   defcal shift %q {
+     shift_freq drive(%q) dfreq;
+   }
 
 Capture Instruction
 -------------------
@@ -237,16 +241,55 @@ product of the measured IQ values and the filter. (Note that the filter is
 sometimes referred to as "kernel" in other contexts, but this is not related in
 any way to the ``kernel`` instruction in OpenQASM).
 
-.. code-block:: c
-       complex[float[32]] filter = [1, 1, 1, 1, 1];
-       // Capture for 5 samples
-       iq = capture acquire(%0), filter;
+.. code-block:: none
+    
+   complex[float[32]] filter = [1, 1, 1, 1, 1];
+   // Capture for 5 samples
+   iq = capture acquire(%0), filter;
 
 Specifying a full list of samples for real-life filters can be unwieldy, so we
 include several built-in filter functions as well. Note that these return the
 same type as pulse shape functions and therefore either can be used for pulse 
 shapes and filters.
 
-.. code-block:: c
-       // Define a boxcar (aka. constant) filter of length l
-       boxcar(l:length)
+.. code-block:: none
+
+   // Define a boxcar (aka. constant) filter of length l
+   boxcar(l:length)
+
+Timing
+------
+
+Each channel maintains its own "clock". When a pulse is played the clock for 
+that channel advances by the number of samples in the pulse. The same is true
+for output channels based on the length of the capture filter. Pulses on a
+single channel cannot be played simultaneously, although pulses on multiple
+channels for the same qubit can.
+
+For channels, everything behaves analogous to qubits in the 
+`Delays <delays.html>`_ section of this specification. There are however some
+small differences.
+
+The ``delay`` instruction may take a channel instead of a qubit. If a ``delay``
+instruction is applied to the qubit, this is the same as applying the delay to
+all channels on the qubit simultaneously.
+
+The ``barrier`` instruction on a qubit implies a barrier on all channels defined
+for that qubit. A barrier instruction will advance the clocks on all channels of
+the qubit to the channel with the highest clock.
+
+``defcal`` blocks have an implicit barrier on every qubit argument, meaning
+that clocks are guaranteed to be aligned at the start of the ``defcal`` block.
+These blocks also need to have a well-defined length, similar to the ``boxas``
+block.
+
+.. code-block:: none
+
+   complex[float[32]] pulse[100] = [...];
+
+   defcal simultaneous_pulsed_gate %0 {
+     play drive(%0, "channel1"), pulse;
+     delay[20dt] drive(%0, "channel2");
+     // Starts the 100dt pulse 20dt into "channel1" already playing it
+     play drive(%0, "channel2"), pulse;
+   }
