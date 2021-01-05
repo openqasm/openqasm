@@ -172,7 +172,7 @@ classicalArgumentList
 
 // Aliasing
 aliasStatement
-    : 'let' Identifier ASSIGN concatenateExpression
+    : 'let' Identifier ASSIGN concatenateExpression SEMICOLON
     ;
 
 // Register Concatenation and Slicing
@@ -258,13 +258,17 @@ expressionStatement
 expression
     : expression binaryOperator expression
     | unaryOperator expression
-    | membershipTest
-    | expression LBRACKET expression RBRACKET
-    | parenList
-    | call parenList
+    | expression assignmentExpression
     | expression incrementor
+    | concatenateExpression
+    | expression LBRACKET expression RBRACKET
+    | LPAREN expression RPAREN
+    | membershipTest
+    | call expressionList
+    | subroutineCall
     | quantumMeasurement
-    | MINUS? expressionTerminator
+    | MINUS expression
+    | expressionTerminator
     ;
 
 expressionTerminator
@@ -278,10 +282,6 @@ expressionTerminator
 
 expressionList
     : ( expression COMMA )* expression
-    ;
-
-parenList
-    : MINUS? LPAREN expressionList? RPAREN
     ;
 
 call
@@ -356,6 +356,10 @@ subroutineDefinition
     returnSignature? programBlock
     ;
 
+subroutineCall
+    : Identifier ( LPAREN expressionList? RPAREN )? expressionList
+    ;
+
 /* Directives */
 
 pragma
@@ -380,7 +384,7 @@ timeTerminator
 
 timeIdentifier
     :  TimeLiteral
-    | 'lengthof' LPAREN Identifier RPAREN
+    | MINUS? 'lengthof' LPAREN Identifier RPAREN
     ;
 
 
@@ -446,7 +450,7 @@ ARROW : '->' ;
 
 MINUS : '-' ;
 
-Constant : 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' ;
+Constant : MINUS? ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' );
 
 Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;
@@ -454,8 +458,12 @@ Newline : [\r\n]+ -> skip ;
 fragment Digit : [0-9] ;
 Integer : MINUS? Digit+ ;
 
-fragment LowerCaseCharacter : [a-z] ;
-fragment UpperCaseCharacter : [A-Z] ;
+fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
+fragment Letter : [A-Za-z] ;
+fragment FirstIdCharacter : '_' | '%' | ValidUnicode | Letter ;
+
+fragment GeneralIdCharacter : FirstIdCharacter | Integer;
+Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
@@ -463,15 +471,6 @@ fragment PlusMinus : [-+] ;
 fragment Float : Integer* DOT Integer+ ;
 
 RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
-
-fragment NumericalCharacter
-    : LowerCaseCharacter
-    | UpperCaseCharacter
-    | '_'
-    | Integer
-    ;
-
-Identifier : LowerCaseCharacter NumericalCharacter* ;
 
 fragment TimeUnit
     : 'dt' | 'ns' | 'us' | 'ms' | 's'

@@ -6,8 +6,11 @@ from contextlib import redirect_stderr
 from antlr4 import *
 from antlr4.tree.Trees import Trees
 
-from grammar.qasm3Lexer import qasm3Lexer
-from grammar.qasm3Parser import qasm3Parser
+# add lexer, parser to Python path and import
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from qasm3Lexer import qasm3Lexer
+from qasm3Parser import qasm3Parser
 
 
 def get_pretty_tree(
@@ -114,4 +117,5 @@ class TestGrammar(unittest.TestCase):
 
 
 if __name__ == "__main__":
+
     unittest.main()
