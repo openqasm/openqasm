@@ -10,7 +10,7 @@ Generalities
 
 Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
-Lu/Ll/Lt/Lm/Lo/NI :cite:`noauthorUnicodeNodate`.
+Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
 Continuation characters may contain numbers. Variable identifiers may
 not override a reserved identifier.
 
