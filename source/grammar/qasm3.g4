@@ -51,7 +51,7 @@ returnSignature
     ;
 
 programBlock
-    : LBRACE ( programBlock | statement ) RBRACE
+    : LBRACE statement* RBRACE
     ;
 
 /* Types and Casting */
@@ -144,7 +144,7 @@ noDesignatorDeclaration
     ;
 
 bitDeclaration
-    : bitType Identifier designator
+    : bitType indexIdentifierList
     ;
 
 classicalVariableDeclaration
@@ -177,10 +177,9 @@ aliasStatement
 
 // Register Concatenation and Slicing
 concatenateExpression
-    : ASSIGN
-    ( Identifier rangeDefinition
+    : Identifier rangeDefinition
     | Identifier '||' Identifier
-    | Identifier LBRACKET expressionList RBRACKET )
+    | Identifier LBRACKET expressionList RBRACKET
     ;
 
 rangeDefinition
@@ -198,7 +197,7 @@ quantumGateSignature
     ;
 
 quantumBlock
-    : LBRACE quantumStatement* RBRACE
+    : LBRACE ( quantumStatement | comment )* RBRACE
     ;
 
 quantumStatement
@@ -261,10 +260,11 @@ expression
     | unaryOperator expression
     | membershipTest
     | expression LBRACKET expression RBRACKET
-    | call LPAREN expressionList? RPAREN
+    | parenList
+    | call parenList
     | expression incrementor
     | quantumMeasurement
-    | expressionTerminator
+    | MINUS? expressionTerminator
     ;
 
 expressionTerminator
@@ -278,6 +278,10 @@ expressionTerminator
 
 expressionList
     : ( expression COMMA )* expression
+    ;
+
+parenList
+    : MINUS? LPAREN expressionList? RPAREN
     ;
 
 call
@@ -348,11 +352,8 @@ kernelDeclaration
 /* Subroutines */
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN subroutineArgumentList? RPAREN )? returnSignature? programBlock
-    ;
-
-subroutineArgumentList
-    : classicalArgumentList | quantumArgumentList
+    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    returnSignature? programBlock
     ;
 
 /* Directives */
@@ -363,10 +364,6 @@ pragma
 
 /* Circuit Timing */
 
-timeUnit
-    : 'dt' | 'ns' | 'us' | 'ms' | 's'
-    ;
-
 timingType
     : 'length'
     | 'stretch' Integer?
@@ -374,7 +371,7 @@ timingType
 
 timingBox
     : 'boxas' Identifier quantumBlock
-    | 'boxto' timeUnit quantumBlock
+    | 'boxto' TimeLiteral quantumBlock
     ;
 
 timeTerminator
@@ -382,7 +379,7 @@ timeTerminator
     ;
 
 timeIdentifier
-    : Identifier timeUnit?
+    :  TimeLiteral
     | 'lengthof' LPAREN Identifier RPAREN
     ;
 
@@ -447,13 +444,15 @@ COMMA : ',' ;
 ASSIGN : '=' ;
 ARROW : '->' ;
 
+MINUS : '-' ;
+
 Constant : 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' ;
 
 Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;
 
 fragment Digit : [0-9] ;
-Integer : Digit+ ;
+Integer : MINUS? Digit+ ;
 
 fragment LowerCaseCharacter : [a-z] ;
 fragment UpperCaseCharacter : [A-Z] ;
@@ -461,9 +460,9 @@ fragment UpperCaseCharacter : [A-Z] ;
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
 
-Float : Integer* DOT Integer+ ;
+fragment Float : Integer* DOT Integer+ ;
 
-RealNumber : Float (SciNotation PlusMinus? Float)? ;
+RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
 
 fragment NumericalCharacter
     : LowerCaseCharacter
@@ -472,7 +471,13 @@ fragment NumericalCharacter
     | Integer
     ;
 
-Identifier : LowerCaseCharacter ( NumericalCharacter )* ;
+Identifier : LowerCaseCharacter NumericalCharacter* ;
+
+fragment TimeUnit
+    : 'dt' | 'ns' | 'us' | 'ms' | 's'
+    ;
+
+TimeLiteral : RealNumber TimeUnit ;  // represents explicit time value in SI or backend units
 
 fragment Quotation : '"' | '\'' ;
 
@@ -482,5 +487,5 @@ fragment AnyString : ~[ \t\r\n]+? ;
 fragment Any : ( AnyString | Whitespace | Newline )+ ;
 fragment AnyBlock : LBRACE Any? RBRACE ;
 
-LineComment : '//' Any ; // Token because Any matches all strings
+LineComment : '//' ~('\r'|'\n')*; // Token because Any matches all strings
 BlockComment : '/*' Any '*/' ; // Token because Any matches all strings

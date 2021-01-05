@@ -1,12 +1,13 @@
 import unittest
 import io
+import os
 from contextlib import redirect_stderr
 
 from antlr4 import *
 from antlr4.tree.Trees import Trees
 
-from source.grammar.qasm3Lexer import qasm3Lexer
-from source.grammar.qasm3Parser import qasm3Parser
+from grammar.qasm3Lexer import qasm3Lexer
+from grammar.qasm3Parser import qasm3Parser
 
 
 def get_pretty_tree(
@@ -66,6 +67,7 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
 
         error = err.getvalue()
         if error:
+            print(input_str)
             raise Exception("Parse tree build failed. Error:\n" + error)
 
     return pretty_tree
@@ -73,36 +75,42 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
 
 class TestGrammar(unittest.TestCase):
     def setUp(self):
-        self.examples_path = "examples/"
-        self.test_path = "source/grammar/tests/outputs/"
+        test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
+        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
+        self.examples_path = os.path.join(root_dir, "examples/")
+        self.test_path = os.path.join(test_dir, "outputs")
 
     def test_binary_expression(self):
         add_tree = build_parse_tree("2+2;")
-        with open(self.test_path + "add.tree", "r") as test_file:
+        with open(os.path.join(self.test_path, "add.tree")) as test_file:
             add_test_tree = test_file.read()
         self.assertEqual(add_tree, add_test_tree)
 
         bshift_tree = build_parse_tree("x << y;")
-        with open(self.test_path + "bshift.tree", "r") as test_file:
+        with open(os.path.join(self.test_path, "bshift.tree"), "r") as test_file:
             bshift_test_tree = test_file.read()
         self.assertEqual(bshift_tree, bshift_test_tree)
 
     def test_unary_expression(self):
         not_tree = build_parse_tree("! my_var;")
-        with open(self.test_path + "not.tree", "r") as test_file:
+        with open(os.path.join(self.test_path, "not.tree"), "r") as test_file:
             not_test_tree = test_file.read()
         self.assertEqual(not_tree, not_test_tree)
 
     def test_empty_gate(self):
         empty_gate_tree = build_parse_tree("gate g q { }")
-        with open(self.test_path + "empty_gate.tree", "r") as test_file:
+        with open(os.path.join(self.test_path, "empty_gate.tree"), "r") as test_file:
             empty_gate_test_tree = test_file.read()
 
         self.assertEqual(empty_gate_tree, empty_gate_test_tree)
 
     def test_adder(self):
         """Verify that no error is raised for adder example."""
-        tree = build_parse_tree(self.examples_path + "adder.qasm", using_file=True)
+        files = os.listdir(self.examples_path)
+        for f in files:
+            abs_path = os.path.join(self.examples_path, f)
+            if os.path.isfile(abs_path):
+                tree = build_parse_tree(abs_path, using_file=True)
 
 
 if __name__ == "__main__":
