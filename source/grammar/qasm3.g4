@@ -47,7 +47,7 @@ declarationStatement
 comment : LineComment | BlockComment ;
 
 returnSignature
-    : ARROW classicalDeclaration
+    : ARROW classicalType
     ;
 
 programBlock
@@ -69,11 +69,15 @@ identifierList
     ;
 
 indexIdentifier
-    : Identifier ( designator | doubleDesignator | rangeDefinition )?
+    : Identifier ( designator | concatenateExpression )?
     ;
 
 indexIdentifierList
     : ( indexIdentifier COMMA )* indexIdentifier
+    ;
+
+indexIdentifierAssignmentList
+    : ( indexIdentifier assignmentExpression? COMMA)* indexIdentifier assignmentExpression?
     ;
 
 association
@@ -132,19 +136,19 @@ constantDeclaration
     ;
 
 singleDesignatorDeclaration
-    : singleDesignatorType designator Identifier
+    : singleDesignatorType designator identifierAssignmentList
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator Identifier
+    : doubleDesignatorType doubleDesignator identifierAssignmentList
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType Identifier
+    : noDesignatorType identifierAssignmentList
     ;
 
 bitDeclaration
-    : bitType indexIdentifierList
+    : bitType indexIdentifierAssignmentList
     ;
 
 classicalVariableDeclaration
@@ -179,7 +183,6 @@ aliasStatement
 concatenateExpression
     : Identifier rangeDefinition
     | Identifier '||' Identifier
-    | Identifier LBRACKET expressionList RBRACKET
     ;
 
 rangeDefinition
@@ -313,6 +316,10 @@ assignmentOperator
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
     ;
 
+identifierAssignmentList
+    : ( Identifier assignmentExpression? COMMA)* Identifier assignmentExpression?
+    ;
+
 membershipTest
     : Identifier 'in' setDeclaration
     ;
@@ -383,7 +390,7 @@ timeTerminator
     ;
 
 timeIdentifier
-    :  TimeLiteral
+    : TimeLiteral
     | MINUS? 'lengthof' LPAREN Identifier RPAREN
     ;
 
@@ -394,8 +401,7 @@ timeInstructionName
     ;
 
 timeInstruction
-    : timeInstructionName ( LPAREN expressionList? RPAREN )? designator
-    ( rangeDefinition | indexIdentifierList )
+    : timeInstructionName ( LPAREN expressionList? RPAREN )? designator indexIdentifierList
     ;
 
 timeStatement
@@ -461,20 +467,17 @@ Integer : MINUS? Digit+ ;
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '%' | ValidUnicode | Letter ;
-
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
+
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
-
 fragment Float : Integer* DOT Integer+ ;
 
 RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
 
-fragment TimeUnit
-    : 'dt' | 'ns' | 'us' | 'ms' | 's'
-    ;
+fragment TimeUnit : 'dt' | 'ns' | 'us' | 'ms' | 's' ;
 
 TimeLiteral : RealNumber TimeUnit ;  // represents explicit time value in SI or backend units
 
