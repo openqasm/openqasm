@@ -108,7 +108,7 @@ class TestGrammar(unittest.TestCase):
         self.assertEqual(empty_gate_tree, empty_gate_test_tree)
 
     def test_examples(self):
-        """Verify that no errors are raised when parsing the example files.
+        """Loop through all example files, parse and verify that no errors are raised.
 
         Examples located at: ``openqasm/examples``.
         """
