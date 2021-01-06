@@ -51,7 +51,7 @@ follows
    c = measure q;
    c2 = measure r;
    bit result;
-   result = parity(c || c2); // or: parity(c || c2) -> result
+   result = parity(c || c2); // or: parity(c || c2) -> result;
 
 We require that we know the signature at compile time, as we do in this
 example. We could also just as easily have used a kernel function for
@@ -62,5 +62,5 @@ this
    const n = /* size of c + size of c2 */;
    kernel parity bit[n] -> bit;
    measure q -> c;
-   measure r -> c2
-   parity(c || c2) -> result; // or: result = parity(c || c2)
+   measure r -> c2;
+   parity(c || c2) -> result; // or: result = parity(c || c2);
