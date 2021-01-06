@@ -82,7 +82,7 @@ specify a frequency before any pulses can be played on that channel. The special
 
    defcal prelude {
       // Required: set the frequency to 5GHz
-      initframe transmit(%1), 5e9;
+      set_frequency transmit(%1), 5e9;
       // Optional: set the starting phase (otherwise it would start at 0)
       set_phase transmit(%1), pi;
    }
