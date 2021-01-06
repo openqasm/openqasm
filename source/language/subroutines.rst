@@ -8,7 +8,7 @@ Classical types are passed by value in ``parameters``. The subroutines return up
 one classical type. All arguments are declared together with their type,
 for example ``qubit: ancilla`` would define a quantum bit argument named ``ancilla``. The output of a
 subroutine can be assigned to a variable on declaration using the
-assignment operator rather than the ``->`` arrow notation.
+assignment operator or the ``->`` arrow notation.
 
 Using subroutines, we can define an X-basis measurement with the program
 ``def xmeasure qubit:q -> bit { h q; return measure q; }``.
@@ -50,7 +50,8 @@ follows
 
    c = measure q;
    c2 = measure r;
-   result = parity(c || c2);
+   bit result;
+   result = parity(c || c2); // or: parity(c || c2) -> result
 
 We require that we know the signature at compile time, as we do in this
 example. We could also just as easily have used a kernel function for
@@ -62,4 +63,4 @@ this
    kernel parity bit[n] -> bit;
    measure q -> c;
    measure r -> c2
-   parity(c || c2) -> result;
+   parity(c || c2) -> result; // or: result = parity(c || c2)
