@@ -2,7 +2,7 @@
  * This example demonstrates the repeated use of fixed delays.
 */
 OPENQASM 3.0;
-include "stdgates.inc"; 
+include "stdgates.inc";
 
 length stride = 1us;            // time resolution of points taken
 const points = 50;              // number of points taken
@@ -10,9 +10,9 @@ const shots = 1000;             // how many shots per point
 
 int[32] counts0, counts1 = 0;   // surviving |1> populations of qubits
 
-kernel tabulate(int[32]:counts, int[32]:shots, int[32]:num);
+kernel tabulate(int[32], int[32], int[32]);
 
-cbit c0, c1;
+bit c0, c1;
 
 // define a gate calibration for an X gate on qubit 1
 defcal "openpulse" x %0 {
@@ -35,8 +35,8 @@ for p in [0 : points-1] {
         c0 = measure %0;
         c1 = measure %1;
         // increment counts memories, if a 1 is seen
-        counts0 += int(c0);
-        counts1 += int(c1);
+        counts0 += int[1](c0);
+        counts1 += int[1](c1);
     }
     // log survival probability curve
     tabulate(counts0, shots, p);

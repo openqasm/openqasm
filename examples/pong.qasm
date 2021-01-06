@@ -31,7 +31,7 @@ barrier 0, 1, 0
 
 //boxto conditional, anonymous subroutine (named boxto not supported)
 
-length maxduration = 1us
+length maxduration = 1us;
 
 barrier q[0], q[1];
 slowgate q[0];

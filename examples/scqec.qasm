@@ -96,10 +96,9 @@ for shot in [1: shots] {
   data_outcomes = measure data;
 
   outcome = zlast(data_outcomes, shot, d);
-  failures += int(outcome);
+  failures += int[1](outcome);
 }
 
 /* The ratio of "failures" to "shots" is our result.
  * The data can be logged by the external functions too.
  */
-

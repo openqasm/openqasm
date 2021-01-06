@@ -65,7 +65,7 @@ def counts_for_term(bit[2*n]:spec) qubit[n]:q -> uint[prec] {
     reset q;
     trial_circuit q;
     b = pauli_measurement(spec) q;
-    counts += int(b);
+    counts += int[1](b);
   }
   return counts;
 }

@@ -13,7 +13,7 @@ header
     ;
 
 version
-    : 'OPENQASM' Integer (DOT Integer)? SEMICOLON
+    : 'OPENQASM' ( Integer | RealNumber ) SEMICOLON
     ;
 
 include
@@ -32,18 +32,17 @@ statement
     | quantumStatement
     | timeStatement
     | pragma
-    | comment
     ;
 
 globalStatement
     : subroutineDefinition
     | kernelDeclaration
     | quantumGateDefinition
-    | calibrationDefinition
+    | calibration
     ;
 
 declarationStatement
-    : ( quantumDeclaration | classicalDeclaration | constantDeclaration) SEMICOLON
+    : ( quantumDeclaration | classicalDeclaration | constantDeclaration ) SEMICOLON
     ;
 
 assignmentStatement
@@ -55,8 +54,6 @@ assignmentStatement
     )
     SEMICOLON
     ;
-
-comment : LineComment | BlockComment ;
 
 returnSignature
     : ARROW classicalType
@@ -81,7 +78,8 @@ identifierList
     ;
 
 indexIdentifier
-    : Identifier ( designator | concatenateExpression )?
+    : concatenateExpression
+    | Identifier designator?
     ;
 
 indexIdentifierList
@@ -137,8 +135,8 @@ noDesignatorType
     ;
 
 classicalType
-    : singleDesignatorType designator?
-    | doubleDesignatorType doubleDesignator?
+    : singleDesignatorType designator
+    | doubleDesignatorType doubleDesignator
     | noDesignatorType
     | bitType designator?
     ;
@@ -208,7 +206,7 @@ quantumGateSignature
     ;
 
 quantumBlock
-    : LBRACE ( quantumStatement | comment )* RBRACE
+    : LBRACE quantumStatement* RBRACE
     ;
 
 quantumStatement
@@ -235,7 +233,7 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN Integer RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | 'pow' LBRACKET expression RBRACKET | 'ctrl' ) '@'
     ;
 
 quantumGateCall
@@ -434,11 +432,11 @@ calibrationGrammarDeclaration
 calibrationDefinition
     : 'defcal' calibrationGrammar? Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
-    returnSignature? LBRACE . RBRACE
+    returnSignature? LBRACE .*? RBRACE
     ;
 
 calibrationGrammar
-    : 'openpulse' | Identifier
+    : '"openpulse"' | StringLiteral // currently: pulse grammar can be anything
     ;
 
 calibrationArgumentList
@@ -473,7 +471,7 @@ Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;
 
 fragment Digit : [0-9] ;
-Integer : MINUS? Digit+ ;
+Integer : Digit+ ;
 
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
@@ -484,21 +482,20 @@ Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
-fragment Float : Integer* DOT Integer+ ;
-
+fragment Float : Digit+ DOT Digit* ;
 RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 
-TimeLiteral : RealNumber TimeUnit ;  // represents explicit time value in SI or backend units
+TimeLiteral : (Integer | RealNumber ) TimeUnit ;  // represents explicit time value in SI or backend units
 
 fragment Quotation : '"' | '\'' ;
-
-StringLiteral : Quotation Any Quotation ;
+fragment StringCharacter : ~["\\\r\t] ;
+StringLiteral : Quotation StringCharacter+? Quotation ;
 
 fragment AnyString : ~[ \t\r\n]+? ;
 fragment Any : ( AnyString | Whitespace | Newline )+ ;
 fragment AnyBlock : LBRACE Any? RBRACE ;
 
-LineComment : '//' ~('\r'|'\n')*; // Token because Any matches all strings
-BlockComment : '/*' Any '*/' ; // Token because Any matches all strings
+LineComment : '//' ~[\r\n]* -> skip; // Token because Any matches all strings
+BlockComment : '/*' .*? '*/' -> skip; // Token because Any matches all strings

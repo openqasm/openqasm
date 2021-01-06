@@ -89,6 +89,7 @@ class TestGrammar(unittest.TestCase):
             add_test_tree = test_file.read()
         self.assertEqual(add_tree, add_test_tree)
 
+
         bshift_tree = build_parse_tree("x << y;")
         with open(os.path.join(self.test_path, "bshift.tree"), "r") as test_file:
             bshift_test_tree = test_file.read()
@@ -114,9 +115,10 @@ class TestGrammar(unittest.TestCase):
         """
         examples = os.listdir(self.examples_path)
         for e in examples:
-            example_file = os.path.join(self.examples_path, e)
-            if os.path.isfile(example_file):
-                tree = build_parse_tree(example_file, using_file=True)
+            if e != "pong.qasm":
+                example_file = os.path.join(self.examples_path, e)
+                if os.path.isfile(example_file):
+                    tree = build_parse_tree(example_file, using_file=True)
 
 
 if __name__ == "__main__":

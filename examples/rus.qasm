@@ -32,7 +32,7 @@ reset input;
 h input;
 
 // braces are optional in this case
-while(int(flags) != 0) {
+while(int[2](flags) != 0) {
   flags = segment() ancilla, input;
 }
 rz(pi - arccos(3 / 5)) input;
