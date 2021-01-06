@@ -27,7 +27,7 @@ optional. If they are not present, minor version number is assumed to be zero.
 Included files
 ==============
 
-The statement ``include "filename";`` continues parsing ``filenmae`` as if the contents of the file were
+The statement ``include "filename";`` continues parsing ``filename`` as if the contents of the file were
 inserted at the location of the ``include`` statement.
 
 .. code-block:: c
