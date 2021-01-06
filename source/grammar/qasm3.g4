@@ -488,7 +488,7 @@ fragment Float : Integer* DOT Integer+ ;
 
 RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
 
-fragment TimeUnit : 'dt' | 'ns' | 'us' | 'ms' | 's' ;
+fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 
 TimeLiteral : RealNumber TimeUnit ;  // represents explicit time value in SI or backend units
 
