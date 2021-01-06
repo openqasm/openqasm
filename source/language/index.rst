@@ -22,3 +22,4 @@ Appendix `[app:semantics] <#app:semantics>`__ gives formal semantics.
    directives
    delays
    pulses
+   openpulse
