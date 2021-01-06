@@ -107,14 +107,16 @@ class TestGrammar(unittest.TestCase):
 
         self.assertEqual(empty_gate_tree, empty_gate_test_tree)
 
-    def test_adder(self):
-        """Verify that no error is raised for adder example."""
-        files = os.listdir(self.examples_path)
-        for f in files:
-            if f != "pong.qasm":  # ignore pong.qasm for now
-                abs_path = os.path.join(self.examples_path, f)
-                if os.path.isfile(abs_path):
-                    tree = build_parse_tree(abs_path, using_file=True)
+    def test_examples(self):
+        """Verify that no errors are raised when parsing the example files.
+
+        Examples located at: ``openqasm/examples``.
+        """
+        examples = os.listdir(self.examples_path)
+        for e in examples:
+            example_file = os.path.join(self.examples_path, e)
+            if os.path.isfile(example_file):
+                tree = build_parse_tree(example_file, using_file=True)
 
 
 if __name__ == "__main__":
