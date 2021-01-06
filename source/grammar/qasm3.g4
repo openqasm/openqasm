@@ -23,6 +23,7 @@ include
 statement
     : globalStatement
     | expressionStatement
+    | assignmentStatement
     | declarationStatement
     | branchingStatement
     | loopStatement
@@ -34,7 +35,8 @@ statement
     | comment
     ;
 
-globalStatement: subroutineDefinition
+globalStatement
+    : subroutineDefinition
     | kernelDeclaration
     | quantumGateDefinition
     | calibrationDefinition
@@ -42,6 +44,16 @@ globalStatement: subroutineDefinition
 
 declarationStatement
     : ( quantumDeclaration | classicalDeclaration | constantDeclaration) SEMICOLON
+    ;
+
+assignmentStatement
+    :
+    (
+        Identifier assignmentOperator expression
+        |   expression ARROW Identifier
+        |   quantumMeasurementAssignment
+    )
+    SEMICOLON
     ;
 
 comment : LineComment | BlockComment ;
@@ -76,8 +88,8 @@ indexIdentifierList
     : ( indexIdentifier COMMA )* indexIdentifier
     ;
 
-indexIdentifierAssignmentList
-    : ( indexIdentifier assignmentExpression? COMMA)* indexIdentifier assignmentExpression?
+indexEqualsAssignmentList
+    : ( indexIdentifier equalsExpression? COMMA)* indexIdentifier equalsExpression?
     ;
 
 association
@@ -132,34 +144,30 @@ classicalType
     ;
 
 constantDeclaration
-    : 'const' Identifier ASSIGN expression
+    : 'const' Identifier equalsExpression
     ;
 
 singleDesignatorDeclaration
-    : singleDesignatorType designator identifierAssignmentList
+    : singleDesignatorType designator equalsAssignmentList
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator identifierAssignmentList
+    : doubleDesignatorType doubleDesignator equalsAssignmentList
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType identifierAssignmentList
+    : noDesignatorType equalsAssignmentList
     ;
 
 bitDeclaration
-    : bitType indexIdentifierAssignmentList
+    : bitType indexEqualsAssignmentList
     ;
 
-classicalVariableDeclaration
+classicalDeclaration
     : singleDesignatorDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
-    ;
-
-classicalDeclaration
-    : classicalVariableDeclaration assignmentExpression?
     ;
 
 classicalTypeList
@@ -176,7 +184,7 @@ classicalArgumentList
 
 // Aliasing
 aliasStatement
-    : 'let' Identifier ASSIGN concatenateExpression SEMICOLON
+    : 'let' Identifier EQUALS concatenateExpression SEMICOLON
     ;
 
 // Register Concatenation and Slicing
@@ -204,7 +212,7 @@ quantumBlock
     ;
 
 quantumStatement
-    : ( quantumInstruction | quantumMeasurementDeclaration ) SEMICOLON
+    : quantumInstruction SEMICOLON
     ;
 
 quantumInstruction
@@ -217,9 +225,9 @@ quantumMeasurement
     : 'measure' indexIdentifierList
     ;
 
-quantumMeasurementDeclaration
+quantumMeasurementAssignment
     : quantumMeasurement ARROW indexIdentifierList
-    | indexIdentifierList ASSIGN quantumMeasurement
+    | indexIdentifierList EQUALS quantumMeasurement
     ;
 
 quantumBarrier
@@ -261,7 +269,6 @@ expressionStatement
 expression
     : expression binaryOperator expression
     | unaryOperator expression
-    | expression assignmentExpression
     | expression incrementor
     | concatenateExpression
     | expression LBRACKET expression RBRACKET
@@ -269,6 +276,7 @@ expression
     | membershipTest
     | call expressionList
     | subroutineCall
+    | kernelCall
     | quantumMeasurement
     | MINUS expression
     | expressionTerminator
@@ -306,18 +314,17 @@ incrementor
     | '--'
     ;
 
-assignmentExpression
-    : assignmentOperator expression
+equalsExpression
+    : EQUALS expression
     ;
 
 assignmentOperator
-    : ASSIGN
-    | ARROW
+    : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
     ;
 
-identifierAssignmentList
-    : ( Identifier assignmentExpression? COMMA)* Identifier assignmentExpression?
+equalsAssignmentList
+    : ( Identifier equalsExpression? COMMA)* Identifier equalsExpression?
     ;
 
 membershipTest
@@ -352,19 +359,23 @@ controlDirective
     ;
 
 kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature?
+    : 'kernel' Identifier LPAREN classicalTypeList? RPAREN returnSignature?
     classicalType? SEMICOLON
+    ;
+
+kernelCall
+    : Identifier LPAREN expressionList? RPAREN
     ;
 
 /* Subroutines */
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier LPAREN classicalArgumentList? RPAREN quantumArgumentList?
     returnSignature? programBlock
     ;
 
 subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? expressionList
+    : Identifier LPAREN expressionList? RPAREN expressionList
     ;
 
 /* Directives */
@@ -451,7 +462,7 @@ SEMICOLON : ';' ;
 DOT : '.' ;
 COMMA : ',' ;
 
-ASSIGN : '=' ;
+EQUALS : '=' ;
 ARROW : '->' ;
 
 MINUS : '-' ;
