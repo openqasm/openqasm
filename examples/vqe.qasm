@@ -59,7 +59,7 @@ def trial_circuit qubit[n]:q {
 /* Apply VQE ansatz circuit and measure a Pauli operator
  * given by spec. Return the number of 1 outcomes.
  */
-def counts_for_term(bit[2*n]:spec) qubit[n] -> uint[prec] {
+def counts_for_term(bit[2*n]:spec) qubit[n]:q -> uint[prec] {
   uint[prec] counts;
   for i in [1: shots] {
     bit b;
