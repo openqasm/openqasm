@@ -282,8 +282,7 @@ expression
 
 expressionTerminator
     : Constant
-    | Integer
-    | RealNumber
+    | MINUS? ( Integer | RealNumber )
     | Identifier
     | StringLiteral
     | timeTerminator
@@ -419,6 +418,7 @@ timeStatement
     ;
 
 /* Pulse Level Descriptions of Gates and Measurement */
+// TODO: Update when pulse grammar is formalized ****
 
 calibration
     : calibrationGrammarDeclaration
@@ -432,11 +432,11 @@ calibrationGrammarDeclaration
 calibrationDefinition
     : 'defcal' calibrationGrammar? Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
-    returnSignature? LBRACE .*? RBRACE
+    returnSignature? LBRACE .*? RBRACE  // for now, match anything inside body
     ;
 
 calibrationGrammar
-    : '"openpulse"' | StringLiteral // currently: pulse grammar can be anything
+    : '"openpulse"' | StringLiteral // currently: pulse grammar string can be anything
     ;
 
 calibrationArgumentList
@@ -483,19 +483,18 @@ Identifier : FirstIdCharacter GeneralIdCharacter* ;
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
 fragment Float : Digit+ DOT Digit* ;
-RealNumber : MINUS? Float (SciNotation PlusMinus? Float)? ;
+RealNumber : Float (SciNotation PlusMinus? Float)? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
+// represents explicit time value in SI or backend units
+TimeLiteral : MINUS? (Integer | RealNumber ) TimeUnit ;
 
-TimeLiteral : (Integer | RealNumber ) TimeUnit ;  // represents explicit time value in SI or backend units
+// allow ``"str"`` and ``'str'``
+StringLiteral
+    : '"' ~["\r\t\n]+? '"'
+    | '\'' ~['\r\t\n]+? '\''
+    ;
 
-fragment Quotation : '"' | '\'' ;
-fragment StringCharacter : ~["\\\r\t] ;
-StringLiteral : Quotation StringCharacter+? Quotation ;
-
-fragment AnyString : ~[ \t\r\n]+? ;
-fragment Any : ( AnyString | Whitespace | Newline )+ ;
-fragment AnyBlock : LBRACE Any? RBRACE ;
-
-LineComment : '//' ~[\r\n]* -> skip; // Token because Any matches all strings
-BlockComment : '/*' .*? '*/' -> skip; // Token because Any matches all strings
+// skip comments
+LineComment : '//' ~[\r\n]* -> skip;
+BlockComment : '/*' .*? '*/' -> skip;
