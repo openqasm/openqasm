@@ -4,11 +4,12 @@ Subroutines
 Subroutines are declared using the statement ``def name(parameters) qargs -> output { body }``.
 Zero or more quantum bits
 and registers are passed to the subroutine by reference or name in ``qargs``.
-Classical types are passed by value in ``parameters``. The subroutines return up to
+Classical types are passed by value in ``parameters``. The parentheses may be omitted if no
+``parameters`` are passed. The subroutines return up to
 one classical type. All arguments are declared together with their type,
 for example ``qubit: ancilla`` would define a quantum bit argument named ``ancilla``. The output of a
-subroutine can be assigned to a variable on declaration using the
-assignment operator or the ``->`` arrow notation.
+subroutine can be assigned to a variable on declaration using an
+assignment operator (``=``, ``+=``, etc).
 
 Using subroutines, we can define an X-basis measurement with the program
 ``def xmeasure qubit:q -> bit { h q; return measure q; }``.
@@ -51,7 +52,7 @@ follows
    c = measure q;
    c2 = measure r;
    bit result;
-   result = parity(c || c2); // or: parity(c || c2) -> result;
+   result = parity(c || c2);
 
 We require that we know the signature at compile time, as we do in this
 example. We could also just as easily have used a kernel function for
@@ -61,6 +62,6 @@ this
 
    const n = /* size of c + size of c2 */;
    kernel parity bit[n] -> bit;
-   measure q -> c;
-   measure r -> c2;
-   parity(c || c2) -> result; // or: result = parity(c || c2);
+   c = measure q;
+   c2 = measure r;
+   result = parity(c || c2);
