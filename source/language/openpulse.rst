@@ -126,7 +126,7 @@ The relevant instructions are:
 - ``set_phase`` and ``shift_phase``
 - ``set_scale`` and ``shift_scale``
 
-Here's an example of using ``shift_scale`` to calibrate an ``rz`` gate:
+Here's an example of using ``shift_phase`` to calibrate an ``rz`` gate:
 
 .. code-block:: none
 
