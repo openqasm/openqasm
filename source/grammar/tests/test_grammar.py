@@ -3,6 +3,8 @@ import io
 import os
 from contextlib import redirect_stderr
 
+import yaml
+
 from antlr4 import *
 from antlr4.tree.Trees import Trees
 
@@ -29,7 +31,7 @@ def get_pretty_tree(
     Returns:
         Pretty tree format (indents of one space at each level).
     """
-    indent_value = " "  # indent using single space
+    indent_value = "  "  # indent using two spaces to match ``yaml`` reference files
 
     if parser is not None:
         rule_names = parser.ruleNames
@@ -75,7 +77,6 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
 
     return pretty_tree
 
-
 class TestGrammar(unittest.TestCase):
     def setUp(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
@@ -83,30 +84,40 @@ class TestGrammar(unittest.TestCase):
         self.examples_path = os.path.join(root_dir, "examples/")
         self.test_path = os.path.join(test_dir, "outputs")
 
+    def load_and_compare_yaml(self, test_str):
+        """Process test yaml files. Yaml is expected to contain OpenQasm3.0 source code, which is
+        parsed. The resulting parse tree is compared to a reference output.
+
+        The yaml keys are ``source`` and ``reference``, respectively.
+
+        Args:
+            test_str (str): Relative path of test yaml file, ie ``add.yaml``.
+        """
+        if not "yaml" in test_str:
+            raise ValueError("Test file should be in YAML format.")
+
+        test_path = os.path.join(self.test_path, test_str)
+        with open(test_path) as test_file:
+            test_dict = yaml.load(test_file, Loader=yaml.FullLoader)
+
+        if sorted(list(test_dict.keys())) != ["reference", "source"]:
+            raise KeyError("Reference YAML file contain only ``source`` and ``reference`` keys.")
+
+        qasm_source = test_dict["source"]
+        parse_tree = build_parse_tree(qasm_source)
+
+        reference = test_dict["reference"]
+        self.assertEqual(parse_tree, reference)
+
     def test_binary_expression(self):
-        add_tree = build_parse_tree("2+2;")
-        with open(os.path.join(self.test_path, "add.tree")) as test_file:
-            add_test_tree = test_file.read()
-        self.assertEqual(add_tree, add_test_tree)
-
-
-        bshift_tree = build_parse_tree("x << y;")
-        with open(os.path.join(self.test_path, "bshift.tree"), "r") as test_file:
-            bshift_test_tree = test_file.read()
-        self.assertEqual(bshift_tree, bshift_test_tree)
+        self.load_and_compare_yaml("add.yaml")
+        self.load_and_compare_yaml("bshift.yaml")
 
     def test_unary_expression(self):
-        not_tree = build_parse_tree("! my_var;")
-        with open(os.path.join(self.test_path, "not.tree"), "r") as test_file:
-            not_test_tree = test_file.read()
-        self.assertEqual(not_tree, not_test_tree)
+        self.load_and_compare_yaml("not.yaml")
 
     def test_empty_gate(self):
-        empty_gate_tree = build_parse_tree("gate g q { }")
-        with open(os.path.join(self.test_path, "empty_gate.tree"), "r") as test_file:
-            empty_gate_test_tree = test_file.read()
-
-        self.assertEqual(empty_gate_tree, empty_gate_test_tree)
+        self.load_and_compare_yaml("empty_gate.yaml")
 
     def test_examples(self):
         """Loop through all example files, parse and verify that no errors are raised.

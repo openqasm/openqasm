@@ -1,0 +1,18 @@
+# indent w/ 2 spaces
+source: |
+  x << y;
+reference: |
+  program
+    header
+    statement
+      expressionStatement
+        expression
+          expression
+            expressionTerminator
+              x
+          binaryOperator
+            <<
+          expression
+            expressionTerminator
+              y
+        ;
