@@ -16,14 +16,14 @@ const shots = 1000;   // number of shots per Pauli observable
 // Parameters could be written to local variables for this
 // iteration, but we will request them using kernel functions
 kernel get_parameter(uint[prec], uint[prec]) -> angle[prec];
-kernel get_npaulis -> uint[prec]:
+kernel get_npaulis -> uint[prec];
 kernel get_pauli(int[prec]) -> bit[2 * n];
 
 // The energy calculation uses fixed point division,
 // so we do that calculation in a kernel function
 kernel update_energy(int[prec], uint[prec], fixed[prec,prec]) -> fixed[prec,prec];
 
-gate entangler qubit[n]:q { for i in [0:n-2] { cx q[i], q[i+1]; } }
+gate entangler q { for i in [0:n-2] { cx q[i], q[i+1]; } }
 def xmeasure qubit:q -> bit { h q; return measure q; }
 def ymeasure qubit:q -> bit { s q; h q; return measure q; }
 

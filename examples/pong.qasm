@@ -20,7 +20,8 @@ defcal pong_cx(amp) %q0, %q1, %q2 {
     barrier q0, q1, q2;
 }
 
-barrier 0, 1, 2
+qubit q[3];
+barrier q;
 glue[1]-delay(0) 0;    // these stretchable delays would be inserted by a high-level scheduling pass.
 glue[1]-delay(0) 1;    // it should be possible to write regular QASM using those ponged CNOTs
 glue[1]-delay(0) 2;    // even if you don't care how the whole program is aligned (left of right)

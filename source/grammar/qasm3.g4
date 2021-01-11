@@ -30,7 +30,6 @@ statement
     | controlDirectiveStatement
     | aliasStatement
     | quantumStatement
-    | timingStatement
     | pragma
     ;
 
@@ -45,15 +44,12 @@ declarationStatement
     : ( quantumDeclaration | classicalDeclaration | constantDeclaration ) SEMICOLON
     ;
 
-assignmentStatement
-    :
-    (
-        Identifier assignmentOperator expression
-        |   expression ARROW Identifier
-        |   quantumMeasurementAssignment
-    )
-    SEMICOLON
+classicalAssignment
+    : indexIdentifier assignmentOperator ( expression | indexIdentifier )
+    | ( expression | indexIdentifier ) ARROW indexIdentifier
     ;
+
+assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
 
 returnSignature
     : ARROW classicalType
@@ -182,12 +178,13 @@ classicalArgumentList
 
 // Aliasing
 aliasStatement
-    : 'let' Identifier EQUALS concatenateExpression SEMICOLON
+    : 'let' Identifier EQUALS indexIdentifier  SEMICOLON
     ;
 
 // Register Concatenation and Slicing
 concatenateExpression
     : Identifier rangeDefinition
+    | Identifier LBRACKET expressionList RBRACKET
     | Identifier '||' Identifier
     ;
 
@@ -206,17 +203,33 @@ quantumGateSignature
     ;
 
 quantumBlock
-    : LBRACE ( quantumStatement | timingStatement )* RBRACE
+    : LBRACE ( quantumStatement | quantumLoop )* RBRACE
+    ;
+
+// loops containing only quantum statements allowed in gates
+quantumLoop
+    : loopSignature quantumLoopBlock
+    ;
+
+quantumLoopBlock
+    : quantumStatement
+    | LBRACE quantumStatement* RBRACE
     ;
 
 quantumStatement
     : quantumInstruction SEMICOLON
+    | timingStatement
     ;
 
 quantumInstruction
     : quantumGateCall
+    | quantumPhase
     | quantumMeasurement
     | quantumBarrier
+    ;
+
+quantumPhase
+    : 'gphase' LPAREN Identifier RPAREN
     ;
 
 quantumMeasurement
@@ -342,8 +355,12 @@ branchingStatement
     : 'if' LPAREN expression RPAREN loopBranchBlock ( 'else' loopBranchBlock )?
     ;
 
-loopStatement: ( 'for' membershipTest | 'while' LPAREN expression RPAREN ) loopBranchBlock
+loopSignature
+    : 'for' membershipTest
+    | 'while' LPAREN expression RPAREN
     ;
+
+loopStatement: loopSignature loopBranchBlock ;
 
 controlDirectiveStatement
     : controlDirective SEMICOLON
