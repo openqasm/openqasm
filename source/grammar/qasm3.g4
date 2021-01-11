@@ -30,7 +30,7 @@ statement
     | controlDirectiveStatement
     | aliasStatement
     | quantumStatement
-    | timeStatement
+    | timingStatement
     | pragma
     ;
 
@@ -206,7 +206,7 @@ quantumGateSignature
     ;
 
 quantumBlock
-    : LBRACE quantumStatement* RBRACE
+    : LBRACE ( quantumStatement | timingStatement )* RBRACE
     ;
 
 quantumStatement
@@ -285,7 +285,7 @@ expressionTerminator
     | MINUS? ( Integer | RealNumber )
     | Identifier
     | StringLiteral
-    | timeTerminator
+    | timingTerminator
     ;
 
 expressionList
@@ -390,30 +390,29 @@ timingType
 
 timingBox
     : 'boxas' Identifier quantumBlock
-    | 'boxto' TimeLiteral quantumBlock
+    | 'boxto' TimingLiteral quantumBlock
     ;
 
-timeTerminator
-    : timeIdentifier | 'stretchinf'
+timingTerminator
+    : timingIdentifier | 'stretchinf'
     ;
 
-timeIdentifier
-    : TimeLiteral
-    | MINUS? 'lengthof' LPAREN Identifier RPAREN
+timingIdentifier
+    : TimingLiteral
+    | MINUS? 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
-
-timeInstructionName
+timingInstructionName
     : 'delay'
     | 'rotary'
     ;
 
-timeInstruction
-    : timeInstructionName ( LPAREN expressionList? RPAREN )? designator indexIdentifierList
+timingInstruction
+    : timingInstructionName ( LPAREN expressionList? RPAREN )? designator indexIdentifierList
     ;
 
-timeStatement
-    : timeInstruction SEMICOLON
+timingStatement
+    : timingInstruction SEMICOLON
     | timingBox
     ;
 
@@ -487,7 +486,7 @@ RealNumber : Float (SciNotation PlusMinus? Float)? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units
-TimeLiteral : MINUS? (Integer | RealNumber ) TimeUnit ;
+TimingLiteral : MINUS? (Integer | RealNumber ) TimeUnit ;
 
 // allow ``"str"`` and ``'str'``
 StringLiteral
