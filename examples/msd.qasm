@@ -7,7 +7,7 @@ include "stdgates.inc";
 const buffer_size = 6;  // size of magic state buffer
 
 // Y-basis measurement
-def ymeasure() qubit:q -> bit {
+def ymeasure qubit:q -> bit {
   s q;
   h q;
   return measure q;
@@ -20,7 +20,7 @@ def ymeasure() qubit:q -> bit {
  * The subroutine returns a success bit that is true
  * on success and false otherwise (see arXiv:1811.00566).
  */
-def distill() qubit[10]:magic, qubit[3]:scratch -> bool {
+def distill qubit[10]:magic, qubit[3]:scratch -> bool {
   bit temp;
   bit checks[3];
   // Encode two magic states in the [[4,2,2]] code
@@ -83,7 +83,7 @@ def distill() qubit[10]:magic, qubit[3]:scratch -> bool {
 }
 
 // Repeat level-0 distillation until success
-def rus_level_0() qubit[10]:magic, qubit[3]:scratch {
+def rus_level_0 qubit[10]:magic, qubit[3]:scratch {
   bool success;
   while(~success) {
     reset magic;

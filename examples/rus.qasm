@@ -10,7 +10,7 @@ include "stdgates.inc";
  * theta + pi where cos(theta)=3/5 if out is 00.
  * The 00 outcome occurs with probability 5/8.
  */
-def segment() qubit[2]:anc, qubit:psi -> bit[2] {
+def segment qubit[2]:anc, qubit:psi -> bit[2] {
   bit[2] b;
   reset anc;
   h anc;
@@ -33,7 +33,7 @@ h input;
 
 // braces are optional in this case
 while(int[2](flags) != 0) {
-  flags = segment() ancilla, input;
+  flags = segment ancilla, input;
 }
 rz(pi - arccos(3 / 5)) input;
 h input;
