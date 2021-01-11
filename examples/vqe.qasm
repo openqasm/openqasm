@@ -66,7 +66,7 @@ def counts_for_term(bit[2*n]:spec) qubit[n] -> uint[prec] {
     reset q;
     trial_circuit q;
     b = pauli_measurement(spec) q;
-    counts += int(b);
+    counts += int[1](b);
   }
   return counts;
 }
@@ -74,7 +74,7 @@ def counts_for_term(bit[2*n]:spec) qubit[n] -> uint[prec] {
 // Estimate the expected energy
 def estimate_energy qubit[n]:q -> fixed[prec,prec] {
   fixed[prec, prec] energy;
-  uint npaulis = get_npaulis();
+  uint[prec] npaulis = get_npaulis();
   for t in [0:npaulis-1] {
     bit spec[2*n] = get_pauli(t);
     uint[prec] counts;
