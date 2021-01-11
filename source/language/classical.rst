@@ -208,12 +208,11 @@ The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
 how the kernel functions are defined and registered.
 
-Kernel functions are invoked using the statement ``output = name(inputs);``, where ``inputs`` and
-``outputs`` are now literals corresponding to the types in the signature. The functions are not
-required to be idempotent. They may change the state of the process
-providing the function. In our computational model, the kernel functions
-are assumed to run concurrently with other classical and quantum
-computations.
+Kernel functions are invoked using the statement ``name(inputs);`` and the result may be assigned to
+``output`` as needed via an assignment operator (``=``, ``+=``, etc). ``inputs`` are literals and
+``output`` is a variable, corresponding to the types in the signature. The functions are not required to
+be idempotent. They may change the state of the process providing the function. In our computational
+model, the kernel functions are assumed to run concurrently with other classical and quantum computations.
 
 .. [1]
    ``popcount`` computes the Hamming weight of the input register.
