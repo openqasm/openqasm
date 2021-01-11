@@ -356,10 +356,11 @@ controlDirective
     ;
 
 kernelDeclaration
-    : 'kernel' Identifier LPAREN classicalTypeList? RPAREN returnSignature?
+    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature?
     classicalType? SEMICOLON
     ;
 
+// if called w/ out parentheses, is ambiguous; may get matched as identifier
 kernelCall
     : Identifier LPAREN expressionList? RPAREN
     ;
@@ -367,12 +368,13 @@ kernelCall
 /* Subroutines */
 
 subroutineDefinition
-    : 'def' Identifier LPAREN classicalArgumentList? RPAREN quantumArgumentList?
+    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
     returnSignature? programBlock
     ;
 
+// if called w/ out paretheses, is ambiguous; may get matched as identifier
 subroutineCall
-    : Identifier LPAREN expressionList? RPAREN expressionList
+    : Identifier ( LPAREN expressionList? RPAREN )? expressionList
     ;
 
 /* Directives */
