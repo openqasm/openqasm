@@ -20,11 +20,11 @@ or “implement this gate as late as possible".
 length and stretch types
 ------------------------
 
-The ``length`` type is used denote duration of time. Lengths are positive numbers
-that are manipulated at compile time. Lengths have units which can be
+The ``length`` type is used denote duration of time. Lengths are positive real numbers
+that are manipulated at compile time. Lengths must be followed by time units which can be
 any of the following:
 
--  SI units of time, such as ``ns, µs, ms, s``
+-  SI units of time: ``ns, µs or us, ms, s``
 
 -  Backend-dependent unit, ``dt``, equivalent to the duration of one waveform
    sample on the backend

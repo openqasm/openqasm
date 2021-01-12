@@ -21,18 +21,75 @@ than requiring the programmer to express the full :math:`2^n \times 2^n`
 matrix. However, a general :math:`n`-qubit gate can be defined using an
 exponential number of these gates.
 
-We now describe this built-in gate set. There is one built-in two-qubit
-gate
+We now describe this built-in gate set.
+All of the single-qubit unitary gates are built-in and
+parameterized as
 
 .. math::
 
-   \mathrm{CX} := \left(\begin{array}{cccc}
+   U(\theta,\phi,\lambda) := \left(\begin{array}{cc}
+       \cos(\theta/2) & -e^{i\lambda}\sin(\theta/2) \\
+   e^{i\phi}\sin(\theta/2) & e^{i(\phi+\lambda)}\cos(\theta/2) \end{array}\right).
+
+When ``a`` is a quantum
+register, the statement ``U(θ, ϕ, λ) a;`` means apply ``U(θ, ϕ, λ) a[j];`` for each index ``j`` into register ``a``. The
+values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
+:math:`\lambda\in
+[0,2\pi)` in this base gate are angles whose precision is implementation
+dependent [1]_. This specifies any element of :math:`U(2)` up to a
+global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
+P
+
+New gates are associated to a unitary transformation by defining them as a sequence of built-in or
+previously defined gates. For example the ``gate`` block
+
+.. code-block:: c
+
+   gate h q {
+      U(π/2, 0, π) q;
+   }
+
+defines a new gate called ``h`` and associates it to the unitary matrix of the Hadamard gate. Once we have
+defined ``h``, we can use it in later ``gate`` blocks. The definition does not imply that ``h`` is
+implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
+the user and/or compiler, given information about the instructions supported by a particular target.
+
+Controled gates can be constructed by adding a control modifier to an existing gate. For example,
+the NOT gate is given by ``X = U(π, 0, π)`` and the block
+
+.. code-block:: c
+
+   gate CX c, t {
+      ctrl @ U(π, 0, π) c, t;
+   }
+   
+   CX q[1], q[0];
+
+defines the gate
+
+.. math::
+
+   \mathrm{CX} := I\oplus X = \left(\begin{array}{cccc}
+   1 & 0 & 0 & 0 \\
+   0 & 1 & 0 & 0 \\
+   0 & 0 & 0 & 1 \\
+   0 & 0 & 1 & 0 \end{array}\right)
+
+that applies a bit-flip ``X`` to ``q[0]`` if ``q[1]`` is one and otherwise applies the identity gate.
+The control modifier is described in more detail later.
+
+Throughout the document we use a tensor order with higher index qubits on the left. In this tensor order,
+``CX q[0], q[1];`` is represented by the matrix
+
+.. math::
+
+   \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
    0 & 0 & 1 & 0 \\
    0 & 1 & 0 & 0 \end{array}\right)
 
-called the controlled-NOT gate. The statement ``CX a, b;`` describes a CNOT gate that
+Given the gate definition we have already given, the statement ``CX a, b;`` describes a CNOT gate that
 flips the target qubit ``b`` if and only if the control qubit ``a`` is one. The
 arguments cannot refer to the same qubit. For convenience, gates automatically broadcast over registers. If ``a`` and ``b`` are quantum registers
 *with the same size*, the statement ``CX a, b;`` means apply ``CX a[j], b[j];`` for each index ``j`` into
@@ -53,8 +110,8 @@ index ``j`` into register ``a``.
 
    .. image:: ../qpics/cnotrq.svg
 
-   The built-in two-qubit entangling gate is the
-   controlled-NOT gate. If ``a`` and ``b`` are qubits, the statement ``CX a,b;`` applies a
+   The two-qubit controlled-NOT gate is contructed from built-in single-qubit gates and the control modifier.
+   If ``a`` and ``b`` are qubits, the statement ``CX a,b;`` applies a
    controlled-NOT (CNOT) gate that flips the target qubit ``b`` iff the control qubit ``a``
    is one. If ``a`` and ``b`` are quantum registers, the statement applies CNOT gates between
    corresponding qubits of each register. There is a similar meaning when ``a`` is a qubit and
@@ -72,31 +129,39 @@ index ``j`` into register ``a``.
    statement applies ``size(q)`` gates in parallel to the qubits of the
    register.
 
-All of the single-qubit unitary gates are also built-in and
-parameterized as
-
-.. math::
-
-   U(\theta,\phi,\lambda) := R_z(\phi)R_y(\theta)R_z(\lambda) = \left(\begin{array}{cc}
-       e^{-i(\phi+\lambda)/2}\cos(\theta/2) & -e^{-i(\phi-\lambda)/2}\sin(\theta/2) \\
-   e^{i(\phi-\lambda)/2}\sin(\theta/2) & e^{i(\phi+\lambda)/2}\cos(\theta/2) \end{array}\right).
-
-Here :math:`R_y(\theta)=\mathrm{exp}(-i\theta Y/2)` and
-:math:`R_z(\phi)=\mathrm{exp}(-i\theta Z/2)`. When ``a`` is a quantum
-register, the statement ``U(θ, ϕ, λ) a;`` means apply ``U(θ, ϕ, λ) a[j];`` for each index ``j`` into register ``a``. The
-values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
-:math:`\lambda\in
-[0,2\pi)` in this base gate are angles whose precision is implementation
-dependent [1]_. This specifies any element of :math:`SU(2)` up to a
-global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
-
-Finally, a built-in global phase gate allows the inclusion of arbitrary
-global phase on circuits. ``gphase(γ);`` adds a global phase of :math:`e^{i\gamma}` to
-the circuit. e.g.:
+From a physical perspective, the gates :math:`e^{i\gamma}U` and :math:`U` are equivalent although they differ by a global
+phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
+that is applied when the control qubit is one. To capture the programmer's intent, a built-in global phase gate
+allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` adds a global phase
+of :math:`e^{i\gamma}` to the scope containing the instruction. For example
 
 .. code-block:: c
 
-   gphase(0.5*γ)
+  gate rz(tau) q {
+    gphase(-tau/2);
+    U(0, 0, tau) q;
+  }
+  ctrl @ rz(π/2) q[1], q[0];
+
+constructs the gate
+
+.. math::
+
+  R_z(\tau) = \exp(-i\tau Z/2) = \left(\begin{array}{cc}
+  e^{-i\tau/2} & 0 \\
+  0 & e^{i\tau/2} \end{array}\right) = e^{-i\tau/2}\left(\begin{array}{cc}
+  1 & 0 \\
+  0 & e^{i\tau} \end{array}\right)
+
+and applies the controlled gate
+
+.. math::
+
+  I\oplus R_z(\pi/2) = \left(\begin{array}{cccc}
+  1 & 0 & 0 & 0 \\
+  0 & 1 & 0 & 0 \\
+  0 & 0 & e^{-i\tau/2} & 0 \\
+  0 & 0 & 0 & e^{i\tau/2} \end{array}\right).
 
 
 .. _sec:macros:
