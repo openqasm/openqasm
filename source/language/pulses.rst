@@ -16,7 +16,7 @@ instructions to the underlying microcoded
 :cite:`wilkesBestWayDesign1989` stimulus programs emitted by
 the controllers to implement each operation. In OpenQASM we expose
 access to this level of control with pulse-level definitions of gates
-and measurement using a `textual representation of OpenPulse <openpulse.html>`_ 
+and measurement with a user-selectable pulse grammar.
 
 The entry point to such gate and measurement definitions is the ``defcal`` keyword
 analogous to the ``gate`` keyword, but where the ``defcal`` body specifies a pulse-level
@@ -73,6 +73,17 @@ the most specific definition found for a given operation. Thus, given,
 the operation ``rx(pi/2) %0`` would match to (3), ``rx(pi) %0`` would
 match (2), ``rx(pi/2) %1`` would match (1).
 
+Users specify the grammar used inside ``defcal`` blocks with a 
+``defcalgrammar "name"`` declaration. One such grammar is a 
+`textual representation of OpenPulse <openpulse.html>`_ specified by:
+
+.. code-block: none
+
+   defcalgrammar "openpulse" 1;
+
+where ``1`` is the version number of the grammar. The ``defcalgrammar`` line
+must appear prior to any ``defcal`` definition.
+
 Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
 define unitary transformation rules to the compiler. The compiler may
 freely invoke such rules on operations while preserving the structure of
@@ -110,36 +121,3 @@ of the if statement has definite and equivalent length.
          // delay for an equivalent amount of time
       }
    }
-
-Special defcals
-~~~~~~~~~~~~~~~
-
-There are two special ``defcal`` keys which are handled in a unique way:
-``prelude`` and ``postlude``. ``prelude`` inserts instructions at the
-beginning of the program, and the ``postlude`` inserts instructions at the
-end of the program. Unlike other ``defcal`` definitions, these do not take
-qubit parameters.
-
-These special defcals are especially useful for running any necessary
-instructions to initialize the program or collect results.
-
-.. code-block:: none
-
-   defcal prelude { ... }
-   defcal postlude { ... }
-
-A program such as this:
-
-.. code-block:: none
-
-   qubit a;
-   x a;
-
-would be transformed to insert the bodies of the two special defcals:
-
-.. code-block:: none
-
-   prelude;
-   qubit a;
-   x a;
-   postlude;
