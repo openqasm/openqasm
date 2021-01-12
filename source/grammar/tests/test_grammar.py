@@ -78,6 +78,8 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
     return pretty_tree
 
 class TestGrammar(unittest.TestCase):
+    """Test the ANTLR grammar w/ python unittest."""
+
     def setUp(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
         root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
@@ -110,15 +112,21 @@ class TestGrammar(unittest.TestCase):
         self.assertEqual(parse_tree, reference)
 
     def test_header(self):
+        """Test header."""
         self.load_and_compare_yaml("header.yaml")
 
+    def test_global_statement(self):
+        """Test global statements."""
+        self.load_and_compare_yaml("subroutine.yaml")
+        self.load_and_compare_yaml("kernel.yaml")
+        self.load_and_compare_yaml("quantum_gate.yaml")
+        # TODO: Add calibration test when pulse grammar is filled in
 
-    def test_binary_expression(self):
-        self.load_and_compare_yaml("add.yaml")
-        self.load_and_compare_yaml("bshift.yaml")
-
-    def test_unary_expression(self):
-        self.load_and_compare_yaml("not.yaml")
+    def test_expression(self):
+        self.load_and_compare_yaml("binary_expr.yaml")
+        self.load_and_compare_yaml("unary_expr.yaml")
+        self.load_and_compare_yaml("built_in_call.yaml")
+        self.load_and_compare_yaml("sub_and_kern_call.yaml")
 
     def test_empty_gate(self):
         self.load_and_compare_yaml("empty_gate.yaml")

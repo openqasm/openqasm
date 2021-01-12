@@ -83,7 +83,7 @@ indexIdentifierList
     ;
 
 indexEqualsAssignmentList
-    : ( indexIdentifier equalsExpression? COMMA)* indexIdentifier equalsExpression?
+    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 association
@@ -141,20 +141,22 @@ constantDeclaration
     : 'const' Identifier equalsExpression
     ;
 
+// if multiple variables declared at once, either none are assigned or all are assigned
+// prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
-    : singleDesignatorType designator equalsAssignmentList
+    : singleDesignatorType designator ( identifierList | equalsAssignmentList )
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator equalsAssignmentList
+    : doubleDesignatorType doubleDesignator ( identifierList | equalsAssignmentList )
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType equalsAssignmentList
+    : noDesignatorType ( identifierList | equalsAssignmentList )
     ;
 
 bitDeclaration
-    : bitType indexEqualsAssignmentList
+    : bitType (identifierList | indexEqualsAssignmentList )
     ;
 
 classicalDeclaration
@@ -237,7 +239,7 @@ quantumMeasurement
     ;
 
 quantumMeasurementAssignment
-    : quantumMeasurement ARROW indexIdentifierList
+    : quantumMeasurement ( ARROW indexIdentifierList)?
     | indexIdentifierList EQUALS quantumMeasurement
     ;
 
@@ -285,7 +287,7 @@ expression
     | expression LBRACKET expression RBRACKET
     | LPAREN expression RPAREN
     | membershipTest
-    | call expressionList
+    | builtInCall
     | subroutineCall
     | kernelCall
     | quantumMeasurement
@@ -305,10 +307,8 @@ expressionList
     : ( expression COMMA )* expression
     ;
 
-call
-    : Identifier
-    | builtInMath
-    | castOperator
+builtInCall
+    : ( builtInMath | castOperator ) LPAREN expressionList RPAREN
     ;
 
 builtInMath
@@ -334,7 +334,7 @@ assignmentOperator
     ;
 
 equalsAssignmentList
-    : ( Identifier equalsExpression? COMMA)* Identifier equalsExpression?
+    : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
     ;
 
 membershipTest
@@ -377,7 +377,7 @@ kernelDeclaration
     classicalType? SEMICOLON
     ;
 
-// if called w/ out parentheses, is ambiguous; may get matched as identifier
+// if have kernel w/ out args, is ambiguous; may get matched as identifier
 kernelCall
     : Identifier LPAREN expressionList? RPAREN
     ;
@@ -389,7 +389,7 @@ subroutineDefinition
     returnSignature? programBlock
     ;
 
-// if called w/ out paretheses, is ambiguous; may get matched as identifier
+// if have subroutine w/ out args, is ambiguous; may get matched as identifier
 subroutineCall
     : Identifier ( LPAREN expressionList? RPAREN )? expressionList
     ;
