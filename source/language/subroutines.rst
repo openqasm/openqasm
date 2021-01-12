@@ -59,7 +59,7 @@ this
 .. code-block:: c
 
    const n = /* size of c + size of c2 */;
-   kernel parity bit[n] -> bit;
+   kernel parity(bit[n]) -> bit;
    measure q -> c;
    measure r -> c2
    parity(c || c2) -> result;
