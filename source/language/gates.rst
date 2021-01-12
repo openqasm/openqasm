@@ -42,6 +42,7 @@ P
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
+
 .. code-block:: c
 
    gate h q {
@@ -133,6 +134,7 @@ phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the gl
 that is applied when the control qubit is one. To capture the programmer's intent, a built-in global phase gate
 allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` adds a global phase
 of :math:`e^{i\gamma}` to the scope containing the instruction. For example
+
 .. code-block:: c
 
   gate rz(tau) q {
@@ -142,6 +144,7 @@ of :math:`e^{i\gamma}` to the scope containing the instruction. For example
   ctrl @ rz(π/2) q[1], q[0];
 
 constructs the gate
+
 .. math::
 
   R_z(\tau) = \exp(-i\tau Z/2) = \left(\begin{array}{cc}
@@ -151,6 +154,7 @@ constructs the gate
   0 & e^{i\tau} \end{array}\right)
 
 and applies the controlled gate
+
 .. math::
 
   I\oplus R_z(\pi/2) = \left(\begin{array}{cccc}
