@@ -16,7 +16,7 @@ instructions to the underlying microcoded
 :cite:`wilkesBestWayDesign1989` stimulus programs emitted by
 the controllers to implement each operation. In OpenQASM we expose
 access to this level of control with pulse-level definitions of gates
-and measurement using a `text representation of OpenPulse <openpulse.html>`_ 
+and measurement using a `textual representation of OpenPulse <openpulse.html>`_ 
 
 The entry point to such gate and measurement definitions is the ``defcal`` keyword
 analogous to the ``gate`` keyword, but where the ``defcal`` body specifies a pulse-level
