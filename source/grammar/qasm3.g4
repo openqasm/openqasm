@@ -46,7 +46,6 @@ declarationStatement
 
 classicalAssignment
     : indexIdentifier assignmentOperator ( expression | indexIdentifier )
-    | ( expression | indexIdentifier ) ARROW indexIdentifier
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -71,19 +70,6 @@ doubleDesignator
 
 identifierList
     : ( Identifier COMMA )* Identifier
-    ;
-
-indexIdentifier
-    : concatenateExpression
-    | Identifier designator?
-    ;
-
-indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
-    ;
-
-indexEqualsAssignmentList
-    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 association
@@ -138,7 +124,7 @@ classicalType
     ;
 
 constantDeclaration
-    : 'const' Identifier equalsExpression
+    : 'const' equalsAssignmentList
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
@@ -156,7 +142,7 @@ noDesignatorDeclaration
     ;
 
 bitDeclaration
-    : bitType (identifierList | indexEqualsAssignmentList )
+    : bitType (indexIdentifierList | indexEqualsAssignmentList )
     ;
 
 classicalDeclaration
@@ -180,14 +166,23 @@ classicalArgumentList
 
 // Aliasing
 aliasStatement
-    : 'let' Identifier EQUALS indexIdentifier  SEMICOLON
+    : 'let' Identifier EQUALS indexIdentifier SEMICOLON
     ;
 
 // Register Concatenation and Slicing
-concatenateExpression
+
+indexIdentifier
     : Identifier rangeDefinition
-    | Identifier LBRACKET expressionList RBRACKET
+    | Identifier ( LBRACKET expressionList RBRACKET )?
     | Identifier '||' Identifier
+    ;
+
+indexIdentifierList
+    : ( indexIdentifier COMMA )* indexIdentifier
+    ;
+
+indexEqualsAssignmentList
+    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 rangeDefinition
@@ -276,21 +271,18 @@ binaryOperator
 
 expressionStatement
     : expression SEMICOLON
-    | 'return' expressionStatement
     ;
 
 expression
     : expression binaryOperator expression
     | unaryOperator expression
     | expression incrementor
-    | concatenateExpression
     | expression LBRACKET expression RBRACKET
     | LPAREN expression RPAREN
     | membershipTest
     | builtInCall
     | subroutineCall
     | kernelCall
-    | quantumMeasurement
     | MINUS expression
     | expressionTerminator
     ;
@@ -346,13 +338,13 @@ setDeclaration
     | rangeDefinition
     ;
 
-loopBranchBlock
+loopBlock
     : statement
-    | programBlock
+    | LBRACE statement* RBRACE
     ;
 
 branchingStatement
-    : 'if' LPAREN expression RPAREN loopBranchBlock ( 'else' loopBranchBlock )?
+    : 'if' LPAREN expression RPAREN loopBlock ( 'else' loopBlock )?
     ;
 
 loopSignature
@@ -360,7 +352,7 @@ loopSignature
     | 'while' LPAREN expression RPAREN
     ;
 
-loopStatement: loopSignature loopBranchBlock ;
+loopStatement: loopSignature loopBlock ;
 
 controlDirectiveStatement
     : controlDirective SEMICOLON
@@ -386,7 +378,13 @@ kernelCall
 
 subroutineDefinition
     : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
-    returnSignature? programBlock
+    returnSignature? subroutineBlock
+    ;
+
+returnStatement : 'return' statement;
+
+subroutineBlock
+    : LBRACE statement* returnStatement? RBRACE
     ;
 
 // if have subroutine w/ out args, is ambiguous; may get matched as identifier
@@ -501,7 +499,7 @@ Identifier : FirstIdCharacter GeneralIdCharacter* ;
 fragment SciNotation : [eE] ;
 fragment PlusMinus : [-+] ;
 fragment Float : Digit+ DOT Digit* ;
-RealNumber : Float (SciNotation PlusMinus? Float)? ;
+RealNumber : Float (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units

@@ -8,7 +8,7 @@ bit c[3];
 bit syn[2];
 
 def syndrome qubit[3]:d, qubit[2]:a -> bit[2] {
-  bit[2] b;
+  bit b[2];
   cx d[0], a[0];
   cx d[1], a[0];
   cx d[1], a[1];

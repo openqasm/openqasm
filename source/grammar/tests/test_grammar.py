@@ -107,7 +107,7 @@ class TestGrammar(unittest.TestCase):
 
         qasm_source = test_dict["source"]
         parse_tree = build_parse_tree(qasm_source)
-        import pdb; pdb.set_trace()
+
         reference = test_dict["reference"]
         self.assertEqual(parse_tree, reference)
 
@@ -127,6 +127,12 @@ class TestGrammar(unittest.TestCase):
         self.load_and_compare_yaml("unary_expr.yaml")
         self.load_and_compare_yaml("built_in_call.yaml")
         self.load_and_compare_yaml("sub_and_kern_call.yaml")
+
+    def test_assignment(self):
+        self.load_and_compare_yaml("assignment.yaml")
+
+    def test_declaration(self):
+        self.load_and_compare_yaml("declaration.yaml")
 
     def test_empty_gate(self):
         self.load_and_compare_yaml("empty_gate.yaml")

@@ -8,7 +8,8 @@ length stride = 1us;            // time resolution of points taken
 const points = 50;              // number of points taken
 const shots = 1000;             // how many shots per point
 
-int[32] counts0, counts1 = 0;   // surviving |1> populations of qubits
+int[32] counts0;
+int[32] counts1 = 0;   // surviving |1> populations of qubits
 
 kernel tabulate(int[32], int[32], int[32]);
 

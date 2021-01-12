@@ -59,7 +59,7 @@ reference: |
                   expressionTerminator
                     10
                 ]
-          programBlock
+          subroutineBlock
             {
             statement
               declarationStatement
@@ -73,12 +73,12 @@ reference: |
                         expressionTerminator
                           10
                       ]
-                    equalsAssignmentList
+                    identifierList
                       result
                 ;
-            statement
-              expressionStatement
-                return
+            returnStatement
+              return
+              statement
                 expressionStatement
                   expression
                     expressionTerminator
