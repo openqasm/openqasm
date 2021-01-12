@@ -159,10 +159,10 @@ distill_and_buffer(buffer_size) workspace, buffer;
 h q[0];
 cx q[0], q[1];
 Ty(address) q[0], buffer;
-address ++;
+address++;
 cx q[0], q[1];
 Ty(address) q[1], buffer;
-address ++;
+address++;
 
 // In principle each Ty gate can execute as soon as the magic
 // state is available at the address in the buffer register.
