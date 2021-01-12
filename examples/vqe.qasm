@@ -24,7 +24,7 @@ kernel get_pauli int[prec] -> bit[2 * n];
 kernel update_energy int[prec], uint[prec],
  fixed[prec,prec] -> fixed[prec,prec];
 
-gate entangler qubit[n]:q { for i in [0:n-2] { cx q[i], q[i+1]; } }
+gate entangler q { for i in [0:n-2] { cx q[i], q[i+1]; } }
 def xmeasure qubit:q -> bit { h q; return measure q; }
 def ymeasure qubit:q -> bit { s q; h q; return measure q; }
 
@@ -59,7 +59,7 @@ def trial_circuit qubit[n]:q {
 /* Apply VQE ansatz circuit and measure a Pauli operator
  * given by spec. Return the number of 1 outcomes.
  */
-def counts_for_term(bit[2*n]:spec) qubit[n] -> uint[prec] {
+def counts_for_term(bit[2*n]:spec) qubit[n]:q -> uint[prec] {
   uint[prec] counts;
   for i in [1: shots] {
     bit b;

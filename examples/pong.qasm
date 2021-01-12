@@ -8,7 +8,7 @@ defcal pong(amp, duration) %q0 {
     play d0, gaussian(amp, duration)
 }
 
-gatecal pong_cx(amp) %q0, %q1, %q2 {
+defcal pong_cx(amp) %q0, %q1, %q2 {
     barrier %q0, %q1, %q2;
     cross-res(pi/4) 0, 1
     x(pi) 0;  // this is a gatecal
