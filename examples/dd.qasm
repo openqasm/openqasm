@@ -1,4 +1,4 @@
-/* CPMG XY4 decoupling
+/* CPMG XY4 decoupling w/ boxing
  * This example demonstrates the use of referential delays
  * and time alignment.
 */
