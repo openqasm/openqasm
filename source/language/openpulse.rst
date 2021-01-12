@@ -165,7 +165,7 @@ Here's an example qubit spectroscopy experiment.
 
    for p in [0 : points-1] {
      // The key line: pick the frequency to sample
-     driveframe.frequency = start + (end-start) / points;
+     driveframe.frequency = start + (end-start) * p / points;
      output[p] = 0;
 
      for i in [0 : shots-1] {
