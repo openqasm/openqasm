@@ -105,9 +105,13 @@ class TestGrammar(unittest.TestCase):
 
         qasm_source = test_dict["source"]
         parse_tree = build_parse_tree(qasm_source)
-
+        import pdb; pdb.set_trace()
         reference = test_dict["reference"]
         self.assertEqual(parse_tree, reference)
+
+    def test_header(self):
+        self.load_and_compare_yaml("header.yaml")
+
 
     def test_binary_expression(self):
         self.load_and_compare_yaml("add.yaml")
