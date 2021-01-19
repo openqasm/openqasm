@@ -4,14 +4,13 @@ source: |
 reference: |
   program
     header
-    statement
-      globalStatement
-        quantumGateDefinition
-          gate
-          quantumGateSignature
-            g
-            identifierList
-              q
-          quantumBlock
-            {
-            }
+    globalStatement
+      quantumGateDefinition
+        gate
+        quantumGateSignature
+          g
+          identifierList
+            q
+        quantumBlock
+          {
+          }

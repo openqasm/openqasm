@@ -5,7 +5,7 @@ grammar qasm3;
 /** Parser grammar **/
 
 program
-    : header statement*
+    : header (globalStatement | statement)*
     ;
 
 header
@@ -20,28 +20,30 @@ include
     : 'include' StringLiteral SEMICOLON
     ;
 
-statement
-    : globalStatement
-    | expressionStatement
-    | assignmentStatement
-    | declarationStatement
-    | branchingStatement
-    | loopStatement
-    | controlDirectiveStatement
-    | aliasStatement
-    | quantumStatement
-    | pragma
-    ;
-
 globalStatement
     : subroutineDefinition
     | kernelDeclaration
     | quantumGateDefinition
     | calibration
+    | quantumDeclarationStatement  // qubits are declared globally
+    | pragma
     ;
 
-declarationStatement
-    : ( quantumDeclaration | classicalDeclaration | constantDeclaration ) SEMICOLON
+statement
+    : expressionStatement
+    | assignmentStatement
+    | classicalDeclarationStatement
+    | branchingStatement
+    | loopStatement
+    | controlDirectiveStatement
+    | aliasStatement
+    | quantumStatement
+    ;
+
+quantumDeclarationStatement : quantumDeclaration SEMICOLON ;
+
+classicalDeclarationStatement
+    : ( classicalDeclaration | constantDeclaration ) SEMICOLON
     ;
 
 classicalAssignment
@@ -52,10 +54,6 @@ assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEM
 
 returnSignature
     : ARROW classicalType
-    ;
-
-programBlock
-    : LBRACE statement* RBRACE
     ;
 
 /* Types and Casting */

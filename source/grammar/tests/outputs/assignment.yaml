@@ -10,7 +10,7 @@ reference: |
   program
     header
     statement
-      declarationStatement
+      classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
             bitType
@@ -34,8 +34,8 @@ reference: |
                       2
                 ]
         ;
-    statement
-      declarationStatement
+    globalStatement
+      quantumDeclarationStatement
         quantumDeclaration
           quantumType
             qubit
@@ -50,7 +50,7 @@ reference: |
               ]
         ;
     statement
-      declarationStatement
+      classicalDeclarationStatement
         classicalDeclaration
           singleDesignatorDeclaration
             singleDesignatorType

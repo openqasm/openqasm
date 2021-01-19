@@ -6,7 +6,7 @@ reference: |
   program
     header
     statement
-      declarationStatement
+      classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
             bitType
@@ -39,7 +39,7 @@ reference: |
                           q2
         ;
     statement
-      declarationStatement
+      classicalDeclarationStatement
         classicalDeclaration
           singleDesignatorDeclaration
             singleDesignatorType
