@@ -334,15 +334,16 @@ membershipTest
 setDeclaration
     : LBRACE expressionList RBRACE
     | rangeDefinition
+    | Identifier
     ;
 
-loopBlock
+programBlock
     : statement
     | LBRACE statement* RBRACE
     ;
 
 branchingStatement
-    : 'if' LPAREN expression RPAREN loopBlock ( 'else' loopBlock )?
+    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
@@ -350,7 +351,7 @@ loopSignature
     | 'while' LPAREN expression RPAREN
     ;
 
-loopStatement: loopSignature loopBlock ;
+loopStatement: loopSignature programBlock ;
 
 controlDirectiveStatement
     : controlDirective SEMICOLON
@@ -393,7 +394,7 @@ subroutineCall
 /* Directives */
 
 pragma
-    : '#pragma' LBRACE . RBRACE
+    : '#pragma' LBRACE statement* RBRACE  // match any valid openqasm statement
     ;
 
 /* Circuit Timing */

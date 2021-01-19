@@ -107,7 +107,8 @@ class TestGrammar(unittest.TestCase):
 
         qasm_source = test_dict["source"]
         parse_tree = build_parse_tree(qasm_source)
-
+        if "loop" in test_str:
+            import pdb; pdb.set_trace()
         reference = test_dict["reference"]
         self.assertEqual(parse_tree, reference)
 
@@ -120,7 +121,16 @@ class TestGrammar(unittest.TestCase):
         self.load_and_compare_yaml("subroutine.yaml")
         self.load_and_compare_yaml("kernel.yaml")
         self.load_and_compare_yaml("quantum_gate.yaml")
+        self.load_and_compare_yaml("empty_gate.yaml")
         # TODO: Add calibration test when pulse grammar is filled in
+
+    def test_declaration(self):
+        """Test classical and quantum declaration."""
+        self.load_and_compare_yaml("declaration.yaml")
+
+    def test_pragma(self):
+        """Test pragma directive."""
+        self.load_and_compare_yaml("pragma.yaml")
 
     def test_expression(self):
         self.load_and_compare_yaml("binary_expr.yaml")
@@ -131,11 +141,12 @@ class TestGrammar(unittest.TestCase):
     def test_assignment(self):
         self.load_and_compare_yaml("assignment.yaml")
 
-    def test_declaration(self):
-        self.load_and_compare_yaml("declaration.yaml")
+    def test_branching(self):
+        self.load_and_compare_yaml("branching.yaml")
 
-    def test_empty_gate(self):
-        self.load_and_compare_yaml("empty_gate.yaml")
+    def test_loop_and_control_directive(self):
+        self.load_and_compare_yaml("loop.yaml")
+
 
     def test_examples(self):
         """Loop through all example files, parse and verify that no errors are raised.
