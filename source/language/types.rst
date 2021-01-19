@@ -230,9 +230,10 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       +-------------------------------+--------------+--------------+---------------------+
       | Tau                           | tau          | τ            | 6.283185...         |
       +-------------------------------+--------------+--------------+---------------------+
-      | Euler’s number                | euler_gamma  | :math:`e`    | 2.7182818284...     |
+      | Euler’s number                | euler        | ℇ            | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
 
+Note that `e` is a valid identifier. `e/E` are also used in scientifier notation where appropriate.
 Types related to timing
 -----------------------
 

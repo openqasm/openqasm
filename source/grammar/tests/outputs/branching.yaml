@@ -15,7 +15,8 @@ reference: |
           membershipTest
             x
             in
-            a
+            setDeclaration
+              a
         )
         programBlock
           {

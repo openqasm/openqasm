@@ -172,7 +172,7 @@ aliasStatement
 indexIdentifier
     : Identifier rangeDefinition
     | Identifier ( LBRACKET expressionList RBRACKET )?
-    | Identifier '||' Identifier
+    | indexIdentifier '||' indexIdentifier
     ;
 
 indexIdentifierList
@@ -480,7 +480,7 @@ ARROW : '->' ;
 
 MINUS : '-' ;
 
-Constant : MINUS? ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'e' );
+Constant : MINUS? ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
 Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;

@@ -107,8 +107,7 @@ class TestGrammar(unittest.TestCase):
 
         qasm_source = test_dict["source"]
         parse_tree = build_parse_tree(qasm_source)
-        if "loop" in test_str:
-            import pdb; pdb.set_trace()
+
         reference = test_dict["reference"]
         self.assertEqual(parse_tree, reference)
 
@@ -133,20 +132,27 @@ class TestGrammar(unittest.TestCase):
         self.load_and_compare_yaml("pragma.yaml")
 
     def test_expression(self):
+        """Test expressions."""
         self.load_and_compare_yaml("binary_expr.yaml")
         self.load_and_compare_yaml("unary_expr.yaml")
         self.load_and_compare_yaml("built_in_call.yaml")
         self.load_and_compare_yaml("sub_and_kern_call.yaml")
 
     def test_assignment(self):
+        """Test assignment statements."""
         self.load_and_compare_yaml("assignment.yaml")
 
     def test_branching(self):
+        """Test branching statements."""
         self.load_and_compare_yaml("branching.yaml")
 
     def test_loop_and_control_directive(self):
+        """Test loop and control directive statements."""
         self.load_and_compare_yaml("loop.yaml")
 
+    def test_aliasing(self):
+        """Test alias statements."""
+        self.load_and_compare_yaml("alias.yaml")
 
     def test_examples(self):
         """Loop through all example files, parse and verify that no errors are raised.
@@ -155,10 +161,9 @@ class TestGrammar(unittest.TestCase):
         """
         examples = os.listdir(self.examples_path)
         for e in examples:
-            if e != "pong.qasm":
-                example_file = os.path.join(self.examples_path, e)
-                if os.path.isfile(example_file):
-                    tree = build_parse_tree(example_file, using_file=True)
+            example_file = os.path.join(self.examples_path, e)
+            if os.path.isfile(example_file):
+                tree = build_parse_tree(example_file, using_file=True)
 
 
 if __name__ == "__main__":
