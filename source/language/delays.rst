@@ -81,9 +81,10 @@ whatever their actual durations may be, we can do the following:
 
 .. code-block:: c
 
+       qubit q[5];
        barrier q;
        cx q[0], q[1];
-       u q[2];
+       U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
        delay[stretchinf] q[0], q[1];
        delay[stretchinf] q[2];
@@ -95,6 +96,7 @@ the stretchy delays (:numref:`fig_alignment`\b):
 
 .. code-block:: c
 
+       qubit q[5];
        stretch g;
        barrier q;
        cx q[0], q[1];
