@@ -5,16 +5,16 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-gate majority a, b, c { 
-    cx c, b; 
-    cx c, a; 
-    ccx a, b, c; 
+gate majority a, b, c {
+    cx c, b;
+    cx c, a;
+    ccx a, b, c;
 }
 
-gate unmaj a, b, c { 
-    ccx a, b, c; 
-    cx c, a; 
-    cx a, b; 
+gate unmaj a, b, c {
+    ccx a, b, c;
+    cx c, a;
+    cx a, b;
 }
 
 qubit cin[1], a[4], b[4], cout[1];
@@ -30,7 +30,7 @@ reset cout;
 // set input states
 for i in [0: 3] {
   if(bool(ain[i])) x a[i];
-  if(bool(bin[i])) x b[i]; 
+  if(bool(bin[i])) x b[i];
 }
 // add a to b, storing result in b
 majority cin[0], b[0], a[0];

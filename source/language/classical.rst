@@ -197,9 +197,10 @@ Kernel function calls
 ---------------------
 
 Kernel functions are declared by giving their signature using the
-statement ``kernel name(inputs)-> output;`` where inputs is a comma-separated list of type names and
-output is a single type name. They can be functions of any number of
-arguments whose types correspond to the classical types of OpenQASM.
+statement ``kernel name(inputs) -> output;`` where ``inputs`` is a comma-separated list of type names and
+``output`` is a single type name. The parentheses may be omitted if there are no ``inputs``.
+
+Kernel functions can take of any number of arguments whose types correspond to the classical types of OpenQASM.
 Inputs are passed by value. They can return zero or one value whose type
 is any classical type in OpenQASM except real constants. If necessary,
 multiple return values can be accommodated by concatenating registers.
@@ -207,13 +208,11 @@ The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
 how the kernel functions are defined and registered.
 
-Kernel functions are invoked using the statement ``name(inputs) -> output;``. The functions are not
-required to be idempotent. They may change the state of the process
-providing the function. In our computational model, the kernel functions
-are assumed to run concurrently with other classical and quantum
-computations. The output of a kernel function can be assigned to a
-variable on declaration using the assignment operator rather than the
-``->`` arrow notation.
+Kernel functions are invoked using the statement ``name(inputs);`` and the result may be assigned to
+``output`` as needed via an assignment operator (``=``, ``+=``, etc). ``inputs`` are literals and
+``output`` is a variable, corresponding to the types in the signature. The functions are not required to
+be idempotent. They may change the state of the process providing the function. In our computational
+model, the kernel functions are assumed to run concurrently with other classical and quantum computations.
 
 .. [1]
    ``popcount`` computes the Hamming weight of the input register.

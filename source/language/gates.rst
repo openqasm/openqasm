@@ -233,7 +233,8 @@ of the gate definition.
 
 Only built-in gate statements, calls to previously defined gates, and
 timing directives can appear in ``body``. For example, it is not valid to
-declare a classical register in a gate body. The statements in the body
+declare a classical register in a gate body. Looping constructs over these quantum
+statements are valid. The statements in the body
 can only refer to the symbols given in the parameter or argument list,
 and these symbols are scoped only to the subroutine body. An empty body
 corresponds to the identity gate. Gates must be declared before use and
