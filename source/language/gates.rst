@@ -62,14 +62,14 @@ the NOT gate is given by ``X = U(π, 0, π)`` and the block
    gate CX c, t {
       ctrl @ U(π, 0, π) c, t;
    }
-   
+
    CX q[1], q[0];
 
 defines the gate
 
 .. math::
 
-   \mathrm{CX} := I\oplus X = \left(\begin{array}{cccc}
+   \mathrm{CX} := I\times X = \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 1 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
@@ -157,7 +157,7 @@ and applies the controlled gate
 
 .. math::
 
-  I\oplus R_z(\pi/2) = \left(\begin{array}{cccc}
+  I\otimes R_z(\pi/2) = \left(\begin{array}{cccc}
   1 & 0 & 0 & 0 \\
   0 & 1 & 0 & 0 \\
   0 & 0 & e^{-i\tau/2} & 0 \\
