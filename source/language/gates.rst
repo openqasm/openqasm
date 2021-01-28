@@ -54,7 +54,7 @@ defined ``h``, we can use it in later ``gate`` blocks. The definition does not i
 implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
 the user and/or compiler, given information about the instructions supported by a particular target.
 
-Controled gates can be constructed by adding a control modifier to an existing gate. For example,
+Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
 .. code-block:: c
