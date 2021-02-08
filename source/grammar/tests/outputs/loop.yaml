@@ -52,9 +52,8 @@ reference: |
                 statement
                   quantumStatement
                     quantumInstruction
-                      quantumGateCall
-                        quantumGateName
-                          reset
+                      quantumReset
+                        reset
                         indexIdentifierList
                           indexIdentifier
                             q
@@ -80,21 +79,16 @@ reference: |
                     8
               )
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      break
-                    ;
+                controlDirective
+                  break
+                  ;
               else
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      continue
-                    ;
+                controlDirective
+                  continue
+                  ;
           }
     statement
-      controlDirectiveStatement
-        controlDirective
-          end
+      endStatement
+        end
         ;

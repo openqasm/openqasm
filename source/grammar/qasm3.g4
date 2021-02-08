@@ -35,7 +35,7 @@ statement
     | classicalDeclarationStatement
     | branchingStatement
     | loopStatement
-    | controlDirectiveStatement
+    | endStatement
     | aliasStatement
     | quantumStatement
     ;
@@ -194,7 +194,13 @@ quantumGateDefinition
     ;
 
 quantumGateSignature
-    : Identifier ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    : quantumGateName ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    ;
+
+quantumGateName
+    : 'U'
+    | 'CX'
+    | Identifier
     ;
 
 quantumBlock
@@ -220,11 +226,16 @@ quantumInstruction
     : quantumGateCall
     | quantumPhase
     | quantumMeasurement
+    | quantumReset
     | quantumBarrier
     ;
 
 quantumPhase
     : 'gphase' LPAREN Identifier RPAREN
+    ;
+
+quantumReset
+    : 'reset' indexIdentifierList
     ;
 
 quantumMeasurement
@@ -245,15 +256,7 @@ quantumGateModifier
     ;
 
 quantumGateCall
-    : quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
-    ;
-
-quantumGateName
-    : 'CX'
-    | 'U'
-    | 'reset'
-    | Identifier
-    | quantumGateModifier quantumGateName
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /* Classical Instructions */
@@ -338,8 +341,8 @@ setDeclaration
     ;
 
 programBlock
-    : statement
-    | LBRACE statement* RBRACE
+    : statement | controlDirective
+    | LBRACE ( statement | controlDirective )* RBRACE
     ;
 
 branchingStatement
@@ -353,14 +356,17 @@ loopSignature
 
 loopStatement: loopSignature programBlock ;
 
-controlDirectiveStatement
-    : controlDirective SEMICOLON
+endStatement
+    : 'end' SEMICOLON
     ;
 
+returnStatement
+    : 'return' statement;
+
 controlDirective
-    : 'break'
-    | 'continue'
-    | 'end'
+    : ('break' | 'continue') SEMICOLON
+    | endStatement
+    | returnStatement
     ;
 
 kernelDeclaration
@@ -380,10 +386,8 @@ subroutineDefinition
     returnSignature? subroutineBlock
     ;
 
-returnStatement : 'return' statement;
-
 subroutineBlock
-    : LBRACE statement* returnStatement? RBRACE
+    : LBRACE ( statement | returnStatement )* RBRACE
     ;
 
 // if have subroutine w/ out args, is ambiguous; may get matched as identifier

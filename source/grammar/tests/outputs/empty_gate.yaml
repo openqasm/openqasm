@@ -8,7 +8,8 @@ reference: |
       quantumGateDefinition
         gate
         quantumGateSignature
-          g
+          quantumGateName
+            g
           identifierList
             q
         quantumBlock

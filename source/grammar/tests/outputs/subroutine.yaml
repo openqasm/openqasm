@@ -2,6 +2,7 @@
 source: |
   def test_sub(int[5]:i) qubit:q1, qubit[5]:q2 -> int[10] {
     int[10] result;
+    if (result == 2) return 1 + result;
     return result;
   }
 reference: |
@@ -75,6 +76,36 @@ reference: |
                   identifierList
                     result
               ;
+          statement
+            branchingStatement
+              if
+              (
+              expression
+                expression
+                  expressionTerminator
+                    result
+                binaryOperator
+                  ==
+                expression
+                  expressionTerminator
+                    2
+              )
+              programBlock
+                controlDirective
+                  returnStatement
+                    return
+                    statement
+                      expressionStatement
+                        expression
+                          expression
+                            expressionTerminator
+                              1
+                          binaryOperator
+                            +
+                          expression
+                            expressionTerminator
+                              result
+                        ;
           returnStatement
             return
             statement
