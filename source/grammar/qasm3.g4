@@ -387,7 +387,7 @@ subroutineDefinition
     ;
 
 subroutineBlock
-    : LBRACE ( statement | returnStatement )* RBRACE
+    : LBRACE statement* returnStatement? RBRACE
     ;
 
 // if have subroutine w/ out args, is ambiguous; may get matched as identifier
