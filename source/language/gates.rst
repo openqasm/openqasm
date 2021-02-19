@@ -176,7 +176,7 @@ corresponding OpenQASM code is
 
 .. code-block:: c
 
-   gate cphase(angle[32]: θ) a, b
+   gate cphase(θ) a, b
    {
      U(0, 0, θ / 2) a;
      CX a, b;
@@ -212,8 +212,8 @@ In general, new gates are defined by statements of the form
 
 where the optional parameter list ``params`` is a comma-separated list of variable
 parameters, and the argument list ``qargs`` is a comma-separated list of qubit
-arguments. The parameters are identifiers with angular types and default
-to 32-bits. The qubit arguments are identifiers. If there are no
+arguments. The parameters are identifiers with arbitrary-precision numeric types.
+The qubit arguments are identifiers. If there are no
 variable parameters, the parentheses are optional. At least one qubit
 argument is required. The arguments in ``qargs`` cannot be indexed within the body
 of the gate definition.
