@@ -194,7 +194,7 @@ quantumGateDefinition
     ;
 
 quantumGateSignature
-    : Identifier ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    : ( Identifier | 'CX' | 'U') ( LPAREN identifierList? RPAREN )? identifierList
     ;
 
 quantumBlock
