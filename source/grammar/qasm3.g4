@@ -194,7 +194,7 @@ quantumGateDefinition
     ;
 
 quantumGateSignature
-    : Identifier ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    : ( Identifier | 'CX' | 'U' ) ( LPAREN classicalArgumentList? RPAREN )? identifierList
     ;
 
 quantumBlock
@@ -490,7 +490,7 @@ Integer : Digit+ ;
 
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
-fragment FirstIdCharacter : '_' | '%' | ValidUnicode | Letter ;
+fragment FirstIdCharacter : '_' | '%q' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
