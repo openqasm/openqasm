@@ -16,25 +16,25 @@ kernel tabulate(int[32], int[32], int[32]);
 bit c0, c1;
 
 // define a gate calibration for an X gate on any qubit
-defcal "openpulse" x q {
-   play drive(q), gaussian(100, 30, 5);
+defcal "openpulse" x $q {
+   play drive($q), gaussian(100, 30, 5);
 }
 
 for p in [0 : points-1] {
     for i in [1 : shots] {
         // start of a basic block
-        reset %q0;
-        reset %q1;
+        reset $0;
+        reset $1;
         // excite qubits
-        x %q0;
-        x %q1;
+        x $0;
+        x $1;
         // wait for a fixed time indicated by loop counter
-        delay[p * stride] %q0;
+        delay[p * stride] $0;
         // wait for a fixed time indicated by loop counters
-        delay[p * lengthof({x %q1;})];
+        delay[p * lengthof({x $1;})];
         // read out qubit states
-        c0 = measure %q0;
-        c1 = measure %q1;
+        c0 = measure $0;
+        c1 = measure $1;
         // increment counts memories, if a 1 is seen
         counts0 += int[1](c0);
         counts1 += int[1](c1);

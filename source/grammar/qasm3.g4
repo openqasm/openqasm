@@ -490,7 +490,7 @@ Integer : Digit+ ;
 
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
-fragment FirstIdCharacter : '_' | '%q' | ValidUnicode | Letter ;
+fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
 Identifier : FirstIdCharacter GeneralIdCharacter* ;

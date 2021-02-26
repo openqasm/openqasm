@@ -5,28 +5,28 @@
  */
 defcalgrammar "openpulse";
 
-defcal pong(amp, duration) q {
+defcal pong(amp, duration) $q {
     play d0, gaussian(amp, duration)
 }
 
-defcal pong_cx(amp) q0, q1, q2 {
-    barrier q0, q1, q2;
-    cross-res(pi/4) 0, 1
-    x(pi) 0;  // this is a gatecal
-    cross-res(-pi/4) 0, 1;
-    glue[1]-pong(amp) q1;
-    glue[2]-pong(-amp) q1;
-    glue[1]-pong(amp) q1;
-    barrier q0, q1, q2;
+defcal pong_cx(amp) $q0, $q1, $q2 {
+    barrier $q0, $q1, $q2;
+    cross-res(pi/4) $q0, $q1
+    x(pi) $q0;  // this is a defcal
+    cross-res(-pi/4) $q0, $q1;
+    glue[1]-pong(amp) $q1;
+    glue[2]-pong(-amp) $q1;
+    glue[1]-pong(amp) $q1;
+    barrier $q0, $q1, $q2;
 }
 
-barrier %q0, %q1, %q2;
-glue[1]-delay[0] %q0;    // these stretchable delays would be inserted by a high-level scheduling pass.
-glue[1]-delay[0] %q1;    // it should be possible to write regular QASM using those ponged CNOTs
-glue[1]-delay[0] %q2;    // even if you don't care how the whole program is aligned (left of right)
-h %q0;
-pong(0.5, 10dt) %q0 - pong_cx(0.5) %q0, %q1, %q2;
-barrier %q0, %q1, %q2;
+barrier $0, $1, $2;
+glue[1]-delay[0] $0;    // these stretchable delays would be inserted by a high-level scheduling pass.
+glue[1]-delay[0] $1;    // it should be possible to write regular QASM using those ponged CNOTs
+glue[1]-delay[0] $2;    // even if you don't care how the whole program is aligned (left of right)
+h $0;
+pong(0.5, 10dt) $0 - pong_cx(0.5) $0, $1, $2;
+barrier $0, $1, $2;
 
 
 //boxto conditional, anonymous subroutine (named boxto not supported)
