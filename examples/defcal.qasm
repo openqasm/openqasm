@@ -23,7 +23,7 @@ defcal measure $0 -> bit {
 
 defcal zx90_ix $0, $1 {
   play drive($0, "cr1"), flat_top_gaussian(...);  // uses a non-default
-                                                   // frame labeled "cr1"
+                                                  // frame labeled "cr1"
 }
 
 defcal cx $0, $1 {

@@ -48,6 +48,7 @@ qubits. For instance, to define an equivalent `rz` calibration on qubits 0 and 1
 .. code-block:: c
 
    defcal rz(angle[20]:theta) $q { ... }
+   // we've defined ``rz`` on arbitrary physical qubits, so we can do:
    rz(3.14) $0;
    rz(3.14) $1;
 
