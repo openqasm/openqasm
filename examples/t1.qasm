@@ -15,8 +15,10 @@ kernel tabulate(int[32], int[32], int[32]);
 
 bit c0, c1;
 
+defcalgrammar "openpulse";
+
 // define a gate calibration for an X gate on any qubit
-defcal "openpulse" x $q {
+defcal x $q {
    play drive($q), gaussian(100, 30, 5);
 }
 

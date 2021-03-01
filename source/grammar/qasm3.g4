@@ -445,13 +445,13 @@ calibrationGrammarDeclaration
     ;
 
 calibrationDefinition
-    : 'defcal' calibrationGrammar? Identifier
+    : 'defcal' Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
     returnSignature? LBRACE .*? RBRACE  // for now, match anything inside body
     ;
 
 calibrationGrammar
-    : '"openpulse"' | StringLiteral // currently: pulse grammar string can be anything
+    : '"openpulse"' | StringLiteral  // currently: pulse grammar string can be anything
     ;
 
 calibrationArgumentList

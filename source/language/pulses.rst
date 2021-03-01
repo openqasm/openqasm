@@ -83,15 +83,15 @@ the most specific definition found for a given operation. Thus, given,
 the operation ``rx(pi/2) $0`` would match to (3), ``rx(pi) $0`` would
 match (2), ``rx(pi/2) $1`` would match (1).
 
-Users specify the grammar used inside ``defcal`` blocks with a ``defcalgrammar "name"`` declaration, or by
-an optional grammar string in a ``defcal`` definition, e.g.
+Users specify the grammar used inside ``defcal`` blocks with a ``defcalgrammar "name"`` declaration.
+For instance,
 
 .. code-block:: c
 
    defcalgrammar "openpulse";
-   defcal "openpulse" measure $0 -> bit { ... }
 
-are two equivalent ways to specify that the ``measure`` definition uses the ``"openpulse"`` grammar.
+specifies that all `defcal`'s will use the "openpulse" grammar.
+
 
 Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
 define unitary transformation rules to the compiler. The compiler may
