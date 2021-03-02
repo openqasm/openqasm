@@ -445,13 +445,13 @@ calibrationGrammarDeclaration
     ;
 
 calibrationDefinition
-    : 'defcal' calibrationGrammar? Identifier
+    : 'defcal' Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
     returnSignature? LBRACE .*? RBRACE  // for now, match anything inside body
     ;
 
 calibrationGrammar
-    : '"openpulse"' | StringLiteral // currently: pulse grammar string can be anything
+    : '"openpulse"' | StringLiteral  // currently: pulse grammar string can be anything
     ;
 
 calibrationArgumentList
@@ -490,7 +490,7 @@ Integer : Digit+ ;
 
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
-fragment FirstIdCharacter : '_' | '%' | ValidUnicode | Letter ;
+fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
 Identifier : FirstIdCharacter GeneralIdCharacter* ;

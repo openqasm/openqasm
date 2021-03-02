@@ -57,7 +57,8 @@ Physical Qubits
 ~~~~~~~~~~~~~~~
 
 While program qubits can be named, hardware qubits are referenced only
-by integers with the syntax ``%0``, ``%1``, ..., ``%n``. These qubit types are
+by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
+references given by ``$0``, ``$1``, ..., ``$n``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 
@@ -70,7 +71,7 @@ circuits.
    // Declare a qubit array with 20 qubits
    qubit qubit_array[20];
    // CNOT gate between physical qubits 0 and 1
-   CX %0, %1;
+   CX $0, $1;
 
 Classical types
 ---------------
