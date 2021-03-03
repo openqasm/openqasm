@@ -401,7 +401,7 @@ pragma
 
 timingType
     : 'length'
-    | 'stretch' Integer?
+    | StretchN
     ;
 
 timingBox
@@ -493,6 +493,7 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
+StretchN : 'stretch'Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
