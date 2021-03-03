@@ -42,14 +42,12 @@ reference: |
                         additiveExpression
                           additiveExpression
                             multiplicativeExpression
-                              unaryExpression
-                                expressionTerminator
-                                  n
+                              expressionTerminator
+                                n
                           +
                           multiplicativeExpression
-                            unaryExpression
-                              expressionTerminator
-                                i
+                            expressionTerminator
+                              i
                 ]
             relationalOperator
               ==

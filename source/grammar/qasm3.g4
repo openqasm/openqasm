@@ -1,8 +1,8 @@
-/**** ANTLRv4  grammar for OpenQASM3.0. ****/
+/***** ANTLRv4  grammar for OpenQASM3.0. *****/
 
 grammar qasm3;
 
-/** Parser grammar **/
+/**** Parser grammar ****/
 
 program
     : header (globalStatement | statement)*
@@ -56,7 +56,7 @@ returnSignature
     : ARROW classicalType
     ;
 
-/* Types and Casting */
+/*** Types and Casting ***/
 
 designator
     : LBRACKET expression RBRACKET
@@ -74,7 +74,7 @@ association
     : COLON Identifier
     ;
 
-// Quantum Types
+/** Quantum Types **/
 quantumType
     : 'qubit'
     | 'qreg'
@@ -92,7 +92,7 @@ quantumArgumentList
     : ( quantumArgument COMMA )* quantumArgument
     ;
 
-// Classical Types
+/** Classical Types **/
 bitType
     : 'bit'
     | 'creg'
@@ -162,12 +162,12 @@ classicalArgumentList
     : ( classicalArgument COMMA )* classicalArgument
     ;
 
-// Aliasing
+/** Aliasing **/
 aliasStatement
     : 'let' Identifier EQUALS indexIdentifier SEMICOLON
     ;
 
-// Register Concatenation and Slicing
+/** Register Concatenation and Slicing **/
 
 indexIdentifier
     : Identifier rangeDefinition
@@ -187,7 +187,7 @@ rangeDefinition
     : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
     ;
 
-/* Gates and Built-in Quantum Instructions */
+/*** Gates and Built-in Quantum Instructions ***/
 
 quantumGateDefinition
     : 'gate' quantumGateSignature quantumBlock
@@ -256,7 +256,7 @@ quantumGateName
     | quantumGateModifier quantumGateName
     ;
 
-/* Classical Instructions */
+/*** Classical Instructions ***/
 
 unaryOperator
     : '~' | '!'
@@ -271,7 +271,6 @@ relationalOperator
     | '!='
     ;
 
-
 logicalOperator
     : '&&'
     | '||'
@@ -281,24 +280,30 @@ expressionStatement
     : expression SEMICOLON
     ;
 
-unaryExpression
+expression
+    // include terminator/unary as base cases to simplify parsing
     : expressionTerminator
-    | unaryOperator expressionTerminator
+    | unaryExpression
+    // expression hierarchy
+    | xOrExpression
+    | expression '|' xOrExpression
     ;
 
-multiplicativeExpression
-    : unaryExpression
-    | multiplicativeExpression ( '*' | '/' | '%' ) unaryExpression
-    ;
-
-additiveExpression
-    : multiplicativeExpression
-    | additiveExpression ( '+' | MINUS ) multiplicativeExpression
-    ;
-
-bitShiftExpression
-    : additiveExpression
-    | bitShiftExpression ( '<<' | '>>' ) additiveExpression
+/**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
+  *  grammar: https://github.com/antlr/grammars-v4/blob/master/c/C.g4
+  * Order (first to last evaluation):
+    Terminator (including Parens),
+    Unary Op,
+    Multiplicative
+    Additive
+    Bit Shift
+    Bit And
+    Exlusive Or (xOr)
+    Bit Or
+**/
+xOrExpression
+    : bitAndExpression
+    | xOrExpression '^' bitAndExpression
     ;
 
 bitAndExpression
@@ -306,26 +311,25 @@ bitAndExpression
     | bitAndExpression '&' bitShiftExpression
     ;
 
-xOrExpression
-    : bitAndExpression
-    | xOrExpression '^' bitAndExpression
+bitShiftExpression
+    : additiveExpression
+    | bitShiftExpression ( '<<' | '>>' ) additiveExpression
     ;
 
-expression
+additiveExpression
+    : multiplicativeExpression
+    | additiveExpression ( '+' | MINUS ) multiplicativeExpression
+    ;
+
+multiplicativeExpression
+    // base case either terminator or unary
     : expressionTerminator
-    | xOrExpression
-    | expression '|' xOrExpression
+    | unaryExpression
+    | multiplicativeExpression ( '*' | '/' | '%' ) ( expressionTerminator | unaryExpression )
     ;
 
-comparsionExpression
-    : expression  // if (expression)
-    | expression relationalOperator expression
-    ;
-
-booleanExpression
-    : membershipTest
-    | comparsionExpression
-    | booleanExpression logicalOperator comparsionExpression
+unaryExpression
+    : unaryOperator expressionTerminator
     ;
 
 expressionTerminator
@@ -343,9 +347,11 @@ expressionTerminator
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
     ;
+/** End expression hierarchy **/
 
-expressionList
-    : ( expression COMMA )* expression
+incrementor
+    : '++'
+    | '--'
     ;
 
 builtInCall
@@ -360,10 +366,22 @@ castOperator
     : classicalType
     ;
 
-incrementor
-    : '++'
-    | '--'
+expressionList
+    : ( expression COMMA )* expression
     ;
+
+/** Boolean expression hierarchy **/
+booleanExpression
+    : membershipTest
+    | comparsionExpression
+    | booleanExpression logicalOperator comparsionExpression
+    ;
+
+comparsionExpression
+    : expression  // if (expression)
+    | expression relationalOperator expression
+    ;
+/** End boolean expression hierarchy **/
 
 equalsExpression
     : EQUALS expression
@@ -424,7 +442,7 @@ kernelCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
-/* Subroutines */
+/*** Subroutines ***/
 
 subroutineDefinition
     : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
@@ -442,13 +460,13 @@ subroutineCall
     : Identifier ( LPAREN expressionList? RPAREN )? expressionList
     ;
 
-/* Directives */
+/*** Directives ***/
 
 pragma
     : '#pragma' LBRACE statement* RBRACE  // match any valid openqasm statement
     ;
 
-/* Circuit Timing */
+/*** Circuit Timing ***/
 
 timingType
     : 'length'
@@ -483,8 +501,8 @@ timingStatement
     | timingBox
     ;
 
-/* Pulse Level Descriptions of Gates and Measurement */
-// TODO: Update when pulse grammar is formalized ****
+/*** Pulse Level Descriptions of Gates and Measurement ***/
+// TODO: Update when pulse grammar is formalized
 
 calibration
     : calibrationGrammarDeclaration
@@ -509,7 +527,7 @@ calibrationArgumentList
     : classicalArgumentList | expressionList
     ;
 
-/** Lexer grammar **/
+/**** Lexer grammar ****/
 
 LBRACKET : '[' ;
 RBRACKET : ']' ;
