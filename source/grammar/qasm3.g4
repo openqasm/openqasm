@@ -262,35 +262,86 @@ unaryOperator
     : '~' | '!'
     ;
 
-binaryOperator
-    : '+' | '-' | '*' | '/' | '<<' | '>>' | 'rotl' | 'rotr' | '&&' | '||' | '&' | '|' | '^'
-    | '>' | '<' | '>=' | '<=' | '==' | '!='
+relationalOperator
+    : '>'
+    | '<'
+    | '>='
+    | '<='
+    | '=='
+    | '!='
+    ;
+
+
+logicalOperator
+    : '&&'
+    | '||'
     ;
 
 expressionStatement
     : expression SEMICOLON
     ;
 
+unaryExpression
+    : expressionTerminator
+    | unaryOperator expressionTerminator
+    ;
+
+multiplicativeExpression
+    : unaryExpression
+    | multiplicativeExpression ( '*' | '/' | '%' ) unaryExpression
+    ;
+
+additiveExpression
+    : multiplicativeExpression
+    | additiveExpression ( '+' | MINUS ) multiplicativeExpression
+    ;
+
+bitShiftExpression
+    : additiveExpression
+    | bitShiftExpression ( '<<' | '>>' ) additiveExpression
+    ;
+
+bitAndExpression
+    : bitShiftExpression
+    | bitAndExpression '&' bitShiftExpression
+    ;
+
+xOrExpression
+    : bitAndExpression
+    | xOrExpression '^' bitAndExpression
+    ;
+
 expression
-    : expression binaryOperator expression
-    | unaryOperator expression
-    | expression incrementor
-    | expression LBRACKET expression RBRACKET
-    | LPAREN expression RPAREN
-    | membershipTest
-    | builtInCall
-    | subroutineCall
-    | kernelCall
-    | MINUS expression
-    | expressionTerminator
+    : expressionTerminator
+    | xOrExpression
+    | expression '|' xOrExpression
+    ;
+
+comparsionExpression
+    : expression  // if (expression)
+    | expression relationalOperator expression
+    ;
+
+booleanExpression
+    : membershipTest
+    | comparsionExpression
+    | booleanExpression logicalOperator comparsionExpression
     ;
 
 expressionTerminator
     : Constant
-    | MINUS? ( Integer | RealNumber )
+    | Integer
+    | RealNumber
     | Identifier
     | StringLiteral
+    | builtInCall
+    | kernelCall
+    | subroutineCall
     | timingTerminator
+    | MINUS expressionTerminator
+    | LPAREN expression RPAREN
+    | expressionTerminator LBRACKET expression RBRACKET
+    | expressionTerminator incrementor
     ;
 
 expressionList
@@ -302,7 +353,7 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
     ;
 
 castOperator
@@ -343,12 +394,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
     : 'for' membershipTest
-    | 'while' LPAREN expression RPAREN
+    | 'while' LPAREN booleanExpression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;
@@ -415,7 +466,7 @@ timingTerminator
 
 timingIdentifier
     : TimingLiteral
-    | MINUS? 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -480,7 +531,7 @@ ARROW : '->' ;
 
 MINUS : '-' ;
 
-Constant : MINUS? ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
+Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
 Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;
@@ -502,7 +553,7 @@ RealNumber : Float (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units
-TimingLiteral : MINUS? (Integer | RealNumber ) TimeUnit ;
+TimingLiteral : (Integer | RealNumber ) TimeUnit ;
 
 // allow ``"str"`` and ``'str'``
 StringLiteral

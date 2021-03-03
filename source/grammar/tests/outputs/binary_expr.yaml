@@ -8,24 +8,37 @@ reference: |
     statement
       expressionStatement
         expression
-          expression
-            expressionTerminator
-              2
-          binaryOperator
-            +
-          expression
-            expressionTerminator
-              2
+          xOrExpression
+            bitAndExpression
+              bitShiftExpression
+                additiveExpression
+                  additiveExpression
+                    multiplicativeExpression
+                      unaryExpression
+                        expressionTerminator
+                          2
+                  +
+                  multiplicativeExpression
+                    unaryExpression
+                      expressionTerminator
+                        2
         ;
     statement
       expressionStatement
         expression
-          expression
-            expressionTerminator
-              x
-          binaryOperator
-            <<
-          expression
-            expressionTerminator
-              y
+          xOrExpression
+            bitAndExpression
+              bitShiftExpression
+                bitShiftExpression
+                  additiveExpression
+                    multiplicativeExpression
+                      unaryExpression
+                        expressionTerminator
+                          x
+                <<
+                additiveExpression
+                  multiplicativeExpression
+                    unaryExpression
+                      expressionTerminator
+                        y
         ;

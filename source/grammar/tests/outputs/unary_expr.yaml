@@ -7,9 +7,14 @@ reference: |
     statement
       expressionStatement
         expression
-          unaryOperator
-            !
-          expression
-            expressionTerminator
-              my_var
+          xOrExpression
+            bitAndExpression
+              bitShiftExpression
+                additiveExpression
+                  multiplicativeExpression
+                    unaryExpression
+                      unaryOperator
+                        !
+                      expressionTerminator
+                        my_var
         ;

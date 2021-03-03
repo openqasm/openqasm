@@ -145,6 +145,7 @@ class TestGrammar(unittest.TestCase):
     def test_branching(self):
         """Test branching statements."""
         self.load_and_compare_yaml("branching.yaml")
+        self.load_and_compare_yaml("branch_binop.yaml")
 
     def test_loop_and_control_directive(self):
         """Test loop and control directive statements."""

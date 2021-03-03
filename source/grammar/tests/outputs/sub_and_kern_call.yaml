@@ -17,26 +17,27 @@ reference: |
               equalsExpression
                 =
                 expression
-                  subroutineCall
-                    sub_call
-                    (
-                    expressionList
-                      expression
-                        expressionTerminator
-                          10
-                      ,
-                      expression
-                        expressionTerminator
-                          "01"
-                    )
-                    expressionList
-                      expression
-                        expressionTerminator
-                          q1
-                      ,
-                      expression
-                        expressionTerminator
-                          q2
+                  expressionTerminator
+                    subroutineCall
+                      sub_call
+                      (
+                      expressionList
+                        expression
+                          expressionTerminator
+                            10
+                        ,
+                        expression
+                          expressionTerminator
+                            "01"
+                      )
+                      expressionList
+                        expression
+                          expressionTerminator
+                            q1
+                        ,
+                        expression
+                          expressionTerminator
+                            q2
         ;
     statement
       classicalDeclarationStatement
@@ -55,18 +56,19 @@ reference: |
               equalsExpression
                 =
                 expression
-                  kernelCall
-                    kern_call
-                    (
-                    expressionList
-                      expression
-                        expressionTerminator
-                          0.5
-                      ,
-                      expression
-                        expressionTerminator
-                          timingTerminator
-                            timingIdentifier
-                              10dt
-                    )
+                  expressionTerminator
+                    kernelCall
+                      kern_call
+                      (
+                      expressionList
+                        expression
+                          expressionTerminator
+                            0.5
+                        ,
+                        expression
+                          expressionTerminator
+                            timingTerminator
+                              timingIdentifier
+                                10dt
+                      )
         ;
