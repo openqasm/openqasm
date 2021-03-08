@@ -73,7 +73,7 @@ def counts_for_term(bit[2*n]:spec) qubit[n]:q -> uint[prec] {
 // Estimate the expected energy
 def estimate_energy qubit[n]:q -> fixed[prec,prec] {
   fixed[prec, prec] energy;
-  uint[prec] npaulis = get_npaulis;
+  uint[prec] npaulis = get_npaulis();
   for t in [0:npaulis-1] {
     bit spec[2*n] = get_pauli(t);
     uint[prec] counts;
