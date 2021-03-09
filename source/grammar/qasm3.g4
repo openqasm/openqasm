@@ -272,10 +272,10 @@ expressionStatement
     ;
 
 expression
-    : expression binaryOperator expression
+    : expression LBRACKET expression RBRACKET
+    | expression binaryOperator expression
     | unaryOperator expression
     | expression incrementor
-    | expression LBRACKET expression RBRACKET
     | LPAREN expression RPAREN
     | membershipTest
     | builtInCall
