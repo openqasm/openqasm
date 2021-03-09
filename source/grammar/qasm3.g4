@@ -318,14 +318,14 @@ bitShiftExpression
 
 additiveExpression
     : multiplicativeExpression
-    | additiveExpression ( '+' | MINUS ) multiplicativeExpression
+    | additiveExpression ( PLUS | MINUS ) multiplicativeExpression
     ;
 
 multiplicativeExpression
     // base case either terminator or unary
     : expressionTerminator
     | unaryExpression
-    | multiplicativeExpression ( '*' | '/' | '%' ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
     ;
 
 unaryExpression
@@ -547,7 +547,12 @@ COMMA : ',' ;
 EQUALS : '=' ;
 ARROW : '->' ;
 
+PLUS : '+';
 MINUS : '-' ;
+MUL : '*';
+DIV : '/';
+MOD : '%';
+
 
 Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
@@ -565,7 +570,7 @@ fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
-fragment PlusMinus : [-+] ;
+fragment PlusMinus : PLUS | MINUS ;
 fragment Float : Digit+ DOT Digit* ;
 RealNumber : Float (SciNotation PlusMinus? Integer )? ;
 
