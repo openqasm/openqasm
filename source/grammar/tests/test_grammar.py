@@ -134,6 +134,7 @@ class TestGrammar(unittest.TestCase):
     def test_expression(self):
         """Test expressions."""
         self.load_and_compare_yaml("binary_expr.yaml")
+        self.load_and_compare_yaml("order_of_ops.yaml")
         self.load_and_compare_yaml("unary_expr.yaml")
         self.load_and_compare_yaml("built_in_call.yaml")
         self.load_and_compare_yaml("sub_and_kern_call.yaml")
@@ -145,6 +146,7 @@ class TestGrammar(unittest.TestCase):
     def test_branching(self):
         """Test branching statements."""
         self.load_and_compare_yaml("branching.yaml")
+        self.load_and_compare_yaml("branch_binop.yaml")
 
     def test_loop_and_control_directive(self):
         """Test loop and control directive statements."""
