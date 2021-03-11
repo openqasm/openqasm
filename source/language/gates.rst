@@ -285,7 +285,7 @@ those with their inverse. The base case is given by replacing ``inv @ CX`` with 
        inv @ rzp(theta) q1;
    }
 
-The modifier ``pow[k] @`` replaces its gate argument :math:`U` by its :math:`k`\ th
+The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
 power :math:`U^k` for some positive integer :math:`k` (not necessarily
 constant). Such a gate can be trivially defined as :math:`k` repetitions
 of the original gate, although more efficient implementations may be
@@ -295,7 +295,7 @@ possible.
 
    // define x as sqrt(x)
    gate x q1 {
-       pow[2] @ sx q1;
+       pow(2) @ sx q1;
    }
 
 The modifier ``ctrl @`` replaces its gate argument :math:`U` by a
