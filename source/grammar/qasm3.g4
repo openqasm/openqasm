@@ -1,8 +1,8 @@
-/**** ANTLRv4  grammar for OpenQASM3.0. ****/
+/***** ANTLRv4  grammar for OpenQASM3.0. *****/
 
 grammar qasm3;
 
-/** Parser grammar **/
+/**** Parser grammar ****/
 
 program
     : header (globalStatement | statement)*
@@ -56,7 +56,7 @@ returnSignature
     : ARROW classicalType
     ;
 
-/* Types and Casting */
+/*** Types and Casting ***/
 
 designator
     : LBRACKET expression RBRACKET
@@ -74,7 +74,7 @@ association
     : COLON Identifier
     ;
 
-// Quantum Types
+/** Quantum Types **/
 quantumType
     : 'qubit'
     | 'qreg'
@@ -92,7 +92,7 @@ quantumArgumentList
     : ( quantumArgument COMMA )* quantumArgument
     ;
 
-// Classical Types
+/** Classical Types **/
 bitType
     : 'bit'
     | 'creg'
@@ -162,12 +162,12 @@ classicalArgumentList
     : ( classicalArgument COMMA )* classicalArgument
     ;
 
-// Aliasing
+/** Aliasing **/
 aliasStatement
     : 'let' Identifier EQUALS indexIdentifier SEMICOLON
     ;
 
-// Register Concatenation and Slicing
+/** Register Concatenation and Slicing **/
 
 indexIdentifier
     : Identifier rangeDefinition
@@ -187,7 +187,7 @@ rangeDefinition
     : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
     ;
 
-/* Gates and Built-in Quantum Instructions */
+/*** Gates and Built-in Quantum Instructions ***/
 
 quantumGateDefinition
     : 'gate' quantumGateSignature quantumBlock
@@ -256,15 +256,24 @@ quantumGateName
     | quantumGateModifier quantumGateName
     ;
 
-/* Classical Instructions */
+/*** Classical Instructions ***/
 
 unaryOperator
     : '~' | '!'
     ;
 
-binaryOperator
-    : '+' | '-' | '*' | '/' | '<<' | '>>' | 'rotl' | 'rotr' | '&&' | '||' | '&' | '|' | '^'
-    | '>' | '<' | '>=' | '<=' | '==' | '!='
+relationalOperator
+    : '>'
+    | '<'
+    | '>='
+    | '<='
+    | '=='
+    | '!='
+    ;
+
+logicalOperator
+    : '&&'
+    | '||'
     ;
 
 expressionStatement
@@ -272,29 +281,77 @@ expressionStatement
     ;
 
 expression
-    : expression binaryOperator expression
-    | unaryOperator expression
-    | expression incrementor
-    | expression LBRACKET expression RBRACKET
-    | LPAREN expression RPAREN
-    | membershipTest
-    | builtInCall
-    | subroutineCall
-    | kernelCall
-    | MINUS expression
-    | expressionTerminator
+    // include terminator/unary as base cases to simplify parsing
+    : expressionTerminator
+    | unaryExpression
+    // expression hierarchy
+    | xOrExpression
+    | expression '|' xOrExpression
+    ;
+
+/**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
+  *  grammar: https://github.com/antlr/grammars-v4/blob/master/c/C.g4
+  * Order (first to last evaluation):
+    Terminator (including Parens),
+    Unary Op,
+    Multiplicative
+    Additive
+    Bit Shift
+    Bit And
+    Exlusive Or (xOr)
+    Bit Or
+**/
+xOrExpression
+    : bitAndExpression
+    | xOrExpression '^' bitAndExpression
+    ;
+
+bitAndExpression
+    : bitShiftExpression
+    | bitAndExpression '&' bitShiftExpression
+    ;
+
+bitShiftExpression
+    : additiveExpression
+    | bitShiftExpression ( '<<' | '>>' ) additiveExpression
+    ;
+
+additiveExpression
+    : multiplicativeExpression
+    | additiveExpression ( PLUS | MINUS ) multiplicativeExpression
+    ;
+
+multiplicativeExpression
+    // base case either terminator or unary
+    : expressionTerminator
+    | unaryExpression
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    ;
+
+unaryExpression
+    : unaryOperator expressionTerminator
     ;
 
 expressionTerminator
     : Constant
-    | MINUS? ( Integer | RealNumber )
+    | Integer
+    | RealNumber
     | Identifier
     | StringLiteral
+    | builtInCall
+    | kernelCall
+    | subroutineCall
     | timingTerminator
+    | MINUS expressionTerminator
+    | LPAREN expression RPAREN
+    | expressionTerminator LBRACKET expression RBRACKET
+    | expressionTerminator incrementor
     ;
+/** End expression hierarchy **/
 
-expressionList
-    : ( expression COMMA )* expression
+incrementor
+    : '++'
+    | '--'
     ;
 
 builtInCall
@@ -302,17 +359,29 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
     ;
 
 castOperator
     : classicalType
     ;
 
-incrementor
-    : '++'
-    | '--'
+expressionList
+    : ( expression COMMA )* expression
     ;
+
+/** Boolean expression hierarchy **/
+booleanExpression
+    : membershipTest
+    | comparsionExpression
+    | booleanExpression logicalOperator comparsionExpression
+    ;
+
+comparsionExpression
+    : expression  // if (expression)
+    | expression relationalOperator expression
+    ;
+/** End boolean expression hierarchy **/
 
 equalsExpression
     : EQUALS expression
@@ -343,12 +412,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
     : 'for' membershipTest
-    | 'while' LPAREN expression RPAREN
+    | 'while' LPAREN booleanExpression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;
@@ -373,7 +442,7 @@ kernelCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
-/* Subroutines */
+/*** Subroutines ***/
 
 subroutineDefinition
     : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
@@ -391,13 +460,13 @@ subroutineCall
     : Identifier ( LPAREN expressionList? RPAREN )? expressionList
     ;
 
-/* Directives */
+/*** Directives ***/
 
 pragma
     : '#pragma' LBRACE statement* RBRACE  // match any valid openqasm statement
     ;
 
-/* Circuit Timing */
+/*** Circuit Timing ***/
 
 timingType
     : 'length'
@@ -415,7 +484,7 @@ timingTerminator
 
 timingIdentifier
     : TimingLiteral
-    | MINUS? 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -432,8 +501,8 @@ timingStatement
     | timingBox
     ;
 
-/* Pulse Level Descriptions of Gates and Measurement */
-// TODO: Update when pulse grammar is formalized ****
+/*** Pulse Level Descriptions of Gates and Measurement ***/
+// TODO: Update when pulse grammar is formalized
 
 calibration
     : calibrationGrammarDeclaration
@@ -458,7 +527,7 @@ calibrationArgumentList
     : classicalArgumentList | expressionList
     ;
 
-/** Lexer grammar **/
+/**** Lexer grammar ****/
 
 LBRACKET : '[' ;
 RBRACKET : ']' ;
@@ -478,9 +547,14 @@ COMMA : ',' ;
 EQUALS : '=' ;
 ARROW : '->' ;
 
+PLUS : '+';
 MINUS : '-' ;
+MUL : '*';
+DIV : '/';
+MOD : '%';
 
-Constant : MINUS? ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
+
+Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
 Whitespace : [ \t]+ -> skip ;
 Newline : [\r\n]+ -> skip ;
@@ -496,13 +570,13 @@ fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
-fragment PlusMinus : [-+] ;
+fragment PlusMinus : PLUS | MINUS ;
 fragment Float : Digit+ DOT Digit* ;
 RealNumber : Float (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units
-TimingLiteral : MINUS? (Integer | RealNumber ) TimeUnit ;
+TimingLiteral : (Integer | RealNumber ) TimeUnit ;
 
 // allow ``"str"`` and ``'str'``
 StringLiteral

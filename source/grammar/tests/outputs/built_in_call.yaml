@@ -8,34 +8,36 @@ reference: |
     statement
       expressionStatement
         expression
-          builtInCall
-            castOperator
-              classicalType
-                singleDesignatorType
-                  int
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
-            (
-            expressionList
-              expression
-                expressionTerminator
-                  10
-            )
+          expressionTerminator
+            builtInCall
+              castOperator
+                classicalType
+                  singleDesignatorType
+                    int
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
+              (
+              expressionList
+                expression
+                  expressionTerminator
+                    10
+              )
         ;
     statement
       expressionStatement
         expression
-          builtInCall
-            builtInMath
-              sin
-            (
-            expressionList
-              expression
-                expressionTerminator
-                  π
-            )
+          expressionTerminator
+            builtInCall
+              builtInMath
+                sin
+              (
+              expressionList
+                expression
+                  expressionTerminator
+                    π
+              )
         ;
