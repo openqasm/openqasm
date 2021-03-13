@@ -83,14 +83,14 @@ reference: |
           assignmentOperator
             =
           expression
-            expression
+            expressionTerminator
               expressionTerminator
                 b
-            [
-            expression
-              expressionTerminator
-                1
-            ]
+              [
+              expression
+                expressionTerminator
+                  1
+              ]
         ;
     statement
       assignmentStatement
@@ -100,29 +100,30 @@ reference: |
           assignmentOperator
             +=
           expression
-            builtInCall
-              castOperator
-                classicalType
-                  singleDesignatorType
-                    int
-                  designator
-                    [
-                    expression
+            expressionTerminator
+              builtInCall
+                castOperator
+                  classicalType
+                    singleDesignatorType
+                      int
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          10
+                      ]
+                (
+                expressionList
+                  expression
+                    expressionTerminator
                       expressionTerminator
-                        10
-                    ]
-              (
-              expressionList
-                expression
-                  expression
-                    expressionTerminator
-                      a
-                  [
-                  expression
-                    expressionTerminator
-                      1
-                  ]
-              )
+                        a
+                      [
+                      expression
+                        expressionTerminator
+                          1
+                      ]
+                )
         ;
     statement
       assignmentStatement

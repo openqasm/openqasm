@@ -54,7 +54,7 @@ defined ``h``, we can use it in later ``gate`` blocks. The definition does not i
 implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
 the user and/or compiler, given information about the instructions supported by a particular target.
 
-Controled gates can be constructed by adding a control modifier to an existing gate. For example,
+Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
 .. code-block:: c
@@ -62,14 +62,14 @@ the NOT gate is given by ``X = U(π, 0, π)`` and the block
    gate CX c, t {
       ctrl @ U(π, 0, π) c, t;
    }
-   
+
    CX q[1], q[0];
 
 defines the gate
 
 .. math::
 
-   \mathrm{CX} := I\oplus X = \left(\begin{array}{cccc}
+   \mathrm{CX} := I\times X = \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 1 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
@@ -157,7 +157,7 @@ and applies the controlled gate
 
 .. math::
 
-  I\oplus R_z(\pi/2) = \left(\begin{array}{cccc}
+  I\otimes R_z(\pi/2) = \left(\begin{array}{cccc}
   1 & 0 & 0 & 0 \\
   0 & 1 & 0 & 0 \\
   0 & 0 & e^{-i\tau/2} & 0 \\
@@ -176,7 +176,7 @@ corresponding OpenQASM code is
 
 .. code-block:: c
 
-   gate cphase(angle[32]: θ) a, b
+   gate cphase(θ) a, b
    {
      U(0, 0, θ / 2) a;
      CX a, b;
@@ -212,8 +212,8 @@ In general, new gates are defined by statements of the form
 
 where the optional parameter list ``params`` is a comma-separated list of variable
 parameters, and the argument list ``qargs`` is a comma-separated list of qubit
-arguments. The parameters are identifiers with angular types and default
-to 32-bits. The qubit arguments are identifiers. If there are no
+arguments. The parameters are identifiers with arbitrary-precision numeric types.
+The qubit arguments are identifiers. If there are no
 variable parameters, the parentheses are optional. At least one qubit
 argument is required. The arguments in ``qargs`` cannot be indexed within the body
 of the gate definition.
@@ -285,7 +285,7 @@ those with their inverse. The base case is given by replacing ``inv @ CX`` with 
        inv @ rzp(theta) q1;
    }
 
-The modifier ``pow[k] @`` replaces its gate argument :math:`U` by its :math:`k`\ th
+The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
 power :math:`U^k` for some positive integer :math:`k` (not necessarily
 constant). Such a gate can be trivially defined as :math:`k` repetitions
 of the original gate, although more efficient implementations may be
@@ -295,7 +295,7 @@ possible.
 
    // define x as sqrt(x)
    gate x q1 {
-       pow[2] @ sx q1;
+       pow(2) @ sx q1;
    }
 
 The modifier ``ctrl @`` replaces its gate argument :math:`U` by a

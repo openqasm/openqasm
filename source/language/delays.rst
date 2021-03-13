@@ -149,7 +149,7 @@ including stretches, will be resolved to constants.
 .. code-block:: c
 
        length a = 300ns;
-       length b = lengthof({x %0});
+       length b = lengthof({x $0});
        stretch c;
        // stretchy length with min=300ns
        length d = a + 2 * c;
@@ -259,24 +259,24 @@ to properly take into account the finite length of each gate.
 .. code-block:: c
 
    stretch s, t;
-   length start_stretch = s - .5 * lengthof({x %0;})
-   length middle_stretch = s - .5 * lengthof({x %0;}) - .5 * lengthof({y %0;}
-   length end_stretch = s - .5 * lengthof({y %0;})
+   length start_stretch = s - .5 * lengthof({x $0;})
+   length middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
+   length end_stretch = s - .5 * lengthof({y $0;})
 
-   delay[start_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[middle_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[end_stretch] %0;
+   delay[start_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[middle_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[end_stretch] $0;
 
-   cx %2, %3;
-   delay[t] %1;
-   cx %1, %2;
-   u %3;
+   cx $2, $3;
+   delay[t] $1;
+   cx $1, $2;
+   u $3;
 
 Boxed expressions
 -----------------
