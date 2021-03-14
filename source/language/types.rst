@@ -10,9 +10,10 @@ Generalities
 
 Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
-Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
-Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier.
+Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
+continuation characters consists of all members of the aforementioned character
+sets with the addition of decimal numerals [0-9]. Variable identifiers may not
+override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
 types can be initialized on declaration. Multiple comma-separated declarations
