@@ -9,7 +9,7 @@ OpenQASM presents a parameterized set of physical logic gates and concurrent
 real-time classical computations. Its main goal is to serve as an intermediate
 representation for higher-level compilers to communicate with quantum hardware.
 Allowances have been made for human usability. In particular, the language admits
-different representations of the same program as it is descends from a high-level
+different representations of the same program as it is transformed from a high-level
 description to a pulse representation.
 
 This document is draft version 3.0 of the OpenQASM specification. The Qiskit development team is
