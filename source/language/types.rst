@@ -45,7 +45,7 @@ for backwards compatibility and will be removed in the future. Sizes
 must always be constant positive integers.
 
 - The label ``name[j]`` refers to a qubit of this register, where :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
-- The label ``name[j:k]`` refers to a slice of the qubits of this register inclusive of all qubits extending from :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` to :math:`k\in \{j+1,\dots,\mathrm{size}(\mathrm{name})-1\}` where `j` and `k` are integers.
+- The label ``name[j:k]`` refers to a slice of the qubits of this register inclusive of all qubits extending from :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` to :math:`k\in \{j+1,\dots,\mathrm{size}(\mathrm{name})\} - 1` where `j` and `k` are integers.
 - The label ``name[j:]`` refers to a slice of the qubits of this register inclusive of :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}`, an integer, and all qubits following `j` to the extent of the register.
 - The label ``name[:]`` refers to a slice of the qubits of this register inclusive of all qubits to the extent of the register.
 
