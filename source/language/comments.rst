@@ -28,7 +28,7 @@ number followed by a number, is optional. If not present, the minor version
 number is assumed to be zero.
 
 Multiple occurrences of the version string (outside of comments) are not
-permitted, nor may it appear elsewhere than as the first non-comment line.
+permitted, nor may it appear elsewhere than the first non-comment line.
 
 Included files
 ==============
