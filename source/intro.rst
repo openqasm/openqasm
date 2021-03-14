@@ -1,9 +1,11 @@
 Introduction
 ============
 
-OpenQASM is an imperative programming language that describes universal quantum
-computing using the measurement-based quantum circuit model. Its use is
-near-term quantum computing experiments.
+OpenQASM is an imperative programming language designed for near-term
+quantum computing algorithms and applications. Quantum
+programs are described using the measurement-based quantum circuit model
+with support for classical feed-forward flow control based on measurement
+outcomes.
 
 OpenQASM presents a parameterized set of physical logic gates and concurrent
 real-time classical computations. Its main goal is to serve as an intermediate
