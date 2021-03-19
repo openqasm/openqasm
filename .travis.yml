@@ -1,0 +1,4 @@
+# basic Travis script to run ANTLR CI tests for OpenQASM
+language: python
+python: 3.7
+script: pytest
