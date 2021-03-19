@@ -1,3 +1,7 @@
 sphinx
 sphinxcontrib-bibtex<2.0.0
 pylint
+
+# ANTLR requirements
+antlr4
+pytest
