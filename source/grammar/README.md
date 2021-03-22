@@ -12,7 +12,6 @@ To get up and running with ANTLR, follow these steps.
 
 ## Run the Tests
 1. Make sure you are set up with ANTLR by following the steps above.
-2. Run the test suite: `pytest MYPATH/test_grammar.py` (or just `pytest`)
-    - `test_grammar.py` path: `openqasm/source/grammar/tests/test_grammar.py`.
+2. From the root of the repository, run the test suite: `pytest openqasm/source/grammar/test_grammar.py` (or just `pytest .`)
     - Reference files at `openqasm/source/grammar/tests/outputs/`
     - Example files at `openqasm/examples/`
