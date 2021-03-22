@@ -1,11 +1,18 @@
 # OpenQasm 3.0 Grammar
 
-Grammar specification in [ANTLR](https://www.antlr.org/).
+Grammar specification in [ANTLR](https://www.antlr.org/). See `openqasm/source/grammar/qasm3.g4`.
 
-Generate ANTLR parser in Python: `antlr4 -Dlanguage=Python3 MYPATH/qasm3.g4`
+## Working with ANTLR
+To get up and running with ANTLR, follow these steps.
+1. Install ANTLR locally following these [instructions](https://github.com/antlr/antlr4/blob/master/doc/getting-started.md).
+2. Install the ANTLR Python runtime: `pip install antlr4-python3-runtime`.
+3. Generate the ANTLR parser files in Python: `antlr4 -Dlanguage=Python3 MYPATH/qasm3.g4`
+    - Note: This assumes you set the `antlr4` alias on installation.
+4. You can now use the generated files to parse qasm3 code! See, for instance, the method `build_parse_tree()` in `openqasm/source/grammar/tests/test_grammar`.
 
-Run Tests
-    - Run the test suite: `pytest MYPATH/test_grammar.py` (or just `pytest`). The `test_grammar.py`
-    file is located at: `openqasm/source/grammar/tests/test_grammar.py`.
+## Run the Tests
+1. Make sure you are set up with ANTLR by following the steps above.
+2. Run the test suite: `pytest MYPATH/test_grammar.py` (or just `pytest`)
+    - `test_grammar.py` path: `openqasm/source/grammar/tests/test_grammar.py`.
     - Reference files at `openqasm/source/grammar/tests/outputs/`
     - Example files at `openqasm/examples/`
