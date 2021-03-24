@@ -1,7 +1,7 @@
-import unittest
 import io
 import os
 from contextlib import redirect_stderr
+import pytest
 
 import yaml
 
@@ -72,15 +72,15 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
 
         error = err.getvalue()
         if error:
-            print(input_str)
             raise Exception("Parse tree build failed. Error:\n" + error)
 
     return pretty_tree
 
-class TestGrammar(unittest.TestCase):
-    """Test the ANTLR grammar w/ python unittest."""
+class TestGrammar:
+    """Test the ANTLR grammar w/ pytest."""
 
-    def setUp(self):
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
         root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
         self.examples_path = os.path.join(root_dir, "examples/")
@@ -109,7 +109,7 @@ class TestGrammar(unittest.TestCase):
         parse_tree = build_parse_tree(qasm_source)
 
         reference = test_dict["reference"]
-        self.assertEqual(parse_tree, reference)
+        assert parse_tree == reference
 
     def test_header(self):
         """Test header."""
@@ -166,7 +166,3 @@ class TestGrammar(unittest.TestCase):
             example_file = os.path.join(self.examples_path, e)
             if os.path.isfile(example_file):
                 tree = build_parse_tree(example_file, using_file=True)
-
-
-if __name__ == "__main__":
-    unittest.main()
