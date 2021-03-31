@@ -41,6 +41,6 @@ contents of the file were inserted at the location of the ``include`` statement.
    // First non-comment is a version string
    OPENQASM 3.0;
 
-   include "stdgates.qasm";
+   include "standard_gates.inc";
 
    // Rest of QASM program
