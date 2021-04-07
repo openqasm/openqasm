@@ -96,7 +96,7 @@ increment ``++`` and decrement ``--``.
    a += 4; // a == 6
    a++; // a == 7
 
-Fixed-point numbers and angles
+Fixed-point numbers, floating-point numbers and angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Fixed-point and angle types support addition, subtraction,
@@ -109,6 +109,25 @@ multiplication, and division and the corresponding assignment operators.
    a + b; // 3/2 * pi
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+Complex numbers
+~~~~~~~~~~~~~~~
+
+In this section, `i` denotes the imaginary constant :math:`sqrt(-1)`.
+
+Addition and subtraction on complex numbers are defined by adding/subtracting the real and imaginary
+components.
+
+.. code-block:: c
+
+   complex[64] a = [10.0, 5.0];
+   complex[64] b = [-2.5, -7.5];
+   complex[64] c = a + b; // c = [7.5, -2.5]
+   complex[64] d = a - b; // d = [12.5, 12.5];
+
+Multiplication is defined by distribution. For complex numbers `a`, `b`, we have
+:math:`(a.real+a.imag*i)*(b.real+b.imag*i) = (a.real*b.real-a.imag*b.imag) + (a.real*b.imag+a.imag*b.real)*i`.
+In array notation, :math:`a*b = [a.real*b.real-a.imag*b.imag, a.real*b.imag+a.imag*b.real]`.
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~

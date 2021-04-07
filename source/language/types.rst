@@ -169,6 +169,22 @@ compatible with run-time values on some platforms.
    // equivalent to pi_by_2 up to rounding errors
    angle[20](float_pi / 2);
 
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers may be declared as ``complex[size] name``, for some number of bits ``size``. The real
+and imaginary parts of the complex number are ``float[size]`` types. The real part may be accessed
+by ``.real`` and the imaginary part by ``.imag``. A ``complex`` type may be defined by array syntax.
+Note, however, that complex literals of the form `[a,b]` are not allowed--they must be used as an
+assigned to a complex type.
+
+.. code-block:: c
+
+   // Declare a 64-bit complex number 2.5+3.5i (where i is :math:`sqrt(-1)`)
+   complex[64] c = [2.5, 3.5];
+   float[64] re = c.real;
+   float[64] im = c.imag;
+
 Boolean types
 ~~~~~~~~~~~~~
 
@@ -234,7 +250,8 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       | Euler’s number                | euler        | ℇ            | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
 
-Note that `e` is a valid identifier. `e/E` are also used in scientifier notation where appropriate.
+Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
+
 Types related to timing
 -----------------------
 

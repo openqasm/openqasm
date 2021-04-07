@@ -125,6 +125,10 @@ constantDeclaration
     : 'const' equalsAssignmentList
     ;
 
+complexDeclaration
+    : 'complex' designator ( identifierList | equalsAssignmentList | complexEqualsAssignmentList )
+    ;
+
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
@@ -148,6 +152,7 @@ classicalDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
+    | complexDeclaration
     ;
 
 classicalTypeList
@@ -387,6 +392,10 @@ equalsExpression
     : EQUALS expression
     ;
 
+complexEqualsExpression
+    : EQUALS LBRACKET expression COMMA expression RBRACKET
+    ;
+
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
@@ -394,6 +403,10 @@ assignmentOperator
 
 equalsAssignmentList
     : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
+    ;
+
+complexEqualsAssignmentList
+    : (Identifier complexEqualsExpression COMMA)* Identifier complexEqualsExpression
     ;
 
 membershipTest
