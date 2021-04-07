@@ -1,44 +1,67 @@
 OpenPulse Grammar
 =================
 
-In addition to OpenQASM instructions, ``defcal`` blocks may contain OpenPulse
-instructions. Certain OpenPulse instructions are further restricted to only
-appearing inside of a ``defcal`` block.
+OpenQASM allows users to provide the underlying pulse definition for quantum gates
+see `here <pulses.html>`_. This is done within ``defcal`` blocks. OpenQASM is can be used with any
+well defined pulse grammar via the `defcalgrammar "name" VERSION` syntax. In this document, we
+outline one such grammar, OpenPulse.
 
-These instructions are motivated by the original OpenPulse specification which
-was defined as a JSON wire-format for pulse-level quantum programs in the paper
+This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
+pulse-level quantum programs defined in the paper
 `Qiskit Backend Specifications for OpenQASM and OpenPulse Experiment <https://arxiv.org/abs/1809.03452>`_.
-The text format described here has several advantages over the equivalent JSON
-format:
+The textual format described here has several advantages over the JSON format:
 
 - It is more readable
-- Absolute time is handled through built-in timekeeping instructions
-- Gates and classical instructions can be mixed in with the pulses to create far richer calibrations
-- Pulse definitions are tied to circuit instructions rather than circuit programs
-- Richer ability to compose pulses as signals and manage the relationship between pulses.
+- Absolute time is handled through built-in timekeeping protocols
+- Gates and classical instructions can be mixed in with pulses to create richer calibrations
+- Pulse definitions are tied to circuit instructions rather than entire programs
+- Richer ability to compose complex pulses via intuitive mathematical operations and a combination
+  of envelopes and oscillators
+- Ease of managing the relationship between pulses
+- Use of multiple oscillators on a single channel at the same time (see geometric gates--LINK)
 
-Interacting with qubits at the level of pulses is onerous and pulse programming is by definition
-less portable than the circuit model. The OpenPulse ``defcalgrammar`` defines the
-concept of ``channel``s and ``signal``s. The ``signal`` defines a *logical* signal within a natural
-DSP block diagram formalism, which are then emitted or produced by transmitting them on a *logical*
-``channel`` in the target device. It is the responsibility of the target device's compiler to map
-this idealized *logical* signal to *physical* target hardware to emit the corresponding *physical*
-signal. This formalism enables the pulse programmer to worry about only specifying the desired signal
-and delegates the responsibility to faithfully implement this signal to the compiler, abstracting away
-the complexities of the device's signal generation hardware.
-
+We aim to provide a flexible model that will cover the most extensive set of future scenarios. At
+the core of the OpenPulse ``defcalgrammar`` are the concepts of ``signals`` and ``channels``.
+``Signals`` define a discrete set of samples (or waveform) which are then played or captured via a
+a *logical* ``channel`` on the target device. A *logical* channel is a software abstraction which
+allows the programmer to be agnostic to complexities of the device's underlying pulse generation
+hardware. It is the responsibility of the target device's compiler to map these *logical*
+``signals`` to *physical* channels on the target hardware.
 
 Signals
 -------
 
-A ``signal`` is a generalization of a concept of a `pulse`.
-A signal consists of a discrete time-dependent function :math:`s(t), ℤ->ℂ` of max unit-norm
-and a clock-value (marker) :math:`t ∈ ℤ, t >= 0`. In a sense, the time :math:`t` is an "index" into the signal.
-The clock-value is propagated from its child signal with the initial value originating from the clock of the channel on which the signal is applied.
+A ``signal`` is a generalized concept of a `pulse`. A signal is a discrete, time-dependent function
+:math:`s(t), ℤ->ℂ` defining the samples in a waveform. It is assumed to have max unit-norm. In a
+sense, the time :math:`t` is an "index" into the signal.
 
-Openpulse supplies many types of builtin signal production operations such as an:
+Envelopes and Carriers
+----------------------------
 
-- ``envelope`` - A complex envelope - ``envelope signal = [0.0+1.0j, ..., 1.0+0.0j];``
+Signals are composed from two fundamental types, ``envelopes`` and ``carriers``.
+
+- ``envelope``: A discrete waveform :math:`f(t), ℤ->ℂ`. This can be constructed directly as an array
+of complex values or as a parametric pulse.
+  -  ``waveform`` - ``envelope wf1 = [0.1, 1.j, 0.1 - 0.2j, ...];``
+  - ``gaussian(amp: complex, duration: length, sigma: length)``,
+  - ``gaussian_square(amp: complex, duration: length, sigma: length, square_width: length)``,
+  - ``drag(amp: complex, duration: length, sigma: length, beta: float)``,
+  - ``constant(amp: complex, duration: length)``
+
+- ``wave(amp: complex, freq: float, phase: angle)`` - Characterized by ``amp``, ``freq`` and ``phase``.
+This modification occurs at the current time of the signal's local clock.
+The clock is determined by the clock of the controlling physical channel, eg., :math:`t_{wave} = t_{ch}`.
+Waves are a named three-tuple and may be modified with dot notation during real-time execution, eg., ``wave.phase += pi;``.
+Updates to a wave's properties will therefore propagate forward in time for future uses as determined by the applied physical channel.
+In this way, persistent amplitude/phase/frequency-updates may be applied.
+
+- ``osc``: :math:`Ae^{i(wt+\phi)}`, Sine/Cosine waves can be obtained by deriving with ``re``/``im``.
+- ``sawtooth``
+- ``square``
+- ``triangle``
+
+
+- ``envelope`` - A discrete, pulse envelope.  - ``envelope signal = [0.0+1.0j, ..., 1.0+0.0j];``
 - ``wave`` - A signal representing a carrier wave such as an oscillator - ``wave frame = osc(5e9, 2*pi);``
 
 Signals may be composed via transformation functions to form new signals that are derived from the input parent signals. For example ``new_signal = mix(envelope, wave);``
@@ -80,30 +103,6 @@ This enables the compiler to restructure the signal network to better map to the
 For example, if the hardware is capable of providing support for a ``carrier``, it may natively represent a signal of the form ``mix(envelope, carrier)``,
 otherwise it may choose to rewrite the signal as a sidebanded envelope.
 
-Signal production operations
-----------------------------
-
-Signal production operations are signal ``sources`` that maintain clock relationships when coupled to an output channel.
-
-- ``envelope``: Maintain an internal clock that begins at :math:`t=0` for every usage with a channel, eg., :math:`t_{envelope} = t_{ch} - t0_{ch}`.
-This is to enable the reuse of an envelope signal many times. Are parameterized such that :math:`s(0) = 0`, :math:`s(t>=tf) = 0`.
-  -  ``waveform`` - ``envelope wf1 = [0.1, 1.j, 0.1 - 0.2j, ...];``
-  - ``gaussian(amp: complex, duration: length, sigma: length)``,
-  - ``gaussian_square(amp: complex, duration: length, sigma: length, square_width: length)``,
-  - ``drag(amp: complex, duration: length, sigma: length, beta: float)``,
-  - ``constant(amp: complex, duration: length)``
-
-- ``wave(amp: complex, freq: float, phase: angle)`` - Characterized by ``amp``, ``freq`` and ``phase``.
-This modification occurs at the current time of the signal's local clock.
-The clock is determined by the clock of the controlling physical channel, eg., :math:`t_{wave} = t_{ch}`.
-Waves are a named three-tuple and may be modified with dot notation during real-time execution, eg., ``wave.phase += pi;``.
-Updates to a wave's properties will therefore propagate forward in time for future uses as determined by the applied physical channel.
-In this way, persistent amplitude/phase/frequency-updates may be applied.
-
-- ``osc``: :math:`Ae^{i(wt+\phi)}`, Sine/Cosine waves can be obtained by deriving with ``re``/``im``.
-- ``sawtooth``
-- ``square``
-- ``triangle``
 
 Signal composition operations
 -----------------------------
@@ -580,4 +579,3 @@ Clocking example
   //            mix[t=0->3]
   //                |
   //            sig0[t=0->3]
-
