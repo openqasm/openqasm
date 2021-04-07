@@ -20,11 +20,11 @@ or “implement this gate as late as possible".
 length and stretch types
 ------------------------
 
-The ``length`` type is used denote duration of time. Lengths are positive numbers
-that are manipulated at compile time. Lengths have units which can be
+The ``length`` type is used denote duration of time. Lengths are positive real numbers
+that are manipulated at compile time. Lengths must be followed by time units which can be
 any of the following:
 
--  SI units of time, such as ``ns, µs, ms, s``
+-  SI units of time: ``ns, µs or us, ms, s``
 
 -  Backend-dependent unit, ``dt``, equivalent to the duration of one waveform
    sample on the backend
@@ -81,9 +81,10 @@ whatever their actual durations may be, we can do the following:
 
 .. code-block:: c
 
+       qubit q[5];
        barrier q;
        cx q[0], q[1];
-       u q[2];
+       U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
        delay[stretchinf] q[0], q[1];
        delay[stretchinf] q[2];
@@ -95,6 +96,7 @@ the stretchy delays (:numref:`fig_alignment`\b):
 
 .. code-block:: c
 
+       qubit q[5];
        stretch g;
        barrier q;
        cx q[0], q[1];
@@ -147,7 +149,7 @@ including stretches, will be resolved to constants.
 .. code-block:: c
 
        length a = 300ns;
-       length b = lengthof({x %0});
+       length b = lengthof({x $0});
        stretch c;
        // stretchy length with min=300ns
        length d = a + 2 * c;
@@ -257,24 +259,24 @@ to properly take into account the finite length of each gate.
 .. code-block:: c
 
    stretch s, t;
-   length start_stretch = s - .5 * lengthof({x %0;})
-   length middle_stretch = s - .5 * lengthof({x %0;}) - .5 * lengthof({y %0;}
-   length end_stretch = s - .5 * lengthof({y %0;})
+   length start_stretch = s - .5 * lengthof({x $0;})
+   length middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
+   length end_stretch = s - .5 * lengthof({y $0;})
 
-   delay[start_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[middle_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[end_stretch] %0;
+   delay[start_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[middle_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[end_stretch] $0;
 
-   cx %2, %3;
-   delay[t] %1;
-   cx %1, %2;
-   u %3;
+   cx $2, $3;
+   delay[t] $1;
+   cx $1, $2;
+   u $3;
 
 Boxed expressions
 -----------------

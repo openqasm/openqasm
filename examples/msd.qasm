@@ -48,7 +48,7 @@ def distill qubit[10]:magic, qubit[3]:scratch -> bool {
   if(temp==1) { ry(-pi / 2) scratch[1]; }
   cz scratch[3], scratch[2];
   cy magic[5], scratch[1];
-  temp = ymeasure magic[5]; 
+  temp = ymeasure magic[5];
   if(temp==0) { ry(pi / 2) scratch[1]; }
   cy scratch[0], magic[1];
   inv @ s scratch[1];
@@ -92,7 +92,7 @@ def rus_level_0 qubit[10]:magic, qubit[3]:scratch {
   }
 }
 
-/* 
+/*
  * Run two levels of 10:2 magic state distillation.
  * Both levels have two distillations running in parallel.
  * The output pairs from the first level are separated and
@@ -158,10 +158,10 @@ distill_and_buffer(buffer_size) workspace, buffer;
 // Consume magic states to apply some gates ...
 h q[0];
 cx q[0], q[1];
-Ty(address) q[0], buffer; 
+Ty(address) q[0], buffer;
 address++;
 cx q[0], q[1];
-Ty(address) q[1], buffer; 
+Ty(address) q[1], buffer;
 address++;
 
 // In principle each Ty gate can execute as soon as the magic

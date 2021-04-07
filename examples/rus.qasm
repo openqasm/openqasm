@@ -11,7 +11,7 @@ include "stdgates.inc";
  * The 00 outcome occurs with probability 5/8.
  */
 def segment qubit[2]:anc, qubit:psi -> bit[2] {
-  bit[2] b;
+  bit b[2];
   reset anc;
   h anc;
   ccx anc[0], anc[1], psi;
@@ -32,7 +32,7 @@ reset input;
 h input;
 
 // braces are optional in this case
-while(int(flags) != 0) {
+while(int[2](flags) != 0) {
   flags = segment ancilla, input;
 }
 rz(pi - arccos(3 / 5)) input;

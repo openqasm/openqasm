@@ -14,9 +14,9 @@ const n = d^2;       // number of code qubits
 
 uint[32] failures;  // number of observed failures
 
-kernel zfirst creg[n - 1], int, int;
-kernel send creg[n -1 ], int, int, int;
-kernel zlast creg[n], int, int -> bit;
+kernel zfirst(creg[n - 1], int[32], int[32]);
+kernel send(creg[n -1 ], int[32], int[32], int[32]);
+kernel zlast(creg[n], int[32], int[32]) -> bit;
 
 qubit data[n];  // code qubits
 qubit ancilla[n - 1];  // syndrome qubits
@@ -83,12 +83,12 @@ for shot in [1: shots] {
 
   // Initialize
   reset data;
-  cycle data, ancilla -> layer;
+  layer = cycle data, ancilla;
   zfirst(layer, shot, d);
 
   // m cycles of syndrome measurement
   for i in [1: m] {
-    cycle data, ancilla -> layer;
+    layer = cycle data, ancilla;
     send(layer, shot, i, d);
   }
 
@@ -96,10 +96,9 @@ for shot in [1: shots] {
   data_outcomes = measure data;
 
   outcome = zlast(data_outcomes, shot, d);
-  failures += int(outcome);
+  failures += int[1](outcome);
 }
 
 /* The ratio of "failures" to "shots" is our result.
  * The data can be logged by the external functions too.
  */
-
