@@ -114,7 +114,7 @@ of the if statement has definite and equivalent length.
 .. code-block:: none
 
    defcal reset $0 {
-      bit res = // measure qubit $0
+      bit res = measure $0;
       if (res == 1) {
          // flip the qubit
       } else {
