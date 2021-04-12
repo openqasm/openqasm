@@ -690,3 +690,5 @@ many ``defcals``'s. Some suggestions are below.
 
     - Define namespaces where variables can be shared across ``defcal``'s as in C/C++
     - Include a global ``backend`` property, from which channels can be retrieved. Something like ``backend.get_tx_channel($0, "drive")``. For carriers, if the backend is capable of returning the resonant frequencies, that could be a good basis for prebuilt carriers likely to be reused.
+
+- Syntactic sugar for ``signal`` operations. For instance, ``*`` instead of ``mix`` or ``+`` instead of ``sum``.
