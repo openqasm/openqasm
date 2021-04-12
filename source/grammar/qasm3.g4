@@ -194,7 +194,7 @@ quantumGateDefinition
     ;
 
 quantumGateSignature
-    : quantumGateName ( LPAREN classicalArgumentList? RPAREN )? identifierList
+    : quantumGateName ( LPAREN identifierList? RPAREN )? identifierList
     ;
 
 quantumGateName
@@ -376,11 +376,11 @@ expressionList
 /** Boolean expression hierarchy **/
 booleanExpression
     : membershipTest
-    | comparsionExpression
-    | booleanExpression logicalOperator comparsionExpression
+    | comparisonExpression
+    | booleanExpression logicalOperator comparisonExpression
     ;
 
-comparsionExpression
+comparisonExpression
     : expression  // if (expression)
     | expression relationalOperator expression
     ;
@@ -430,7 +430,7 @@ endStatement
     ;
 
 returnStatement
-    : 'return' expression? SEMICOLON;
+    : 'return' ( expression | quantumMeasurement )? SEMICOLON;
 
 controlDirective
     : ('break' | 'continue') SEMICOLON

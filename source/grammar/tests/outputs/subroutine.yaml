@@ -85,29 +85,34 @@ reference: |
             branchingStatement
               if
               (
-              expression
-                expression
-                  expressionTerminator
-                    result
-                binaryOperator
-                  ==
-                expression
-                  expressionTerminator
-                    2
+              booleanExpression
+                comparisonExpression
+                  expression
+                    expressionTerminator
+                      result
+                  relationalOperator
+                    ==
+                  expression
+                    expressionTerminator
+                      2
               )
               programBlock
                 controlDirective
                   returnStatement
                     return
                     expression
-                      expression
-                        expressionTerminator
-                          1
-                      binaryOperator
-                        +
-                      expression
-                        expressionTerminator
-                          result
+                      xOrExpression
+                        bitAndExpression
+                          bitShiftExpression
+                            additiveExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    1
+                              +
+                              multiplicativeExpression
+                                expressionTerminator
+                                  result
                     ;
           returnStatement
             return
@@ -142,7 +147,7 @@ reference: |
             branchingStatement
               if
               (
-              expression
+              booleanExpression
                 membershipTest
                   i
                   in
@@ -166,13 +171,17 @@ reference: |
           returnStatement
             return
             expression
-              expression
-                expressionTerminator
-                  i
-              binaryOperator
-                +
-              expression
-                expressionTerminator
-                  1
+              xOrExpression
+                bitAndExpression
+                  bitShiftExpression
+                    additiveExpression
+                      additiveExpression
+                        multiplicativeExpression
+                          expressionTerminator
+                            i
+                      +
+                      multiplicativeExpression
+                        expressionTerminator
+                          1
             ;
           }
