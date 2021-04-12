@@ -664,27 +664,27 @@ Additional Considerations
 the document requires a frequency input. Similarly, in a Rabi experiment, an input amplitude will be
 needed for the drive pulse. I added a suggestion for generic ``defcal``'s, which can take any
 classical parameter. But there are other options as well.
-    - Create an attribute system which allows tagging of certain properties to a ``defcal``. This is
+  - Create an attribute system which allows tagging of certain properties to a ``defcal``. This is
 along the lines of LLVM IR, for instance.
-    - Allow global input from OpenQASM into ``defcal``'s.
-    - Don't allow these advanced pulse experiments. The goal seems to be to move away from the pulse
+  - Allow global input from OpenQASM into ``defcal``'s.
+  - Don't allow these advanced pulse experiments. The goal seems to be to move away from the pulse
 model, abstracting everything into circuits. Perhaps we don't want to support this functionality going forward.
 - Reuse of channels, carriers, etc... Since pulse syntax is local to ``defcal``'s, channels, carriers and signals have to be redefined within
 each ``defcal``. It would be nice if we could define some global variables which could be shared across ``defcal``'s.
 For instance, we would likely want to share a carreir containing a qubit's resonant frequency across
 many ``defcals``'s. Some suggestions are below.
-    - Include a global pulse namespace (or other initalization syntax). Something like
+  - Include a global pulse namespace (or other initalization syntax). Something like
 
-    .. code-block:: c
+  .. code-block:: c
 
-        // global variables to be used in any ``defcal``
-        global "openpulse" {
-            carrier c = exp(1.0, 5e9, 0);
-            txchannel d0 = txch($0, "drive");
-            rxchannel cap0 = rxch($0, "capture");
-        }
+    // global variables to be used in any ``defcal``
+    global "openpulse" {
+        carrier c = exp(1.0, 5e9, 0);
+        txchannel d0 = txch($0, "drive");
+        rxchannel cap0 = rxch($0, "capture");
+    }
 
-    - Define namespaces where variables can be shared across ``defcal``'s as in C/C++
-    - Include a global ``backend`` property, from which channels can be retrieved. Something like
+  - Define namespaces where variables can be shared across ``defcal``'s as in C/C++
+  - Include a global ``backend`` property, from which channels can be retrieved. Something like
 ``backend.get_tx_channel($0, "drive")``. For carriers, if the backend is capable of returning the resonant
 frequencies, that could be a good basis for prebuilt carriers likely to be reused.
