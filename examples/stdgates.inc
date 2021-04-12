@@ -1,7 +1,7 @@
 // Standard gate library
 
 // phase gate (Z-rotation by lambda)
-gate phase(angle[32]:lambda) q { U(0, 0, lambda) q; }
+gate phase(lambda) q { U(0, 0, lambda) q; }
 // controlled-NOT
 gate CX c, t { ctrl @ U(pi, 0, pi) c, t; }
 gate cx c, t { CX c, t; }
@@ -24,26 +24,26 @@ gate t a { phase(pi/4) a; }
 // C3 gate: conjugate of sqrt(S)
 gate tdg a { phase(-pi/4) a; }
 // Rotation around X-axis
-gate rx(angle[32]:theta) a { U(theta, -pi / 2, pi / 2) a; }
+gate rx(theta) a { U(theta, -pi / 2, pi / 2) a; }
 // rotation around Y-axis
-gate ry(angle[32]:theta) a { U(theta, 0, 0) a; }
+gate ry(theta) a { U(theta, 0, 0) a; }
 // rotation around Z axis
-gate rz(angle[32]:phi) a { phase(phi) a; }
+gate rz(phi) a { phase(phi) a; }
 // controlled-Phase
 gate cz a, b { h b; cx a, b; h b; }
 // controlled-Y
 gate cy a, b { sdg b; cx a, b; s b; }
 // controlled-H
 gate ch a, b {
-  h b; 
+  h b;
   sdg b;
   cx a, b;
-  h b; 
+  h b;
   t b;
   cx a, b;
-  t b; s a; 
-  h b; 
-  s b; 
+  t b; s a;
+  h b;
+  s b;
   x b;
 }
 // Toffoli
@@ -52,13 +52,13 @@ gate ccx a, b, c
   h c;
   cx b, c;
   tdg c;
-  cx a, c; 
+  cx a, c;
   t c;
-  cx b, c; 
+  cx b, c;
   tdg c;
-  cx a, c; 
+  cx a, c;
   t b; t c; h c;
-  cx a, b; 
+  cx a, b;
   t a; tdg b;
   cx a, b;
 }
@@ -70,7 +70,7 @@ gate cswap a, b, c
   cx c, b;
 }
 // controlled-rz
-gate crz(angle[32]:lambda) a, b
+gate crz(lambda) a, b
 {
   phase(lambda / 2) b;
   cx a, b;
@@ -78,7 +78,7 @@ gate crz(angle[32]:lambda) a, b
   cx a, b;
 }
 // controlled-phase
-gate cphase(angle[32]:lambda) a, b
+gate cphase(lambda) a, b
 {
   phase(lambda / 2) a;
   cx a, b;
@@ -87,7 +87,7 @@ gate cphase(angle[32]:lambda) a, b
   phase(lambda / 2) b;
 }
 // controlled-U
-gate cu(angle[32]:theta,angle[32]:phi,angle[32]:lambda) c, t
+gate cu(theta, phi, lambda) c, t
 {
   // implements controlled-U(theta,phi,lambda) with  target t and control c
   phase((lambda - phi)/2) t;

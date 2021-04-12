@@ -18,17 +18,23 @@ A comment block begins with ``/*`` and ends with ``*/``:
 Version string
 ==============
 
-The first (non-comment) line of an OpenQASM program may optionally be ``OPENQASM M.m;``
-indicating a major version M and minor version m. Version 3.0 is
-described in this document. Multiple occurrences of the version keyword
-are not permitted. The minor version number and decimal point are
-optional. If they are not present, minor version number is assumed to be zero.
+The first non-comment line of an OpenQASM program may optionally be
+``OPENQASM`` *M.m* ``;`` indicating a major version *M* and minor version *m*.
+
+This document describes Version 3.0.
+
+The minor version number, expressed as a decimal point after the major version
+number followed by a number, is optional. If not present, the minor version
+number is assumed to be zero.
+
+Multiple occurrences of the version string (outside of comments) are not
+permitted, nor may it appear elsewhere than the first non-comment line.
 
 Included files
 ==============
 
-The statement ``include "filename";`` continues parsing ``filename`` as if the contents of the file were
-inserted at the location of the ``include`` statement.
+The statement ``include "filename";`` continues parsing ``filename`` as if the
+contents of the file were inserted at the location of the ``include`` statement.
 
 .. code-block:: c
 

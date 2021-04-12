@@ -10,9 +10,10 @@ Generalities
 
 Variable identifiers must begin with a letter [A-Za-z], an underscore, a
 percent sign, or an element from the Unicode character categories
-Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
-Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier.
+Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
+continuation characters consists of all members of the aforementioned character
+sets with the addition of decimal numerals [0-9]. Variable identifiers may not
+override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
 types can be initialized on declaration. Multiple comma-separated declarations
@@ -41,9 +42,8 @@ arrays of qubits that cannot be dynamically resized. The statement ``qubit name;
 declares a reference to a quantum bit. The statement ``qreg name[size];`` or ``qubit name[size];`` declares a
 quantum register with the given name identifier. The keyword ``qreg`` is included
 for backwards compatibility and will be removed in the future. Sizes
-must always be constant positive integers. The label ``name[j]`` refers to a qubit
-of this register, where
-:math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+must always be constant positive integers.
+
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
 
@@ -57,7 +57,8 @@ Physical Qubits
 ~~~~~~~~~~~~~~~
 
 While program qubits can be named, hardware qubits are referenced only
-by integers with the syntax ``%0``, ``%1``, ..., ``%n``. These qubit types are
+by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
+references given by ``$0``, ``$1``, ..., ``$n``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 
@@ -70,7 +71,7 @@ circuits.
    // Declare a qubit array with 20 qubits
    qubit qubit_array[20];
    // CNOT gate between physical qubits 0 and 1
-   CX %0, %1;
+   CX $0, $1;
 
 Classical types
 ---------------

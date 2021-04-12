@@ -1,7 +1,7 @@
-import unittest
 import io
 import os
 from contextlib import redirect_stderr
+import pytest
 
 import yaml
 
@@ -72,15 +72,15 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
 
         error = err.getvalue()
         if error:
-            print(input_str)
             raise Exception("Parse tree build failed. Error:\n" + error)
 
     return pretty_tree
 
-class TestGrammar(unittest.TestCase):
-    """Test the ANTLR grammar w/ python unittest."""
+class TestGrammar:
+    """Test the ANTLR grammar w/ pytest."""
 
-    def setUp(self):
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self):
         test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
         root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
         self.examples_path = os.path.join(root_dir, "examples/")
@@ -109,7 +109,7 @@ class TestGrammar(unittest.TestCase):
         parse_tree = build_parse_tree(qasm_source)
 
         reference = test_dict["reference"]
-        self.assertEqual(parse_tree, reference)
+        assert parse_tree == reference
 
     def test_header(self):
         """Test header."""
@@ -134,6 +134,7 @@ class TestGrammar(unittest.TestCase):
     def test_expression(self):
         """Test expressions."""
         self.load_and_compare_yaml("binary_expr.yaml")
+        self.load_and_compare_yaml("order_of_ops.yaml")
         self.load_and_compare_yaml("unary_expr.yaml")
         self.load_and_compare_yaml("built_in_call.yaml")
         self.load_and_compare_yaml("sub_and_kern_call.yaml")
@@ -145,6 +146,7 @@ class TestGrammar(unittest.TestCase):
     def test_branching(self):
         """Test branching statements."""
         self.load_and_compare_yaml("branching.yaml")
+        self.load_and_compare_yaml("branch_binop.yaml")
 
     def test_loop_and_control_directive(self):
         """Test loop and control directive statements."""
@@ -164,7 +166,3 @@ class TestGrammar(unittest.TestCase):
             example_file = os.path.join(self.examples_path, e)
             if os.path.isfile(example_file):
                 tree = build_parse_tree(example_file, using_file=True)
-
-
-if __name__ == "__main__":
-    unittest.main()

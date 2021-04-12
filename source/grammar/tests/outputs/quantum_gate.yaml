@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  gate test_gate(angle[5]:theta) a, b {
+  gate test_gate(theta) a, b {
     reset a;
     barrier b;
     CX a, b;
@@ -15,20 +15,8 @@ reference: |
           quantumGateName
             test_gate
           (
-          classicalArgumentList
-            classicalArgument
-              classicalType
-                singleDesignatorType
-                  angle
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      5
-                  ]
-              association
-                :
-                theta
+          identifierList
+            theta
           )
           identifierList
             a
