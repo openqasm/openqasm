@@ -111,7 +111,7 @@ The sole exception to the second rule is a ``reset`` gate. The ``defcal`` for a
 ``reset`` gate is permitted to have a single if statement, provided each branch
 of the if statement has definite and equivalent length.
 
-.. code-block:: none
+.. code-block:: c
 
    defcal reset $0 {
       bit res = measure $0;
@@ -121,3 +121,17 @@ of the if statement has definite and equivalent length.
          // delay for an equivalent amount of time
       }
    }
+
+Generic defcal's
+~~~~~~~~~~~~~~~~~~~~~
+
+For certain experiments, it may not be possible to encode all pulse functionality within a gate
+definition. For instance, consider the case of qubit spectroscopy. A frequency input is required
+to the drive stimulus pulse. For this reason, we allow ``defcal``'s which may be called directly
+within OpenQASM. They must obey the same rules as gate/measurement ``defcal``'s (no control flow,
+up to one return type), but can take any classical argument. For instance, one might define for
+spectroscopy
+
+.. code-block:: c
+
+   defcal sp_cal(float[64] freq) $q -> complex[64] {...}

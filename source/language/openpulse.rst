@@ -1,3 +1,7 @@
+.. role:: raw-latex(raw)
+   :format: latex
+..
+
 OpenPulse Grammar
 =================
 
@@ -496,40 +500,36 @@ Shows how to do an Rz gate (e.g. phase shift) via signals.
 Qubit spectroscopy
 ~~~~~~~~~~~~~~~~~~
 
-Construct a ``defcal`` for doing qubit spectroscopy. Gives the qubit resonant frequency value.
+Construct a ``defcal`` for doing qubit spectroscopy. Gives the qubit resonant frequency value. This
+example also demonstrates how ``defcal``'s can be used within a larger openqasm program.
 
 .. code-block:: c
 
-    // Subroutine which returns the index of the largest entry in a ``float[64]`` array
-    def max_index(array[float[64], size] arr)->int[32] {...}
+    // Computes index of largest entry in ``float[64]`` array
+    kernel max_index(array[float[64], size] arr)->int[32];
 
-    // Compute qubit resonant frequency
-    defcal spectro $q -> float[64] {
-        txchannel dq = txch($q, "drive");
+    def spectro(int[32] shots, int[32] steps, float[64] freq_low, float[64] freq_high) qubit q -> float[64] {
+        /** Compute qubit resonant frequency in a spectroscopy experiment.
 
-        const shots = 1000;
-        const start = 5e9; // 5 GHz
-        const end = 6e9; // 6 GHz
-        const points = 50;
+        Args:
+            shots: Number of shots to execute
+            steps: Number of frequencies to use in the sweep.
+            freq_low: Low end of frequency sweep.
+            freq_high: High end of frequency sweep.
 
-        array[float[64], points] output;
-
-        envelope env = gaussian(0.3, 1024dt, 256dt);
-        carrier carr = exp(1.0, 0.0, 0.0);
-
-        for p in [0:points] {
-            // Sweep freq from ``start`` to ``end``
-            carr.freq = start + (end-start)*p/points;
-
+        Returns:
+            Resonant frequencies of qubit q.
+        **/
+        array[float[64], steps] output;  // Array for output signal
+        for s in [0:steps] {
+            // Sweep freqs from ``freq_low`` to ``freq_high``
+            float[64] curr_freq = freq_low + (freq_high-freq_low)*s/steps;
             // Compute the avg absolute value of the output iq signal over ``shots`` shots
-            output[p] = 0;
+            output[s] = 0;
             for i in [0:shots] {
-                reset $q;  // Assume a valid reset calibration
-                transmit(dq, mix(env, carr), env.duration);
-                barrier_all();  // Sync all clocks
-                complex[64] iq = measure $q;
+                complex[64] iq = sp_cal(curr_freq) $q;
                 float[64] abs_iq = abs(iq);  // Assue abs value for complex numbers
-                output[p] = (output[p]*i + abs_iq)/(i+1);  // Update avg via recursive formula
+                output[s] = (output[s]*i + abs_iq)/(i+1);  // Update avg via recursive formula
             }
         }
 
@@ -538,6 +538,21 @@ Construct a ``defcal`` for doing qubit spectroscopy. Gives the qubit resonant fr
         float[64] res_freq = start + (end-start)*ind/points;
 
         return res_freq;
+    }
+
+    // Defcal for spectroscopy
+    // NOTE: Assumed can pass other classical types to ``defcal``'s; need to consider this
+    defcal sp_cal(float[64] freq) $q -> complex[64] {
+        txchannel dq = txch($q, "drive");
+
+        envelope env = gaussian(0.3, 1024dt, 256dt);
+        carrier carr = exp(1.0, freq, 0.0);
+
+        reset $q;  // Assume a valid reset calibration
+        transmit(dq, mix(env, carr), env.duration);
+        barrier_all();  // Sync all clocks
+        complex[64] iq = measure $q;
+        return iq;
     }
 
 Clocking example
@@ -640,4 +655,4 @@ need not be at ``t=0``.
     q0_cal2 $0;
     // Implicit barrier brings both clocks to ``175dt`` (``lengthof(q0_cal1)+sig4.duration``) at start of next ``defcal``
 
-``defcal`` blocks must have a well-definined length, which can be accessed via ``lengthof``.
+``defcal`` blocks must have a well-defined length, which can be accessed via ``lengthof``.
