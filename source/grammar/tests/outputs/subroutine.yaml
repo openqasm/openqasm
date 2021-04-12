@@ -1,9 +1,14 @@
 # indent w/ 2 spaces
 source: |
-  def test_sub(int[5]:i) qubit:q1, qubit[5]:q2 -> int[10] {
+  def test_sub1(int[5]:i) qubit:q1, qubit[5]:q2 -> int[10] {
     int[10] result;
     if (result == 2) return 1 + result;
     return result;
+  }
+  def test_sub2(int[5]:i) {
+    if (i in {2, 3})
+      return;
+    return i+1;
   }
 reference: |
   program
@@ -11,7 +16,7 @@ reference: |
     globalStatement
       subroutineDefinition
         def
-        test_sub
+        test_sub1
         (
         classicalArgumentList
           classicalArgument
@@ -94,24 +99,80 @@ reference: |
                 controlDirective
                   returnStatement
                     return
-                    statement
-                      expressionStatement
-                        expression
-                          expression
-                            expressionTerminator
-                              1
-                          binaryOperator
-                            +
-                          expression
-                            expressionTerminator
-                              result
-                        ;
+                    expression
+                      expression
+                        expressionTerminator
+                          1
+                      binaryOperator
+                        +
+                      expression
+                        expressionTerminator
+                          result
+                    ;
           returnStatement
             return
-            statement
-              expressionStatement
+            expression
+              expressionTerminator
+                result
+            ;
+          }
+    globalStatement
+      subroutineDefinition
+        def
+        test_sub2
+        (
+        classicalArgumentList
+          classicalArgument
+            classicalType
+              singleDesignatorType
+                int
+              designator
+                [
                 expression
                   expressionTerminator
-                    result
-                ;
+                    5
+                ]
+            association
+              :
+              i
+        )
+        subroutineBlock
+          {
+          statement
+            branchingStatement
+              if
+              (
+              expression
+                membershipTest
+                  i
+                  in
+                  setDeclaration
+                    {
+                    expressionList
+                      expression
+                        expressionTerminator
+                          2
+                      ,
+                      expression
+                        expressionTerminator
+                          3
+                    }
+              )
+              programBlock
+                controlDirective
+                  returnStatement
+                    return
+                    ;
+          returnStatement
+            return
+            expression
+              expression
+                expressionTerminator
+                  i
+              binaryOperator
+                +
+              expression
+                expressionTerminator
+                  1
+            ;
           }

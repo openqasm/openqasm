@@ -361,7 +361,7 @@ endStatement
     ;
 
 returnStatement
-    : 'return' statement?;
+    : 'return' expression? SEMICOLON;
 
 controlDirective
     : ('break' | 'continue') SEMICOLON
