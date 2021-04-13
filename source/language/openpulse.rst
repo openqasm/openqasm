@@ -48,29 +48,29 @@ Frames
 ------
 
 When interacting with qubits, it turns out to be quite useful to keep track of a frame of reference,
-akin to the rotating frame of a Hamiltonian, throughout the execution of a program. These frames
-are responsible for two things
+akin to the rotating frame of a Hamiltonian, throughout the execution of a program. These ``frame``
+types are responsible for two things
 
 - Tracking time appropriately so programs do not need to deal in absolute time
-- Tracking phase by producing a complex value given an input time (i.e. via the mathematical relationship
-  :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
-  :math:`\theta` is phase).
+- Tracking phase by producing a complex value given an input time (i.e. via the mathematical
+  relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
+  :math:`\theta` is phase). One motivation for keeping track of phase is to allow pulses to be be
+  defined in the rotating frame (i.e. without the carrier) with the effect being
+  an equivalent application in the lab frame (i.e. with the carrier supplied by the ``frame``).
+  Another motivation is to more naturally implement a "virtual Z-gate", which does not require a
+  physical pulse but rather shifts the phase of all future pulses on that frame.
 
-The canonical motivation for keeping track of phase is to implement a "virtual
-Z-gate", which does not require a physical pulse but rather shifts the phase of
-all future pulses on that frame.
-
-The ``frame`` type is a virtual resource and may be copied without a problem.
-It is up to the compiler to choose how to implement the required transformations on
-hardware The frame is composed of three parts:
+The frame is composed of three parts:
 
 1. A frequency ``frequency`` of type ``float``.
 2. A phase ``phase`` of type ``angle``.
 3. A time of type ``dt`` which is manipulated implicitly and cannot be modified other
    than through existing timing instructions like ``delay`` and ``barrier``.
 
-It is initialized depending on how the frame is constructed (see below),
-and the exact precision of these parameters is hardware specific.
+The ``frame`` type is a virtual resource and the exact precision of these parameters is
+hardware specific. It is thus up to the compiler to choose how to implement the required
+transformations to physical resources in hardware (e.g. mapping multiple frames to a
+single NCO).
 
 Frame Construction
 ~~~~~~~~~~~~~~~~~~
@@ -79,21 +79,71 @@ Frames are purely virtual and can be constructed using the ``Frame`` command
 
 .. code-block:: javascript
 
-  driveframe = Frame(5e9, 0.0);
+  frame driveframe = Frame(5e9, 0.0);
 
 When instantiated, the frame time starts at 0. ``Frame``s can also be copied using the
 ``copy`` command with argument replacement
 
 .. code-block:: javascript
 
-  driveframe1 = Frame(1.0, 5e9, 0.0);
-  driveframe2 = copy(driveframe1, phase=driveframe1.phase + pi/2);
+  frame driveframe1 = Frame(1.0, 5e9, 0.0);
+  frame driveframe2 = copy(driveframe1, phase=driveframe1.phase + pi/2);
 
 This will generate a ::math:`pi/2` phase incremented copy of ``driveframe1`` (i.e. with
-the same frequency and time as ``driveframe1``).
+the same frequency and time as ``driveframe1``) with the same time as `driveframe1`.
 
-Like other things in OpenQASM, a ``frame`` is locally scoped and a prelude must be used to
-instantiate frames in global scope.
+Like other things in OpenQASM, a ``frame`` is locally scoped unless a ``prelude`` defcal is used
+to instantiate frames in global scope.
+
+.. code-block:: javascript
+
+   defcal prelude {
+     frame driveframe0 = Frame(1.0, 5e9, 0.0);
+     frame driveframe1 = Frame(1.0, 6e9, 0.0);
+    }
+
+   defcal access_frames $q {
+     frame driveframe2 = copy(driveframe1); // `driveframe1` globally scoped
+   }
+
+
+To allow for parameterized access to these globally defined frames, we can also define a ``map``.
+
+.. code-block:: javascript
+
+   defcal prelude {
+     frame driveframe0 = Frame(1.0, 5e9, 0.0);
+     frame driveframe1 = Frame(1.0, 6e9, 0.0);
+     ...
+     map[int, frame] frame_mapping = {0: driveframe0, 1: driveframe1};
+    }
+
+   defcal access_frames $q {
+     frame driveframe2 = copy(driveframe0); // `driveframe0` globally scoped
+     frame driveframe3 = frame_mapping[$q]; // access `driveframe0` or `driveframe1` by the integer label
+   }
+
+
+If there are multiple frames associated with a qubit, the map can be extended using a
+``list``
+
+.. code-block:: javascript
+
+   defcal prelude {
+     frame frame_01 = Frame(1.0, 5e9, 0.0);
+     frame frame_02 = Frame(1.0, 6e9, 0.0);
+     ...
+     map[int, list[frame]] frame_mapping = {0: [frame_01, frame_02], ...};
+    }
+
+   defcal access_frames $q {
+     frame qframe_01 = frame_mapping[$q][0];
+     frame qframe_12 = frame_mapping[$q][1];
+   }
+
+Note that ``map`` and ``list`` are simple base containers and are not tied to the ``frame``
+construction, they  simply make it easier to parametrize the access to these frames and could
+be useful in mapping and/or collecting other OpenQASM types.
 
 Frame manipulation
 ~~~~~~~~~~~~~~~~~~
@@ -137,7 +187,7 @@ Waveforms are of type ``waveform`` and can either be:
 
 A value of type ``waveform`` is retrieved by explicitly constructing the complex samples
 or by calling one of the built-in waveform template functions. Note that each of these
-functions takes a type ``length`` as a first argument, since pulses need to have a definite
+functions takes a type ``length`` as a first argument, since waveforms need to have a definite
 length. Using the hardware dependent ``dt`` unit is recommended, since the compiler may need to
 down-sample a higher precision waveform to physically realize it.
 
@@ -256,9 +306,10 @@ For frames, everything behaves analogous to qubits in the
 small differences.
 
 The ``delay`` instruction may take a frame instead of a qubit. The ``barrier``
-instruction may also take a list of frames intead of a list of qubits.
+instruction may also take a list of frames intead of a list of qubits and aligns the time
+of the clocks given as arguments.
 
-``defcal`` blocks have an implicit barrier on every frame that enters the block,
+``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
 meaning that those clocks are guaranteed to be aligned at the start of the block.
 These blocks also need to have a well-defined length, similar to the ``boxas`` block.
 
@@ -266,12 +317,19 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
 
    waveform p = ...; // some 100dt waveform
 
-   defcal simultaneous_pulsed_gate $0 {
-     driveframe = Frame(1.0, 5e9, 0.0);
-     play(tx0, p driveframe);
+   defcal prelude {
+     frame driveframe1 = Frame(1.0, 5e9, 0.0);
+     frame driveframe2 = Frame(1.0, 6e9, 0.0);
+   }
+
+   defcal aligned_gates {
+     // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
+     play(tx0, p, driveframe1);
      delay[20dt] driveframe;
-     // Starts the 100dt pulse 20dt into "drive0" already playing it
-     play(tx0, p driveframe);
+     // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
+     barrier(driveframe1, driveframe2);
+     // `driveframe2` will now play a pulse 120dt after `driveframe1` finishes playing
+     play(tx0, p, driveframe2);
    }
 
 Examples
@@ -283,58 +341,57 @@ Cross-resonance gate
 
 .. code-block:: javascript
 
-    // Initialize
-    channel d0 = txch(0, "drive");
-    channel d1 = txch(1, "drive");
+  defcal prelude {
+     frame frame0 = Frame(1.0, 5e9, 0.0);
+  }
 
-    frame frame0 = Frame(5e9, 0);
+  defcal cross_resonance %0 %1 {
+      // Initialize
+      channel d0 = txch(%0, "drive");
+      channel d1 = txch(%1, "drive");
 
-    waveform wf1 = gaussian_square(1., 1024dt, 32dt, 128dt);
-    waveform wf2 = gaussian_square(0.1, 1024dt, 32dt, 128dt);
+      waveform wf1 = gaussian_square(1., 1024dt, 32dt, 128dt);
+      waveform wf2 = gaussian_square(0.1, 1024dt, 32dt, 128dt);
 
-    // phase update some virtual Z gate
-    frame0.phase += pi/2;
+      // phase update some virtual Z gate
+      frame0.phase += pi/2;
 
-    /*** Do pre-rotation ***/
-    {...}
+      /*** Do pre-rotation ***/
+      {...}
 
-    // generate new frame for second drive -- frame can be discarded at will
-    frame temp_frame = copy(frame0, phase=frame0.phase + pi/2);
+      // generate new frame for second drive that is locally scoped
+      frame temp_frame = copy(frame0, phase=frame0.phase + pi/2);
 
-    play(d0, wf1, frame0);
-    play(d1, wf2, temp_frame);
+      play(d0, wf1, frame0);
+      play(d1, wf2, temp_frame);
 
-
-    /*** Do post-rotation ***/
-    {...}
+      /*** Do post-rotation ***/
+      {...}
+  }
 
 Geometric gate
 ~~~~~~~~~~~~~~
 
 .. code-block:: javascript
 
-  defcal geo_gate(angle[32]: theta) $q {
+  defcal prelude {
+      float[32] fq_01 = 5e9; // hardcode or pull from some function
+      float[32] anharm = 300e6; // hardcode or pull from some function
+      frame frame_01 = Frame(fq_01, 0);
+      frame frame_12 = Frame(fq_01 + anharm, 0);
+  }
+
+  defcal geo_gate(angle[32]: theta) %0 {
       // theta: rotation angle (about z-axis) on Bloch sphere
+
+      tx_channel dq = txch($q, “drive”);
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
       // envelopes (no sideband)
       waveform X_01 = {...};
       waveform X_12 = {...};
-
-      // Get 0->1 freq and anharmonicity for $q
-      float[32] fq_01 = 5e9; // hardcode or pull from some function
-      float[32] anharm = 300e6; // hardcode or pull from some function
-
       float[32] a = sin(theta/2);
       float[32] b = sqrt(1-a**2);
-      // pi geo pulse envelope is: a*X_01 + b*X_12
-      // X_01 has freq fq_01
-      // X_12 has freq fq_01+anharm
-      frame frame_01 = Frame(fq_01, 0);
-      frame frame_12 = Frame(fq_12, 0);
-      fence(.*);
-
-      tx_channel dq = txch($q, “drive”);
 
       // Double-tap
       play(dq, scale(a, X_01), frame_01);
@@ -357,67 +414,68 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
 .. code-block:: javascript
 
-  // Define the channels
-  eom_a_channel = txch(0, "eom_a");
-  eom_a_channel = txch(1, "eom_b");
-  aod_channel = txch(0, "aod");
+  defcal neutral_atoms {
+    // Define the channels
+    eom_a_channel = txch(0, "eom_a");
+    eom_a_channel = txch(1, "eom_b");
+    aod_channel = txch(0, "aod");
 
-  // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
-  // and offset from each other by the qubit_freq
-  raman_a_frame = Frame(Δ, 0.0)
-  raman_b_frame = Frame(Δ-qubit_freq, 0.0)
+    // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
+    // and offset from each other by the qubit_freq
+    raman_a_frame = Frame(Δ, 0.0)
+    raman_b_frame = Frame(Δ-qubit_freq, 0.0)
 
-  // Waveforms supplied to the Raman beams are just constant
+    // Waveforms supplied to the Raman beams are just constant
 
 
-  // Three copies of qubit freq to track phase of each qubit
-  q1_frame = Frame(qubit_freq, 0)
-  q2_frame = Frame(qubit_freq, 0)
-  q3_frame = Frame(qubit_freq, 0)
+    // Three copies of qubit freq to track phase of each qubit
+    q1_frame = Frame(qubit_freq, 0)
+    q2_frame = Frame(qubit_freq, 0)
+    q3_frame = Frame(qubit_freq, 0)
 
-  // Generic gaussian envelope
-  waveform π_half_sig = gaussian(..., π_half_time, ...)
+    // Generic gaussian envelope
+    waveform π_half_sig = gaussian(..., π_half_time, ...)
 
-  // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
-  // put a sideband on the signal construction to target the qubit position while maintainig the
-  // desired Rabi rate.
-  q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
-  q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
-  q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
+    // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
+    // put a sideband on the signal construction to target the qubit position while maintainig the
+    // desired Rabi rate.
+    q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
+    q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
+    q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
 
-  for τ in [0: T]:
-      // Simultaneous π/2 pulses
-      play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-      play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-      play(aod_channel, q1_π_half_sig, q1_frame);
-      play(aod_channel, q1_π_half_sig, q2_frame);
-      play(aod_channel, q1_π_half_sig, q3_frame);
+    for τ in [0: T]:
+        // Simultaneous π/2 pulses
+        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+        play(aod_channel, q1_π_half_sig, q1_frame);
+        play(aod_channel, q1_π_half_sig, q2_frame);
+        play(aod_channel, q1_π_half_sig, q3_frame);
 
-      // Time delay all
-      delay(.*, τ/2)
+        // Time delay all
+        delay(.*, τ/2)
 
-      // π pulse on qubit 1 only -- composed of two π/2 pulses
-      for _ in [0:1]:
-          play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-          play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-          play(aod_channel, q1_π_half_sig, q1_frame);
+        // π pulse on qubit 1 only -- composed of two π/2 pulses
+        for _ in [0:1]:
+            play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+            play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+            play(aod_channel, q1_π_half_sig, q1_frame);
 
-      // Fence all then time delay
-      fence(.*)
-      delay(.*, τ/2)
+        // Fence all then time delay
+        fence(.*)
+        delay(.*, τ/2)
 
-      // Phase shift the signals by a different amount -- or should I be shifting qubit_#_signal?
-      q1_frame.phase += tppi_1 * τ
-      q1_frame.phase += tppi_2 * τ
-      q1_frame.phase += tppi_3 * τ
+        // Phase shift the signals by a different amount -- or should I be shifting qubit_#_signal?
+        q1_frame.phase += tppi_1 * τ
+        q1_frame.phase += tppi_2 * τ
+        q1_frame.phase += tppi_3 * τ
 
-      // Simultaneous π/2 pulses
-      play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-      play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-      play(aod_channel, q1_π_half_sig, q1_frame);
-      play(aod_channel, q1_π_half_sig, q2_frame);
-      play(aod_channel, q1_π_half_sig, q3_frame);
-
+        // Simultaneous π/2 pulses
+        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+        play(aod_channel, q1_π_half_sig, q1_frame);
+        play(aod_channel, q1_π_half_sig, q2_frame);
+        play(aod_channel, q1_π_half_sig, q3_frame);
+  }
 
 Multiplexed readout and capture
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -460,7 +518,8 @@ Sample rate collisions
 Incommensurate Rates
 ~~~~~~~~~~~~~~~~~~~~
 
-Since the frame can be played on multiple channels, there may be an issue with sample rates. For example,
+Since the frame can be played on multiple channels, there may be an issue with sample rates.
+For example,
 
 .. code-block:: javascript
 
@@ -498,18 +557,3 @@ produces
   }
 
 This is considered well-defined behavior.
-
-Silly
------
-
-.. code-block:: javascript
-
-   waveform p = ...; // some 100dt waveform
-
-   // driveframe defined in prelude
-   defcal simultaneous_pulsed_gate %0 {
-     play(tx0, p, driveframe);
-     fence(.*);
-
-     frame new_frame = Frame(6.0, 0.0); // time is start of 0 or defcal
-   }
