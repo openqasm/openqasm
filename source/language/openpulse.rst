@@ -7,7 +7,7 @@ OpenPulse Grammar
 
 OpenQASM allows users to provide the target system's implementation of quantum operations with
 ``defcal`` `blocks <pulses.rst>`_ . Calibration grammars are open to extension for system
-implementors, in this document, we outline one such grammar, OpenPulse which maybe selected
+implementors. In this document, we outline one such grammar, OpenPulse, which maybe selected
 within a supporting compiler through the declaration `defcalgrammar "openpulse" <VERSION>`.
 
 This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
@@ -21,7 +21,7 @@ The textual format described here has several advantages over the original JSON 
 - Pulse definitions are declared as a calibration for individual circuit instructions attached to physical qubits enabling the microcoding of gate level operations.
 - Richer ability to compose complex pulses through natural DSP-like operations.
 - Clearly defined relationship between pulses, channels and the phases of compilation to hardware resources.
-- Use of multiple oscillators on a single channel at the same time (see geometric gates--LINK)
+- Use of multiple oscillators on a single channel at the same time (see :ref:`Geo Gate`):
 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes and hardware.
 At the core of the OpenPulse grammar are the concepts of ``signals`` and ``channels``. Many of these concepts
@@ -37,11 +37,11 @@ to the applied channels in target hardware.
 Signals
 -------
 
-A ``signal`` is a generalized concept of a `pulse`. A signal is a discrete, time-dependent function
-:math:`s: ℤ->ℂ`. The value of a signal :math:`s` at time :math:`t` is :math:`s(t)`. Signals have
-a max unit-norm (signal processes that emit a signal outside of this range clip). In hardware the time,
-:math:`t` is given by :math:`t_i \Delta t`, where ``t_i`` is an integral sample number of elapsed samples
-and ``dt`` is the time elapsed per sample. ``t_i`` can be viewed as the "index" into the signal.
+A ``signal`` is a generalized concept of a ``pulse``. A signal is a discrete, time-dependent function
+:math:`s(t): ℤ->ℂ`. The input time is an integer representing the number of elapsed samples. It can
+be viewed as the "index" into the signal. In hardware, the time :math:`t_h`, is given by
+:math:`t_h=t*dt`, where ``dt`` is the time elapsed per sample. Signals have a max unit-norm
+(signal processes that emit a signal outside of this range clip).
 
 All signals have a ``.duration`` property giving the length of the signal.
 
@@ -56,7 +56,7 @@ Envelopes
 ~~~~~~~~~
 
 Envelopes are discrete waveforms :math:`f(t), ℤ->ℂ`. Examples include a waveform described as
-an array of complex samples or as a parametric function supported directly by the hardware
+an array of complex samples or a parametric function supported directly by the hardware
 such as a Gaussian waveform.
 
 Arrays initialization is done as in OpenQASM.
@@ -65,7 +65,7 @@ Arrays initialization is done as in OpenQASM.
 
     envelope env = [0.1, 1.+1I, 0.1 - 0.2I, ...];
 
-Parametric pulses are declared by assigning the result of``envelope``'s to the result of a (kernel) function call.
+Parametric pulses are initialized by assigning the result of``envelope``'s to the result of a (kernel) function call.
 
 .. code-block:: c
 
@@ -83,9 +83,9 @@ The following parametric functions are currently defined
 Carriers
 ~~~~~~~~
 
-Carriers represent stateful carrier signals in hardware such as those used to implement the <Virtual Z-gate `https://arxiv.org/abs/1612.00858`>_.
-The standard carrier has the form :math:`Ae^{i(2*\pi*\imag*freq(t_i)*\Delta t +\phi(t_i) + \phi(t_{i-1})}`,
-where :math:`A` is the amplitude, :math:`freq(t_i)` and :math:`\phi(t_i)` are the carrier's instantaneous frequency and
+Carriers represent stateful modulation signals in hardware such as those used to implement the <Virtual Z-gate `https://arxiv.org/abs/1612.00858`>_.
+The standard carrier has the form :math:`Ae^{i(2*\pi*\imag*freq(t_i)*\Delta t +\phi(t_i) + \phi(t_{i-1})}`.
+:math:`A` is the amplitude. :math:`freq(t_i)` and :math:`\phi(t_i)` are the carrier's instantaneous frequency and
 relative phase respectively, and :math:`phi(t_{i-1})` is the carrier's accumulated phase which stores the history of the carrier.
 Carriers are declared by calling an exponential kernel function
 ``kernel exp(complex[size] amp, float[size] freq, angle[size] phase) -> carrier``.
@@ -94,24 +94,24 @@ Carriers are declared by calling an exponential kernel function
 
     carrier carr = exp(0.5+0.5I, 5e9, pi);
 
-The instantaneous carrier parameters may be accessed with the ``carrier.amp``, ``carrier.freq`` and ``carrier.phase``
-accessors. Standard OpenQASM assignment and arithmetic operations apply to these fields--for instance,
-to increment the phase one may apply ``carrier.phase += pi;``. However, in contrast to the circuit model
-care must be taken to the global time :math:`t_i` this phase increment will take place as a carrier may
-be shared across many channels which operate in parallel in time. Updates to carriers take place at the
+The instantaneous carrier parameters may be accessed via ``carrier.amp``, ``carrier.freq`` and ``carrier.phase``.
+Standard OpenQASM assignment and arithmetic operations apply to these fields--for instance,
+to increment the phase one may apply ``carrier.phase += pi;``. However, in contrast to the circuit model,
+care must be taken to the global time :math:`t_i` at which this phase increment occurs, as a carrier may
+be shared across many channels operating in parallel in time. Updates to carriers take place at the
 greatest time of all channels within the current scope. This enables reasoning about the absolute accumulated
-phase of the carrier and how this impacts pulses that are emitted on different channels with a shared carrier.
-See the :ref:`Timing` example below for more detail on this behaviour.
+phase of the carrier and how this impacts signals that are emitted on different channels with a shared carrier.
+See the :ref:`Timing` for more detail on this behavior.
 
 It is the responsibility of the compiler to identify operations which affect the carrier state, and the
 relative timing at which the update takes place with respect to the target channel.
 
 Signal composition & transformation operations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Complex signals may be constructed through signal transformation and composition operations applied to
 ``envelope`` and ``carrier`` signals which are the signal production base types. This is very natural
-within the Openpulse DSP-like formalism. As a simple example, consider a pulse which is the sum of
+within the OpenPulse DSP-like formalism. As a simple example, consider a signal which is the sum of
 two Gaussian envelopes, modulated by two carriers which have a phase differing by a factor of 2.
 
 .. code-block:: c
@@ -123,7 +123,7 @@ two Gaussian envelopes, modulated by two carriers which have a phase differing b
 
 Each operation takes as input one or more signals (which can also be ``envelope`` or ``carrier``)
 applies a transformation, and produces a new signal. Note these do not mutate the input signals, but
-instead pipes the signal into a transfer function producing a new signal derived from the inputs.
+instead pipe the signal into a transfer function producing a new signal derived from the inputs.
 Signals are classical and may be reused. It is the responsibility of the target compiler to decided
 how to implement signals on hardware. For example, the compiler may implement carriers by applying a
 digital sideband to supplied envelopes and tracking all phases in software or alternatively it may
@@ -132,23 +132,38 @@ in control hardware.
 
 Currently, the following signal operations exist:
 
-- ``shift(signal sig, length time)``: Shift the signal by ``time``, :math:`s(t)->s(t+time)`.
-- ``set(signal sig, length time)``: Force the signal time index to begin at ``time``.
-- ``mix(signal sig0, signal sig1, ..., signal sig_n) -> signal``: Mix ``n`` input signals to produce a new signal. This is equivalent to the product signal :math:`s(t_i) = s_1(t_i)*s_2(t_i)* ... *s_n(t_i)`.
-- ``sum(signal sig0, signal sig1, ..., signal sig_n) -> signal``: Add ``n`` input signals sample by sample to produce a new signal. This is equivalent to :math:`s(t_i) = s_1(t_i)+s_2(t_i)+ ... +s_n(t_i)`.
-- ``piecewise(signal sig0, signal sig1, length time) -> signal``: Construct a signal as a piecewise function w/ ``sig0, t <= time`` and ``sig1, t > time``.
-- ``offset(signal sig, complex[size] val) -> signal``: Add ``val`` to every sample, :math:`s(t)->val+s(t)`.
-- ``scale(signal sig, complex[size] val) -> signal``: Scale the input signal by ``val``, :math:`s(t)->val*s(t)`.
-- ``conj(signal sig) -> signal``: The the complex conjugate of the input signal.
-- ``re(signal sig) -> signal``: Real component of the input signal.
-- ``im(signal sig) -> signal``: Imaginary component of the input signal.
-- ``abs(signal sig) -> signal``: Compute the norm of the signal->sqrt of sum of squares of each sample's norm.
-- ``phase(signal sig, angle[size] ang) -> signal``: Modulate signal with a relative phase, :math:`s(t)->s(t)*e^{\imag*ang}`.
+.. code-block:: c
+
+    shift(signal sig, length time) -> signal  // Shift signal by ``time``, :math:`s(t)->s(t+time)`
+    set(signal sig, length time) -> signal  // Force the signal to begin at ``time``
+
+    // Mix ``n`` input signals to produce a new signal. This is equivalent to the product signal
+    // :math:`s(t_i) = s_1(t_i)*s_2(t_i)* ... *s_n(t_i)`.
+    mix(signal sig0, signal sig1, ..., signal sig_n) -> signal
+
+    // Add ``n`` input signals sample by sample to produce a new signal. This is equivalent to
+    // :math:`s(t_i) = s_1(t_i)+s_2(t_i)+ ... +s_n(t_i)`.
+    sum(signal sig0, signal sig1, ..., signal sig_n) -> signal
+
+    // Construct a signal as a piecewise function w/ ``sig0, t <= time`` and ``sig1, t > time``
+    piecewise(signal sig0, signal sig1, length time) -> signal
+
+    offset(signal sig, complex[size] val) -> signal  // Add ``val`` to every sample, :math:`s(t)->val+s(t)`
+    scale(signal sig, complex[size] val) -> signal  // Scale input signal by ``val``, :math:`s(t)->val*s(t)`
+    conj(signal sig) -> signal  // Take the complex conjugate of the input signal
+    re(signal sig) -> signal  // Take the real component of the input signal
+    im(signal sig) -> signal  // Take the imaginary component of the input signal
+
+    // Compute the norm of the signal, :math:`|s(t)| = \sqrt{\sum{|s(t_i)|^2}}`, where the square of
+    // the sample norm is the sum of squares of the real and imag components of the sample.
+    abs(signal sig) -> signal
+
+    phase(signal sig, angle[size] ang) -> signal  // Modulate signal w/ relative phase, :math:`s(t)->s(t)*e^{\imag*ang}`
 
 Signal Networks
 ~~~~~~~~~~~~~~~
 
-As described above signals may be composed via transformation functions to form new signals that are derived from the input parent signals. For example ``new_signal = mix(env, carr);``
+As described above, signals may be composed via transformation functions to form new signals that are derived from the input parent signals. For example ``new_signal = mix(env, carr);``
 produces a new child signal that is a mixture of its parent envelope and carrier wave signals. Combining signals in this way forms a "signal network", where signals are
 edges between signal production/transformation nodes. A signal network has a correspondence with a traditional microwave block diagram. Within the signal programming model,
 signals are constructed via composition. Signals are emitted to the physical world by transmitting them on a ``channel``.
@@ -191,24 +206,23 @@ hardware implementation of an OpenPulse program may be performed within the same
 Channels
 --------
 
-Channels model to hardware resources which can play signals to manipulate a qubit
+Channels model hardware resources which can play signals to manipulate a qubit
 or capture a signal emitted from the target system such as a qubit measurement result.
 
 Within the OpenPulse grammar channels have two critical responsibilities:
 
-1. They are the interface between a ``signal`` (and correspondingly gates)
+1. They are the interface between connecting ``signal``'s (and correspondingly gates)
 to configured control hardware in the target system, ie., they are the
 representations of the system IO ports.
-2. They are responsible for representing the instantaneous *time* of the channel
-within a program's execution with respect to the global program time, ie., each channel
-represents an IO port's clock. As instructions are applied to the channel this clock is
+2. They are responsible for representing the instantaneous *time* of each HW resource
+within a program's execution with respect to the global program time. As instructions are applied to the channel this clock is
 incremented. As each channel maintains its own clock, it is possible to apply instructions sequentially
 to channels and have the resulting ``signal``s be emitted in parallel at runtime. In this way channels
 are similar to ports in an HDL language.
 
 There is a many-to-many relationship between qubits and channels.
 One qubit may be controlled by multiple channels.
-Pulses applied on different channels have different physical interactions with that qubit.
+Signals applied on different channels have different physical interactions with that qubit.
 Inversely, a channel may also affect many qubits. For instance,
 a channel could manipulate the coupling between two neighboring qubits, or
 could even reference multiple qubits coupled in a chain.
@@ -239,16 +253,14 @@ To capture a signal from a ``rxchannel``, the ``receive`` instruction is used.
 
     receive(rxchannel ch, length duration) -> signal  // raw signal data
 
-output, which gives the raw signal obtained from the hardware. There is ``complex[32]`` output, which is the kerneled IQ data
-resulting from the raw signal. And finally, there is `bit` output, which gives the discriminated binary value. Getting either IQ or
-bit output will result in kerneling/discrimination being done in the hardware. If you wish to do this yourself, ``receive`` the raw
-``signal`` and apply kernel functions for kerneling and discrimination (ie ``kernel IQ(signal raw)``, ``discriminate(complex[64] iq)``.
+The ``receive`` instruction returns raw signal output. If you wish to get a higher level of data, processing
+functions such as ``kernel``'s or ``discriminator``'s must be applied. For transmon systems, there are three
+data levels which may be obtained as follows:
 
 - Level 0: The raw input signal - ``receive(rxchannel ch, length duration) -> signal``.
-- Level 1: A single IQ value derived from the signal after the application of a filter and integration kernel - ``kernel apply_kernel(signal input) -> complex[64]  // IQ data``
+- Level 1: A single IQ value derived from the signal after the application of a filter and integration kernel - ``kernel my_kernel(signal input) -> complex[64]  // IQ data``
 - Level 2: A single bit produced by thresholding the level 1 output - ``kernel discriminate(complex[64] input) -> bit``. This typically is the final result produced and
     returned by ``defcal measure $q -> bit``.
-
 
 ``receive`` increments the target channel's clock by ``duration``.
 
@@ -258,10 +270,17 @@ Channel operations
 Channels provide several operations such as ``barrier`` and ``delay`` to enable synchronization of the channels
 within a program:
 
-- ``barrier(channel ch1, ..., channel chn)``: Synchronize the clocks of all input channels.
-    . This is performed by advancing the clocks to maximum time across all input channels.
-- ``barrier_all()``: Barrier all channels on the device.
-- ``delay(channel ch1, length duration)``: Increment the clock of the input channel by ``duration``.
+.. code-block:: c
+
+    // Synchronize the clocks of all input channels. This is performed by advancing the clocks to
+    // maximum time across all input channels.
+    barrier(channel ch1, ..., channel chn)
+
+    // Barrier all channels on the device
+    barrier_all()
+
+    // Increment the clock of the input channel by ``duration``
+    delay(channel ch1, length duration)
 
 Channel accessors
 ~~~~~~~~~~~~~~~~~~
@@ -279,8 +298,8 @@ The hardware can then be accessed as OpenPulse ``txchannel``/``rxchannel``'s via
 
 The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
 ``txch($0, $1, "control")`` and ``txch($1, $0, "control")`` may be used to implement distinct cross-resonance
-gates. No qubits may be supplied to access the channel by its full name, eg., ``txch("<channel_name>")`` may
-refer to a transmit channel with an arbitrary name.
+gates. It is also possible to access a channel by its full name, without supplying any qubits, if that has between
+implemented by the vendor. For instance, ``txch("<channel_name>")`` may refer to a transmit channel with an arbitrary name.
 
 .. code-block:: c
 
@@ -332,6 +351,8 @@ Demonstrating the ability to express the semantics required for the cross-resona
         // {...}
     }
 
+.. _Geo Gate:
+
 Single qubit geometric gate
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -348,7 +369,7 @@ emitting a signal with multiple carriers simultaneously on a common channel. For
         envelope X_01 = {...};
         envelope X_12 = {...};
 
-        // Get 0->1 freq and anharmonicity for $q
+        // Get 0->1 freq and 1->2 freq for $q
         float[64] fq_01 = 5e9;
         float[64] fq_12 = 5.3e9;
 
@@ -494,7 +515,7 @@ process within the signal framework.
 
         // Kernel and discriminate
         complex[32] iq = boxcar(raw_output);
-        bit result = linear_disc(iq);
+        bit result = discriminate(iq);
 
         return result;
     }
@@ -548,7 +569,7 @@ should be performed in a higher level language on the output data.
     for s in [0:steps] {
         // Sweep freqs from ``freq_low`` to ``freq_high``
         float[64] curr_freq = freq_low + (freq_high-freq_low)*s/steps;
-        // Compute the avg absolute value of the output iq signal over ``shots`` shots
+        // Fill the output iq array w/ freq sweep data
         output[s] = 0;
         for i in [0:shots] {
             output[s][i] iq = sp_cal(curr_freq) $q;
@@ -595,6 +616,8 @@ only changes when a signal is transmitted/received.
         // Uses sample indices ``t_i={0,1,2}``
         // This enables scheduling in parallel across channels.
         tx(d1, sig0, 3);
+
+.. _Timing:
 
 Timing
 ------
@@ -659,8 +682,7 @@ need not be at ``t=0``.
 to the scheduler at the circuit level.
 
 It is critical that the update time of carrier properties be well-defined such that the appropriate absolute phase may be
-accumulated. The update of the carrier properties are defined to occurs at the maximum time across all channels defined
-within the namespace at the update site.
+accumulated. Updates of carrier properties are defined to occur at the maximum time across all channels used up to that point.
 
 .. code-block:: c
 
