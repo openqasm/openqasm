@@ -506,10 +506,10 @@ process within the signal framework.
         // Apply measurement stimulus
         envelope meas_pulse = gaussian_square(1.0, 16000dt, 262dt, 13952dt);
 
-        // Align measure and capture channels
-        barrier(m0, cap0);
         // Transmit signal
         transmit(m0, mix(carrier, meas_pulse), meas_pulse.duration);
+        // Align measure and capture channels
+        barrier(m0, cap0);
         // Capture transmitted signal after interaction with measurement resonator
         signal raw_output = receive(cap0, meas_pulse.duration);
 
@@ -562,7 +562,9 @@ should be performed in a higher level language on the output data.
         carrier carr = set(exp(1.0, freq, 0.0), 0);
 
         transmit(dq, mix(env, carr), env.duration);
-        complex[64] iq = boxcar(receive(cap0, env.duration));
+        barrier_all();  // sync clocks
+
+        complex[64] iq = measure $q;  // precalibrated ``measure`` returning iq data
         return iq;
     }
 
