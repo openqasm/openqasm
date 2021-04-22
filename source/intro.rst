@@ -1,14 +1,18 @@
 Introduction
 ============
 
-OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model, and near-term
-quantum computing experiments. It achieves this using a parameterized set of physical logic gates
-and concurrent real-time classical computations. Its main goal is to serve as an intermediate
-representation for higher-level compilers to communicate with quantum hardware; however, allowances
-have been made to make it pleasant to write for people as well. In particular, the language admits
-different representations of the same program as it is lowered from a high-level description down to
-a low-level pulse representation.
+OpenQASM is an imperative programming language designed for near-term
+quantum computing algorithms and applications. Quantum
+programs are described using the measurement-based quantum circuit model
+with support for classical feed-forward flow control based on measurement
+outcomes.
+
+OpenQASM presents a parameterized set of physical logic gates and concurrent
+real-time classical computations. Its main goal is to serve as an intermediate
+representation for higher-level compilers to communicate with quantum hardware.
+Allowances have been made for human usability. In particular, the language admits
+different representations of the same program as it is transformed from a high-level
+description to a pulse representation.
 
 This document is draft version 3.0 of the OpenQASM specification. The Qiskit development team is
 soliciting feedback on this draft for consideration prior to finalizing version 3.0.
@@ -21,7 +25,7 @@ Version 3.0 of the OpenQASM specification aims to extend OpenQASM to include:
 
 * **A broader family of computation with classical logic**. We introduce classical control flow,
   instructions, and data types to define circuits that include real-time computations on
-  classical data. A *kernel* mechanism allows for opaque references to generic classical
+  classical data. A *kernel* mechanism allows opaque references to generic classical
   computations acting upon run-time data.
 
 * **Explicit timing**. We introduce a flexible mechanism to describe *design intent* of
