@@ -5,6 +5,11 @@ source: |
   bit b1[4]="0100", b2 = "1";
   bool m=True, n=bool(b2);
   const c = 5.5e3, d=5;
+  stretch s;
+  stretch1 s1;
+  stretch10 s10;
+  stretch100 s100;
+  stretch255 s255;
 reference: |
   program
     header
@@ -120,4 +125,54 @@ reference: |
               expression
                 expressionTerminator
                   5
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                stretch
+            identifierList
+              s
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                stretch1
+            identifierList
+              s1
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                stretch10
+            identifierList
+              s10
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                stretch100
+            identifierList
+              s100
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                stretch255
+            identifierList
+              s255
         ;
