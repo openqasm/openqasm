@@ -51,10 +51,11 @@ When interacting with qubits, it turns out to be quite useful to keep track of a
 akin to the rotating frame of a Hamiltonian, throughout the execution of a program. These ``frame``
 types are responsible for two things
 
-- Tracking time appropriately so programs do not need to deal in absolute time
+- Tracking time appropriately so programs do not need to deal in absolute time or with the
+  bookkeeping of advancing time in a sequence of pulses.
 - Tracking phase by producing a complex value given an input time (i.e. via the mathematical
   relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
-  :math:`\theta` is phase). One motivation for keeping track of phase is to allow pulses to be be
+  :math:`\theta` is phase). One motivation for keeping track of phase is to allow pulses to be
   defined in the rotating frame (i.e. without the carrier) with the effect being
   an equivalent application in the lab frame (i.e. with the carrier supplied by the ``frame``).
   Another motivation is to more naturally implement a "virtual Z-gate", which does not require a
@@ -64,8 +65,9 @@ The frame is composed of three parts:
 
 1. A frequency ``frequency`` of type ``float``.
 2. A phase ``phase`` of type ``angle``.
-3. A time of type ``dt`` which is manipulated implicitly and cannot be modified other
-   than through existing timing instructions like ``delay`` and ``barrier``.
+3. A time which is manipulated implicitly and cannot be modified other
+   than through existing timing instructions like ``delay`` and ``barrier``. The time increment
+   is determined by the channel on which the frame is played (see :ref:`Timing` section).
 
 The ``frame`` type is a virtual resource and the exact precision of these parameters is
 hardware specific. It is thus up to the compiler to choose how to implement the required
@@ -82,12 +84,13 @@ Frames are purely virtual and can be constructed using the ``Frame`` command
   frame driveframe = Frame(5e9, 0.0);
 
 When instantiated, the frame time starts at 0. ``Frame``s can also be copied using the
-``copy`` command with argument replacement
+``copy`` command
 
 .. code-block:: javascript
 
   frame driveframe1 = Frame(1.0, 5e9, 0.0);
-  frame driveframe2 = copy(driveframe1, phase=driveframe1.phase + pi/2);
+  frame driveframe2 = copy(driveframe1);
+  driveframe2.phase = driveframe1.phase + pi/2;
 
 This will generate a ::math:`pi/2` phase incremented copy of ``driveframe1`` (i.e. with
 the same frequency and time as ``driveframe1``) with the same time as `driveframe1`.
@@ -162,8 +165,16 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
    driveframe.phase += pi/4;
 
    // Define a calibration for the rz gate on all physical qubits
-   defcal rz(angle[20]:theta) %q {
-     driveframe.phase -= theta;
+
+   defcal prelude {
+     frame frame_q1 = Frame(1.0, 5e9, 0.0);
+     frame frame_q2 = Frame(1.0, 6e9, 0.0);
+     ...
+     map[int, frame] frame_mapping = {1: frame_q1, 2: frame_q2, ...};
+    }
+
+   defcal rz(angle[20] theta) $q {
+     frame_mapping[$q].phase -= theta;
    }
 
 Manipulating frames based on the state of other frames is also permitted:
@@ -197,32 +208,36 @@ down-sample a higher precision waveform to physically realize it.
    arb_waveform = [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
 
    // amp is waveform amplitude at center
-   // center is the mean of waveform
+   // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   gaussian(length:l, complex[float[32]]:amp, length:center, length:sigma)
+   gaussian(complex[float[32]]:amp, length:l, length:sigma)
 
    // amp is waveform amplitude at center
-   // center is the mean of waveform
+   // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   sech(length:l, complex[float[32]]:amp, length:center, length:sigma)
+   sech(complex[float[32]]:amp, length:l, length:sigma)
 
    // amp is waveform amplitude at center
-   // center is the mean of waveform
+   // l is the overall length of the waveform
    // square_width is the width of the square waveform component
    // sigma is the standard deviation of waveform
-   gaussian_square(length:l, complex[float[32]]:amp, length:center, length:square_width, length:sigma)
+   gaussian_square(complex[float[32]]:amp, length:l, length:square_width, length:sigma)
 
    // amp is waveform amplitude at center
-   // center is the mean of waveform
+   // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   drag(length:l, complex[float[32]]:amp, length:center, length:sigma, float[32]:beta)
+   drag(complex[float[32]]:amp, length:l, length:sigma, float[32]:beta)
 
-   // Define a constant waveform of length l
-   constant(l:length)
+   // amp is waveform amplitude
+   // l is the overall length of the waveform
+   constant(complex[float[32]]:amp, length:l)
 
-   // Define a sine wave of a given amplitude, frequncy, phase, and length
-   sine(l: length, complex[float[32]]:amp, float[32]: frequency, angle: phase)
+   // amp is waveform amplitude
+   // l is the overall length of the waveform
+   // frequency is the frequency of the waveform
+   // phase is the phase of the waveform
+   sine(complex[float[32]]:amp, length: l, float[32]: frequency, angle: phase)
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms
@@ -245,7 +260,7 @@ Play instruction
 Waveforms are scheduled using the ``play`` instruction. These instructions may
 only appear inside a ``defcal`` block!
 
-Play instructions have two required parameters:
+Play instructions have three required parameters:
 
 - a value of type ``waveform`` representing the waveform envelope
 - the frame to use for the pulse
@@ -253,12 +268,12 @@ Play instructions have two required parameters:
 
 .. code-block:: javascript
 
-   // Play a 3 sample pulse on qubit 0's "drive" frame
+   // Play a 3 sample pulse on the tx0 channel
    play(tx0, [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j], driveframe);
 
-   // Play a gaussian on qubit 1's "drive" frame
+   // Play a gaussian pulse on the tx1 channel
    frame f1 = Frame(q1_freq, 0.0);
-   play(tx0, gaussian(...), f1);
+   play(tx1, gaussian(...), f1);
 
 Capture Instruction
 -------------------
@@ -269,7 +284,7 @@ process is difficult to describe generically due to the wide variety of
 hardware and measurement methods. Like the play instruction, these instructions
 may only appear inside a ``defcal`` block!
 
-The only required parameter is a ``frame``.
+The only required parameters are the ``channel`` and the ``frame``.
 
 The following are possible parameters that might be included:
 
@@ -325,7 +340,7 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
    defcal aligned_gates {
      // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
      play(tx0, p, driveframe1);
-     delay[20dt] driveframe;
+     delay[20dt] driveframe1;
      // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
      barrier(driveframe1, driveframe2);
      // `driveframe2` will now play a pulse 120dt after `driveframe1` finishes playing
@@ -345,13 +360,13 @@ Cross-resonance gate
      frame frame0 = Frame(1.0, 5e9, 0.0);
   }
 
-  defcal cross_resonance %0 %1 {
+  defcal cross_resonance $0 $1 {
       // Initialize
-      channel d0 = txch(%0, "drive");
-      channel d1 = txch(%1, "drive");
+      channel d0 = txch($0, "drive");
+      channel d1 = txch($1, "drive");
 
-      waveform wf1 = gaussian_square(1., 1024dt, 32dt, 128dt);
-      waveform wf2 = gaussian_square(0.1, 1024dt, 32dt, 128dt);
+      waveform wf1 = gaussian_square(1., 1024dt, 128dt, 32dt);
+      waveform wf2 = gaussian_square(0.1, 1024dt, 128dt, 32dt);
 
       // phase update some virtual Z gate
       frame0.phase += pi/2;
@@ -360,7 +375,8 @@ Cross-resonance gate
       {...}
 
       // generate new frame for second drive that is locally scoped
-      frame temp_frame = copy(frame0, phase=frame0.phase + pi/2);
+      frame temp_frame = copy(frame0);
+      temp_frame.phase = frame0.phase + pi/2;
 
       play(d0, wf1, frame0);
       play(d1, wf2, temp_frame);
@@ -381,7 +397,7 @@ Geometric gate
       frame frame_12 = Frame(fq_01 + anharm, 0);
   }
 
-  defcal geo_gate(angle[32]: theta) %0 {
+  defcal geo_gate(angle[32]: theta) $0 {
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       tx_channel dq = txch($q, “drive”);
@@ -406,9 +422,10 @@ Neutral atoms
 In this simple example, the signal chain is composed of two electro-optic modulators (EOM) and
 an acousto-optic deflector (AOD). The EOMs put sidebands on the laser light while the AOD diffracts
 the light in an amount proportional to the frequency of the RF drive. This example was chosen
-because it is similar in spirit to the work by Levine et al. except that phase control is exerted
-using virtual Z gates on the AODs -- requiring frame tracking of the qubit frequency yet
-application of a tone that maps to the qubit position (i.e. requires the use of a sideband).
+because it is similar in spirit to the work by Levine et al.:cite:`levine2019` except that phase
+control is exerted using virtual Z gates on the AODs -- requiring frame tracking of the qubit
+frequency yet application of a tone that maps to the qubit position (i.e. requires the use of a
+sideband).
 
 The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on q2 and q3.
 
@@ -424,9 +441,6 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     // and offset from each other by the qubit_freq
     raman_a_frame = Frame(Δ, 0.0)
     raman_b_frame = Frame(Δ-qubit_freq, 0.0)
-
-    // Waveforms supplied to the Raman beams are just constant
-
 
     // Three copies of qubit freq to track phase of each qubit
     q1_frame = Frame(qubit_freq, 0)
@@ -460,8 +474,8 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
             play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
             play(aod_channel, q1_π_half_sig, q1_frame);
 
-        // Fence all then time delay
-        fence(.*)
+        // Barrier all then time delay
+        barrier(.*)
         delay(.*, τ/2)
 
         // Phase shift the signals by a different amount -- or should I be shifting qubit_#_signal?
@@ -497,15 +511,15 @@ many (just adding more frames, waveforms, plays, and captures).
     q1_frame = Frame(q1_ro_freq, 0); // time 0
 
     // flat-top readout waveforms
-    waveform q0_ro_wf = constant(amplitude=0.1, time=...);
-    waveform q1_ro_wf = constant(amplitude=0.2, time=...);
+    waveform q0_ro_wf = constant(amp=0.1, l=...);
+    waveform q1_ro_wf = constant(amp=0.2, l=...);
 
     // multiplexed readout
     play(ro_tx, q0_ro_wf, q0_frame);
     play(ro_tx, q1_ro_wf, q1_frame);
 
     // simple boxcar kernel
-    waveform ro_kernel = constant(amplitude=1, time=...);
+    waveform ro_kernel = constant(amp=1, l=...);
 
     // multiplexed capture
     complex[32] q0_iqs = capture(ro_rx, q0_frame, ro_kernel);
