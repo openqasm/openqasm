@@ -11,12 +11,28 @@ reference: |
       branchingStatement
         if
         (
-        booleanExpression
-          membershipTest
-            x
-            in
-            setDeclaration
-              a
+        expression
+          logicalAndExpression
+            comparisonExpression
+              comparisonExpression
+                orExpression
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            expressionTerminator
+                              x
+              relationalOperator
+                in
+              orExpression
+                xOrExpression
+                  bitAndExpression
+                    bitShiftExpression
+                      additiveExpression
+                        multiplicativeExpression
+                          expressionTerminator
+                            a
         )
         programBlock
           {

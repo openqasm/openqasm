@@ -269,6 +269,7 @@ relationalOperator
     | '<='
     | '=='
     | '!='
+    | 'in'
     ;
 
 logicalOperator
@@ -285,8 +286,8 @@ expression
     : expressionTerminator
     | unaryExpression
     // expression hierarchy
-    | xOrExpression
-    | expression '|' xOrExpression
+    | logicalAndExpression
+    | expression '||' logicalAndExpression
     ;
 
 /**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
@@ -300,7 +301,26 @@ expression
     Bit And
     Exlusive Or (xOr)
     Bit Or
+    Comparison
+    Logical and
+    Logical or
 **/
+
+logicalAndExpression
+    : comparisonExpression
+    | logicalAndExpression '&&' comparisonExpression
+    ;
+
+comparisonExpression
+    : orExpression  // if (expression)
+    | comparisonExpression relationalOperator orExpression
+    ;
+
+orExpression
+    : xOrExpression
+    | orExpression '|' xOrExpression
+    ;
+
 xOrExpression
     : bitAndExpression
     | xOrExpression '^' bitAndExpression
@@ -337,6 +357,7 @@ expressionTerminator
     | Integer
     | RealNumber
     | Identifier
+    | setDeclaration
     | StringLiteral
     | builtInCall
     | kernelCall
@@ -370,19 +391,6 @@ expressionList
     : ( expression COMMA )* expression
     ;
 
-/** Boolean expression hierarchy **/
-booleanExpression
-    : membershipTest
-    | comparsionExpression
-    | booleanExpression logicalOperator comparsionExpression
-    ;
-
-comparsionExpression
-    : expression  // if (expression)
-    | expression relationalOperator expression
-    ;
-/** End boolean expression hierarchy **/
-
 equalsExpression
     : EQUALS expression
     ;
@@ -412,12 +420,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
     : 'for' membershipTest
-    | 'while' LPAREN booleanExpression RPAREN
+    | 'while' LPAREN expression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;

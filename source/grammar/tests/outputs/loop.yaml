@@ -14,16 +14,28 @@ reference: |
         loopSignature
           while
           (
-          booleanExpression
-            comparsionExpression
-              expression
-                expressionTerminator
-                  i
-              relationalOperator
-                <
-              expression
-                expressionTerminator
-                  10
+          expression
+            logicalAndExpression
+              comparisonExpression
+                comparisonExpression
+                  orExpression
+                    xOrExpression
+                      bitAndExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                i
+                relationalOperator
+                  <
+                orExpression
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            expressionTerminator
+                              10
           )
         programBlock
           {
@@ -70,16 +82,28 @@ reference: |
             branchingStatement
               if
               (
-              booleanExpression
-                comparsionExpression
-                  expression
-                    expressionTerminator
-                      i
-                  relationalOperator
-                    ==
-                  expression
-                    expressionTerminator
-                      8
+              expression
+                logicalAndExpression
+                  comparisonExpression
+                    comparisonExpression
+                      orExpression
+                        xOrExpression
+                          bitAndExpression
+                            bitShiftExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    i
+                    relationalOperator
+                      ==
+                    orExpression
+                      xOrExpression
+                        bitAndExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  8
               )
               programBlock
                 statement
