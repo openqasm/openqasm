@@ -8,7 +8,7 @@ compiler through the declaration defcalgrammar "openpulse" <VERSION>.
 
 This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
 pulse-level quantum programs defined in the paper `Qiskit Backend Specifications for OpenQASM
-and OpenPulse Experiment <https://arxiv.org/abs/1809.03452>`_. The textual format described
+and OpenPulse Experiment`_:cite:`mckay2018`. The textual format described
 here has several advantages over the original JSON format:
 
 - Improved readability
