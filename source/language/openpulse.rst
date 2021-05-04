@@ -1,27 +1,42 @@
 OpenPulse Grammar
 =================
 
-In addition to OpenQASM instructions, ``defcal`` blocks may contain OpenPulse 
-instructions. Certain OpenPulse instructions are further restricted to only
-appearing inside of a ``defcal`` block.
+OpenQASM allows users to provide the target system's implementation of quantum operations
+with ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
+this document, we outline one such grammar, OpenPulse, which maybe selected within a supporting
+compiler through the declaration defcalgrammar "openpulse" <VERSION>.
 
-These instructions are motivated by the original OpenPulse specification which
-was defined as a JSON wire-format for pulse-level quantum programs in the paper
-`Qiskit Backend Specifications for OpenQASM and OpenPulse Experiment <https://arxiv.org/abs/1809.03452>`_. 
-The text format described here has several advantages over the equivalent JSON 
-format:
+This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
+pulse-level quantum programs defined in the paper `Qiskit Backend Specifications for OpenQASM
+and OpenPulse Experiment`_:cite:`mckay2018`. The textual format described
+here has several advantages over the original JSON format:
 
-- It is more readable
-- Absolute time is handled through built-in timekeeping instructions
-- Gates and classical instructions can be mixed in with the pulses to create far richer calibrations
-- Pulse definitions are tied to circuit instructions rather than circuit programs
-- Richer handling of frames
+- Improved readability
+- Pulse timing is based on instruction ordering and works with programs containing branching
+  control flow
+- Reusable gate calibrations enable more succinct calibration descriptions.
+- Pulse definitions are declared as a calibration for individual circuit instructions attached to
+  physical qubits enabling the microcoding of gate level operations.
+- Richer ability to compose complex pulses through natural DSP-like operations.
+- Clearly defined relationship between pulses, channels and the phases of compilation to
+  hardware resources.
+- Use of multiple frames on a single channel at the same time (see :ref:`Geometric gate`)
+
+
+Openpulse provides a flexible programming model that should extend to many quantum control schemes
+and hardware. At the core of the OpenPulse grammar are the concepts of ``frames``.
+``frames`` are used to schedule the playing of a ``waveform`` or capturing of data
+via a ``channel`` on the target device. A channel is a software abstraction which allows the
+programmer to be agnostic to complexities of the device's underlying pulse generation hardware. It
+is the responsibility of the target device's compiler to map ``frames`` to the applied channels in
+target hardware.
+
 
 Channels
 --------
 
 Channels map to a hardware resource, which can play pulses to manipulate a qubit
-or capture signal from the qubit to perform a measurement. There is a many-to-many
+or capture data from the qubit to perform a measurement. There is a many-to-many
 relationship between qubits and channels. One qubit may have multiple channels
 connecting to it. Pulses on different channels would have different physical
 interactions with that qubit. A channel may also have many qubits. For instance,
@@ -30,227 +45,261 @@ could even reference multiple qubits in a chain.
 
 Channels are vendor-specific and device-specific. It is expected that vendors
 of quantum hardware provide the appropriate channel names and qubit mappings
-as configuration information to end users. Each channel may also have associated 
-static settings, such as local-oscillator frequencies, which do not vary 
-throughout program execution. Again it is expected that vendors of quantum 
+as configuration information to end users. Each channel may also have associated
+static settings, such as local-oscillator frequencies, which do not vary
+throughout program execution. Again it is expected that vendors of quantum
 hardware provide a method for manipulating those static settings if appropriate.
 
 There are two kinds of channels: transmit channels (sending input to a quantum
 device) and receive channels (reading output from a quantum device).
 
-Interacting with channels directly is onerous and makes the pulse programs less
-portable. The OpenPulse defcalgrammar does not directly work with channels and
-instead works with abstract "frames", described below. The static settings above 
-should also include a mapping of these abstract frames to the correct channels.
+A channel is only used to specify the physical resource on which to play a pulse or from which
+to capture data. This specification should be done by providing a mapping between a qubit list +
+name and the configured hardware channel. The hardware can then be accessed as
+OpenPulse ``txchannel``/``rxchannel``'s via "get" functions.
+
+.. code-block:: c
+
+    txch(qubit q0, ..., qubit qn, str name) -> txchannel  // get transmit channel
+    rxch(qubit q0, ..., qubit qn, str name) -> rxchannel  // get receive channel
+
+The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
+``txch($0, $1, "control")`` and ``txch($1, $0, "control")`` may be used to implement distinct
+cross-resonance gates. It is also possible to access a channel by its full name, without supplying
+any qubits, if that has between implemented by the vendor. For instance, ``txch("<channel_name>")``
+may refer to a transmit channel with an arbitrary name.
+
+.. code-block:: c
+
+    txchannel d0 = txch($0, "drive");  // channel for driving at qubit $0's freq
+    txchannel cr1_2 = txch($1, $2, "coupler");  // channel for a coupler between two qubits
+    txchannel m2 = txch($2, "measure");  // channel for transmitting measurement stimulus
+
+    // capture channels for capturing qubits $0 and $1
+    rxchannel cap0 = rxch($0, "capture");
+    rxchannel cap1 = rxch($1, "capture");
 
 Frames
 ------
 
-It turns out to be quite useful to keep track of a set of carrier signals
-throughout the execution of a program. These carrier signals are called "frames"
-and are defined by :math:$A*e^{i\left(2\pi f t + \theta\right)}$, where `f` is
-frequency, `theta` is phase, and `A` is a scaling factor. Frames will also track
-time appropriately so programs do not need to deal in absolute time. The
-canonical motivation for keeping track of phase is to implement a "virtual
-Z-gate", which does not require a physical pulse but rather shifts the phase of
-all future pulses on that frame.
+When interacting with qubits, it is powerful to track of a frame of reference, akin to the rotating
+frame of a Hamiltonian, throughout the execution of a program. Openpulse provides the ``frame``
+type which is responsible for tracking two properties:
 
-The ``frame`` type is a compile-type type representing a *reference* to a frame.
-The frame is composed of four parts:
+- Tracking time appropriately so programs do not need to deal in absolute time or with the
+  bookkeeping of advancing time in a sequence of pulses.
+- Tracking phase by producing a complex value given an input time (i.e. via the mathematical
+  relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
+  :math:`\theta` is phase). One motivation for keeping track of phase is to allow pulses to be
+  defined in the rotating frame with the effect being an equivalent application in the lab
+  frame (i.e. with the carrier supplied by the ``frame``). Another motivation is to more naturally
+  implement a "virtual Z-gate", which does not require a physical pulse but rather shifts the phase
+  of all future pulses on that frame.
 
-1. A frequency ``frequency`` of type ``float``. It is not initialized and must
-be set before any pulses can be played on that frame.
-2. A phase ``phase`` of type ``angle``. This is initialized to the value 0.
-3. An amplitude ``scale`` of type ``float``. This is initilized to the value 1.0.
-4. A time of type ``dt`` which is manipulated implicitly and cannot be modified
-other than through existing timing instructions like ``delay`` and ``barrier``.
+The frame is composed of three parts:
 
-The exact precision of these parameters is hardware specific.
+1. A frequency ``frequency`` of type ``float``.
+2. A phase ``phase`` of type ``angle``.
+3. A time which is manipulated implicitly and cannot be modified other
+   than through existing timing instructions like ``delay`` and ``barrier``. The time increment
+   is determined by the channel on which the frame is played (see :ref:`Timing` section).
 
-frameof command
-~~~~~~~~~~~~~~~
+The ``frame`` type is a virtual resource and the exact precision of these parameters is
+hardware specific. It is thus up to the compiler to choose how to implement the required
+transformations to physical resources in hardware (e.g. mapping multiple frames to a
+single NCO).
 
-Frames are uniquely identified by a string name and a set of qubits. The order
-of qubits does not matter.
+Frame Construction
+~~~~~~~~~~~~~~~~~~
 
-Frames are retrieved using the ``frameof`` function and passing in the name and
-list of physical qubits.
+Frames can be constructed using the ``Frame`` command e.g.
 
-.. code-block: none
+.. code-block:: javascript
 
-   frameof("drive", %0)
-   
-   // These next two lines refer to the same frame
-   frameof("coupling", %0, %1)
-   frameof("coupling", %1, %0)
+  frame driveframe = Frame(5e9, 0.0); // Frame(float[size] frequency, angle[size] phase)
 
-Frame names may seem like they ascribe meaning or that there are only certain
-permissable names. This is not the case; frame names are arbitrary. The frames
-are later mapped to channel names that do have meaning for a certain hardware
-vendor. For example, the hardware vendor may choose to map frames to channels
-using JSON:
+would construct a frame with frequency `f`  5 GHz and phase :math:`\theta` 0.0. When
+instantiated, the frame time starts at 0. ``Frame``s can also be copied using the
+``copy`` command
 
-.. code-block: javascript
+.. code-block:: javascript
 
-   {
-     drive: {
-       "{0}": "channel0",
-       "{1}": "channel1"
-     coupling: {
-       "{0,1}": "channel2"
-     }
+  frame driveframe1 = Frame(5e9, 0.0);
+  frame driveframe2 = copy(driveframe1);
+  driveframe2.phase = driveframe1.phase + pi/2;
+
+This will generate a ::math:`pi/2` phase incremented copy of ``driveframe1`` with the same
+time as `driveframe1`.
+
+Unless a ``calconfig`` block is used to instantiate frames in global scope, a ``frame`` is
+locally scoped . To allow for parameterized access to globally defined frames, we can use
+the ``setframe`` and ``getframe`` functions
+
+.. code-block:: javascript
+
+   setframe(str name, frame fr) $q;
+   getframe(str name) $q-> frame;
+
+For example, we can parmaeterize frames on different qubits using the wildcard reference
+.. code-block:: javascript
+
+   calconfig {
+     setframe("frame",  Frame(5.120e9, 0)) $0;
+     setframe("frame",  Frame(4.938e9, 0)) $1;
+    }
+
+   defcal access_frames $q {
+     frame carrier = getframe("frame") $q;
    }
 
-This has the advantage that one can run any program with any arbitrary frame
-names provided a mapping to the appropriate channels is given.
+Multiple frames associated with a qubit are uniquely accessed by their string identifier e.g.
 
-Restrictions on the use of frames
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: javascript
 
-There are two important considersations when dealing with frames.
+   calconfig {
+     setframe("frame_01",  Frame(5.0e9, 0)) $0;
+     setframe("frame_12",  Frame(6.0e9, 0)) $1;
+     ...
+    }
 
-First, frames are compile time constants. Runtime variables cannot be used as
-arguments to frames; the frame must be resolvable at compile time. This also
-means that assigning a frame to an alias (for the purpose of avoiding typing)
-needs to be done with ``const`` not ``let``.
-
-.. code-block: none
-
-   const driveframe = frameof("drive", %0);
-
-Second, frames return references not values. This means that calling the same
-``frameof`` command in different places is the same as assigning the frame to a
-constant and referencing it multiple times.
+   defcal access_frames $q {
+     qframe_01 = getframe("frame_01") $q;
+     qframe_12 = getframe("frame_12") $q;
+   }
 
 Frame manipulation
 ~~~~~~~~~~~~~~~~~~
 
-The (frequency, phase, scale) of a frame can be manipulated throughout program
-by referencing ``.frequency``, ``.phase``, and ``.scale``. Operations must be 
-appropriate for the respective type, ``float`` for frequency, ``angle`` for
-phase, and ``float`` for scale. Again, the exact precision of these calculations
-is hardware specific.
+The (frequency, phase) tuple of a frame can be manipulated throughout program
+by referencing ``.frequency``, and ``.phase``. Operations must be
+appropriate for the respective type, ``float`` for frequency and ``angle`` for
+phase. Again, the exact precision of these calculations is hardware specific.
 
-Here's an example of manipulating the phase to calibrate an ``rz`` gate:
+Here's an example of manipulating the phase to calibrate an ``rz`` gate on a frame called
+``driveframe``:
 
-.. code-block:: none
+.. code-block:: javascript
 
-   // Shift phase of qubit 0's "drive" frame by pi/4, eg. an rz gate with angle -pi/4
-   frameof("drive", %0).phase += pi/4;
-
-   // Equivalent
-   const drive = frameof("drive", %0);
-   drive.phase += pi/4;
+   // Shift phase of the "drive" frame by pi/4, eg. an rz gate with angle -pi/4
+   driveframe.phase += pi/4;
 
    // Define a calibration for the rz gate on all physical qubits
-   defcal rz(angle[20]:theta) %q {
-     frameof("drive", %q).phase -= theta;
-   }
 
-Here's an example qubit spectroscopy experiment.
+   calconfig {
+     setframe("frame",  Frame(5.0e9, 0)) $0;
+     setframe("frame",  Frame(6.0e9, 0)) $1;
+     ...
+    }
 
-.. code-block:: none
-
-   qubit q;
-
-   const shots = 1000;
-   const start = 5e9; // 5 GHz
-   const end = 6e9; // 6 GHz
-   const points = 50;
-
-   complex[32] iq, average;
-   complex[32] output[points];
-
-   const driveframe = frameof("drive", q);
-
-   for p in [0 : points-1] {
-     // The key line: pick the frequency to sample
-     driveframe.frequency = start + (end-start) * p / points;
-     output[p] = 0;
-
-     for i in [0 : shots-1] {
-       // Assumes suitable calibrations for reset, x, and measure_iq
-       // and that the x gate references the same "drive" frame
-       reset q;
-       x q;
-       measure_iq q -> iq;
-
-       output[p] = (output[p] * i + iq) / (i + 1);
-     }
+   defcal rz(angle[20] theta) $q {
+     frame rz_frame = getframe("frame") $q;
+     rz_frame.phase -= theta;
    }
 
 Manipulating frames based on the state of other frames is also permitted:
 
-.. code-block:: none
+.. code-block:: javascript
 
    // Swap phases between two frames
    const temp = frame1.phase;
    frame1.phase = frame2.phase;
    frame2.phase = temp;
 
-Pulses
-------
+Waveforms
+---------
 
-Pulses have two representations:
+Waveforms are of type ``waveform`` and can either be:
 
-- An array of complex samples which define the points for the pulse envelope
-- A``pulse`` type, which describes an abstract mathematical function
-  representing a pulse. This will later be materialized into a list of complex
-  samples, either by the compiler or the hardware using the parameters provided
-  to the pulse template.
+- An array of complex samples which define the points for the waveform envelope
+- An abstract mathematical function representing a waveform. This will later be
+  materialized into a list of complex samples, either by the compiler or the hardware
+  using the parameters provided to the pulse template.
 
-A value of type ``pulse`` is retrieved by calling one of the built-in pulse
-template functions. Note that each of these functions takes a type ``length``
-as a first argument, since pulses need to have a definite length. Using the
-hardware dependent ``dt`` unit is recommended, since the compiler may need to
-down-sample a higher precision pulse to physically realize it.
+A value of type ``waveform`` is retrieved by explicitly constructing the complex samples
+or by calling one of the built-in waveform template functions. The latter are initialized by
+assigning a ``waveform`` to the result of a (kernel) function call. Note that each of these
+kernel functions takes a type ``length`` as a first argument, since waveforms need to have a
+definite length. Using the hardware dependent ``dt`` unit is recommended for this length,
+since the compiler may need to down-sample a higher precision waveform to physically realize it.
 
-.. code-block:: none
+.. code-block:: javascript
 
-   // amp is pulse amplitude at center
-   // center is the mean of pulse
-   // sigma is the standard deviation of pulse
-   gaussian(length:l, complex[float[32]]:amp, length:center, length:sigma)
+   // arbitrary complex samples
+   waveform arb_waveform = [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
 
-   // amp is pulse amplitude at center
-   // center is the mean of pulse
-   // sigma is the standard deviation of pulse
-   sech(length:l, complex[float[32]]:amp, length:center, length:sigma)
+   // amp is waveform amplitude at center
+   // l is the overall length of the waveform
+   // sigma is the standard deviation of waveform
+   kernel gaussian(complex[size] amp, length l, length sigma) -> waveform;
 
-   // amp is pulse amplitude at center
-   // center is the mean of pulse
-   // square_width is the width of the square pulse component
-   // sigma is the standard deviation of pulse
-   gaussian_square(length:l, complex[float[32]]:amp, length:center, length:square_width, length:sigma)
+   // amp is waveform amplitude at center
+   // l is the overall length of the waveform
+   // sigma is the standard deviation of waveform
+   kernel sech(complex[size] amp, length l, length sigma) -> waveform;
 
-   // amp is pulse amplitude at center
-   // center is the mean of pulse
-   // sigma is the standard deviation of pulse
+   // amp is waveform amplitude at center
+   // l is the overall length of the waveform
+   // square_width is the width of the square waveform component
+   // sigma is the standard deviation of waveform
+   kernel gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
+
+   // amp is waveform amplitude at center
+   // l is the overall length of the waveform
+   // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   drag(length:l, complex[float[32]]:amp, length:center, length:sigma, float[32]:beta)
+   kernel drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
 
-   // Define a constant pulse of length l
-   constant(l:length)
+   // amp is waveform amplitude
+   // l is the overall length of the waveform
+   kernel constant(complex[size] amp, length l) -> waveform;
+
+   // amp is waveform amplitude
+   // l is the overall length of the waveform
+   // frequency is the frequency of the waveform
+   // phase is the phase of the waveform
+   kernel sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
+
+We can manipulate the ``waveform`` types using the following signal processing functions to produce
+new waveforms
+
+- ``mix(waveform wf1, waveform wf2)`` -> waveform - Mix two input waveforms to produce a new waveform.
+  This is equivalent to the product signal :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
+- ``sum(waveform wf1, waveform wf2)`` -> waveform - Sum two input waveforms to produce a new waveform.
+- ``piecewise(waveform wf0, waveform wf1)`` -> waveform - Output waveform.
+- ``offset(waveform wf, complex amount)`` -> waveform - Offset the input waveform by an amount.
+- ``scale(waveform wf, complex factor)`` -> waveform - Scale the input waveform by a factor.
+- ``conj(waveform wf) -> waveform`` - Conjugate the input waveform.
+- ``re(waveform wf) -> waveform`` - Real component of input waveform.
+- ``im(waveform wf) -> waveform`` - Imaginary component of input waveform.
+- ``abs(waveform wf) -> waveform`` - Transform waveform as norm of input. waveform
+- ``phase_shift(waveform wf, angle ang) -> waveform`` - Signal with relative phase, ang.
 
 Play instruction
 ----------------
 
-Pulses are scheduled using the ``play`` instruction. These instructions may
-only appear inside a ``defcal`` block!
+Waveforms are scheduled using the ``play`` instruction. These instructions may
+only appear inside a ``defcal`` block and have three required parameters:
 
-Play instructions have two required parameters:
-
-- a value of type ``pulse`` representing the pulse envelope
+- the channel on which to play the pulse
+- a value of type ``waveform`` representing the waveform envelope
 - the frame to use for the pulse
 
-.. code-block:: none
+.. code-block:: javascript
 
-   // Play a 3 sample pulse on qubit 0's "drive" frame
-   play([1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j]) frameof("drive", %0);
+  play(channel chan, waveform wfm, frame fr)
 
-   // Play a gaussian on qubit 1's "drive" frame
-   frame f1 = frameof("drive", %1);
-   play(gaussian(...)) f1;
+For example,
+
+.. code-block:: javascript
+
+  defcal play_my_pulses {
+   // Play a 3 sample pulse on the tx0 channel
+   play(tx0, [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j], driveframe);
+
+   // Play a gaussian pulse on the tx1 channel
+   frame f1 = Frame(q1_freq, 0.0);
+   play(tx1, gaussian(...), f1);
+  }
 
 Capture Instruction
 -------------------
@@ -261,57 +310,341 @@ process is difficult to describe generically due to the wide variety of
 hardware and measurement methods. Like the play instruction, these instructions
 may only appear inside a ``defcal`` block!
 
-The only required parameter is a ``frame``.
+The only required parameters are the ``channel`` and the ``frame``.
 
 The following are possible parameters that might be included:
 
-- A "duration" of type ``length``, if it cannot be inferred from other parameters
-- A "filter", which is dot product-ed with the measured IQ the distill the
+- A "duration" of type ``length``, if it cannot be inferred from other parameters.
+- A "filter" of type ``waveform``, which is dot product-ed with the measured IQ to distill the
   result into a single IQ value
-- A "tag", which could be used to identify which branch of an if statement was
-  traversed
 
 Again it is up to the hardware vendor to determine the parameters and write a
 kernel definition at the top-level, such as:
 
-.. code-block:: none
+.. code-block:: javascript
 
    // Minimum requirement
-   kernel capture(frame output) -> complex[32];
+   kernel capture(channel chan, frame output) -> complex[32];
 
-   // A capture command with more features
-   kernel capture(frame output, pulse filter) -> complex[32];
+   // A capture command that returns an iq value
+   kernel capture(channel chan, waveform filter, frame output) -> complex[32];
+
+   // A capture command that returns a discrimnated bit
+   kernel capture(channel chan, waveform filter, frame output) -> bit;
+
+   // A capture command that returns a raw waveform data
+   kernel capture(channel chan, length len, frame output) -> waveform;
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie. a
 list of samples taken over a short period of time. It could be some averaged IQ
 value. It could be a classified bit. Or it could even have no return value,
 pushing the results into some buffer which is then accessed outside the program.
 
+For example, the ``capture`` instruction could return raw waveform data that is then
+discriminated using user-defined boxcar and discrimnation ``kernel``s.
+
+.. code-block:: javascript
+
+    // Use a boxcar function to generate IQ data from raw waveform
+    kernel boxcar(waveform input) -> complex[64];
+    // Use a linear discriminator to generate bits from IQ data
+    kernel discriminate(complex[64] iq) -> bit;
+
+    defcal measure $0 -> bit {
+        // Define the channels
+        txchannel m0 = txch($0, "measure");
+        rxchannel cap0 = rxch($0, "capture");
+
+        // Force time of carrier to 0 for consistent phase for discrimination.
+        frame stimulus_frame = Frame(5e9, 0);
+        frame capture_frame = Frame(5e9, 0);
+
+        // Apply measurement stimulus
+        waveform meas_wf = gaussian_square(1.0, 16000dt, 262dt, 13952dt);
+
+        // Play the stimulus
+        play(m0, meas_wf, stimulus_frame);
+        // Align measure and capture channels
+        barrier(stimulus_frame, capture_frame);
+        // Capture transmitted data after interaction with measurement resonator
+        // kernel capture(channel chan, frame capture_frame) -> waveform;
+        waveform raw_output = receive(cap0, meas_pulse.duration);
+
+        // Kernel and discriminate
+        complex[32] iq = boxcar(raw_output);
+        bit result = discriminate(iq);
+
+        return result;
+    }
+
+
 Timing
 ------
 
-Each frame maintains its own "clock". When a pulse is played the clock for 
-that frame advances by the length of the pulse. 
+Each frame maintains its own "clock". When a pulse is played the clock for
+that frame advances by the length of the pulse.
 
-For frames, everything behaves analogous to qubits in the 
+For frames, everything behaves analogous to qubits in the
 `Delays <delays.html>`_ section of this specification. There are however some
 small differences.
 
-The ``delay`` instruction may take a frame instead of a qubit. The ``barrier`` 
-instruction may also take a list of frames intead of a list of qubits.
+The ``delay`` instruction may take a frame instead of a qubit. The ``barrier``
+instruction may also take a list of frames instead of a list of qubits and aligns the time
+of the clocks given as arguments.
 
-``defcal`` blocks have an implicit barrier on every frame used within the block,
-meaning that clocks are guaranteed to be aligned at the start of the block.
-These blocks also need to have a well-defined length, similar to the ``boxas``
-block.
+``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
+meaning that those clocks are guaranteed to be aligned at the start of the block.
+These blocks also need to have a well-defined length, similar to the ``boxas`` block.
 
-.. code-block:: none
+.. code-block:: javascript
 
-   pulse p = ...; // some 100dt pulse
+   waveform p = ...; // some 100dt waveform
 
-   defcal simultaneous_pulsed_gate %0 {
-     play(p) frameof("drive0", %0);
-     delay[20dt] frameof("drive1", %0);
-     // Starts the 100dt pulse 20dt into "drive0" already playing it
-     play(p) frameof("drive1");
+   calconfig {
+     setframe("frame",  Frame(5.0e9, 0)) $0;
+     setframe("frame",  Frame(6.0e9, 0)) $1;
    }
+
+   defcal aligned_gates {
+     // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
+     frame driveframe1 = getframe("frame") $0;
+     frame driveframe2 = getframe("frame") $1;
+     play(tx0, p, driveframe1);
+     delay[20dt] driveframe1;
+     // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
+     barrier(driveframe1, driveframe2);
+     // `driveframe2` will now play a pulse 120dt after `driveframe1` finishes playing
+     play(tx0, p, driveframe2);
+   }
+
+Examples
+--------
+
+Cross-resonance gate
+~~~~~~~~~~~~~~~~~~~~
+
+
+.. code-block:: javascript
+
+  calconfig {
+     setframe("frame",  Frame(5.0e9, 0)) $0;
+  }
+
+  defcal cross_resonance $0 $1 {
+      // Access globally defined frame and channels
+      frame frame0 = getframe("frame") $0;
+      channel d0 = txch($0, "drive");
+      channel d1 = txch($1, "drive");
+
+      waveform wf1 = gaussian_square(1., 1024dt, 128dt, 32dt);
+      waveform wf2 = gaussian_square(0.1, 1024dt, 128dt, 32dt);
+
+      // phase update some virtual Z gate
+      frame0.phase += pi/2;
+
+      /*** Do pre-rotation ***/
+      {...}
+
+      // generate new frame for second drive that is locally scoped
+      frame temp_frame = copy(frame0);
+      temp_frame.phase = frame0.phase + pi/2;
+
+      play(d0, wf1, frame0);
+      play(d1, wf2, temp_frame);
+
+      /*** Do post-rotation ***/
+      {...}
+  }
+
+Geometric gate
+~~~~~~~~~~~~~~
+
+.. code-block:: javascript
+
+  calconfig {
+      float[32] fq_01 = 5e9; // hardcode or pull from some function
+      float[32] anharm = 300e6; // hardcode or pull from some function
+      setframe("frame_01",  Frame(fq_01, 0)) $0;
+      setframe("frame_12",  Frame(fq_01 + anharm, 0)) $0;
+  }
+
+  defcal geo_gate(angle[32] theta) $0 {
+      // theta: rotation angle (about z-axis) on Bloch sphere
+
+      // Access globally defined frame and channels
+      frame frame_01 = getframe("frame_01") $0;
+      frame frame_12 = getframe("frame_12") $1;
+      tx_channel dq = txch($q, “drive”);
+
+      // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
+      // envelopes (no sideband)
+      waveform X_01 = {...};
+      waveform X_12 = {...};
+      float[32] a = sin(theta/2);
+      float[32] b = sqrt(1-a**2);
+
+      // Double-tap
+      play(dq, scale(a, X_01), frame_01);
+      play(dq, scale(b, X_12), frame_12);
+      play(dq, scale(a, X_01), frame_01);
+      play(dq, scale(b, X_12), frame_12);
+  }
+
+Neutral atoms
+~~~~~~~~~~~~~
+
+In this simple example, the signal chain is composed of two electro-optic modulators (EOM) and
+an acousto-optic deflector (AOD). The EOMs put sidebands on the laser light while the AOD diffracts
+the light in an amount proportional to the frequency of the RF drive. This example was chosen
+because it is similar in spirit to the work by Levine et al.:cite:`levine2019` except that phase
+control is exerted using virtual Z gates on the AODs -- requiring frame tracking of the qubit
+frequency yet application of a tone that maps to the qubit position (i.e. requires the use of a
+sideband).
+
+The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on q2 and q3.
+
+.. code-block:: javascript
+
+  defcal neutral_atoms {
+    // Access globally defined channels
+    eom_a_channel = txch(0, "eom_a");
+    eom_a_channel = txch(1, "eom_b");
+    aod_channel = txch(0, "aod");
+
+    // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
+    // and offset from each other by the qubit_freq
+    raman_a_frame = Frame(Δ, 0.0)
+    raman_b_frame = Frame(Δ-qubit_freq, 0.0)
+
+    // Three copies of qubit freq to track phase of each qubit
+    q1_frame = Frame(qubit_freq, 0)
+    q2_frame = Frame(qubit_freq, 0)
+    q3_frame = Frame(qubit_freq, 0)
+
+    // Generic gaussian envelope
+    waveform π_half_sig = gaussian(..., π_half_time, ...)
+
+    // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
+    // put a sideband on the signal construction to target the qubit position while maintainig the
+    // desired Rabi rate.
+    q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
+    q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
+    q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
+
+    for τ in [0: T]:
+        // Simultaneous π/2 pulses
+        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+        play(aod_channel, q1_π_half_sig, q1_frame);
+        play(aod_channel, q1_π_half_sig, q2_frame);
+        play(aod_channel, q1_π_half_sig, q3_frame);
+
+        // Time delay all
+        delay(τ/2)
+
+        // π pulse on qubit 1 only -- composed of two π/2 pulses
+        for _ in [0:1]:
+            play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+            play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+            play(aod_channel, q1_π_half_sig, q1_frame);
+
+        // Barrier all then time delay all
+        barrier()
+        delay(τ/2)
+
+        // Phase shift the signals by a different amount -- or should I be shifting qubit_#_signal?
+        q1_frame.phase += tppi_1 * τ
+        q1_frame.phase += tppi_2 * τ
+        q1_frame.phase += tppi_3 * τ
+
+        // Simultaneous π/2 pulses
+        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+        play(aod_channel, q1_π_half_sig, q1_frame);
+        play(aod_channel, q1_π_half_sig, q2_frame);
+        play(aod_channel, q1_π_half_sig, q3_frame);
+  }
+
+Multiplexed readout and capture
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this example, we want to perform readout and capture of a pair of qubits, but mediated by a
+single physical tx and rx channel. The example is for just two qubits, but works the same for
+many (just adding more frames, waveforms, plays, and captures).
+
+.. code-block:: javascript
+
+  defcal multiplexed_readout_and_capture $0 $1 {
+
+      // the tx/rx channel is the same for $0 and $1
+      tx_channel ro_tx = txch($0, "readout");
+      rx_channel ro_rx = rxch($0, "readout");
+
+      // readout frames of different frequencies
+      q0_frame = Frame(q0_ro_freq, 0); // time 0
+      q1_frame = Frame(q1_ro_freq, 0); // time 0
+
+      // flat-top readout waveforms
+      waveform q0_ro_wf = constant(amp=0.1, l=...);
+      waveform q1_ro_wf = constant(amp=0.2, l=...);
+
+      // multiplexed readout
+      play(ro_tx, q0_ro_wf, q0_frame);
+      play(ro_tx, q1_ro_wf, q1_frame);
+
+      // simple boxcar kernel
+      waveform ro_kernel = constant(amp=1, l=...);
+
+      // multiplexed capture
+      // kernel capture(channel chan, waveform ro_kernel, frame capture_frame) -> bit;
+      bit q0_bit = capture(ro_rx, ro_kernel, q0_frame);
+      bit q1_bit = capture(ro_rx, ro_kernel, q1_frame);
+      ...
+  }
+
+
+Sample rate collisions
+-----------------------
+
+Incommensurate Rates
+~~~~~~~~~~~~~~~~~~~~
+
+Since the frame can be played on multiple channels, there may be an issue with sample rates.
+For example,
+
+.. code-block:: javascript
+
+  defcal incommensurate_rates_interval $q
+    tx0 = txch(0, "tx0"); # sample per 1 ns
+    tx1 = txch(1, "tx1"); # sample per 2 ns
+
+    waveform wf = gaussian_square(0.1, 13ns, ...);
+
+    play(tx0, wf, driveframe);
+    // now driveframe.time is at 13ns
+    play(tx1, wf, driveframe); // does not support 13 ns -- either 12ns or 14 ns
+  }
+
+The implementation of this behavior is up to the vendor.
+
+Incommensurate Lengths
+~~~~~~~~~~~~~~~~~~~~~~
+
+If the samples are defined dt, then playing the same waveform on two different channels
+produces
+
+.. code-block:: javascript
+
+  defcal incommensurate_lengths $q
+    tx0 = txch(0, "tx0"); # sample per 1 ns
+    tx1 = txch(1, "tx1"); # sample per 2 ns
+
+    waveform wf = gaussian_square(0.1, 12dt, ...); // this means different lengths to different channels
+
+    play(tx0, wf, driveframe);
+    // now driveframe.time is at 12ns
+    play(tx1, wf, driveframe);
+    // now driveframe.time is at 36ns
+  }
+
+This is considered well-defined behavior.

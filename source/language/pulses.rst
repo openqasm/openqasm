@@ -73,11 +73,11 @@ the most specific definition found for a given operation. Thus, given,
 the operation ``rx(pi/2) %0`` would match to (3), ``rx(pi) %0`` would
 match (2), ``rx(pi/2) %1`` would match (1).
 
-Users specify the grammar used inside ``defcal`` blocks with a 
-``defcalgrammar "name"`` declaration. One such grammar is a 
+Users specify the grammar used inside ``defcal`` blocks with a
+``defcalgrammar "name"`` declaration. One such grammar is a
 `textual representation of OpenPulse <openpulse.html>`_ specified by:
 
-.. code-block: none
+.. code-block:: c
 
    defcalgrammar "openpulse" 1;
 
@@ -98,20 +98,18 @@ of prior versions of OpenQASM.
 Restrictions on defcal bodies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The contents of ``defcal`` bodies are subject to some restrictions. This is
-similar to how boxed expressions work.
+The contents of ``defcal`` bodies are subject to the restriction they must have a definite length
+known at compile time, regardless of the parameters passed in or the state of the system when
+called. This allows the compiler to properly resolve ``lengthof(...)`` calls and
+allows for optimizations. If there is to be control flow in the ``defcal``, each branch of the
+control flow must have definite and equivalent length resolvable at compile time. Similarly, loops
+must be have a resolvable definite length at compile time.
 
-- They must have a definite length, regardless of the parameters passed in or
-  the state of the system when called. This allows the compiler to properly
-  resolve ``lengthof(...)`` calls and allowing for optimizations.
-- No control flow is allowed within a ``defcal`` block (with one exception,
-  see below). This follows from the definite length requirement.
-
-The sole exception to the second rule is a ``reset`` gate. The ``defcal`` for a
-``reset`` gate is permitted to have a single if statement, provided each branch
+For example,  consider the case of a ``reset`` gate. The ``defcal`` for a
+``reset`` gate can be composed of a single if statement, provided each branch
 of the if statement has definite and equivalent length.
 
-.. code-block:: none
+.. code-block:: c
 
    defcal reset %0 {
       bit res = // measure qubit %0
