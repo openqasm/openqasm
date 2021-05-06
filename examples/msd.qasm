@@ -103,7 +103,8 @@ def rus_level_0 qubit[10]:magic, qubit[3]:scratch {
  */
 def distill_and_buffer(int[32]:num) qubit[33]:work, qubit[buffer_size]:buffer {
   int[32] index;
-  bit success_0, success_1;
+  bit success_0;
+  bit success_1;
   let magic_lvl0 = work[0: 9];
   let magic_lvl1_0 = work[10: 19];
   let magic_lvl1_1 = work[20: 29];

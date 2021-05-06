@@ -16,11 +16,27 @@ sets with the addition of decimal numerals [0-9]. Variable identifiers may not
 override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
-types can be initialized on declaration. Multiple comma-separated declarations
-can occur after the typename with optional assignment on declaration for each.
-Any classical variable or Boolean that is not explicitly initialized is
-undefined. Classical types can be mutually cast to one another using the
-typename.
+types can be initialized on declaration. Any classical variable or Boolean that is not explicitly
+initialized is undefined. Classical types can be mutually cast to one another using the typename.
+
+Declaration and initialization must be done one variable at a time for both quantum and classical
+types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
+example, to declare a set of qubits one must do
+
+.. code-block:: c
+
+   qubit q0;
+   qubit q1;
+   qubit q2;
+
+and to declare a set of classical variables
+
+.. code-block:: c
+
+   int[32] x;
+   float[32] y = 5.5;
+   bit c[3];
+   bool my_bool = false;
 
 We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers,
 where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the

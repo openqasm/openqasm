@@ -51,7 +51,8 @@ follows
 
 .. code-block:: c
 
-   qubit q, r;
+   qubit q;
+   qubit r;
    c = measure q;
    c2 = measure r;
    bit result;
@@ -65,7 +66,8 @@ this
 
    const n = /* size of c + size of c2 */;
    kernel parity(bit[n]) -> bit;
-   qubit q, r;
+   qubit q;
+   qubit r;
    c = measure q;
    c2 = measure r;
    bit result;

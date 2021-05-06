@@ -17,7 +17,10 @@ gate unmaj a, b, c {
     cx a, b;
 }
 
-qubit cin[1], a[4], b[4], cout[1];
+qubit cin[1];
+qubit a[4];
+qubit b[4];
+qubit cout[1];
 bit ans[5];
 uint[4] a_in = 1;  // a = 0001
 uint[4] b_in = 15; // b = 1111

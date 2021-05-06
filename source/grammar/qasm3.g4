@@ -47,7 +47,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : indexIdentifier assignmentOperator ( expression | indexIdentifier )
+    : Identifier designator? ( assignmentOperator expression )?
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -81,7 +81,7 @@ quantumType
     ;
 
 quantumDeclaration
-    : quantumType indexIdentifierList
+    : quantumType Identifier designator?
     ;
 
 quantumArgument
@@ -122,25 +122,25 @@ classicalType
     ;
 
 constantDeclaration
-    : 'const' equalsAssignmentList
+    : 'const' Identifier equalsExpression?
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
-    : singleDesignatorType designator ( identifierList | equalsAssignmentList )
+    : singleDesignatorType designator Identifier equalsExpression?
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator ( identifierList | equalsAssignmentList )
+    : doubleDesignatorType doubleDesignator Identifier equalsExpression?
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType ( identifierList | equalsAssignmentList )
+    : noDesignatorType Identifier equalsExpression?
     ;
 
 bitDeclaration
-    : bitType (indexIdentifierList | indexEqualsAssignmentList )
+    : bitType Identifier designator? equalsExpression?
     ;
 
 classicalDeclaration
@@ -177,10 +177,6 @@ indexIdentifier
 
 indexIdentifierList
     : ( indexIdentifier COMMA )* indexIdentifier
-    ;
-
-indexEqualsAssignmentList
-    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 rangeDefinition
@@ -390,10 +386,6 @@ equalsExpression
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-equalsAssignmentList
-    : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
     ;
 
 membershipTest

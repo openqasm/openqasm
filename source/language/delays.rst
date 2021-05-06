@@ -258,7 +258,8 @@ to properly take into account the finite length of each gate.
 
 .. code-block:: c
 
-   stretch s, t;
+   stretch s;
+   stretch t;
    length start_stretch = s - .5 * lengthof({x $0;})
    length middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
    length end_stretch = s - .5 * lengthof({y $0;})

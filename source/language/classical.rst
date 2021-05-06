@@ -47,8 +47,8 @@ right circular shift, ``rotl`` and ``rotr``, respectively.
 
 .. code-block:: c
 
-   bit[8] a = "10001111";
-   bit[8] b = "01110000";
+   bit a[8] = "10001111";
+   bit b[8] = "01110000";
 
    a << 1; // Bit shift left produces "00011110"
    rotl(a, 2) // Produces "00111110"

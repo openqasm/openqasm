@@ -72,8 +72,7 @@ reference: |
                       expressionTerminator
                         10
                     ]
-                  identifierList
-                    result
+                  result
               ;
           returnStatement
             return
