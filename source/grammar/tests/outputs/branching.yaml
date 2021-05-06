@@ -11,7 +11,7 @@ reference: |
       branchingStatement
         if
         (
-        expression
+        booleanExpression
           membershipTest
             x
             in
@@ -46,17 +46,17 @@ reference: |
                 statement
                   expressionStatement
                     expression
-                      expression
-                        expression
+                      expressionTerminator
+                        expressionTerminator
                           expressionTerminator
                             x
-                        [
-                        expression
-                          expressionTerminator
-                            i
-                        ]
-                      incrementor
-                        ++
+                          [
+                          expression
+                            expressionTerminator
+                              i
+                          ]
+                        incrementor
+                          ++
                     ;
           }
         else

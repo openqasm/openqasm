@@ -95,17 +95,18 @@ reference: |
               equalsExpression
                 =
                 expression
-                  builtInCall
-                    castOperator
-                      classicalType
-                        noDesignatorType
-                          bool
-                    (
-                    expressionList
-                      expression
-                        expressionTerminator
-                          b2
-                    )
+                  expressionTerminator
+                    builtInCall
+                      castOperator
+                        classicalType
+                          noDesignatorType
+                            bool
+                      (
+                      expressionList
+                        expression
+                          expressionTerminator
+                            b2
+                      )
         ;
     statement
       classicalDeclarationStatement

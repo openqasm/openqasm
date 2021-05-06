@@ -142,7 +142,7 @@ the indexset.
        b += i;
    } // b == 16
 
-   // loop over every positive number from 0 to 20 using an indexset
+   // loop over every even integer from 0 to 20 using an indexset
    for i in [0:2:20] {
       // do something
    }

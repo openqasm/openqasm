@@ -14,15 +14,16 @@ reference: |
         loopSignature
           while
           (
-          expression
-            expression
-              expressionTerminator
-                i
-            binaryOperator
-              <
-            expression
-              expressionTerminator
-                10
+          booleanExpression
+            comparsionExpression
+              expression
+                expressionTerminator
+                  i
+              relationalOperator
+                <
+              expression
+                expressionTerminator
+                  10
           )
         programBlock
           {
@@ -69,15 +70,16 @@ reference: |
             branchingStatement
               if
               (
-              expression
-                expression
-                  expressionTerminator
-                    i
-                binaryOperator
-                  ==
-                expression
-                  expressionTerminator
-                    8
+              booleanExpression
+                comparsionExpression
+                  expression
+                    expressionTerminator
+                      i
+                  relationalOperator
+                    ==
+                  expression
+                    expressionTerminator
+                      8
               )
               programBlock
                 statement
