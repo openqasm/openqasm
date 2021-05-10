@@ -17,6 +17,8 @@ we want to provide the ability to capture *design intent* such as “space
 these gates evenly to implement a higher-order echo decoupling sequence"
 or “implement this gate as late as possible".
 
+.. _length-and-stretch:
+
 length and stretch types
 ------------------------
 
@@ -28,6 +30,9 @@ any of the following:
 
 -  Backend-dependent unit, ``dt``, equivalent to the duration of one waveform
    sample on the backend
+
+Units can appear attached to the numerical value, or immediately following
+separated only by blanks or tabs. ``1000ms`` is the same as ``1000 ms``.
 
 It is often useful to reference the duration of other parts of the
 circuit. For example, we may want to delay a gate for twice the duration
@@ -157,7 +162,7 @@ including stretches, will be resolved to constants.
        length e = -0.5 * b + c;
 
 Delays (and other lengthened instructions)
-----------------------------------------
+------------------------------------------
 
 OpenQASM and OpenPulse have a ``delay`` instruction, whose duration is defined by
 a ``length``. If the length passed to the delay contains stretch, it will become a
