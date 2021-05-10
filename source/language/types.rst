@@ -252,6 +252,8 @@ another part of the program or the duration of a calibrated gate.
    length one_second = 1000ms;
    length thousand_cycles = 1000dt;
 
+``length`` is further discussed in :any:`length-and-stretch`
+
 stretch
 ~~~~~~~
 
@@ -264,6 +266,8 @@ is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stret
 timing resolution stage of the compiler, higher order stretches will
 suppress lower order stretches whenever they appear in the same scope on
 the same qubits.
+
+``stretch`` is further discussed in :any:`length-and-stretch`
 
 Aliasing
 --------
