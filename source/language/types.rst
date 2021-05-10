@@ -73,6 +73,14 @@ circuits.
    // CNOT gate between physical qubits 0 and 1
    CX $0, $1;
 
+An alternate and preferable syntax for qubit declaration going forward is
+to place the range after the qubit keyword ahead of the identifier as in:
+
+.. code-block:: c
+
+   // Declare a qubit array with 20 qubits
+   qubit[20] qubit_array;
+
 Classical types
 ---------------
 
@@ -95,9 +103,17 @@ bit is on the right.
 .. code-block:: c
 
    // Declare an array of 20 bits
-   bit bit_array[20]
+   bit bit_array[20];
    // Declare and assign an array of bits with decimal value of 15
    bit name[8] = "00001111";
+
+An alternate and preferable syntax for bit declaration going forward is
+to place the range after the bit keyword ahead of the identifier as in:
+
+.. code-block:: c
+
+   // Declare an array of 20 bits
+   bit[20] bit_array;
 
 Integers
 ~~~~~~~~
