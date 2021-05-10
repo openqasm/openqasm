@@ -12,7 +12,8 @@ reference: |
       quantumGateDefinition
         gate
         quantumGateSignature
-          test_gate
+          quantumGateName
+            test_gate
           (
           identifierList
             theta
@@ -25,9 +26,8 @@ reference: |
           {
           quantumStatement
             quantumInstruction
-              quantumGateCall
-                quantumGateName
-                  reset
+              quantumReset
+                reset
                 indexIdentifierList
                   indexIdentifier
                     a
