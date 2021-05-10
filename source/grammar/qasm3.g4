@@ -142,6 +142,7 @@ noDesignatorDeclaration
 
 bitDeclaration
     : bitType (indexIdentifierList | indexEqualsAssignmentList )
+    | bitType LBRACKET expressionList RBRACKET Identifier
     ;
 
 classicalDeclaration
