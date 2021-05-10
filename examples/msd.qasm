@@ -7,7 +7,7 @@ include "stdgates.inc";
 const buffer_size = 6;  // size of magic state buffer
 
 // Y-basis measurement
-def ymeasure qubit:q -> bit {
+def ymeasure qubit q -> bit {
   s q;
   h q;
   return measure q;
@@ -20,9 +20,9 @@ def ymeasure qubit:q -> bit {
  * The subroutine returns a success bit that is true
  * on success and false otherwise (see arXiv:1811.00566).
  */
-def distill qubit[10]:magic, qubit[3]:scratch -> bool {
+def distill qubit[10] magic, qubit[3] scratch -> bool {
   bit temp;
-  bit checks[3];
+  bit[3] checks;
   // Encode two magic states in the [[4,2,2]] code
   reset scratch[0: 1];
   h scratch[1];
@@ -83,7 +83,7 @@ def distill qubit[10]:magic, qubit[3]:scratch -> bool {
 }
 
 // Repeat level-0 distillation until success
-def rus_level_0 qubit[10]:magic, qubit[3]:scratch {
+def rus_level_0 qubit[10] magic, qubit[3] scratch {
   bool success;
   while(~success) {
     reset magic;
@@ -101,7 +101,7 @@ def rus_level_0 qubit[10]:magic, qubit[3]:scratch {
  * errors on both outputs.
  * Put the requested even number of copies into the buffer.
  */
-def distill_and_buffer(int[32]:num) qubit[33]:work, qubit[buffer_size]:buffer {
+def distill_and_buffer(int[32] num) qubit[33] work, qubit[buffer_size] buffer {
   int[32] index;
   bit success_0;
   bit success_1;
@@ -135,18 +135,18 @@ def distill_and_buffer(int[32]:num) qubit[33]:work, qubit[buffer_size]:buffer {
 
 // Apply Ry(pi/4) to a qubit by consuming a magic state
 // from the magic state buffer at address "addr"
-def Ty(int[32]:addr) qubit:q, qubit[buffer_size]:buffer {
+def Ty(int[32] addr) qubit q, qubit[buffer_size] buffer {
   bit outcome;
   cy buffer[addr], q;
   outcome = ymeasure buffer[addr];
   if(outcome == 1) ry(pi / 2) q;
 }
 
-qubit workspace[33];
-qubit buffer[buffer_size];
+qubit[33] workspace;
+qubit[buffer_size] buffer;
 
-qubit q[5];
-bit c[5];
+qubit[5] q;
+bit[5] c;
 int[32] address;
 
 // initialize

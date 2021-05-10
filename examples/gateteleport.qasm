@@ -6,16 +6,16 @@ include "stdgates.inc";
 const n = 3;
 kernel vote(bit[n]) -> bit;
 
-def logical_meas qubit[3]:d -> bit {
-    bit c[3];
+def logical_meas qubit[3] d -> bit {
+    bit[3] c;
     bit r;
     measure d -> c;
     r = vote(c);
     return r;
 }
 
-qubit q[3];
-qubit a[3];
+qubit[3] q;
+qubit[3] a;
 bit r;
 
 // prep magic state

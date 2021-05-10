@@ -2,9 +2,9 @@
 source: |
   int[10] x;
   int[10] y;
-  qubit q1[6];
+  qubit[6] q1;
   qubit q2;
-  bit b1[4]="0100";
+  bit[4] b1="0100";
   bit b2 = "1";
   bool m=True;
   bool n=bool(b2);
@@ -49,36 +49,33 @@ reference: |
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
-          quantumType
-            qubit
-          q1
+          qubit
           designator
             [
             expression
               expressionTerminator
                 6
             ]
+          q1
         ;
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
-          quantumType
-            qubit
+          qubit
           q2
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
-            b1
+            bit
             designator
               [
               expression
                 expressionTerminator
                   4
               ]
+            b1
             equalsExpression
               =
               expression
@@ -89,8 +86,7 @@ reference: |
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
+            bit
             b2
             equalsExpression
               =

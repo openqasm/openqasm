@@ -84,6 +84,11 @@ quantumArgumentList
     ;
 
 /** Classical Types **/
+bitType
+    : 'bit'
+    | 'creg'
+    ;
+
 singleDesignatorType
     : 'int'
     | 'uint'
@@ -100,15 +105,11 @@ noDesignatorType
     | timingType
     ;
 
-nonBitClassicalType
+classicalType
     : singleDesignatorType designator
     | doubleDesignatorType doubleDesignator
     | noDesignatorType
-    ;
-
-classicalType
-    : nonBitClassicalType
-    | ( 'creg' | 'bit' ) designator?
+    | bitType designator?
     ;
 
 constantDeclaration
@@ -145,7 +146,12 @@ classicalTypeList
     ;
 
 classicalArgument
-    : nonBitClassicalType Identifier
+    :
+    (
+        singleDesignatorType designator |
+        doubleDesignatorType doubleDesignator |
+        noDesignatorType
+    ) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
     ;

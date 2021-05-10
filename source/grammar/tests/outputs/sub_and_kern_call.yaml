@@ -9,8 +9,7 @@ reference: |
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
+            bit
             x
             equalsExpression
               =

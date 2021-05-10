@@ -5,11 +5,11 @@
  */
 defcalgrammar "openpulse";
 
-defcal pong(amp, duration) $q {
+defcal pong(angle[32] amp, length duration) $q {
     play d0, gaussian(amp, duration)
 }
 
-defcal pong_cx(amp) $q0, $q1, $q2 {
+defcal pong_cx(angle[32] amp) $q0, $q1, $q2 {
     barrier $q0, $q1, $q2;
     cross-res(pi/4) $q0, $q1
     x(pi) $q0;  // this is a defcal
@@ -33,7 +33,7 @@ barrier $0, $1, $2;
 
 length maxduration = 1us;
 
-qubit q[2]
+qubit[2] q;
 barrier q[0], q[1];
 slowgate q[0];
 stretch s;

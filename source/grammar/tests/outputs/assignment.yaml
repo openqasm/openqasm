@@ -1,8 +1,8 @@
 # indent w/ 2 spaces
 source: |
-  bit a[2];
-  bit b[2];
-  qubit q[3];
+  bit[2] a;
+  creg b[2];
+  qubit[3] q;
   int[10] x = 12;
   a[0] = b[1];
   x += int[10](a[1]);
@@ -14,22 +14,20 @@ reference: |
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
-            a
+            bit
             designator
               [
               expression
                 expressionTerminator
                   2
               ]
+            a
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
+            creg
             b
             designator
               [
@@ -41,15 +39,14 @@ reference: |
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
-          quantumType
-            qubit
-          q
+          qubit
           designator
             [
             expression
               expressionTerminator
                 3
             ]
+          q
         ;
     statement
       classicalDeclarationStatement
