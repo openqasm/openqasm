@@ -82,6 +82,7 @@ quantumType
 
 quantumDeclaration
     : quantumType indexIdentifierList
+    | quantumType LBRACKET expressionList RBRACKET Identifier
     ;
 
 quantumArgument
