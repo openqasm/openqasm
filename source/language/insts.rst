@@ -47,7 +47,7 @@ broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``.
 
    // Initialize, flip and measure an array of 10 qubits
    qubit qubits[10];
-   bit[10] bits;
+   bit bits[10];
    x qubits;
    bits = measure qubits;
 

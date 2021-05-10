@@ -11,8 +11,7 @@ reference: |
         statement
           assignmentStatement
             classicalAssignment
-              indexIdentifier
-                __directive_info__
+              __directive_info__
               assignmentOperator
                 =
               expression

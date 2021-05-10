@@ -1,6 +1,7 @@
 # indent w/ 2 spaces
 source: |
-  bit a[2], b[2];
+  bit a[2];
+  bit b[2];
   qubit q[3];
   int[10] x = 12;
   a[0] = b[1];
@@ -15,39 +16,40 @@ reference: |
           bitDeclaration
             bitType
               bit
-            indexIdentifierList
-              indexIdentifier
-                a
-                [
-                expressionList
-                  expression
-                    expressionTerminator
-                      2
-                ]
-              ,
-              indexIdentifier
-                b
-                [
-                expressionList
-                  expression
-                    expressionTerminator
-                      2
-                ]
+            a
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          bitDeclaration
+            bitType
+              bit
+            b
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
         ;
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
           quantumType
             qubit
-          indexIdentifierList
-            indexIdentifier
-              q
-              [
-              expressionList
-                expression
-                  expressionTerminator
-                    3
-              ]
+          q
+          designator
+            [
+            expression
+              expressionTerminator
+                3
+            ]
         ;
     statement
       classicalDeclarationStatement
@@ -61,24 +63,22 @@ reference: |
                 expressionTerminator
                   10
               ]
-            equalsAssignmentList
-              x
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    12
+            x
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  12
         ;
     statement
       assignmentStatement
         classicalAssignment
-          indexIdentifier
-            a
+          a
+          designator
             [
-            expressionList
-              expression
-                expressionTerminator
-                  0
+            expression
+              expressionTerminator
+                0
             ]
           assignmentOperator
             =
@@ -95,8 +95,7 @@ reference: |
     statement
       assignmentStatement
         classicalAssignment
-          indexIdentifier
-            x
+          x
           assignmentOperator
             +=
           expression

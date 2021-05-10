@@ -47,7 +47,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : indexIdentifier assignmentOperator ( expression | indexIdentifier )
+    : Identifier designator? ( assignmentOperator expression )?
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -84,11 +84,6 @@ quantumArgumentList
     ;
 
 /** Classical Types **/
-bitType
-    : 'bit'
-    | 'creg'
-    ;
-
 singleDesignatorType
     : 'int'
     | 'uint'
@@ -105,33 +100,37 @@ noDesignatorType
     | timingType
     ;
 
-classicalType
+nonBitClassicalType
     : singleDesignatorType designator
     | doubleDesignatorType doubleDesignator
     | noDesignatorType
-    | bitType designator?
+    ;
+
+classicalType
+    : nonBitClassicalType
+    | ( 'creg' | 'bit' ) designator?
     ;
 
 constantDeclaration
-    : 'const' equalsAssignmentList
+    : 'const' Identifier equalsExpression?
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
-    : singleDesignatorType designator ( identifierList | equalsAssignmentList )
+    : singleDesignatorType designator Identifier equalsExpression?
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator ( identifierList | equalsAssignmentList )
+    : doubleDesignatorType doubleDesignator Identifier equalsExpression?
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType ( identifierList | equalsAssignmentList )
+    : noDesignatorType Identifier equalsExpression?
     ;
 
 bitDeclaration
-    : ( 'qreg' Identifier designator? | 'qubit' designator? Identifier ) equalsExpression
+    : ( 'creg' Identifier designator? | 'bit' designator? Identifier ) equalsExpression?
     ;
 
 classicalDeclaration
@@ -146,7 +145,9 @@ classicalTypeList
     ;
 
 classicalArgument
-    : classicalType Identifier
+    : nonBitClassicalType Identifier
+    | 'creg' Identifier designator?
+    | 'bit' designator? Identifier
     ;
 
 classicalArgumentList
@@ -168,10 +169,6 @@ indexIdentifier
 
 indexIdentifierList
     : ( indexIdentifier COMMA )* indexIdentifier
-    ;
-
-indexEqualsAssignmentList
-    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 rangeDefinition
@@ -384,10 +381,6 @@ equalsExpression
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-equalsAssignmentList
-    : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
     ;
 
 membershipTest
