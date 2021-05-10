@@ -35,7 +35,7 @@ statement
     | classicalDeclarationStatement
     | branchingStatement
     | loopStatement
-    | controlDirectiveStatement
+    | endStatement
     | aliasStatement
     | quantumStatement
     ;
@@ -185,7 +185,13 @@ quantumGateDefinition
     ;
 
 quantumGateSignature
-    : ( Identifier | 'CX' | 'U') ( LPAREN identifierList? RPAREN )? identifierList
+    : quantumGateName ( LPAREN identifierList? RPAREN )? identifierList
+    ;
+
+quantumGateName
+    : 'U'
+    | 'CX'
+    | Identifier
     ;
 
 quantumBlock
@@ -211,11 +217,16 @@ quantumInstruction
     : quantumGateCall
     | quantumPhase
     | quantumMeasurement
+    | quantumReset
     | quantumBarrier
     ;
 
 quantumPhase
     : 'gphase' LPAREN Identifier RPAREN
+    ;
+
+quantumReset
+    : 'reset' indexIdentifierList
     ;
 
 quantumMeasurement
@@ -236,15 +247,7 @@ quantumGateModifier
     ;
 
 quantumGateCall
-    : quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
-    ;
-
-quantumGateName
-    : 'CX'
-    | 'U'
-    | 'reset'
-    | Identifier
-    | quantumGateModifier quantumGateName
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/
@@ -364,11 +367,11 @@ expressionList
 /** Boolean expression hierarchy **/
 booleanExpression
     : membershipTest
-    | comparsionExpression
-    | booleanExpression logicalOperator comparsionExpression
+    | comparisonExpression
+    | booleanExpression logicalOperator comparisonExpression
     ;
 
-comparsionExpression
+comparisonExpression
     : expression  // if (expression)
     | expression relationalOperator expression
     ;
@@ -398,8 +401,8 @@ setDeclaration
     ;
 
 programBlock
-    : statement
-    | LBRACE statement* RBRACE
+    : statement | controlDirective
+    | LBRACE ( statement | controlDirective )* RBRACE
     ;
 
 branchingStatement
@@ -413,14 +416,17 @@ loopSignature
 
 loopStatement: loopSignature programBlock ;
 
-controlDirectiveStatement
-    : controlDirective SEMICOLON
+endStatement
+    : 'end' SEMICOLON
     ;
 
+returnStatement
+    : 'return' ( expression | quantumMeasurement )? SEMICOLON;
+
 controlDirective
-    : 'break'
-    | 'continue'
-    | 'end'
+    : ('break' | 'continue') SEMICOLON
+    | endStatement
+    | returnStatement
     ;
 
 kernelDeclaration
@@ -439,8 +445,6 @@ subroutineDefinition
     : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
     returnSignature? subroutineBlock
     ;
-
-returnStatement : 'return' statement;
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
@@ -461,7 +465,7 @@ pragma
 
 timingType
     : 'length'
-    | 'stretch' Integer?
+    | StretchN
     ;
 
 timingBox
@@ -558,6 +562,7 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
+StretchN : 'stretch' Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
