@@ -70,22 +70,13 @@ identifierList
     : ( Identifier COMMA )* Identifier
     ;
 
-association
-    : COLON Identifier
-    ;
-
 /** Quantum Types **/
-quantumType
-    : 'qubit'
-    | 'qreg'
-    ;
-
 quantumDeclaration
-    : quantumType indexIdentifierList
+    : 'qreg' Identifier designator? | 'qubit' designator? Identifier
     ;
 
 quantumArgument
-    : quantumType designator? association
+    : 'qreg' Identifier designator? | 'qubit' designator? Identifier
     ;
 
 quantumArgumentList
@@ -140,7 +131,7 @@ noDesignatorDeclaration
     ;
 
 bitDeclaration
-    : bitType (indexIdentifierList | indexEqualsAssignmentList )
+    : ( 'qreg' Identifier designator? | 'qubit' designator? Identifier ) equalsExpression
     ;
 
 classicalDeclaration
@@ -155,7 +146,7 @@ classicalTypeList
     ;
 
 classicalArgument
-    : classicalType association
+    : classicalType Identifier
     ;
 
 classicalArgumentList

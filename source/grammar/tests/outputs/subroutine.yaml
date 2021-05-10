@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  def test_sub(int[5]:i) qubit:q1, qubit[5]:q2 -> int[10] {
+  def test_sub(int[5] i) qubit q1, qubit[5] q2 -> int[10] {
     int[10] result;
     return result;
   }
