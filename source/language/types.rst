@@ -175,14 +175,14 @@ Complex numbers
 Complex numbers may be declared as ``complex[size] name``, for some number of bits ``size``. The real
 and imaginary parts of the complex number are ``float[size]`` types. The ``im`` keyword defines the
 imaginary number :math:`sqrt(-1)`. ``complex`` types are initalized as ``a + b im``, where ``a`` and
-``b`` are float types (or expressions resolving to floats). There is no token between the float and
-``im`` tokens.
+``b`` are float types (or expressions resolving to floats). The float must occur to the left of ``im``
+for the imaginary part and the two can only be seperated by spaces/tabs (or nothing at all).
 
 .. code-block:: c
 
    complex[64] c;
    c = 2.5 + 3.5im;
-   complex[64] d = 2.0+sin(π) + 3.1*5.5im;
+   complex[64] d = 2.0+sin(π) + 3.1*5.5 im;
 
 Boolean types
 ~~~~~~~~~~~~~
