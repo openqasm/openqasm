@@ -15,7 +15,7 @@ reference: |
           while
           (
           booleanExpression
-            comparsionExpression
+            comparisonExpression
               expression
                 expressionTerminator
                   i
@@ -53,9 +53,8 @@ reference: |
                 statement
                   quantumStatement
                     quantumInstruction
-                      quantumGateCall
-                        quantumGateName
-                          reset
+                      quantumReset
+                        reset
                         indexIdentifierList
                           indexIdentifier
                             q
@@ -71,7 +70,7 @@ reference: |
               if
               (
               booleanExpression
-                comparsionExpression
+                comparisonExpression
                   expression
                     expressionTerminator
                       i
@@ -82,21 +81,16 @@ reference: |
                       8
               )
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      break
-                    ;
+                controlDirective
+                  break
+                  ;
               else
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      continue
-                    ;
+                controlDirective
+                  continue
+                  ;
           }
     statement
-      controlDirectiveStatement
-        controlDirective
-          end
+      endStatement
+        end
         ;
