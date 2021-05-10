@@ -1,17 +1,18 @@
 # indent w/ 2 spaces
 source: |
-  complex[10] a, b;
-  complex[20] c = [4.0, 4.4], d = [-2.1, -3.2];
-  complex[10] x = a;
-  complex[10] y = a + b;
+  complex[10] a;
+  complex[20] b = 4-5.5im;
+  complex[10] c = b+7.5*1e9im;
+  complex[10] d = a + b;
 reference: |
   program
     header
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          complexDeclaration
-            complex
+          singleDesignatorDeclaration
+            singleDesignatorType
+              complex
             designator
               [
               expression
@@ -20,75 +21,43 @@ reference: |
               ]
             identifierList
               a
-              ,
-              b
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          complexDeclaration
-            complex
+          singleDesignatorDeclaration
+            singleDesignatorType
+              complex
             designator
               [
               expression
                 expressionTerminator
                   20
               ]
-            complexEqualsAssignmentList
-              c
-              complexEqualsExpression
-                =
-                [
-                expression
-                  expressionTerminator
-                    4.0
-                ,
-                expression
-                  expressionTerminator
-                    4.4
-                ]
-              ,
-              d
-              complexEqualsExpression
-                =
-                [
-                expression
-                  expressionTerminator
-                    -
-                    expressionTerminator
-                      2.1
-                ,
-                expression
-                  expressionTerminator
-                    -
-                    expressionTerminator
-                      3.2
-                ]
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
-            complex
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
             equalsAssignmentList
-              x
+              b
               equalsExpression
                 =
                 expression
-                  expressionTerminator
-                    a
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                4
+                          -
+                          multiplicativeExpression
+                            expressionTerminator
+                              5.5im
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          complexDeclaration
-            complex
+          singleDesignatorDeclaration
+            singleDesignatorType
+              complex
             designator
               [
               expression
@@ -96,7 +65,41 @@ reference: |
                   10
               ]
             equalsAssignmentList
-              y
+              c
+              equalsExpression
+                =
+                expression
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                b
+                          +
+                          multiplicativeExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                7.5
+                            *
+                            expressionTerminator
+                              1e9im
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          singleDesignatorDeclaration
+            singleDesignatorType
+              complex
+            designator
+              [
+              expression
+                expressionTerminator
+                  10
+              ]
+            equalsAssignmentList
+              d
               equalsExpression
                 =
                 expression

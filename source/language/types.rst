@@ -173,17 +173,16 @@ Complex numbers
 ~~~~~~~~~~~~~~~
 
 Complex numbers may be declared as ``complex[size] name``, for some number of bits ``size``. The real
-and imaginary parts of the complex number are ``float[size]`` types. The real part may be accessed
-by ``.real`` and the imaginary part by ``.imag``. A ``complex`` type may be defined by array syntax.
-Note, however, that complex literals of the form `[a,b]` are not allowed--they must be used as an
-assigned to a complex type.
+and imaginary parts of the complex number are ``float[size]`` types. The ``im`` keyword defines the
+imaginary number :math:`sqrt(-1)`. ``complex`` types are initalized as ``a + b im``, where ``a`` and
+``b`` are float types (or expressions resolving to floats). There is no token between the float and
+``im`` tokens.
 
 .. code-block:: c
 
-   // Declare a 64-bit complex number 2.5+3.5i (where i is :math:`sqrt(-1)`)
-   complex[64] c = [2.5, 3.5];
-   float[64] re = c.real;
-   float[64] im = c.imag;
+   complex[64] c;
+   c = 2.5 + 3.5im;
+   complex[64] d = 2.0+sin(π) + 3.1*5.5im;
 
 Boolean types
 ~~~~~~~~~~~~~

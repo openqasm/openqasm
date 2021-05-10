@@ -113,21 +113,17 @@ multiplication, and division and the corresponding assignment operators.
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-In this section, `i` denotes the imaginary constant :math:`sqrt(-1)`.
-
-Addition and subtraction on complex numbers are defined by adding/subtracting the real and imaginary
-components.
+Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+assignment operators.
 
 .. code-block:: c
 
-   complex[64] a = [10.0, 5.0];
-   complex[64] b = [-2.5, -7.5];
-   complex[64] c = a + b; // c = [7.5, -2.5]
-   complex[64] d = a - b; // d = [12.5, 12.5];
-
-Multiplication is defined by distribution. For complex numbers `a`, `b`, we have
-:math:`(a.real+a.imag*i)*(b.real+b.imag*i) = (a.real*b.real-a.imag*b.imag) + (a.real*b.imag+a.imag*b.real)*i`.
-In array notation, :math:`a*b = [a.real*b.real-a.imag*b.imag, a.real*b.imag+a.imag*b.real]`.
+   complex[64] a = 10.0 + 5.0im;
+   complex[64] b = -2.0 - 7.0im;
+   complex[64] c = a + b; // c = 8.0 - 2.0im
+   complex[64] d = a - b; // d = 12.0+12.0im;
+   complex[64] e = a*b; // e = 15.0-80.0im;
+   complex[64] f = a/b; // f = (-55.0+60.0im)/53.0
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~

@@ -103,6 +103,7 @@ singleDesignatorType
     | 'uint'
     | 'float'
     | 'angle'
+    | 'complex'
     ;
 
 doubleDesignatorType
@@ -123,10 +124,6 @@ classicalType
 
 constantDeclaration
     : 'const' equalsAssignmentList
-    ;
-
-complexDeclaration
-    : 'complex' designator ( identifierList | equalsAssignmentList | complexEqualsAssignmentList )
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
@@ -152,7 +149,6 @@ classicalDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
-    | complexDeclaration
     ;
 
 classicalTypeList
@@ -341,6 +337,7 @@ expressionTerminator
     : Constant
     | Integer
     | RealNumber
+    | ImagNumber
     | Identifier
     | StringLiteral
     | builtInCall
@@ -392,10 +389,6 @@ equalsExpression
     : EQUALS expression
     ;
 
-complexEqualsExpression
-    : EQUALS LBRACKET expression COMMA expression RBRACKET
-    ;
-
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
@@ -403,10 +396,6 @@ assignmentOperator
 
 equalsAssignmentList
     : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
-    ;
-
-complexEqualsAssignmentList
-    : (Identifier complexEqualsExpression COMMA)* Identifier complexEqualsExpression
     ;
 
 membershipTest
@@ -566,6 +555,8 @@ MUL : '*';
 DIV : '/';
 MOD : '%';
 
+IMAG: 'im';
+ImagNumber : ( Integer | RealNumber ) IMAG ;
 
 Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
@@ -585,7 +576,7 @@ Identifier : FirstIdCharacter GeneralIdCharacter* ;
 fragment SciNotation : [eE] ;
 fragment PlusMinus : PLUS | MINUS ;
 fragment Float : Digit+ DOT Digit* ;
-RealNumber : Float (SciNotation PlusMinus? Integer )? ;
+RealNumber : (Integer | Float ) (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units
