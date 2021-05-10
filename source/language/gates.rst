@@ -247,7 +247,6 @@ cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
 and the variable parameters ``params`` can have any numeric type.
 
 The gate can be applied to any combination of qubit registers *of the same size*, as shown in the following example.
-which latter are *of the same size*, as shown in the following example.
 
 The quantum circuit given by
 
