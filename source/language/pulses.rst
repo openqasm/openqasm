@@ -27,7 +27,7 @@ instruction sequence on *physical* qubits, e.g.
 
 .. code-block:: c
 
-   defcal rz(angle[20]:theta) $0 { ... }
+   defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
 
 We distinguish gate and measurement definitions by the presence of a
@@ -47,7 +47,7 @@ qubits. For instance, to define an equivalent `rz` calibration on qubits 0 and 1
 
 .. code-block:: c
 
-   defcal rz(angle[20]:theta) $q { ... }
+   defcal rz(angle[20] theta) $q { ... }
    // we've defined ``rz`` on arbitrary physical qubits, so we can do:
    rz(3.14) $0;
    rz(3.14) $1;
@@ -74,9 +74,9 @@ physical qubits with different parameter values, e.g.
 Given multiple definitions of the same symbol, the compiler will match
 the most specific definition found for a given operation. Thus, given,
 
-#. ``defcal rx(angle[20]:theta) $q  ...``
+#. ``defcal rx(angle[20] theta) $q  ...``
 
-#. ``defcal rx(angle[20]:theta) $0  ...``
+#. ``defcal rx(angle[20] theta) $0  ...``
 
 #. ``defcal rx(pi / 2) $0  ...``
 

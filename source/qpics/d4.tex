@@ -8,7 +8,7 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{yquant}
-    qubit q[2];
+    qubit[2] q;
     cnot q[1] | q[0];
     hspace {3mm} q;
     [name=del, x radius=12mm] box {$Delay [30ns]$} q[0];

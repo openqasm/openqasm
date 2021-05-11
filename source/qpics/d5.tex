@@ -8,7 +8,7 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{yquant}
-    qubit q[3];
+    qubit[3] q;
     cnot q[1] | q[0];
     [name=boxa, x radius=4mm, y radius=6mm] box {$R^+$} q[2];
     [name=boxb, x radius=8mm, y radius=6mm] box {$R^-$} q[2];

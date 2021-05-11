@@ -1,10 +1,15 @@
 # indent w/ 2 spaces
 source: |
-  int[10] x, y;
-  qubit q1[6], q2;
-  bit b1[4]="0100", b2 = "1";
-  bool m=True, n=bool(b2);
-  const c = 5.5e3, d=5;
+  int[10] x;
+  int[10] y;
+  qubit[6] q1;
+  qubit q2;
+  bit[4] b1="0100";
+  bit b2 = "1";
+  bool m=True;
+  bool n=bool(b2);
+  const c = 5.5e3;
+  const d=5;
   stretch s;
   stretch1 s1;
   stretch10 s10;
@@ -25,57 +30,69 @@ reference: |
                 expressionTerminator
                   10
               ]
-            identifierList
-              x
-              ,
-              y
+            x
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          singleDesignatorDeclaration
+            singleDesignatorType
+              int
+            designator
+              [
+              expression
+                expressionTerminator
+                  10
+              ]
+            y
         ;
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
-          quantumType
-            qubit
-          indexIdentifierList
-            indexIdentifier
-              q1
-              [
-              expressionList
-                expression
-                  expressionTerminator
-                    6
-              ]
-            ,
-            indexIdentifier
-              q2
+          qubit
+          designator
+            [
+            expression
+              expressionTerminator
+                6
+            ]
+          q1
+        ;
+    globalStatement
+      quantumDeclarationStatement
+        quantumDeclaration
+          qubit
+          q2
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
-            indexEqualsAssignmentList
-              indexIdentifier
-                b1
-                [
-                expressionList
-                  expression
-                    expressionTerminator
-                      4
-                ]
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    "0100"
-              ,
-              indexIdentifier
-                b2
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    "1"
+            bit
+            designator
+              [
+              expression
+                expressionTerminator
+                  4
+              ]
+            b1
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  "0100"
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          bitDeclaration
+            bit
+            b2
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  "1"
         ;
     statement
       classicalDeclarationStatement
@@ -83,49 +100,57 @@ reference: |
           noDesignatorDeclaration
             noDesignatorType
               bool
-            equalsAssignmentList
-              m
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    True
-              ,
-              n
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    builtInCall
-                      castOperator
-                        classicalType
-                          noDesignatorType
-                            bool
-                      (
-                      expressionList
-                        expression
-                          expressionTerminator
-                            b2
-                      )
+            m
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  True
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              bool
+            n
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  builtInCall
+                    castOperator
+                      classicalType
+                        noDesignatorType
+                          bool
+                    (
+                    expressionList
+                      expression
+                        expressionTerminator
+                          b2
+                    )
         ;
     statement
       classicalDeclarationStatement
         constantDeclaration
           const
-          equalsAssignmentList
-            c
-            equalsExpression
-              =
-              expression
-                expressionTerminator
-                  5.5e3
-            ,
-            d
-            equalsExpression
-              =
-              expression
-                expressionTerminator
-                  5
+          c
+          equalsExpression
+            =
+            expression
+              expressionTerminator
+                5.5e3
+        ;
+    statement
+      classicalDeclarationStatement
+        constantDeclaration
+          const
+          d
+          equalsExpression
+            =
+            expression
+              expressionTerminator
+                5
         ;
     statement
       classicalDeclarationStatement
@@ -134,8 +159,7 @@ reference: |
             noDesignatorType
               timingType
                 stretch
-            identifierList
-              s
+            s
         ;
     statement
       classicalDeclarationStatement
@@ -144,8 +168,7 @@ reference: |
             noDesignatorType
               timingType
                 stretch1
-            identifierList
-              s1
+            s1
         ;
     statement
       classicalDeclarationStatement
@@ -154,8 +177,7 @@ reference: |
             noDesignatorType
               timingType
                 stretch10
-            identifierList
-              s10
+            s10
         ;
     statement
       classicalDeclarationStatement
@@ -164,8 +186,7 @@ reference: |
             noDesignatorType
               timingType
                 stretch100
-            identifierList
-              s100
+            s100
         ;
     statement
       classicalDeclarationStatement
@@ -174,6 +195,5 @@ reference: |
             noDesignatorType
               timingType
                 stretch255
-            identifierList
-              s255
+            s255
         ;

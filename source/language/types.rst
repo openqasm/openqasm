@@ -16,11 +16,27 @@ sets with the addition of decimal numerals [0-9]. Variable identifiers may not
 override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
-types can be initialized on declaration. Multiple comma-separated declarations
-can occur after the typename with optional assignment on declaration for each.
-Any classical variable or Boolean that is not explicitly initialized is
-undefined. Classical types can be mutually cast to one another using the
-typename.
+types can be initialized on declaration. Any classical variable or Boolean that is not explicitly
+initialized is undefined. Classical types can be mutually cast to one another using the typename.
+
+Declaration and initialization must be done one variable at a time for both quantum and classical
+types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
+example, to declare a set of qubits one must do
+
+.. code-block:: c
+
+   qubit q0;
+   qubit q1;
+   qubit q2;
+
+and to declare a set of classical variables
+
+.. code-block:: c
+
+   int[32] x;
+   float[32] y = 5.5;
+   bit[3] c;
+   bool my_bool = false;
 
 We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers,
 where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the
@@ -39,10 +55,11 @@ Qubits
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. Quantum registers are static
 arrays of qubits that cannot be dynamically resized. The statement ``qubit name;``
-declares a reference to a quantum bit. The statement ``qreg name[size];`` or ``qubit name[size];`` declares a
-quantum register with the given name identifier. The keyword ``qreg`` is included
-for backwards compatibility and will be removed in the future. Sizes
-must always be constant positive integers.
+declares a reference to a quantum bit. The statement ``qubit[size] name;`` declares a
+quantum register with ``size`` qubits. Sizes must always be constant positive integers.
+
+Qubit registers may also be declared as ``qreg name[size]``. This keyword is included for backwards
+compatibility and may not be supported in the future.
 
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
@@ -68,8 +85,8 @@ circuits.
    qubit gamma;
    // Declare a qubit with a Unicode name
    qubit γ;
-   // Declare a qubit array with 20 qubits
-   qubit qubit_array[20];
+   // Declare a qubit register with 20 qubits
+   qubit[20] qubit_array;
    // CNOT gate between physical qubits 0 and 1
    CX $0, $1;
 
@@ -82,11 +99,14 @@ Classical bits and registers
 There is a classical bit type that takes values 0 or 1. Classical
 registers are static arrays of bits. The classical registers model part
 of the controller state that is exposed within the OpenQASM program. The
-statement ``bit name;`` declares a classical bit, and ``creg name[size];`` or ``bit name[size];`` declares an array of bits
-(register). The keyword ``creg`` is deprecated and will be removed in the future.
-The label ``name[j]`` refers to a bit of this register, where :math:`j\in
-\{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer. For
-convenience, classical registers can be assigned a text string
+statement ``bit name;`` declares a classical bit, and or ``bit[size] name;`` declares a register of
+``size`` bits. The label ``name[j]`` refers to a bit of this register, where :math:`j\in
+\{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+
+Bit registers may also be declared as ``creg name[size]``. This is included for backwards
+compatibility and may be removed in the future.
+
+For convenience, classical registers can be assigned a text string
 containing zeros and ones of the same length as the size of the
 register. It is interpreted to assign each bit of the register to
 corresponding value 0 or 1 in the string, where the least-significant
@@ -94,10 +114,10 @@ bit is on the right.
 
 .. code-block:: c
 
-   // Declare an array of 20 bits
-   bit bit_array[20]
-   // Declare and assign an array of bits with decimal value of 15
-   bit name[8] = "00001111";
+   // Declare a register of 20 bits
+   bit[20] bit_array;
+   // Declare and assign a rgister of bits with decimal value of 15
+   bit[8] name = "00001111";
 
 Integers
 ~~~~~~~~
@@ -277,7 +297,7 @@ another name as long as the alias is in scope.
 
 .. code-block:: c
 
-  qubit q[5];
+  qubit[5] q;
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
 
