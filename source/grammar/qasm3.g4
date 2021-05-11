@@ -451,7 +451,7 @@ subroutineBlock
 
 // if have subroutine w/ out args, is ambiguous; may get matched as identifier
 subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? expressionList
+    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/
