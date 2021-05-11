@@ -1,10 +1,10 @@
 // quantum Fourier transform
 OPENQASM 3;
 include "stdgates.inc";
-qubit q[4];
-bit c[4];
+qubit[4] q;
+bit[4] c;
 reset q;
-x q[0]; 
+x q[0];
 x q[2];
 barrier q;
 h q[0];
