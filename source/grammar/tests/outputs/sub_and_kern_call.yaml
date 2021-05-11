@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  bit x = sub_call(10, "01") q1, q2;
+  bit x = sub_call(10, "01") q1[0], q2;
   int[2] y = kern_call(0.5, 10dt);
 reference: |
   program
@@ -27,14 +27,18 @@ reference: |
                         expressionTerminator
                           "01"
                     )
-                    expressionList
-                      expression
-                        expressionTerminator
-                          q1
+                    indexIdentifierList
+                      indexIdentifier
+                        q1
+                        [
+                        expressionList
+                          expression
+                            expressionTerminator
+                              0
+                        ]
                       ,
-                      expression
-                        expressionTerminator
-                          q2
+                      indexIdentifier
+                        q2
         ;
     statement
       classicalDeclarationStatement

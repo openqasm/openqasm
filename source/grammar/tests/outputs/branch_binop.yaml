@@ -63,15 +63,14 @@ reference: |
                 expressionTerminator
                   subroutineCall
                     x
-                    expressionList
-                      expression
-                        expressionTerminator
-                          expressionTerminator
-                            q
-                          [
+                    indexIdentifierList
+                      indexIdentifier
+                        q
+                        [
+                        expressionList
                           expression
                             expressionTerminator
                               i
-                          ]
+                        ]
               ;
           }
