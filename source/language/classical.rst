@@ -91,7 +91,7 @@ increment ``++`` and decrement ``--``.
    int[32] a = 2;
    int[32] b = 3;
 
-   a * b; // 5
+   a * b; // 6
    b / a; // 1
    a += 4; // a == 6
    a++; // a == 7
@@ -109,6 +109,40 @@ multiplication, and division and the corresponding assignment operators.
    a + b; // 3/2 * pi
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+
+Evaluation order
+~~~~~~~~~~~~~~~~
+
+OpenQASM evaluates expressions from left to right.
+The operator precedence is based on C.
+
+   .. table:: [operator-precedence] operator precedence in OpenQASM.
+
+      +-------------------------------+
+      | Operator                      |
+      +-------------------------------+
+      | +x, -x, ~x                    |
+      +-------------------------------+
+      | *, /                          |
+      +-------------------------------+
+      | +, -                          |
+      +-------------------------------+
+      | <<, >>                        |
+      +-------------------------------+
+      | &                             |
+      +-------------------------------+
+      | ^                             |
+      +-------------------------------+
+      | |                             |
+      +-------------------------------+
+      | <, <=, >, >=, !=, ==          |
+      +-------------------------------+
+      | &&                            |
+      +-------------------------------+
+      | ||                            |
+      +-------------------------------+
+
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
