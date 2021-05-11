@@ -2,8 +2,8 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-qubit q[4];
-bit c[4];
+qubit[4] q;
+bit[4] c;
 reset q;
 h q;
 barrier q;

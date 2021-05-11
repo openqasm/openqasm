@@ -13,7 +13,8 @@ int[32] counts1 = 0;   // surviving |1> populations of qubits
 
 kernel tabulate(int[32], int[32], int[32]);
 
-bit c0, c1;
+bit c0;
+bit c1;
 
 defcalgrammar "openpulse";
 
