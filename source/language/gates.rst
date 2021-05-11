@@ -269,8 +269,6 @@ has a second-to-last line that means
 
    // FIXME: insert translation of algorithmic block from TeX source.
 
-.. code-block:: c
-
    for j ← 0, 1 do
        g qr0[0],qr1[j],qr2[0],qr3[j];
 
