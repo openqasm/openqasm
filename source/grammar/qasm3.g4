@@ -360,7 +360,6 @@ expressionTerminator
     | Integer
     | RealNumber
     | Identifier
-    | setDeclaration
     | StringLiteral
     | builtInCall
     | kernelCall
@@ -407,10 +406,6 @@ equalsAssignmentList
     : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
     ;
 
-membershipTest
-    : Identifier 'in' setDeclaration
-    ;
-
 setDeclaration
     : LBRACE expressionList RBRACE
     | rangeDefinition
@@ -427,7 +422,7 @@ branchingStatement
     ;
 
 loopSignature
-    : 'for' membershipTest
+    : 'for' Identifier 'in' setDeclaration
     | 'while' LPAREN expression RPAREN
     ;
 

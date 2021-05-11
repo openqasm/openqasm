@@ -6,8 +6,8 @@ source: |
     return result;
   }
   def test_sub2(int[5]:i) {
-    if (i in {2, 3})
-      return;
+    for j in {2, 3}
+      i += j;
     return i+1;
   }
 reference: |
@@ -159,46 +159,33 @@ reference: |
         subroutineBlock
           {
           statement
-            branchingStatement
-              if
-              (
-              expression
-                logicalAndExpression
-                  comparisonExpression
-                    comparisonExpression
-                      orExpression
-                        xOrExpression
-                          bitAndExpression
-                            bitShiftExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  expressionTerminator
-                                    i
-                    relationalOperator
-                      in
-                    orExpression
-                      xOrExpression
-                        bitAndExpression
-                          bitShiftExpression
-                            additiveExpression
-                              multiplicativeExpression
-                                expressionTerminator
-                                  setDeclaration
-                                    {
-                                    expressionList
-                                      expression
-                                        expressionTerminator
-                                          2
-                                      ,
-                                      expression
-                                        expressionTerminator
-                                          3
-                                    }
-              )
+            loopStatement
+              loopSignature
+                for
+                j
+                in
+                setDeclaration
+                  {
+                  expressionList
+                    expression
+                      expressionTerminator
+                        2
+                    ,
+                    expression
+                      expressionTerminator
+                        3
+                  }
               programBlock
-                controlDirective
-                  returnStatement
-                    return
+                statement
+                  assignmentStatement
+                    classicalAssignment
+                      indexIdentifier
+                        i
+                      assignmentOperator
+                        +=
+                      expression
+                        expressionTerminator
+                          j
                     ;
           returnStatement
             return

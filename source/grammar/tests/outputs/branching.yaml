@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  if (x in a) {
+  if (x == a) {
     for i in [0:2:4] x[i]++;
   }
   else CX x[0], x[1];
@@ -24,7 +24,7 @@ reference: |
                             expressionTerminator
                               x
               relationalOperator
-                in
+                ==
               orExpression
                 xOrExpression
                   bitAndExpression
@@ -40,24 +40,23 @@ reference: |
             loopStatement
               loopSignature
                 for
-                membershipTest
-                  i
-                  in
-                  setDeclaration
-                    rangeDefinition
-                      [
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          2
-                      :
-                      expression
-                        expressionTerminator
-                          4
-                      ]
+                i
+                in
+                setDeclaration
+                  rangeDefinition
+                    [
+                    expression
+                      expressionTerminator
+                        0
+                    :
+                    expression
+                      expressionTerminator
+                        2
+                    :
+                    expression
+                      expressionTerminator
+                        4
+                    ]
               programBlock
                 statement
                   expressionStatement
@@ -102,3 +101,4 @@ reference: |
                             1
                       ]
               ;
+

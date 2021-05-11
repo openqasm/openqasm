@@ -43,24 +43,23 @@ reference: |
             loopStatement
               loopSignature
                 for
-                membershipTest
-                  j
-                  in
-                  setDeclaration
-                    {
-                    expressionList
-                      expression
-                        expressionTerminator
-                          1
-                      ,
-                      expression
-                        expressionTerminator
-                          4
-                      ,
-                      expression
-                        expressionTerminator
-                          6
-                    }
+                j
+                in
+                setDeclaration
+                  {
+                  expressionList
+                    expression
+                      expressionTerminator
+                        1
+                    ,
+                    expression
+                      expressionTerminator
+                        4
+                    ,
+                    expression
+                      expressionTerminator
+                        6
+                  }
               programBlock
                 statement
                   quantumStatement
