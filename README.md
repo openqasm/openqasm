@@ -2,7 +2,7 @@
 
 
 OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model, 
+describe universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
 Specs, examples and tools for the OpenQASM intermediate representation.
@@ -40,7 +40,7 @@ include "stdgates.inc";
  * theta + pi where cos(theta)=3/5 if out is 00.
  * The 00 outcome occurs with probability 5/8.
  */
-def segment qubit[2]:anc, qubit:psi -> bit[2] {
+def segment qubit[2] anc, qubit psi -> bit[2] {
   bit[2] b;
   reset anc;
   h anc;
@@ -54,8 +54,8 @@ def segment qubit[2]:anc, qubit:psi -> bit[2] {
 }
 
 qubit input;
-qubit ancilla[2];
-bit flags[2] = "11";
+qubit[2] ancilla;
+bit[2] flags = "11";
 bit output;
 
 reset input;
