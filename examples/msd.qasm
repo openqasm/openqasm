@@ -119,8 +119,8 @@ def distill_and_buffer(int[32] num) qubit[33] work, qubit[buffer_size] buffer {
   }
 
   // Run two second level circuits simultaneously
-  success_0 = distill magic_lvl1_0, scratch_0;
-  success_1 = distill magic_lvl1_1, scratch_1;
+  success_0 = distill magic_lvl1_0, scratch;
+  success_1 = distill magic_lvl1_1, scratch;
 
   // Move usable magic states into the buffer register
   if(success_0 && index < buffer_size) {
