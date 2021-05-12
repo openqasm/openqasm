@@ -8,8 +8,7 @@ Types and Casting
 Generalities
 ------------
 
-Variable identifiers must begin with a letter [A-Za-z], an underscore, a
-percent sign, or an element from the Unicode character categories
+Variable identifiers must begin with a letter [A-Za-z], an underscore or an element from the Unicode character categories
 Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
 continuation characters consists of all members of the aforementioned character
 sets with the addition of decimal numerals [0-9]. Variable identifiers may not
