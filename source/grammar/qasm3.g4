@@ -225,7 +225,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN Identifier RPAREN
+    : 'gphase' LPAREN expression RPAREN
     ;
 
 quantumReset
@@ -333,6 +333,7 @@ expressionTerminator
     : Constant
     | Integer
     | RealNumber
+    | booleanLiteral
     | Identifier
     | StringLiteral
     | builtInCall
@@ -345,6 +346,10 @@ expressionTerminator
     | expressionTerminator incrementor
     ;
 /** End expression hierarchy **/
+
+booleanLiteral
+    : 'true' | 'false'
+    ;
 
 incrementor
     : '++'
@@ -429,8 +434,7 @@ controlDirective
     ;
 
 kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature?
-    classicalType? SEMICOLON
+    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
 // if have kernel w/ out args, is ambiguous; may get matched as identifier
@@ -558,7 +562,7 @@ Integer : Digit+ ;
 
 fragment ValidUnicode : [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
 fragment Letter : [A-Za-z] ;
-fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
+fragment FirstIdCharacter : '_' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
 StretchN : 'stretch' Digit* ;
