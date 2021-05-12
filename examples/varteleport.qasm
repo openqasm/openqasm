@@ -33,7 +33,7 @@ for i in [0: n_pairs - 1] {
   cx io, bp[0];
   h io;
   pf[0] = measure io;
-  pf[1] = bp[0];
+  pf[1] = measure bp[0];
   if (pf[0]==1) z bp[1];
   if (pf[1]==1) x bp[1];
   let io = bp[1];
