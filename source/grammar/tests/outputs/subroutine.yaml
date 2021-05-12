@@ -87,26 +87,25 @@ reference: |
               (
               expression
                 logicalAndExpression
-                  comparisonExpression
-                    comparisonExpression
-                      orExpression
-                        xOrExpression
-                          bitAndExpression
+                  orExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      result
+                          equalityOperator
+                            ==
+                          comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
                                   expressionTerminator
-                                    result
-                    relationalOperator
-                      ==
-                    orExpression
-                      xOrExpression
-                        bitAndExpression
-                          bitShiftExpression
-                            additiveExpression
-                              multiplicativeExpression
-                                expressionTerminator
-                                  2
+                                    2
               )
               programBlock
                 controlDirective
@@ -114,20 +113,21 @@ reference: |
                     return
                     expression
                       logicalAndExpression
-                        comparisonExpression
-                          orExpression
-                            xOrExpression
-                              bitAndExpression
-                                bitShiftExpression
-                                  additiveExpression
+                        orExpression
+                          xOrExpression
+                            bitAndExpression
+                              equalityExpression
+                                comparisonExpression
+                                  bitShiftExpression
                                     additiveExpression
+                                      additiveExpression
+                                        multiplicativeExpression
+                                          expressionTerminator
+                                            1
+                                      +
                                       multiplicativeExpression
                                         expressionTerminator
-                                          1
-                                    +
-                                    multiplicativeExpression
-                                      expressionTerminator
-                                        result
+                                          result
                     ;
           returnStatement
             return
@@ -191,19 +191,21 @@ reference: |
             return
             expression
               logicalAndExpression
-                comparisonExpression
-                  orExpression
-                    xOrExpression
-                      bitAndExpression
-                        bitShiftExpression
-                          additiveExpression
+                orExpression
+                  xOrExpression
+                    bitAndExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
                             additiveExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    i
+                              +
                               multiplicativeExpression
                                 expressionTerminator
-                                  i
-                            +
-                            multiplicativeExpression
-                              expressionTerminator
-                                1
+                                  1
             ;
           }
+  

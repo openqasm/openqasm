@@ -16,26 +16,24 @@ reference: |
           (
           expression
             logicalAndExpression
-              comparisonExpression
-                comparisonExpression
-                  orExpression
-                    xOrExpression
-                      bitAndExpression
+              orExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      comparisonExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  i
+                        comparisonOperator
+                          <
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
                               expressionTerminator
-                                i
-                relationalOperator
-                  <
-                orExpression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          multiplicativeExpression
-                            expressionTerminator
-                              10
+                                10
           )
         programBlock
           {
@@ -82,26 +80,25 @@ reference: |
               (
               expression
                 logicalAndExpression
-                  comparisonExpression
-                    comparisonExpression
-                      orExpression
-                        xOrExpression
-                          bitAndExpression
+                  orExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      i
+                          equalityOperator
+                            ==
+                          comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
                                   expressionTerminator
-                                    i
-                    relationalOperator
-                      ==
-                    orExpression
-                      xOrExpression
-                        bitAndExpression
-                          bitShiftExpression
-                            additiveExpression
-                              multiplicativeExpression
-                                expressionTerminator
-                                  8
+                                    8
               )
               programBlock
                 controlDirective
@@ -117,3 +114,4 @@ reference: |
       endStatement
         end
         ;
+  

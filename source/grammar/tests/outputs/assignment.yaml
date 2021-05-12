@@ -158,24 +158,24 @@ reference: |
             =
           expression
             logicalAndExpression
-              comparisonExpression
-                comparisonExpression
-                  orExpression
-                    xOrExpression
-                      bitAndExpression
+              orExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  a
+                      equalityOperator
+                        ==
+                      comparisonExpression
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
                               expressionTerminator
-                                a
-                relationalOperator
-                  ==
-                orExpression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          multiplicativeExpression
-                            expressionTerminator
-                              0
+                                0
         ;
+  

@@ -9,38 +9,41 @@ reference: |
       expressionStatement
         expression
           logicalAndExpression
-            comparisonExpression
-              orExpression
-                xOrExpression
-                  bitAndExpression
-                    bitShiftExpression
-                      additiveExpression
+            orExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
                         additiveExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                2
+                          +
                           multiplicativeExpression
                             expressionTerminator
                               2
-                        +
-                        multiplicativeExpression
-                          expressionTerminator
-                            2
         ;
     statement
       expressionStatement
         expression
           logicalAndExpression
-            comparisonExpression
-              orExpression
-                xOrExpression
-                  bitAndExpression
-                    bitShiftExpression
+            orExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
                       bitShiftExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                x
+                        <<
                         additiveExpression
                           multiplicativeExpression
                             expressionTerminator
-                              x
-                      <<
-                      additiveExpression
-                        multiplicativeExpression
-                          expressionTerminator
-                            y
+                              y
         ;
+  

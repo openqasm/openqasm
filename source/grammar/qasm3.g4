@@ -262,17 +262,19 @@ quantumGateCall
 /*** Classical Instructions ***/
 
 unaryOperator
-    : '~' | '!'
+    : '~' | '!' | '-'
     ;
 
-relationalOperator
+comparisonOperator
     : '>'
     | '<'
     | '>='
     | '<='
-    | '=='
+    ;
+
+equalityOperator
+    : '=='
     | '!='
-    | 'in'
     ;
 
 logicalOperator
@@ -301,22 +303,18 @@ expression
     Multiplicative
     Additive
     Bit Shift
+    Comparison
+    Equality
     Bit And
     Exlusive Or (xOr)
     Bit Or
-    Comparison
     Logical and
     Logical or
 **/
 
 logicalAndExpression
-    : comparisonExpression
-    | logicalAndExpression '&&' comparisonExpression
-    ;
-
-comparisonExpression
-    : orExpression  // if (expression)
-    | comparisonExpression relationalOperator orExpression
+    : orExpression
+    | logicalAndExpression '&&' orExpression
     ;
 
 orExpression
@@ -330,8 +328,18 @@ xOrExpression
     ;
 
 bitAndExpression
+    : equalityExpression
+    | bitAndExpression '&' equalityExpression
+    ;
+
+equalityExpression
+    : comparisonExpression
+    | equalityExpression equalityOperator comparisonExpression
+    ;
+
+comparisonExpression
     : bitShiftExpression
-    | bitAndExpression '&' bitShiftExpression
+    | comparisonExpression comparisonOperator bitShiftExpression
     ;
 
 bitShiftExpression
@@ -365,7 +373,6 @@ expressionTerminator
     | kernelCall
     | subroutineCall
     | timingTerminator
-    | MINUS expressionTerminator
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
