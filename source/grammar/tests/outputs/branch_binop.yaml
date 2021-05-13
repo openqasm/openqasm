@@ -13,7 +13,7 @@ reference: |
         expression
           logicalAndExpression
             logicalAndExpression
-              orExpression
+              bitOrExpression
                 xOrExpression
                   bitAndExpression
                     equalityExpression
@@ -39,7 +39,7 @@ reference: |
                               expressionTerminator
                                 0
             &&
-            orExpression
+            bitOrExpression
               xOrExpression
                 bitAndExpression
                   equalityExpression
@@ -54,7 +54,7 @@ reference: |
                                 [
                                 expression
                                   logicalAndExpression
-                                    orExpression
+                                    bitOrExpression
                                       xOrExpression
                                         bitAndExpression
                                           equalityExpression

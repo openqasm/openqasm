@@ -83,7 +83,7 @@ reference: |
               (
               expression
                 logicalAndExpression
-                  orExpression
+                  bitOrExpression
                     xOrExpression
                       bitAndExpression
                         equalityExpression
@@ -109,7 +109,7 @@ reference: |
                     return
                     expression
                       logicalAndExpression
-                        orExpression
+                        bitOrExpression
                           xOrExpression
                             bitAndExpression
                               equalityExpression
@@ -203,7 +203,7 @@ reference: |
             return
             expression
               logicalAndExpression
-                orExpression
+                bitOrExpression
                   xOrExpression
                     bitAndExpression
                       equalityExpression

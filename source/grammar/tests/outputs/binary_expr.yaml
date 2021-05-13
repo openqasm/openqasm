@@ -9,7 +9,7 @@ reference: |
       expressionStatement
         expression
           logicalAndExpression
-            orExpression
+            bitOrExpression
               xOrExpression
                 bitAndExpression
                   equalityExpression
@@ -29,7 +29,7 @@ reference: |
       expressionStatement
         expression
           logicalAndExpression
-            orExpression
+            bitOrExpression
               xOrExpression
                 bitAndExpression
                   equalityExpression

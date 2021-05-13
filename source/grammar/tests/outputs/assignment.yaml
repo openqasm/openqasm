@@ -153,7 +153,7 @@ reference: |
             =
           expression
             logicalAndExpression
-              orExpression
+              bitOrExpression
                 xOrExpression
                   bitAndExpression
                     equalityExpression

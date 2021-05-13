@@ -8,8 +8,8 @@ reference: |
       expressionStatement
         expression
           logicalAndExpression
-            orExpression
-              orExpression
+            bitOrExpression
+              bitOrExpression
                 xOrExpression
                   bitAndExpression
                     equalityExpression
@@ -46,7 +46,7 @@ reference: |
                               (
                               expression
                                 logicalAndExpression
-                                  orExpression
+                                  bitOrExpression
                                     xOrExpression
                                       xOrExpression
                                         bitAndExpression

@@ -302,18 +302,18 @@ expression
     Bit And
     Exlusive Or (xOr)
     Bit Or
-    Logical and
-    Logical or
+    Logical And
+    Logical Or
 **/
 
 logicalAndExpression
-    : orExpression
-    | logicalAndExpression '&&' orExpression
+    : bitOrExpression
+    | logicalAndExpression '&&' bitOrExpression
     ;
 
-orExpression
+bitOrExpression
     : xOrExpression
-    | orExpression '|' xOrExpression
+    | bitOrExpression '|' xOrExpression
     ;
 
 xOrExpression
@@ -401,10 +401,6 @@ equalsExpression
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-equalsAssignmentList
-    : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
     ;
 
 setDeclaration
