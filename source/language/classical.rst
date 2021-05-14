@@ -82,8 +82,8 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and integer
-division [2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
+and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
 increment ``++`` and decrement ``--``.
 
 .. code-block:: c
@@ -93,6 +93,7 @@ increment ``++`` and decrement ``--``.
 
    a * b; // 6
    b / a; // 1
+   b % a; // 1
    a += 4; // a == 6
    a++; // a == 7
 
@@ -121,9 +122,9 @@ OpenQASM evaluates expressions from left to right.
       +-------------------------------+---------------------------------------+
       | Operator                      | Operator Types                        |
       +-------------------------------+---------------------------------------+
-      | (), [], ++, (type)(x)         | call, index, incrementors, cast       |
+      | (), [], ++, (type)(x)         | Call, index, incrementors, cast       |
       +-------------------------------+---------------------------------------+
-      | +, -, ~                       | unary                                 |
+      | !, -, ~                       | Unary                                 |
       +-------------------------------+---------------------------------------+
       | *, /, %                       | Multiplicative                        |
       +-------------------------------+---------------------------------------+
