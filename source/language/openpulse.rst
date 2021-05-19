@@ -260,19 +260,20 @@ since the compiler may need to down-sample a higher precision waveform to physic
    kernel sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
-new waveforms
+new waveforms (this list may be updated as more functionality is required).
 
-- ``mix(waveform wf1, waveform wf2)`` -> waveform - Mix two input waveforms to produce a new waveform.
-  This is equivalent to the product signal :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
-- ``sum(waveform wf1, waveform wf2)`` -> waveform - Sum two input waveforms to produce a new waveform.
-- ``piecewise(waveform wf0, waveform wf1)`` -> waveform - Output waveform.
-- ``offset(waveform wf, complex amount)`` -> waveform - Offset the input waveform by an amount.
-- ``scale(waveform wf, complex factor)`` -> waveform - Scale the input waveform by a factor.
-- ``conj(waveform wf) -> waveform`` - Conjugate the input waveform.
-- ``re(waveform wf) -> waveform`` - Real component of input waveform.
-- ``im(waveform wf) -> waveform`` - Imaginary component of input waveform.
-- ``abs(waveform wf) -> waveform`` - Transform waveform as norm of input. waveform
-- ``phase_shift(waveform wf, angle ang) -> waveform`` - Signal with relative phase, ang.
+.. code-block:: javascript
+
+    // Multiply two input waveforms entry by entry to produce a new waveform
+    // :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
+    kernel mix(waveform wf1, waveform wf2) -> waveform;
+
+    // Sum two input waveforms entry by entry to produce a new waveform
+    // :math:`wf(t_i) = wf_1(t_i) + wf_2(t_i)`
+    kernel sum(waveform wf1, waveform wf2) -> waveform;
+
+    // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`
+    kernel phase_shift(waveform wf, angle ang) -> waveform;
 
 Play instruction
 ----------------
