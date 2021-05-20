@@ -1,98 +1,75 @@
-// Standard gate library
+// OpenQASM 3 standard gate library
 
-// phase gate (Z-rotation by lambda)
-gate phase(lambda) q { U(0, 0, lambda) q; }
-// controlled-NOT
-gate CX c, t { ctrl @ U(pi, 0, pi) c, t; }
-gate cx c, t { CX c, t; }
-// idle gate (identity)
-gate id a { U(0, 0, 0) a; }
-// Pauli gate: bit-flip
-gate x a { U(pi, 0, pi) a; }
+// phase phase gate
+gate p(λ) a { ctrl @ gphase(λ) a; }
+
+// Pauli gate: bit-flip or NOT gate
+gate x a { U(π, 0, π) a; }
 // Pauli gate: bit and phase flip
-gate y a { U(pi, pi / 2, pi / 2) a; }
-// Pauli gate: phase flip
-gate z a { phase(pi) a; }
+gate y a { U(π, π/2, π/2) a; }
+ // Pauli gate: phase flip
+gate z a { p(π) a; }
+
 // Clifford gate: Hadamard
-gate h a { U(pi / 2, 0, pi) a; }
-// Clifford gate: sqrt(Z) phase gate
-gate s a { phase(pi / 2) a; }
-// Clifford gate: conjugate of sqrt(Z)
-gate sdg a { phase(-pi / 2) a; }
-// C3 gate: sqrt(S) phase gate
-gate t a { phase(pi/4) a; }
-// C3 gate: conjugate of sqrt(S)
-gate tdg a { phase(-pi/4) a; }
+gate h a { U(π/2, 0, π) a; }
+// Clifford gate: sqrt(Z) or S gate
+gate s a { pow(1/2) @ z a; }
+// Clifford gate: inverse of sqrt(Z)
+gate sdg a { inv @ pow(1/2) @ z a; }
+
+// sqrt(S) or T gate
+gate t a { pow(1/2) @ s a; }
+// inverse of sqrt(S)
+gate tdg a { inv @ pow(1/2) @ s a; }
+
+// sqrt(NOT) gate
+gate sx a { pow(1/2) @ x a; }
+
 // Rotation around X-axis
-gate rx(theta) a { U(theta, -pi / 2, pi / 2) a; }
+gate rx(θ) a { U(θ, -π/2, π/2) a; }
 // rotation around Y-axis
-gate ry(theta) a { U(theta, 0, 0) a; }
+gate ry(θ) a { U(θ, 0, 0) a; }
 // rotation around Z axis
-gate rz(phi) a { phase(phi) a; }
-// controlled-Phase
-gate cz a, b { h b; cx a, b; h b; }
+gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
+
+// controlled-NOT
+gate cx c, t { ctrl @ x c, t; }
 // controlled-Y
-gate cy a, b { sdg b; cx a, b; s b; }
-// controlled-H
-gate ch a, b {
-  h b;
-  sdg b;
-  cx a, b;
-  h b;
-  t b;
-  cx a, b;
-  t b; s a;
-  h b;
-  s b;
-  x b;
-}
-// Toffoli
-gate ccx a, b, c
-{
-  h c;
-  cx b, c;
-  tdg c;
-  cx a, c;
-  t c;
-  cx b, c;
-  tdg c;
-  cx a, c;
-  t b; t c; h c;
-  cx a, b;
-  t a; tdg b;
-  cx a, b;
-}
-// controlled-swap
-gate cswap a, b, c
-{
-  cx c, b;
-  ccx a, b, c;
-  cx c, b;
-}
-// controlled-rz
-gate crz(lambda) a, b
-{
-  phase(lambda / 2) b;
-  cx a, b;
-  phase(-lambda / 2) b;
-  cx a, b;
-}
+gate cy a, b { ctrl @ y a, b; }
+// controlled-Z
+gate cz a, b { ctrl @ z a, b; }
 // controlled-phase
-gate cphase(lambda) a, b
-{
-  phase(lambda / 2) a;
-  cx a, b;
-  phase(-lambda / 2) b;
-  cx a, b;
-  phase(lambda / 2) b;
-}
-// controlled-U
-gate cu(theta, phi, lambda) c, t
-{
-  // implements controlled-U(theta,phi,lambda) with  target t and control c
-  phase((lambda - phi)/2) t;
-  cx c,t;
-  U(-theta / 2, 0, -(phi + lambda) / 2) t;
-  cx c, t;
-  U(theta / 2, phi, 0) t;
-}
+gate cp(λ) a, b { ctrl @ p(λ) a, b; }
+// controlled-rx
+gate crx(θ) a, b { ctrl @ rx(θ) a, b; }
+// controlled-ry
+gate cry(θ) a, b { ctrl @ ry(θ) a, b; }
+// controlled-rz
+gate crz(θ) a, b { ctrl @ rz(θ) a, b; }
+// controlled-H
+gate ch a, b { ctrl @ h a, b; }
+
+// swap
+gate swap a, b { cx a, b; cx b, a; cx a, b; }
+
+// Toffoli
+gate ccx a, b, c { ctrl @ ctrl @ x a, b, c; }
+// controlled-swap
+gate cswap a, b, c { ctrl @ swap a, b, c; }
+
+// four parameter controlled-U gate with relative phase γ
+gate cu(θ, φ, λ, γ) c, t { p(γ) c; ctrl @ U(θ, φ, λ) c, t; }
+
+// Gates for OpenQASM 2 backwards compatibility
+// CNOT
+gate CX c, t { ctrl @ U(π, 0, π) c, t; }
+// phase gate
+gate phase(λ) q { U(0, 0, λ) q; }
+// controlled-phase
+gate cphase(λ) a, b { ctrl @ phase(λ) a, b; }
+// identity or idle gate
+gate id a { U(0, 0, 0) a; }
+// IBM Quantum experience gates
+gate u1(λ) q { U(0, 0, λ) q; }
+gate u2(φ, λ) q { gphase(-(φ+λ)/2); U(π/2, φ, λ) q; }
+gate u3(θ, φ, λ) q { gphase(-(φ+λ)/2); U(θ, φ, λ) q; }

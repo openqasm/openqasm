@@ -246,7 +246,7 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN expression RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | ( 'pow' | 'ctrl' | 'negctrl' ) LPAREN expression RPAREN ) '@'
     ;
 
 quantumGateCall
