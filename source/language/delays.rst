@@ -349,3 +349,6 @@ in the following example
 This will prevent an attempt to combine the CNOT gates but will not
 constrain the pair of ``h s[0];`` gates, which might be executed before or after the
 barrier, or cancelled by a compiler.
+
+A barrier can also be invoked without arguments, in which case the argument is assumed to be all
+qubits.

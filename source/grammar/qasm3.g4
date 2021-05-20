@@ -242,7 +242,7 @@ quantumMeasurementAssignment
     ;
 
 quantumBarrier
-    : 'barrier' indexIdentifierList
+    : 'barrier' indexIdentifierList?
     ;
 
 quantumGateModifier

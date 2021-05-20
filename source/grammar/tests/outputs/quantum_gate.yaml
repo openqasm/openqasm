@@ -5,6 +5,7 @@ source: |
     barrier b;
     gphase(-theta/2);
     CX a, b;
+    barrier;
   }
 reference: |
   program
@@ -73,5 +74,10 @@ reference: |
                   ,
                   indexIdentifier
                     b
+            ;
+          quantumStatement
+            quantumInstruction
+              quantumBarrier
+                barrier
             ;
           }
