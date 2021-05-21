@@ -225,7 +225,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN expression RPAREN
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
     ;
 
 quantumReset
@@ -246,7 +246,7 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | powModifier | 'ctrl' ) '@'
+    : ( 'inv' | powModifier | ctrlModifier ) '@'
     ;
 
 powModifier
@@ -254,11 +254,11 @@ powModifier
     ;
 
 ctrlModifier
-    : ( 'ctrl' | 'negctrl' ) //( LPAREN expression RPAREN )?
+    : ( 'ctrl' | 'negctrl' ) ( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* ( quantumGateName ( LPAREN expressionList RPAREN )? | quantumPhase ) indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/

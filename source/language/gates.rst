@@ -163,6 +163,8 @@ and applies the controlled gate
   0 & 0 & e^{-i\tau/2} & 0 \\
   0 & 0 & 0 & e^{i\tau/2} \end{array}\right).
 
+``gphase(γ)`` may optionally take qubit arguments to apply the phase directly to the qubit. This is
+typically used in conjunction with a gate modifier such as control.
 
 .. _sec:macros:
 

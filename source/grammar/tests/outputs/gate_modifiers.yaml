@@ -30,12 +30,13 @@ reference: |
         quantumInstruction
           quantumGateCall
             quantumGateModifier
-              ctrl
-              (
-              expression
-                expressionTerminator
-                  2
-              )
+              ctrlModifier
+                ctrl
+                (
+                expression
+                  expressionTerminator
+                    2
+                )
               @
             quantumGateName
               g
@@ -48,12 +49,13 @@ reference: |
         quantumInstruction
           quantumGateCall
             quantumGateModifier
-              negctrl
-              (
-              expression
-                expressionTerminator
-                  3
-              )
+              ctrlModifier
+                negctrl
+                (
+                expression
+                  expressionTerminator
+                    3
+                )
               @
             quantumGateName
               g
@@ -66,23 +68,24 @@ reference: |
         quantumInstruction
           quantumGateCall
             quantumGateModifier
-              pow
-              (
-              expression
-                xOrExpression
-                  bitAndExpression
-                    bitShiftExpression
-                      additiveExpression
-                        multiplicativeExpression
+              powModifier
+                pow
+                (
+                expression
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
                           multiplicativeExpression
-                            expressionTerminator
-                              -
+                            multiplicativeExpression
                               expressionTerminator
-                                1
-                          /
-                          expressionTerminator
-                            2
-              )
+                                -
+                                expressionTerminator
+                                  1
+                            /
+                            expressionTerminator
+                              2
+                )
               @
             quantumGateName
               g

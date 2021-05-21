@@ -69,8 +69,7 @@ def build_parse_tree(input_str: str, using_file: bool = False) -> str:
         tree = parser.program()
 
         pretty_tree = get_pretty_tree(tree, None, parser)
-        if "stdgates" in input_str:
-            import pdb; pdb.set_trace()
+
         error = err.getvalue()
         if error:
             raise Exception("Parse tree build failed. Error:\n" + error)
