@@ -69,6 +69,13 @@ significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
 the quantum memory.
 
+.. code-block:: c
+
+   // Declare a qubit
+   qubit gamma;
+   // Declare a qubit with a Unicode name
+   qubit γ;
+
 Physical Qubits
 ~~~~~~~~~~~~~~~
 
@@ -78,16 +85,16 @@ references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 
+The language OpenQASM3 does not impose any limitation on how the discrete space of physical qubits is organized. In other words, it is possible to declared any loose physical qubit:
+
 .. code-block:: c
 
-   // Declare a qubit
-   qubit gamma;
-   // Declare a qubit with a Unicode name
-   qubit γ;
-   // Declare a qubit register with 20 qubits
-   qubit[20] qubit_array;
-   // CNOT gate between physical qubits 0 and 1
-   CX $0, $1;
+   // Declare two physical qubits
+   qubit $3;
+   qubit $12;
+   
+   // CNOT gate between physical qubits 3 and 12
+   CX $3, $12;
 
 Classical types
 ---------------
