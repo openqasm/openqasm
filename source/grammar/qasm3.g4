@@ -246,11 +246,19 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | ( 'pow' | 'ctrl' | 'negctrl' ) LPAREN expression RPAREN ) '@'
+    : ( 'inv' | powModifier | 'ctrl' ) '@'
+    ;
+
+powModifier
+    : 'pow' LPAREN expression RPAREN
+    ;
+
+ctrlModifier
+    : ( 'ctrl' | 'negctrl' ) //( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    : quantumGateModifier* ( quantumGateName ( LPAREN expressionList RPAREN )? | quantumPhase ) indexIdentifierList
     ;
 
 /*** Classical Instructions ***/

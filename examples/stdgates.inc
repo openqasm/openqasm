@@ -1,6 +1,6 @@
 // OpenQASM 3 standard gate library
 
-// phase phase gate
+// phase gate
 gate p(λ) a { ctrl @ gphase(λ) a; }
 
 // Pauli gate: bit-flip or NOT gate
