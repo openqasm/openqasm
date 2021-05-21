@@ -124,9 +124,8 @@ reference: |
     statement
       assignmentStatement
         quantumMeasurementAssignment
-          indexIdentifierList
-            indexIdentifier
-              a
+          indexIdentifier
+            a
           =
           quantumMeasurement
             measure
