@@ -6,9 +6,9 @@ OPENQASM 3.0;
 include "stdgates.inc";
 
 stretch s;
-length start_stretch = -0.5 * lengthof({x $0;}) + s;
-length middle_stretch = -0.5 * lengthof({x $0;}) - 5 * lengthof({y $0;}) + s;
-length end_stretch = -0.5 * lengthof({y $0;}) + s;
+duration start_stretch = -0.5 * lengthof({x $0;}) + s;
+duration middle_stretch = -0.5 * lengthof({x $0;}) - 5 * lengthof({y $0;}) + s;
+duration end_stretch = -0.5 * lengthof({y $0;}) + s;
 
 boxas dd_circ {
   delay[start_stretch] $0;

@@ -5,8 +5,8 @@
  */
 defcalgrammar "openpulse";
 
-defcal pong(angle[32] amp, length duration) $q {
-    play d0, gaussian(amp, duration)
+defcal pong(angle[32] amp, duration dur) $q {
+    play d0, gaussian(amp, dur)
 }
 
 defcal pong_cx(angle[32] amp) $q0, $q1, $q2 {
@@ -31,7 +31,7 @@ barrier $0, $1, $2;
 
 //boxto conditional, anonymous subroutine (named boxto not supported)
 
-length maxduration = 1us;
+duration maxdur = 1us;
 
 qubit[2] q;
 barrier q[0], q[1];
@@ -41,7 +41,7 @@ delay[s] q[1];
 h q[1];
 measure q[1] -> c[0];
 delay[s] q[1];
-boxto[maxduration] { // fixed-duration anonymous subroutine
+boxto[maxdur] { // fixed-duration anonymous subroutine
     if (c==0) U(0.1, 0.2, 0.3) q[1];  // duration depends on result of measurement
     delay[s];                 // glue to allow to stretch (can be implicit)
 } // throw runtime error if `box` does not conclude by maxduration

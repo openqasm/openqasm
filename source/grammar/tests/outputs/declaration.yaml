@@ -11,6 +11,8 @@ source: |
   bool o=false;
   const c = 5.5e3;
   const d=5;
+  duration dur = 1000dt;
+  duration dur2 = dur + 200ns;
   stretch s;
   stretch1 s1;
   stretch10 s10;
@@ -167,6 +169,48 @@ reference: |
             expression
               expressionTerminator
                 5
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                duration
+            dur
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  timingTerminator
+                    timingIdentifier
+                      1000dt
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                duration
+            dur2
+            equalsExpression
+              =
+              expression
+                xOrExpression
+                  bitAndExpression
+                    bitShiftExpression
+                      additiveExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            expressionTerminator
+                              dur
+                        +
+                        multiplicativeExpression
+                          expressionTerminator
+                            timingTerminator
+                              timingIdentifier
+                                200ns
         ;
     statement
       classicalDeclarationStatement

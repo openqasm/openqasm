@@ -1,7 +1,7 @@
 # indent w/ 2 spaces
 source: |
   bit x = sub_call(10, "01") q1[0], q2;
-  int[2] y = kern_call(0.5, 10dt);
+  int[2] y = extern_call(0.5, 10dt);
 reference: |
   program
     header
@@ -57,8 +57,8 @@ reference: |
               =
               expression
                 expressionTerminator
-                  kernelCall
-                    kern_call
+                  externCall
+                    extern_call
                     (
                     expressionList
                       expression

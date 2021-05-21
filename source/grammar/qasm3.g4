@@ -22,7 +22,7 @@ include
 
 globalStatement
     : subroutineDefinition
-    | kernelDeclaration
+    | externDeclaration
     | quantumGateDefinition
     | calibration
     | quantumDeclarationStatement  // qubits are declared globally
@@ -337,7 +337,7 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | kernelCall
+    | externCall
     | subroutineCall
     | timingTerminator
     | MINUS expressionTerminator
@@ -433,12 +433,12 @@ controlDirective
     | returnStatement
     ;
 
-kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+externDeclaration
+    : 'extern' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
-// if have kernel w/ out args, is ambiguous; may get matched as identifier
-kernelCall
+// if have extern w/ out args, is ambiguous; may get matched as identifier
+externCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
@@ -467,7 +467,7 @@ pragma
 /*** Circuit Timing ***/
 
 timingType
-    : 'length'
+    : 'duration'
     | StretchN
     ;
 
