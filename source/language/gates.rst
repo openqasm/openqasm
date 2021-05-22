@@ -38,7 +38,6 @@ values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
 [0,2\pi)` in this base gate are angles whose precision is implementation
 dependent [1]_. This specifies any element of :math:`U(2)` up to a
 global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
-P
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
