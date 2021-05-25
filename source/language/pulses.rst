@@ -95,6 +95,36 @@ corresponding ``gate`` definitions. However, if a user provides a ``defcal`` for
 without a corresponding ``gate``, then we treat such operations like the ``opaque`` gates
 of prior versions of OpenQASM.
 
+Inline calibration blocks
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As calibration grammars may require the ability to insert top-level configuration information, perform program setup, or make inline calls
+to calibration-level instructions, OpenQASM supports the ability to declare a ``cal`` block. Within the ``cal`` block the
+semantics of the selected calibration grammar are valid. The scope of this block is at the determination of the calibration grammar designer.
+In practice, calibration grammars such as OpenPulse may apply a global scope to all identifiers in order to communicate state between
+``defcal`` calls.
+
+.. code-block:: c
+
+   OPENQASM 3;
+   defcalgrammar "openpulse" 1;
+
+
+   cal {
+      // declare global channel
+      txchannel d0 = txch($0, "drive");
+      // declare global frame
+      frame d0f = Frame(5.0e9, 0.0);
+
+   }
+
+   defcal x $0 {
+      waveform xp = gaussian(1.0, 160t, 40dt);
+      // References channel and frame declared in top-level cal block
+      play(d0, xp, d0f);
+   }
+
+
 Restrictions on defcal bodies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
