@@ -117,7 +117,7 @@ Evaluation order
 
 OpenQASM evaluates expressions from left to right.
 
-   .. table:: [operator-precedence] operator precedence in OpenQASM.
+   .. table:: [operator-precedence] operator precedence in OpenQASM ordered from highest precedence to lowest precedence. Higher precedence operators will be evaluated first.
 
       +-------------------------------+---------------------------------------+
       | Operator                      | Operator Types                        |
