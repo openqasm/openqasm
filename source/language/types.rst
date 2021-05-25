@@ -8,8 +8,7 @@ Types and Casting
 Generalities
 ------------
 
-Variable identifiers must begin with a letter [A-Za-z], an underscore, a
-percent sign, or an element from the Unicode character categories
+Variable identifiers must begin with a letter [A-Za-z], an underscore or an element from the Unicode character categories
 Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
 continuation characters consists of all members of the aforementioned character
 sets with the addition of decimal numerals [0-9]. Variable identifiers may not
@@ -75,7 +74,7 @@ Physical Qubits
 
 While program qubits can be named, hardware qubits are referenced only
 by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
-references given by ``$0``, ``$1``, ..., ``$n``. These qubit types are
+references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 

@@ -3,6 +3,7 @@ source: |
   gate test_gate(theta) a, b {
     reset a;
     barrier b;
+    gphase(-theta/2);
     CX a, b;
   }
 reference: |
@@ -39,6 +40,27 @@ reference: |
                 indexIdentifierList
                   indexIdentifier
                     b
+            ;
+          quantumStatement
+            quantumInstruction
+              quantumPhase
+                gphase
+                (
+                expression
+                  xOrExpression
+                    bitAndExpression
+                      bitShiftExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                -
+                                expressionTerminator
+                                  theta
+                            /
+                            expressionTerminator
+                              2
+                )
             ;
           quantumStatement
             quantumInstruction

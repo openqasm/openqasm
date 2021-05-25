@@ -6,8 +6,9 @@ source: |
   qubit q2;
   bit[4] b1="0100";
   bit b2 = "1";
-  bool m=True;
+  bool m=true;
   bool n=bool(b2);
+  bool o=false;
   const c = 5.5e3;
   const d=5;
   stretch s;
@@ -105,7 +106,8 @@ reference: |
               =
               expression
                 expressionTerminator
-                  True
+                  booleanLiteral
+                    true
         ;
     statement
       classicalDeclarationStatement
@@ -129,6 +131,20 @@ reference: |
                         expressionTerminator
                           b2
                     )
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              bool
+            o
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  booleanLiteral
+                    false
         ;
     statement
       classicalDeclarationStatement
