@@ -82,8 +82,8 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and integer
-division [2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
+and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
 increment ``++`` and decrement ``--``.
 
 .. code-block:: c
@@ -91,8 +91,9 @@ increment ``++`` and decrement ``--``.
    int[32] a = 2;
    int[32] b = 3;
 
-   a * b; // 5
+   a * b; // 6
    b / a; // 1
+   b % a; // 1
    a += 4; // a == 6
    a++; // a == 7
 
@@ -109,6 +110,43 @@ multiplication, and division and the corresponding assignment operators.
    a + b; // 3/2 * pi
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+
+Evaluation order
+~~~~~~~~~~~~~~~~
+
+OpenQASM evaluates expressions from left to right.
+
+   .. table:: [operator-precedence] operator precedence in OpenQASM ordered from highest precedence to lowest precedence. Higher precedence operators will be evaluated first.
+
+      +-------------------------------+---------------------------------------+
+      | Operator                      | Operator Types                        |
+      +-------------------------------+---------------------------------------+
+      | (), [], ++, (type)(x)         | Call, index, incrementors, cast       |
+      +-------------------------------+---------------------------------------+
+      | !, -, ~                       | Unary                                 |
+      +-------------------------------+---------------------------------------+
+      | *, /, %                       | Multiplicative                        |
+      +-------------------------------+---------------------------------------+
+      | +, -                          | Additive                              |
+      +-------------------------------+---------------------------------------+
+      | <<, >>                        | Bit Shift                             |
+      +-------------------------------+---------------------------------------+
+      | <, <=, >, >=                  | Comparison                            |
+      +-------------------------------+---------------------------------------+
+      | !=, ==                        | Equality                              |
+      +-------------------------------+---------------------------------------+
+      | &                             | Bitwise AND                           |
+      +-------------------------------+---------------------------------------+
+      | ^                             | Bitwise XOR                           |
+      +-------------------------------+---------------------------------------+
+      | |                             | Bitwise OR                            |
+      +-------------------------------+---------------------------------------+
+      | &&                            | Logical AND                           |
+      +-------------------------------+---------------------------------------+
+      | ||                            | Logical OR                            |
+      +-------------------------------+---------------------------------------+
+
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
