@@ -75,6 +75,8 @@ the quantum memory.
    qubit gamma;
    // Declare a qubit with a Unicode name
    qubit γ;
+   // Declare a qubit register with 20 qubits
+   qubit[20] qubit_array;
 
 Physical Qubits
 ~~~~~~~~~~~~~~~
