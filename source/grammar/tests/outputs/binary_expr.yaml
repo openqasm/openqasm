@@ -18,12 +18,14 @@ reference: |
                         additiveExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                2
+                              powerExpression
+                                expressionTerminator
+                                  2
                           +
                           multiplicativeExpression
-                            expressionTerminator
-                              2
+                            powerExpression
+                              expressionTerminator
+                                2
         ;
     statement
       expressionStatement
@@ -38,11 +40,13 @@ reference: |
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                x
+                              powerExpression
+                                expressionTerminator
+                                  x
                         <<
                         additiveExpression
                           multiplicativeExpression
-                            expressionTerminator
-                              y
+                            powerExpression
+                              expressionTerminator
+                                y
         ;

@@ -92,16 +92,18 @@ reference: |
                               bitShiftExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      result
+                                    powerExpression
+                                      expressionTerminator
+                                        result
                           equalityOperator
                             ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    2
+                                  powerExpression
+                                    expressionTerminator
+                                      2
               )
               programBlock
                 controlDirective
@@ -118,12 +120,14 @@ reference: |
                                     additiveExpression
                                       additiveExpression
                                         multiplicativeExpression
-                                          expressionTerminator
-                                            1
+                                          powerExpression
+                                            expressionTerminator
+                                              1
                                       +
                                       multiplicativeExpression
-                                        expressionTerminator
-                                          result
+                                        powerExpression
+                                          expressionTerminator
+                                            result
                     ;
           returnStatement
             return
@@ -212,11 +216,13 @@ reference: |
                             additiveExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    i
+                                  powerExpression
+                                    expressionTerminator
+                                      i
                               +
                               multiplicativeExpression
-                                expressionTerminator
-                                  1
+                                powerExpression
+                                  expressionTerminator
+                                    1
             ;
           }

@@ -348,13 +348,18 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : expressionTerminator
+    : powerExpression
     | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
     ;
 
 unaryExpression
-    : unaryOperator expressionTerminator
+    : unaryOperator powerExpression
+    ;
+
+powerExpression
+    : expressionTerminator
+    | expressionTerminator '**' powerExpression
     ;
 
 expressionTerminator
