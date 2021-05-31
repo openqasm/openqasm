@@ -365,8 +365,7 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | kernelCall
-    | subroutineCall
+    | functionCall
     | timingTerminator
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
@@ -447,9 +446,10 @@ kernelDeclaration
     : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
-// if have kernel w/ out args, is ambiguous; may get matched as identifier
-kernelCall
-    : Identifier LPAREN expressionList? RPAREN
+// this "function" includes kernels and subroutines
+// if have function call w/ out args, is ambiguous; may get matched as identifier
+functionCall
+    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList?
     ;
 
 /*** Subroutines ***/
@@ -461,11 +461,6 @@ subroutineDefinition
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
-    ;
-
-// if have subroutine w/ out args, is ambiguous; may get matched as identifier
-subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/

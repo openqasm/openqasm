@@ -15,7 +15,7 @@ reference: |
               =
               expression
                 expressionTerminator
-                  subroutineCall
+                  functionCall
                     sub_call
                     (
                     expressionList
@@ -57,7 +57,7 @@ reference: |
               =
               expression
                 expressionTerminator
-                  kernelCall
+                  functionCall
                     kern_call
                     (
                     expressionList
