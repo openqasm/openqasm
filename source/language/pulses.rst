@@ -24,14 +24,9 @@ instruction sequence on *physical* qubits, e.g.
 
 .. code-block:: c
 
-<<<<<<< HEAD
-   defcal rz(angle[20]:theta) %q { ... }
-   defcal measure %q -> bit { ... }
-   defcal measure_iq %q -> complex[32] { ... }
-=======
    defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
->>>>>>> 89e93e7f8ec1fd93cb494b5f6f3e3bb6b41884a9
+   defcal measure_iq $q -> complex[32] { ... }
 
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
