@@ -112,60 +112,24 @@ single NCO).
 Frame Construction
 ~~~~~~~~~~~~~~~~~~
 
-Frames can be constructed using the ``Frame`` command e.g.
+Frames can be constructed using the ``newframe`` command e.g.
 
 .. code-block:: javascript
 
-  frame driveframe = Frame(5e9, 0.0); // Frame(float[size] frequency, angle[size] phase)
+  frame driveframe = newframe(5e9, 0.0); // newframe(float[size] frequency, angle[size] phase)
 
 would construct a frame with frequency `f`  5 GHz and phase :math:`\theta` 0.0. When
-instantiated, the frame time starts at 0. ``Frame``s can also be copied using the
-``copy`` command
+instantiated, the frame time starts at 0. ``frame``s can also be copied using the
+``copyframe`` command
 
 .. code-block:: javascript
 
-  frame driveframe1 = Frame(5e9, 0.0);
-  frame driveframe2 = copy(driveframe1);
+  frame driveframe1 = newframe(5e9, 0.0);
+  frame driveframe2 = copyframe(driveframe1);
   driveframe2.phase = driveframe1.phase + pi/2;
 
 This will generate a ::math:`pi/2` phase incremented copy of ``driveframe1`` with the same
 time as `driveframe1`.
-
-Unless a ``calconfig`` block is used to instantiate frames in global scope, a ``frame`` is
-locally scoped . To allow for parameterized access to globally defined frames, we can use
-the ``setframe`` and ``getframe`` functions
-
-.. code-block:: javascript
-
-   setframe(str name, frame fr) $q;
-   getframe(str name) $q-> frame;
-
-For example, we can parmaeterize frames on different qubits using the wildcard reference
-.. code-block:: javascript
-
-   calconfig {
-     setframe("frame",  Frame(5.120e9, 0)) $0;
-     setframe("frame",  Frame(4.938e9, 0)) $1;
-    }
-
-   defcal access_frames $q {
-     frame carrier = getframe("frame") $q;
-   }
-
-Multiple frames associated with a qubit are uniquely accessed by their string identifier e.g.
-
-.. code-block:: javascript
-
-   calconfig {
-     setframe("frame_01",  Frame(5.0e9, 0)) $0;
-     setframe("frame_12",  Frame(6.0e9, 0)) $1;
-     ...
-    }
-
-   defcal access_frames $q {
-     qframe_01 = getframe("frame_01") $q;
-     qframe_12 = getframe("frame_12") $q;
-   }
 
 Frame manipulation
 ~~~~~~~~~~~~~~~~~~
@@ -180,20 +144,20 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
 
 .. code-block:: javascript
 
-   // Shift phase of the "drive" frame by pi/4, eg. an rz gate with angle -pi/4
-   driveframe.phase += pi/4;
+   // Example 1: Shift phase of the "drive" frame by pi/4, eg. an rz gate with angle -pi/4
+   cal {
+     driveframe.phase += pi/4;
+   }
 
-   // Define a calibration for the rz gate on all physical qubits
-
-   calconfig {
-     setframe("frame",  Frame(5.0e9, 0)) $0;
-     setframe("frame",  Frame(6.0e9, 0)) $1;
-     ...
-    }
+   // Example 2: Define a calibration for the rz gate on all 8 physical qubits
+   cal {
+     frame[8] rz_frames;
+     frame[0] = newframe(...);
+     // and so on
+   }
 
    defcal rz(angle[20] theta) $q {
-     frame rz_frame = getframe("frame") $q;
-     rz_frame.phase -= theta;
+     rz_frames[q].phase -= theta;
    }
 
 Manipulating frames based on the state of other frames is also permitted:
@@ -298,7 +262,7 @@ For example,
    play(tx0, [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j], driveframe);
 
    // Play a gaussian pulse on the tx1 channel
-   frame f1 = Frame(q1_freq, 0.0);
+   frame f1 = newframe(q1_freq, 0.0);
    play(tx1, gaussian(...), f1);
   }
 
@@ -357,8 +321,8 @@ discriminated using user-defined boxcar and discrimnation ``kernel``s.
         rxchannel cap0 = rxch($0, "capture");
 
         // Force time of carrier to 0 for consistent phase for discrimination.
-        frame stimulus_frame = Frame(5e9, 0);
-        frame capture_frame = Frame(5e9, 0);
+        frame stimulus_frame = newframe(5e9, 0);
+        frame capture_frame = newframe(5e9, 0);
 
         // Apply measurement stimulus
         waveform meas_wf = gaussian_square(1.0, 16000dt, 262dt, 13952dt);
@@ -399,17 +363,14 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
 
 .. code-block:: javascript
 
-   waveform p = ...; // some 100dt waveform
-
-   calconfig {
-     setframe("frame",  Frame(5.0e9, 0)) $0;
-     setframe("frame",  Frame(6.0e9, 0)) $1;
+   cal {
+     waveform p = ...; // some 100dt waveform
+     frame driveframe1 = newframe(5.0e9, 0);
+     frame driveframe2 = newframe(6.0e9, 0);
    }
 
    defcal aligned_gates {
      // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
-     frame driveframe1 = getframe("frame") $0;
-     frame driveframe2 = getframe("frame") $1;
      play(tx0, p, driveframe1);
      delay[20dt] driveframe1;
      // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
@@ -427,13 +388,12 @@ Cross-resonance gate
 
 .. code-block:: javascript
 
-  calconfig {
-     setframe("frame",  Frame(5.0e9, 0)) $0;
+  cal {
+     frame frame0 = newframe(5.0e9, 0);
   }
 
   defcal cross_resonance $0 $1 {
-      // Access globally defined frame and channels
-      frame frame0 = getframe("frame") $0;
+      // Access globally defined channels
       channel d0 = txch($0, "drive");
       channel d1 = txch($1, "drive");
 
@@ -447,7 +407,7 @@ Cross-resonance gate
       {...}
 
       // generate new frame for second drive that is locally scoped
-      frame temp_frame = copy(frame0);
+      frame temp_frame = copyframe(frame0);
       temp_frame.phase = frame0.phase + pi/2;
 
       play(d0, wf1, frame0);
@@ -462,19 +422,17 @@ Geometric gate
 
 .. code-block:: javascript
 
-  calconfig {
-      float[32] fq_01 = 5e9; // hardcode or pull from some function
-      float[32] anharm = 300e6; // hardcode or pull from some function
-      setframe("frame_01",  Frame(fq_01, 0)) $0;
-      setframe("frame_12",  Frame(fq_01 + anharm, 0)) $0;
+  float[32] fq_01 = 5e9; // hardcode or pull from some function
+  float[32] anharm = 300e6; // hardcode or pull from some function
+  cal {
+      frame frame_01 = newframe(fq_01, 0);
+      frame frame_12 = newframe(fq_01 + anharm, 0);
   }
 
   defcal geo_gate(angle[32] theta) $0 {
       // theta: rotation angle (about z-axis) on Bloch sphere
 
-      // Access globally defined frame and channels
-      frame frame_01 = getframe("frame_01") $0;
-      frame frame_12 = getframe("frame_12") $1;
+      // Access globally defined channels
       tx_channel dq = txch($q, “drive”);
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
@@ -508,19 +466,19 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
   defcal neutral_atoms {
     // Access globally defined channels
-    eom_a_channel = txch(0, "eom_a");
-    eom_a_channel = txch(1, "eom_b");
-    aod_channel = txch(0, "aod");
+    channel eom_a_channel = txch(0, "eom_a");
+    channel eom_a_channel = txch(1, "eom_b");
+    channel aod_channel = txch(0, "aod");
 
     // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
     // and offset from each other by the qubit_freq
-    raman_a_frame = Frame(Δ, 0.0)
-    raman_b_frame = Frame(Δ-qubit_freq, 0.0)
+    frame raman_a_frame = newframe(Δ, 0.0)
+    frame raman_b_frame = newframe(Δ-qubit_freq, 0.0)
 
     // Three copies of qubit freq to track phase of each qubit
-    q1_frame = Frame(qubit_freq, 0)
-    q2_frame = Frame(qubit_freq, 0)
-    q3_frame = Frame(qubit_freq, 0)
+    frame q1_frame = newframe(qubit_freq, 0)
+    frame q2_frame = newframe(qubit_freq, 0)
+    frame q3_frame = newframe(qubit_freq, 0)
 
     // Generic gaussian envelope
     waveform π_half_sig = gaussian(..., π_half_time, ...)
@@ -528,9 +486,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
     // put a sideband on the signal construction to target the qubit position while maintainig the
     // desired Rabi rate.
-    q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
-    q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
-    q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
+    waveform q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
+    waveform q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
+    waveform q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
 
     for τ in [0: T]:
         // Simultaneous π/2 pulses
@@ -550,13 +508,13 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
             play(aod_channel, q1_π_half_sig, q1_frame);
 
         // Barrier all then time delay all
-        barrier()
-        delay(τ/2)
+        barrier();
+        delay(τ/2);
 
-        // Phase shift the signals by a different amount -- or should I be shifting qubit_#_signal?
-        q1_frame.phase += tppi_1 * τ
-        q1_frame.phase += tppi_2 * τ
-        q1_frame.phase += tppi_3 * τ
+        // Phase shift the signals by a different amount
+        q1_frame.phase += tppi_1 * τ;
+        q2_frame.phase += tppi_2 * τ;
+        q3_frame.phase += tppi_3 * τ;
 
         // Simultaneous π/2 pulses
         play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
@@ -578,12 +536,12 @@ many (just adding more frames, waveforms, plays, and captures).
   defcal multiplexed_readout_and_capture $0 $1 {
 
       // the tx/rx channel is the same for $0 and $1
-      tx_channel ro_tx = txch($0, "readout");
-      rx_channel ro_rx = rxch($0, "readout");
+      channel ro_tx = txch($0, "readout");
+      channel ro_rx = rxch($0, "readout");
 
       // readout frames of different frequencies
-      q0_frame = Frame(q0_ro_freq, 0); // time 0
-      q1_frame = Frame(q1_ro_freq, 0); // time 0
+      frame q0_frame = newframe(q0_ro_freq, 0); // time 0
+      frame q1_frame = newframe(q1_ro_freq, 0); // time 0
 
       // flat-top readout waveforms
       waveform q0_ro_wf = constant(amp=0.1, l=...);
@@ -616,8 +574,8 @@ For example,
 .. code-block:: javascript
 
   defcal incommensurate_rates_interval $q
-    tx0 = txch(0, "tx0"); # sample per 1 ns
-    tx1 = txch(1, "tx1"); # sample per 2 ns
+    channel tx0 = txch(0, "tx0"); # sample per 1 ns
+    channel tx1 = txch(1, "tx1"); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 13ns, ...);
 
@@ -637,8 +595,8 @@ produces
 .. code-block:: javascript
 
   defcal incommensurate_lengths $q
-    tx0 = txch(0, "tx0"); # sample per 1 ns
-    tx1 = txch(1, "tx1"); # sample per 2 ns
+    channel tx0 = txch(0, "tx0"); # sample per 1 ns
+    channel tx1 = txch(1, "tx1"); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 12dt, ...); // this means different lengths to different channels
 
