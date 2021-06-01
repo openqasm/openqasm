@@ -23,7 +23,7 @@ uint[n] power = 1;
 for i in [0: n - 1] {  // implicitly cast val to int
   reset q;
   h q;
-  ctrl @ pow[power] @ phase(theta) q, r;
+  ctrl @ pow(power) @ phase(theta) q, r;
   inv @ phase(c) q;
   h q;
   measure q -> c[0];

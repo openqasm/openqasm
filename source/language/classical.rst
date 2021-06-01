@@ -82,8 +82,8 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, and integer
-division [2]_ ``/``; the corresponding assignments ``+=``, ``-=``, ``*=``, and ``/=``; as well as
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
+and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
 increment ``++`` and decrement ``--``.
 
 .. code-block:: c
@@ -91,8 +91,9 @@ increment ``++`` and decrement ``--``.
    int[32] a = 2;
    int[32] b = 3;
 
-   a * b; // 5
+   a * b; // 6
    b / a; // 1
+   b % a; // 1
    a += 4; // a == 6
    a++; // a == 7
 
@@ -109,6 +110,43 @@ multiplication, and division and the corresponding assignment operators.
    a + b; // 3/2 * pi
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+
+Evaluation order
+~~~~~~~~~~~~~~~~
+
+OpenQASM evaluates expressions from left to right.
+
+   .. table:: [operator-precedence] operator precedence in OpenQASM ordered from highest precedence to lowest precedence. Higher precedence operators will be evaluated first.
+
+      +----------------------------------------+------------------------------------+
+      | Operator                               | Operator Types                     |
+      +----------------------------------------+------------------------------------+
+      | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      +----------------------------------------+------------------------------------+
+      | ``!``, ``-``, ``~``                    | Unary                              |
+      +----------------------------------------+------------------------------------+
+      | ``*``, ``/``, ``%``                    | Multiplicative                     |
+      +----------------------------------------+------------------------------------+
+      | ``+``, ``-``                           | Additive                           |
+      +----------------------------------------+------------------------------------+
+      | ``<<``, ``>>``                         | Bit Shift                          |
+      +----------------------------------------+------------------------------------+
+      | ``<``, ``<=``, ``>``, ``>=``           | Comparison                         |
+      +----------------------------------------+------------------------------------+
+      | ``!=``, ``==``                         | Equality                           |
+      +----------------------------------------+------------------------------------+
+      | ``&``                                  | Bitwise AND                        |
+      +----------------------------------------+------------------------------------+
+      | ``^``                                  | Bitwise XOR                        |
+      +----------------------------------------+------------------------------------+
+      | ``|``                                  | Bitwise OR                         |
+      +----------------------------------------+------------------------------------+
+      | ``&&``                                 | Logical AND                        |
+      +----------------------------------------+------------------------------------+
+      | ``||``                                 | Logical OR                         |
+      +----------------------------------------+------------------------------------+
+
 
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
@@ -142,7 +180,7 @@ the indexset.
        b += i;
    } // b == 16
 
-   // loop over every positive number from 0 to 20 using an indexset
+   // loop over every even integer from 0 to 20 using an indexset
    for i in [0:2:20] {
       // do something
    }
@@ -197,9 +235,10 @@ Kernel function calls
 ---------------------
 
 Kernel functions are declared by giving their signature using the
-statement ``kernel name(inputs)-> output;`` where inputs is a comma-separated list of type names and
-output is a single type name. They can be functions of any number of
-arguments whose types correspond to the classical types of OpenQASM.
+statement ``kernel name(inputs) -> output;`` where ``inputs`` is a comma-separated list of type names and
+``output`` is a single type name. The parentheses may be omitted if there are no ``inputs``.
+
+Kernel functions can take of any number of arguments whose types correspond to the classical types of OpenQASM.
 Inputs are passed by value. They can return zero or one value whose type
 is any classical type in OpenQASM except real constants. If necessary,
 multiple return values can be accommodated by concatenating registers.
@@ -207,13 +246,11 @@ The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
 how the kernel functions are defined and registered.
 
-Kernel functions are invoked using the statement ``name(inputs) -> output;``. The functions are not
-required to be idempotent. They may change the state of the process
-providing the function. In our computational model, the kernel functions
-are assumed to run concurrently with other classical and quantum
-computations. The output of a kernel function can be assigned to a
-variable on declaration using the assignment operator rather than the
-``->`` arrow notation.
+Kernel functions are invoked using the statement ``name(inputs);`` and the result may be assigned to
+``output`` as needed via an assignment operator (``=``, ``+=``, etc). ``inputs`` are literals and
+``output`` is a variable, corresponding to the types in the signature. The functions are not required to
+be idempotent. They may change the state of the process providing the function. In our computational
+model, the kernel functions are assumed to run concurrently with other classical and quantum computations.
 
 .. [1]
    ``popcount`` computes the Hamming weight of the input register.

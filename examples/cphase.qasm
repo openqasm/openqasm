@@ -1,4 +1,4 @@
-gate cphase(angle[32]: θ) a, b
+gate cphase(θ) a, b
 {
   U(0, 0, θ / 2) a;
   CX a, b;

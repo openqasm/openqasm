@@ -1,7 +1,7 @@
 // quantum teleportation example
 OPENQASM 3;
 include "stdgates.inc";
-qubit q[3];
+qubit[3] q;
 bit c0;
 bit c1;
 bit c2;
@@ -9,7 +9,7 @@ bit c2;
 // empty gate body => identity gate
 gate post q { }
 reset q;
-u3(0.3, 0.2, 0.1) q[0];
+U(0.3, 0.2, 0.1) q[0];
 h q[1];
 cx q[1], q[2];
 barrier q;

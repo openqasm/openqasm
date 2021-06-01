@@ -24,9 +24,14 @@ instruction sequence on *physical* qubits, e.g.
 
 .. code-block:: c
 
+<<<<<<< HEAD
    defcal rz(angle[20]:theta) %q { ... }
    defcal measure %q -> bit { ... }
    defcal measure_iq %q -> complex[32] { ... }
+=======
+   defcal rz(angle[20] theta) $0 { ... }
+   defcal measure $0 -> bit { ... }
+>>>>>>> 89e93e7f8ec1fd93cb494b5f6f3e3bb6b41884a9
 
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
@@ -39,18 +44,29 @@ interchangeable at the pulse level. Due to varying physical qubit
 properties a microcode definition of a gate on one qubit will not
 perform the equivalent operation on another qubit. To meaningfully
 describe gates as pulses we must bind operations to specific qubits.
-QASM achieves this by prefixing qubit references with ``%`` to indicate
-a specific qubit on the device, e.g. ``%2`` would refer to physical
-qubit 2, while ``%q`` is an unbound reference to a physical qubit.
+QASM achieves this by prefixing qubit references with ``$`` to indicate
+a specific qubit on the device, e.g. ``$2`` would refer to physical
+qubit 2.
+
+One can define a `defcal` using an arbitrary `$` identifier, provided that gate is called using physical
+qubits. For instance, to define an equivalent `rz` calibration on qubits 0 and 1, we could write
+
+.. code-block:: c
+
+   defcal rz(angle[20] theta) $q { ... }
+   // we've defined ``rz`` on arbitrary physical qubits, so we can do:
+   rz(3.14) $0;
+   rz(3.14) $1;
+
 
 As a consequence of the need for specialization of operations on
-particular qubits, we expect the same symbol to be defined multiple
+particular qubits, the same symbol may be defined multiple
 times, e.g.
 
 .. code-block:: c
 
-   defcal h %0 { ... }
-   defcal h %1 { ... }
+   defcal h $0 { ... }
+   defcal h $1 { ... }
 
 and so forth. Some operations require further specialization on
 parameter values, so we also allow multiple declarations on the same
@@ -58,20 +74,20 @@ physical qubits with different parameter values, e.g.
 
 .. code-block:: c
 
-   defcal rx(pi) %0 { ... }
-   defcal rx(pi / 2) %0 { ... }
+   defcal rx(pi) $0 { ... }
+   defcal rx(pi / 2) $0 { ... }
 
 Given multiple definitions of the same symbol, the compiler will match
 the most specific definition found for a given operation. Thus, given,
 
-#. ``defcal rx(angle[20]:theta) %q  { ... }``
+#. ``defcal rx(angle[20] theta) $q  ...``
 
-#. ``defcal rx(angle[20]:theta) %0  { ... }``
+#. ``defcal rx(angle[20] theta) $0  ...``
 
-#. ``defcal rx(pi / 2) %0  { ... }``
+#. ``defcal rx(pi / 2) $0  ...``
 
-the operation ``rx(pi/2) %0`` would match to (3), ``rx(pi) %0`` would
-match (2), ``rx(pi/2) %1`` would match (1).
+the operation ``rx(pi/2) $0`` would match to (3), ``rx(pi) $0`` would
+match (2), ``rx(pi/2) $1`` would match (1).
 
 Users specify the grammar used inside ``defcal`` blocks with a
 ``defcalgrammar "name"`` declaration. One such grammar is a
