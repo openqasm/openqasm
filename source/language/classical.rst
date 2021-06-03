@@ -97,9 +97,9 @@ increment ``++`` and decrement ``--``.
    a++; // a == 7
 
 Fixed-point numbers, floating-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixed-point and angle types support addition, subtraction,
+Fixed-point, floating-point and angle types support addition, subtraction,
 multiplication, and division and the corresponding assignment operators.
 
 .. code-block:: c
