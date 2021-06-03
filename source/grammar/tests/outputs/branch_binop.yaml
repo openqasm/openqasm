@@ -85,7 +85,7 @@ reference: |
             expressionStatement
               expression
                 expressionTerminator
-                  functionCall
+                  kernelOrSubroutineCall
                     x
                     indexIdentifierList
                       indexIdentifier

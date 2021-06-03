@@ -160,6 +160,15 @@ classicalArgumentList
     : ( classicalArgument COMMA )* classicalArgument
     ;
 
+anyTypeArgument
+    : classicalArgument
+    | quantumArgument
+    ;
+
+anyTypeArgumentList
+    : ( anyTypeArgument COMMA )* anyTypeArgument
+    ;
+
 /** Aliasing **/
 aliasStatement
     : 'let' Identifier EQUALS indexIdentifier SEMICOLON
@@ -365,7 +374,7 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | functionCall
+    | kernelOrSubroutineCall
     | timingTerminator
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
@@ -446,16 +455,15 @@ kernelDeclaration
     : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
-// this "function" includes kernels and subroutines
 // if have function call w/ out args, is ambiguous; may get matched as identifier
-functionCall
+kernelOrSubroutineCall
     : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList?
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier ( LPAREN anyTypeArgumentList? RPAREN )?
     returnSignature? subroutineBlock
     ;
 
