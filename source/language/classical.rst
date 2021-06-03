@@ -82,9 +82,9 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
-and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
-increment ``++`` and decrement ``--``.
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``,
+modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=`` and 
+``**=``; as well as increment ``++`` and decrement ``--``.
 
 .. code-block:: c
 
@@ -94,6 +94,7 @@ increment ``++`` and decrement ``--``.
    a * b; // 6
    b / a; // 1
    b % a; // 1
+   a ** b; // 8
    a += 4; // a == 6
    a++; // a == 7
 
@@ -122,6 +123,8 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
+      | ``**``                                 | Power                              |
+      +----------------------------------------+------------------------------------+
       | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
       +----------------------------------------+------------------------------------+
       | ``!``, ``-``, ``~``                    | Unary                              |
@@ -140,7 +143,7 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | ``^``                                  | Bitwise XOR                        |
       +----------------------------------------+------------------------------------+
-      | ``|``                                  | Bitwise OR                         |
+      | ``\|``                                 | Bitwise OR                         |
       +----------------------------------------+------------------------------------+
       | ``&&``                                 | Logical AND                        |
       +----------------------------------------+------------------------------------+
