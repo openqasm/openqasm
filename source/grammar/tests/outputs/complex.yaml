@@ -19,8 +19,7 @@ reference: |
                 expressionTerminator
                   10
               ]
-            identifierList
-              a
+            a
         ;
     statement
       classicalDeclarationStatement
@@ -34,23 +33,26 @@ reference: |
                 expressionTerminator
                   20
               ]
-            equalsAssignmentList
-              b
-              equalsExpression
-                =
-                expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          additiveExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                4
-                          -
-                          multiplicativeExpression
-                            expressionTerminator
-                              5.5im
+            b
+            equalsExpression
+              =
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      4
+                                -
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    5.5im
         ;
     statement
       classicalDeclarationStatement
@@ -64,27 +66,30 @@ reference: |
                 expressionTerminator
                   10
               ]
-            equalsAssignmentList
-              c
-              equalsExpression
-                =
-                expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          additiveExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                b
-                          +
-                          multiplicativeExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                7.5
-                            *
-                            expressionTerminator
-                              1e9im
+            c
+            equalsExpression
+              =
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      b
+                                +
+                                multiplicativeExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      7.5
+                                  *
+                                  expressionTerminator
+                                    1e9im
         ;
     statement
       classicalDeclarationStatement
@@ -98,21 +103,24 @@ reference: |
                 expressionTerminator
                   10
               ]
-            equalsAssignmentList
-              d
-              equalsExpression
-                =
-                expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          additiveExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                a
-                          +
-                          multiplicativeExpression
-                            expressionTerminator
-                              b
+            d
+            equalsExpression
+              =
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      a
+                                +
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    b
         ;
