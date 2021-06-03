@@ -2,7 +2,7 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-qubit q[4];
+qubit[4] q;
 bit c0;
 bit c1;
 bit c2;

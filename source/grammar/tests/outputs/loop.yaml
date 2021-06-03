@@ -14,16 +14,26 @@ reference: |
         loopSignature
           while
           (
-          booleanExpression
-            comparisonExpression
-              expression
-                expressionTerminator
-                  i
-              relationalOperator
-                <
-              expression
-                expressionTerminator
-                  10
+          expression
+            logicalAndExpression
+              bitOrExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      comparisonExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  i
+                        comparisonOperator
+                          <
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                10
           )
         programBlock
           {
@@ -31,24 +41,23 @@ reference: |
             loopStatement
               loopSignature
                 for
-                membershipTest
-                  j
-                  in
-                  setDeclaration
-                    {
-                    expressionList
-                      expression
-                        expressionTerminator
-                          1
-                      ,
-                      expression
-                        expressionTerminator
-                          4
-                      ,
-                      expression
-                        expressionTerminator
-                          6
-                    }
+                j
+                in
+                setDeclaration
+                  {
+                  expressionList
+                    expression
+                      expressionTerminator
+                        1
+                    ,
+                    expression
+                      expressionTerminator
+                        4
+                    ,
+                    expression
+                      expressionTerminator
+                        6
+                  }
               programBlock
                 statement
                   quantumStatement
@@ -69,16 +78,27 @@ reference: |
             branchingStatement
               if
               (
-              booleanExpression
-                comparisonExpression
-                  expression
-                    expressionTerminator
-                      i
-                  relationalOperator
-                    ==
-                  expression
-                    expressionTerminator
-                      8
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      i
+                          equalityOperator
+                            ==
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    8
               )
               programBlock
                 controlDirective

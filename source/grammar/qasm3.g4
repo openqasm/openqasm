@@ -47,7 +47,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : indexIdentifier assignmentOperator ( expression | indexIdentifier )
+    : Identifier designator? ( assignmentOperator expression )?
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -70,22 +70,13 @@ identifierList
     : ( Identifier COMMA )* Identifier
     ;
 
-association
-    : COLON Identifier
-    ;
-
 /** Quantum Types **/
-quantumType
-    : 'qubit'
-    | 'qreg'
-    ;
-
 quantumDeclaration
-    : quantumType indexIdentifierList
+    : 'qreg' Identifier designator? | 'qubit' designator? Identifier
     ;
 
 quantumArgument
-    : quantumType designator? association
+    : 'qreg' Identifier designator? | 'qubit' designator? Identifier
     ;
 
 quantumArgumentList
@@ -123,25 +114,25 @@ classicalType
     ;
 
 constantDeclaration
-    : 'const' equalsAssignmentList
+    : 'const' Identifier equalsExpression?
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
-    : singleDesignatorType designator ( identifierList | equalsAssignmentList )
+    : singleDesignatorType designator Identifier equalsExpression?
     ;
 
 doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator ( identifierList | equalsAssignmentList )
+    : doubleDesignatorType doubleDesignator Identifier equalsExpression?
     ;
 
 noDesignatorDeclaration
-    : noDesignatorType ( identifierList | equalsAssignmentList )
+    : noDesignatorType Identifier equalsExpression?
     ;
 
 bitDeclaration
-    : bitType (indexIdentifierList | indexEqualsAssignmentList )
+    : ( 'creg' Identifier designator? | 'bit' designator? Identifier ) equalsExpression?
     ;
 
 classicalDeclaration
@@ -156,7 +147,14 @@ classicalTypeList
     ;
 
 classicalArgument
-    : classicalType association
+    :
+    (
+        singleDesignatorType designator |
+        doubleDesignatorType doubleDesignator |
+        noDesignatorType
+    ) Identifier
+    | 'creg' Identifier designator?
+    | 'bit' designator? Identifier
     ;
 
 classicalArgumentList
@@ -178,10 +176,6 @@ indexIdentifier
 
 indexIdentifierList
     : ( indexIdentifier COMMA )* indexIdentifier
-    ;
-
-indexEqualsAssignmentList
-    : ( indexIdentifier equalsExpression COMMA)* indexIdentifier equalsExpression
     ;
 
 rangeDefinition
@@ -232,7 +226,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN Identifier RPAREN
+    : 'gphase' LPAREN expression RPAREN
     ;
 
 quantumReset
@@ -263,15 +257,18 @@ quantumGateCall
 /*** Classical Instructions ***/
 
 unaryOperator
-    : '~' | '!'
+    : '~' | '!' | '-'
     ;
 
-relationalOperator
+comparisonOperator
     : '>'
     | '<'
     | '>='
     | '<='
-    | '=='
+    ;
+
+equalityOperator
+    : '=='
     | '!='
     ;
 
@@ -289,8 +286,8 @@ expression
     : expressionTerminator
     | unaryExpression
     // expression hierarchy
-    | xOrExpression
-    | expression '|' xOrExpression
+    | logicalAndExpression
+    | expression '||' logicalAndExpression
     ;
 
 /**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
@@ -301,18 +298,43 @@ expression
     Multiplicative
     Additive
     Bit Shift
+    Comparison
+    Equality
     Bit And
     Exlusive Or (xOr)
     Bit Or
+    Logical And
+    Logical Or
 **/
+
+logicalAndExpression
+    : bitOrExpression
+    | logicalAndExpression '&&' bitOrExpression
+    ;
+
+bitOrExpression
+    : xOrExpression
+    | bitOrExpression '|' xOrExpression
+    ;
+
 xOrExpression
     : bitAndExpression
     | xOrExpression '^' bitAndExpression
     ;
 
 bitAndExpression
+    : equalityExpression
+    | bitAndExpression '&' equalityExpression
+    ;
+
+equalityExpression
+    : comparisonExpression
+    | equalityExpression equalityOperator comparisonExpression
+    ;
+
+comparisonExpression
     : bitShiftExpression
-    | bitAndExpression '&' bitShiftExpression
+    | comparisonExpression comparisonOperator bitShiftExpression
     ;
 
 bitShiftExpression
@@ -341,18 +363,22 @@ expressionTerminator
     | Integer
     | RealNumber
     | ImagNumber
+    | booleanLiteral
     | Identifier
     | StringLiteral
     | builtInCall
     | kernelCall
     | subroutineCall
     | timingTerminator
-    | MINUS expressionTerminator
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
     ;
 /** End expression hierarchy **/
+
+booleanLiteral
+    : 'true' | 'false'
+    ;
 
 incrementor
     : '++'
@@ -375,19 +401,6 @@ expressionList
     : ( expression COMMA )* expression
     ;
 
-/** Boolean expression hierarchy **/
-booleanExpression
-    : membershipTest
-    | comparisonExpression
-    | booleanExpression logicalOperator comparisonExpression
-    ;
-
-comparisonExpression
-    : expression  // if (expression)
-    | expression relationalOperator expression
-    ;
-/** End boolean expression hierarchy **/
-
 equalsExpression
     : EQUALS expression
     ;
@@ -395,14 +408,6 @@ equalsExpression
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-equalsAssignmentList
-    : ( Identifier equalsExpression COMMA)* Identifier equalsExpression
-    ;
-
-membershipTest
-    : Identifier 'in' setDeclaration
     ;
 
 setDeclaration
@@ -417,12 +422,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
-    : 'for' membershipTest
-    | 'while' LPAREN booleanExpression RPAREN
+    : 'for' Identifier 'in' setDeclaration
+    | 'while' LPAREN expression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;
@@ -441,8 +446,7 @@ controlDirective
     ;
 
 kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature?
-    classicalType? SEMICOLON
+    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
 // if have kernel w/ out args, is ambiguous; may get matched as identifier
@@ -463,7 +467,7 @@ subroutineBlock
 
 // if have subroutine w/ out args, is ambiguous; may get matched as identifier
 subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? expressionList
+    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/

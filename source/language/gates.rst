@@ -38,7 +38,6 @@ values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
 [0,2\pi)` in this base gate are angles whose precision is implementation
 dependent [1]_. This specifies any element of :math:`U(2)` up to a
 global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
-P
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
@@ -234,14 +233,21 @@ of the gate definition.
 Only built-in gate statements, calls to previously defined gates, and
 timing directives can appear in ``body``. For example, it is not valid to
 declare a classical register in a gate body. Looping constructs over these quantum
-statements are valid. The statements in the body
+statements are valid.
+
+The statements in the body
 can only refer to the symbols given in the parameter or argument list,
-and these symbols are scoped only to the subroutine body. An empty body
-corresponds to the identity gate. Gates must be declared before use and
-cannot call themselves. The statement ``name(params) qargs;`` applies the gate, and the variable
-parameters ``params`` can have any numeric type. The gate can be applied to any
-combination of qubits and quantum registers *of the same size* as shown
-in the following example. The quantum circuit given by
+and these symbols are scoped only to the subroutine body.
+
+An empty body corresponds to the identity gate.
+
+Gates must be declared before use and
+cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
+and the variable parameters ``params`` can have any numeric type.
+
+The gate can be applied to any combination of qubit registers *of the same size*, as shown in the following example.
+
+The quantum circuit given by
 
 .. code-block:: c
 
@@ -254,13 +260,16 @@ in the following example. The quantum circuit given by
    qubit qr2[3];
    qubit qr3[2];
    g qr0[0], qr1, qr2[0], qr3; // ok
-   g qr0[0], qr2, qr1[0], qr3; // error!
+   g qr0[0], qr2, qr1[0], qr3; // error! qr2 and qr3 differ in size
 
 has a second-to-last line that means
 
 .. code-block:: c
 
    // FIXME: insert translation of algorithmic block from TeX source.
+
+   for j ← 0, 1 do
+       g qr0[0],qr1[j],qr2[0],qr3[j];
 
 We provide this so that user-defined gates can be applied in parallel
 like the built-in gates.

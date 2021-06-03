@@ -13,8 +13,8 @@ The statement ``reset qubit|qubit[];`` resets a qubit or quantum register to the
 
 .. code-block:: c
 
-   // Initialize and reset an array of 10 qubits
-   qubit qubits[10];
+   // Initialize and reset a register of 10 qubits
+   qubit[10] qubits;
    reset qubits;
 
 
@@ -45,8 +45,8 @@ broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``.
 
 .. code-block:: c
 
-   // Initialize, flip and measure an array of 10 qubits
-   qubit qubits[10];
+   // Initialize, flip and measure a register of 10 qubits
+   qubit[10] qubits;
    bit[10] bits;
    x qubits;
    bits = measure qubits;

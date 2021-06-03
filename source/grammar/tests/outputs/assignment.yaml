@@ -1,11 +1,13 @@
 # indent w/ 2 spaces
 source: |
-  bit a[2], b[2];
-  qubit q[3];
+  bit[2] a;
+  creg b[2];
+  qubit[3] q;
   int[10] x = 12;
   a[0] = b[1];
   x += int[10](a[1]);
   a = measure q[1:2];
+  b = a == 0;
 reference: |
   program
     header
@@ -13,41 +15,39 @@ reference: |
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
-            indexIdentifierList
-              indexIdentifier
-                a
-                [
-                expressionList
-                  expression
-                    expressionTerminator
-                      2
-                ]
-              ,
-              indexIdentifier
-                b
-                [
-                expressionList
-                  expression
-                    expressionTerminator
-                      2
-                ]
+            bit
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
+            a
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          bitDeclaration
+            creg
+            b
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
         ;
     globalStatement
       quantumDeclarationStatement
         quantumDeclaration
-          quantumType
-            qubit
-          indexIdentifierList
-            indexIdentifier
-              q
-              [
-              expressionList
-                expression
-                  expressionTerminator
-                    3
-              ]
+          qubit
+          designator
+            [
+            expression
+              expressionTerminator
+                3
+            ]
+          q
         ;
     statement
       classicalDeclarationStatement
@@ -61,24 +61,22 @@ reference: |
                 expressionTerminator
                   10
               ]
-            equalsAssignmentList
-              x
-              equalsExpression
-                =
-                expression
-                  expressionTerminator
-                    12
+            x
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  12
         ;
     statement
       assignmentStatement
         classicalAssignment
-          indexIdentifier
-            a
+          a
+          designator
             [
-            expressionList
-              expression
-                expressionTerminator
-                  0
+            expression
+              expressionTerminator
+                0
             ]
           assignmentOperator
             =
@@ -95,8 +93,7 @@ reference: |
     statement
       assignmentStatement
         classicalAssignment
-          indexIdentifier
-            x
+          x
           assignmentOperator
             +=
           expression
@@ -147,4 +144,32 @@ reference: |
                     expressionTerminator
                       2
                   ]
+        ;
+    statement
+      assignmentStatement
+        classicalAssignment
+          b
+          assignmentOperator
+            =
+          expression
+            logicalAndExpression
+              bitOrExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  a
+                      equalityOperator
+                        ==
+                      comparisonExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                0
         ;

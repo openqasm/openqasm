@@ -1,7 +1,7 @@
 // quantum teleportation example
 OPENQASM 3;
 include "stdgates.inc";
-qubit q[3];
+qubit[3] q;
 bit c0;
 bit c1;
 bit c2;
