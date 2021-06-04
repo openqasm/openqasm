@@ -3,7 +3,7 @@ OpenPulse Grammar
 
 OpenQASM allows users to provide the target system's implementation of quantum operations
 with ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
-this document, we outline one such grammar, OpenPulse, which maybe selected within a supporting
+this document, we outline one such grammar, OpenPulse, which may be selected within a supporting
 compiler through the declaration defcalgrammar "openpulse" <VERSION>.
 
 This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
