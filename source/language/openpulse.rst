@@ -392,7 +392,7 @@ Cross-resonance gate
      frame frame0 = newframe(5.0e9, 0);
   }
 
-  defcal cross_resonance $0 $1 {
+  defcal cross_resonance $0, $1 {
       // Access globally defined channels
       channel d0 = txch($0, "drive");
       channel d1 = txch($1, "drive");
