@@ -270,7 +270,7 @@ Capture Instruction
 -------------------
 
 Acquisition is scheduled by a ``capture`` instruction. This is a special
-``kernel`` function which is specified by a hardware vendor. The measurement
+``extern`` function which is specified by a hardware vendor. The measurement
 process is difficult to describe generically due to the wide variety of
 hardware and measurement methods. Like the play instruction, these instructions
 may only appear inside a ``defcal`` block!
