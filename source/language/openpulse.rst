@@ -533,7 +533,7 @@ many (just adding more frames, waveforms, plays, and captures).
 
 .. code-block:: javascript
 
-  defcal multiplexed_readout_and_capture $0 $1 {
+  defcal multiplexed_readout_and_capture $0, $1 {
 
       // the tx/rx channel is the same for $0 and $1
       channel ro_tx = txch($0, "readout");
