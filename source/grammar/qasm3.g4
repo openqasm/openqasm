@@ -457,7 +457,7 @@ kernelDeclaration
 
 // if have function call w/ out args, is ambiguous; may get matched as identifier
 kernelOrSubroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList?
+    : Identifier ( LPAREN expressionList? RPAREN )?
     ;
 
 /*** Subroutines ***/
