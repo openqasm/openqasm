@@ -153,7 +153,7 @@ of the if statement has definite and equivalent length.
 .. code-block:: c
 
    defcal reset $0 {
-      bit res = // measure qubit %0
+      bit res = // measure qubit $0
       if (res == 1) {
          // flip the qubit
       } else {
