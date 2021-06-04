@@ -306,7 +306,7 @@ value. It could be a classified bit. Or it could even have no return value,
 pushing the results into some buffer which is then accessed outside the program.
 
 For example, the ``capture`` instruction could return raw waveform data that is then
-discriminated using user-defined boxcar and discrimnation ``kernel``s.
+discriminated using user-defined boxcar and discrimination ``kernel``s.
 
 .. code-block:: javascript
 
