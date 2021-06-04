@@ -236,7 +236,7 @@ new waveforms (this list may be updated as more functionality is required).
     // :math:`wf(t_i) = wf_1(t_i) + wf_2(t_i)`
     kernel sum(waveform wf1, waveform wf2) -> waveform;
 
-    // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`
+    // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`)
     kernel phase_shift(waveform wf, angle ang) -> waveform;
 
 Play instruction
