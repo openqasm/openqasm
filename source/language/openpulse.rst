@@ -429,7 +429,7 @@ Geometric gate
       frame frame_12 = newframe(fq_01 + anharm, 0);
   }
 
-  defcal geo_gate(angle[32] theta) $0 {
+  defcal geo_gate(angle[32] theta) $q {
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       // Access globally defined channels
