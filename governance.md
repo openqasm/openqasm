@@ -4,7 +4,7 @@
 
 The purpose of the OpenQASM governance model is to formalize the process for proposing and deciding upon changes to OpenQASM. It provides explicit mechanisms for a broader community to contribute. It will memorialize decisions in a public record. This model should make decision-making routine to get issues unstuck.
 
-OpenQASM is a Qiskit project, but this governance structure is scoped to just OpenQASM itself and not Qiskit as a whole. The scope of OpenQASM includes the language specification as well as reference implementations of parsers or other low-level infrastructure to facilitate use in other projects.
+This governance structure is scoped to just OpenQASM itself and not Qiskit as a whole. The scope of OpenQASM includes the language specification as well as reference implementations of parsers or other low-level infrastructure to facilitate use in other projects. OpenQASM inherits the contribution guidelines and community standards that are common to all projects within the Qiskit GitHub organization.
 
 **In brief**: we propose 3 community roles: **Member**, **Contributor**, and **TSC Member**. We also propose 2 structures: a **Technical Steering Committee** (TSC) and **Working Group** (WG). The TSC creates WGs and appoints WG chairs. Working Group membership shall be composed of Members with a Contributor as chair.
 
