@@ -69,8 +69,8 @@ variable:
 
 .. code-block:: c
 
-    input angle param1;
-    input angle param2;
+    input angle[32] param1;
+    input angle[32] param2;
     qubit q;
 
     // Build an ansatz using the above free parameters, eg.
