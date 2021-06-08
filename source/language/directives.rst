@@ -62,7 +62,7 @@ performs a measurement in a basis given by an input parameter:
     result = measure q;
 
 For a second example, consider the Variable Quantum Eigensolver (VQE) algorithm 
-:cite: `peruzzo2014variational`. In this algorithm the same circuit is repeated
+:cite:`peruzzo2014variational`. In this algorithm the same circuit is repeated
 many times using different sets of free parameters to minimize an expectation 
 value. The following is an example, in which there is also more than one input
 variable:
