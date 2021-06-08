@@ -19,14 +19,14 @@ and return select output parameters.
 
 The ``input`` modifier can be used to indicate that one or more variable
 declarations represent values which will be provided at run-time, upon
-invocation. This allows the programmer touse the same compiled circuits
+invocation. This allows the programmer to use the same compiled circuits
 which only differ in the values of certain parameters. For backward compatibility,
 OpenQASM3 does not require an ``input`` declaration to be provided. When
 an ``input`` declaration is provided, the compiler produces an executable
 that leaves these free parameters unspecified: a circuit run would take as
 input both the executable and some choice of the parameters.
 
-The ``output`` modifier can be used to indicate that one or more variables
+Similarly, the ``output`` modifier can be used to indicate that one or more variables
 are to be provided as an explicit output of the quantum procedure. Note that
 OpenQASM 2 did not allow the programmer to specify that only a subset of its
 variables should be returned as output, and so it would return all classical
