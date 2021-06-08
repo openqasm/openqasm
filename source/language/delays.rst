@@ -17,6 +17,8 @@ we want to provide the ability to capture *design intent* such as “space
 these gates evenly to implement a higher-order echo decoupling sequence"
 or “implement this gate as late as possible".
 
+.. _length-and-stretch:
+
 length and stretch types
 ------------------------
 
@@ -28,6 +30,9 @@ any of the following:
 
 -  Backend-dependent unit, ``dt``, equivalent to the duration of one waveform
    sample on the backend
+
+Units can appear attached to the numerical value, or immediately following
+separated only by blanks or tabs. ``1000ms`` is the same as ``1000 ms``.
 
 It is often useful to reference the duration of other parts of the
 circuit. For example, we may want to delay a gate for twice the duration
@@ -81,9 +86,10 @@ whatever their actual durations may be, we can do the following:
 
 .. code-block:: c
 
+       qubit[5] q;
        barrier q;
        cx q[0], q[1];
-       u q[2];
+       U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
        delay[stretchinf] q[0], q[1];
        delay[stretchinf] q[2];
@@ -95,6 +101,7 @@ the stretchy delays (:numref:`fig_alignment`\b):
 
 .. code-block:: c
 
+       qubit[5] q;
        stretch g;
        barrier q;
        cx q[0], q[1];
@@ -147,7 +154,7 @@ including stretches, will be resolved to constants.
 .. code-block:: c
 
        length a = 300ns;
-       length b = lengthof({x %0});
+       length b = lengthof({x $0});
        stretch c;
        // stretchy length with min=300ns
        length d = a + 2 * c;
@@ -155,7 +162,7 @@ including stretches, will be resolved to constants.
        length e = -0.5 * b + c;
 
 Delays (and other lengthened instructions)
-----------------------------------------
+------------------------------------------
 
 OpenQASM and OpenPulse have a ``delay`` instruction, whose duration is defined by
 a ``length``. If the length passed to the delay contains stretch, it will become a
@@ -256,25 +263,26 @@ to properly take into account the finite length of each gate.
 
 .. code-block:: c
 
-   stretch s, t;
-   length start_stretch = s - .5 * lengthof({x %0;})
-   length middle_stretch = s - .5 * lengthof({x %0;}) - .5 * lengthof({y %0;}
-   length end_stretch = s - .5 * lengthof({y %0;})
+   stretch s;
+   stretch t;
+   length start_stretch = s - .5 * lengthof({x $0;})
+   length middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
+   length end_stretch = s - .5 * lengthof({y $0;})
 
-   delay[start_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[middle_stretch] %0;
-   x %0;
-   delay[middle_stretch] %0;
-   y %0;
-   delay[end_stretch] %0;
+   delay[start_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[middle_stretch] $0;
+   x $0;
+   delay[middle_stretch] $0;
+   y $0;
+   delay[end_stretch] $0;
 
-   cx %2, %3;
-   delay[t] %1;
-   cx %1, %2;
-   u %3;
+   cx $2, $3;
+   delay[t] $1;
+   cx $1, $2;
+   u $3;
 
 Boxed expressions
 -----------------
