@@ -349,9 +349,9 @@ Boxes can be dressed by a ``verbatim`` modifier to prevent the compiler from opt
 piece inside.  The ``verbatim`` modifier is simply a compiler flag to let compiler passes ignore the
 boxed region. For example, gates will not be re-ordered or be cancelled in a ``verbatim`` box. The
 only two compiler passes that look inside a ``verbatim`` box are (1) the pass the resolves timing and
-duration (2) the pass that links gates to their ``defcal``. As a result, having any of the following 
-high-level constructs in a ``verbatim`` box will result in a runtime error since related compiler passes
-will not be able to look inside to properly compile these:
+duration (2) the pass that links gates to their ``defcal``. As a result, having any high-level constructs
+in a ``verbatim`` box that requires other compiler passes will result in a runtime error since related 
+compiler passes will not be able to look inside to properly compile them. Examples include:
 
 -  Virtual qubits
 
