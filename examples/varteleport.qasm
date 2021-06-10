@@ -7,13 +7,13 @@ include "stdgates.inc";
 
 const n_pairs = 10;  // number of teleportations to do
 
-def bellprep qubit[2] q {
+def bellprep(qubit[2] q) {
   reset q;
   h q[0];
   cx q[0], q[1];
 }
 
-def xprepare qubit q {
+def xprepare(qubit q) {
   reset q;
   h q;
 }
@@ -22,7 +22,7 @@ qubit input;
 bit output;
 qubit[2*n_pairs] q;
 
-xprepare input;
+xprepare(input);
 rz(pi / 4) input;
 
 let io = input;

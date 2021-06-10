@@ -6,7 +6,7 @@ include "stdgates.inc";
 const n = 3;
 kernel vote(bit[n]) -> bit;
 
-def logical_meas qubit[3] d -> bit {
+def logical_meas(qubit[3] d) -> bit {
     bit[3] c;
     bit r;
     measure d -> c;
@@ -25,7 +25,7 @@ rz(pi/4) a;
 cx q, a;
 
 // measure out the ancilla
-r = logical_meas a;
+r = logical_meas(a);
 
 // if we get a logical |1> then we need to apply a logical Z correction
 if (r == 1) z q;
