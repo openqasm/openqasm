@@ -76,6 +76,11 @@ For research papers, we encourage authors to reference.
 
 - Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
+## Governance
+
+The OpenQASM project has a process for accepting changes to the language and making decisions codified in its [governance model](governance.md).
+
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
