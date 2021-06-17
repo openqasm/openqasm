@@ -1,13 +1,13 @@
 # indent w/ 2 spaces
 source: |
-  def test_sub1(int[5]:i) qubit:q1, qubit[5]:q2 -> int[10] {
+  def test_sub1(int[5] i) qubit[2] q1, qreg q2[5] -> int[10] {
     int[10] result;
     if (result == 2) return 1 + result;
     return result;
   }
-  def test_sub2(int[5]:i) {
-    if (i in {2, 3})
-      return;
+  def test_sub2(int[5] i, bit[2] b, creg c[3]) {
+    for j in {2, 3}
+      i += j;
     return i+1;
   }
 reference: |
@@ -20,39 +20,36 @@ reference: |
         (
         classicalArgumentList
           classicalArgument
-            classicalType
-              singleDesignatorType
-                int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ]
-            association
-              :
-              i
-        )
-        quantumArgumentList
-          quantumArgument
-            quantumType
-              qubit
-            association
-              :
-              q1
-          ,
-          quantumArgument
-            quantumType
-              qubit
+            singleDesignatorType
+              int
             designator
               [
               expression
                 expressionTerminator
                   5
               ]
-            association
-              :
-              q2
+            i
+        )
+        quantumArgumentList
+          quantumArgument
+            qubit
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
+            q1
+          ,
+          quantumArgument
+            qreg
+            q2
+            designator
+              [
+              expression
+                expressionTerminator
+                  5
+              ]
         returnSignature
           ->
           classicalType
@@ -78,41 +75,55 @@ reference: |
                       expressionTerminator
                         10
                     ]
-                  identifierList
-                    result
+                  result
               ;
           statement
             branchingStatement
               if
               (
-              booleanExpression
-                comparisonExpression
-                  expression
-                    expressionTerminator
-                      result
-                  relationalOperator
-                    ==
-                  expression
-                    expressionTerminator
-                      2
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      result
+                          equalityOperator
+                            ==
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    2
               )
               programBlock
                 controlDirective
                   returnStatement
                     return
                     expression
-                      xOrExpression
-                        bitAndExpression
-                          bitShiftExpression
-                            additiveExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  expressionTerminator
-                                    1
-                              +
-                              multiplicativeExpression
-                                expressionTerminator
-                                  result
+                      logicalAndExpression
+                        bitOrExpression
+                          xOrExpression
+                            bitAndExpression
+                              equalityExpression
+                                comparisonExpression
+                                  bitShiftExpression
+                                    additiveExpression
+                                      additiveExpression
+                                        multiplicativeExpression
+                                          expressionTerminator
+                                            1
+                                      +
+                                      multiplicativeExpression
+                                        expressionTerminator
+                                          result
                     ;
           returnStatement
             return
@@ -128,60 +139,84 @@ reference: |
         (
         classicalArgumentList
           classicalArgument
-            classicalType
-              singleDesignatorType
-                int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ]
-            association
-              :
-              i
+            singleDesignatorType
+              int
+            designator
+              [
+              expression
+                expressionTerminator
+                  5
+              ]
+            i
+          ,
+          classicalArgument
+            bit
+            designator
+              [
+              expression
+                expressionTerminator
+                  2
+              ]
+            b
+          ,
+          classicalArgument
+            creg
+            c
+            designator
+              [
+              expression
+                expressionTerminator
+                  3
+              ]
         )
         subroutineBlock
           {
           statement
-            branchingStatement
-              if
-              (
-              booleanExpression
-                membershipTest
-                  i
-                  in
-                  setDeclaration
-                    {
-                    expressionList
-                      expression
-                        expressionTerminator
-                          2
-                      ,
-                      expression
-                        expressionTerminator
-                          3
-                    }
-              )
+            loopStatement
+              loopSignature
+                for
+                j
+                in
+                setDeclaration
+                  {
+                  expressionList
+                    expression
+                      expressionTerminator
+                        2
+                    ,
+                    expression
+                      expressionTerminator
+                        3
+                  }
               programBlock
-                controlDirective
-                  returnStatement
-                    return
+                statement
+                  assignmentStatement
+                    classicalAssignment
+                      i
+                      assignmentOperator
+                        +=
+                      expression
+                        expressionTerminator
+                          j
                     ;
           returnStatement
             return
             expression
-              xOrExpression
-                bitAndExpression
-                  bitShiftExpression
-                    additiveExpression
-                      additiveExpression
-                        multiplicativeExpression
-                          expressionTerminator
-                            i
-                      +
-                      multiplicativeExpression
-                        expressionTerminator
-                          1
+              logicalAndExpression
+                bitOrExpression
+                  xOrExpression
+                    bitAndExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    i
+                              +
+                              multiplicativeExpression
+                                expressionTerminator
+                                  1
             ;
           }

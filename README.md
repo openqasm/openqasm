@@ -2,7 +2,7 @@
 
 
 OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model, 
+describe universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
 Specs, examples and tools for the OpenQASM intermediate representation.
@@ -40,7 +40,7 @@ include "stdgates.inc";
  * theta + pi where cos(theta)=3/5 if out is 00.
  * The 00 outcome occurs with probability 5/8.
  */
-def segment qubit[2]:anc, qubit:psi -> bit[2] {
+def segment qubit[2] anc, qubit psi -> bit[2] {
   bit[2] b;
   reset anc;
   h anc;
@@ -54,8 +54,8 @@ def segment qubit[2]:anc, qubit:psi -> bit[2] {
 }
 
 qubit input;
-qubit ancilla[2];
-bit flags[2] = "11";
+qubit[2] ancilla;
+bit[2] flags = "11";
 bit output;
 
 reset input;
@@ -74,7 +74,8 @@ output = measure input;  // should get zero
 
 For research papers, we encourage authors to reference.
 
-- Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
+- [Version 3.0] Andrew W. Cross, Ali Javadi-Abhari, Thomas Alexander, Niel de Beaudrap, Lev S. Bishop, Steven Heidel, Colm A. Ryan, John Smolin, Jay M. Gambetta, Blake R. Johnson "OpenQASM 3: A broader and deeper quantum assembly language" [[arxiv:2104.14722]](https://arxiv.org/abs/2104.14722).
+- [Previous Version: 2.0] Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
 ## License
 

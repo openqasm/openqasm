@@ -8,7 +8,7 @@ include "stdgates.inc";
 
 stretch g;
 
-qubit q[3];
+qubit[3] q;
 barrier q;
 cx q[0], q[1];
 delay[g] q[2];

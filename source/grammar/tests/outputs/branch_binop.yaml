@@ -10,50 +10,74 @@ reference: |
       branchingStatement
         if
         (
-        booleanExpression
-          booleanExpression
-            comparisonExpression
-              expression
-                expressionTerminator
-                  expressionTerminator
-                    spec
-                  [
-                  expression
-                    expressionTerminator
-                      i
-                  ]
-              relationalOperator
-                ==
-              expression
-                expressionTerminator
-                  0
-          logicalOperator
-            &&
-          comparisonExpression
-            expression
-              expressionTerminator
-                expressionTerminator
-                  spec
-                [
-                expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
+        expression
+          logicalAndExpression
+            logicalAndExpression
+              bitOrExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                expressionTerminator
+                                  expressionTerminator
+                                    spec
+                                  [
+                                  expression
+                                    expressionTerminator
+                                      i
+                                  ]
+                      equalityOperator
+                        ==
+                      comparisonExpression
+                        bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
                               expressionTerminator
-                                n
-                          +
+                                0
+            &&
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    equalityExpression
+                      comparisonExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                expressionTerminator
+                                  spec
+                                [
+                                expression
+                                  logicalAndExpression
+                                    bitOrExpression
+                                      xOrExpression
+                                        bitAndExpression
+                                          equalityExpression
+                                            comparisonExpression
+                                              bitShiftExpression
+                                                additiveExpression
+                                                  additiveExpression
+                                                    multiplicativeExpression
+                                                      expressionTerminator
+                                                        n
+                                                  +
+                                                  multiplicativeExpression
+                                                    expressionTerminator
+                                                      i
+                                ]
+                    equalityOperator
+                      ==
+                    comparisonExpression
+                      bitShiftExpression
+                        additiveExpression
                           multiplicativeExpression
                             expressionTerminator
-                              i
-                ]
-            relationalOperator
-              ==
-            expression
-              expressionTerminator
-                1
+                              1
         )
         programBlock
           {
@@ -63,15 +87,14 @@ reference: |
                 expressionTerminator
                   subroutineCall
                     x
-                    expressionList
-                      expression
-                        expressionTerminator
-                          expressionTerminator
-                            q
-                          [
+                    indexIdentifierList
+                      indexIdentifier
+                        q
+                        [
+                        expressionList
                           expression
                             expressionTerminator
                               i
-                          ]
+                        ]
               ;
           }

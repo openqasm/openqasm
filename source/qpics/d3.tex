@@ -9,7 +9,7 @@
 \begin{tikzpicture}
 \begin{yquant}
   [name=ypos]
-  qubit q[2];
+  qubit[2] q;
   cnot q[1] | q[0];
   box {$R_Y(\pi/2)$} q[1];
   cnot q[1] | q[0];
