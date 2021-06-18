@@ -9,8 +9,8 @@ to have known durations and many such instructions might be executed
 within the qubit coherence time. The external, or ``extern``, functions execute
 complex blocks of classical code that may be neither fast nor guaranteed to return. In order
 to connect with classical compilation infrastucture, ``extern`` functions are defined outside of
-quantum circuits. The compiler toolchain is expected to link ``extern`` functions when building an
-executable. This strategy allows the programmer to use existing libraries with porting them into
+OpenQASM. The compiler toolchain is expected to link ``extern`` functions when building an
+executable. This strategy allows the programmer to use existing libraries without porting them into
 OpenQASM. ``extern`` functions run on a global processor concurrently with operations on local
 processors, if possible. ``extern`` functions can write to the global controller’s memory,
 which may not be directly accessible by the local controllers.
