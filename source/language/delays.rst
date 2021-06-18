@@ -22,7 +22,7 @@ or “implement this gate as late as possible".
 Duration and stretch types
 ---------------------------
 
-The ``duration`` type is used denote duration of time. Durations are positive real numbers
+The ``duration`` type is used denote increments of time. Durations are positive real numbers
 that are manipulated at compile time. Durations must be followed by time units which can be
 any of the following:
 
@@ -39,7 +39,7 @@ circuit. For example, we may want to delay a gate for twice the duration
 of a particular sub-circuit, without knowing the exact value to which
 that duration will resolve. Alternatively, we may want to calibrate a
 gate using some pulses, and use its duration as a new ``duration`` in order to delay
-other parts of the circuit. The ``lengthof()`` intrinsic function can be used for this
+other parts of the circuit. The ``durationof()`` intrinsic function can be used for this
 type of referential timing.
 
 Below are some examples of values of type ``duration``.
@@ -51,9 +51,9 @@ Below are some examples of values of type ``duration``.
        // fixed duration, backend dependent
        duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = lengthof(defcal);
+       duration c = durationof(defcal);
        // dynamic duration, referencing a box within its context
-       duration d = lengthof(box);
+       duration d = durationof(box);
 
 We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
 have variable non-negative duration that are permitted to grow as necessary
@@ -91,9 +91,10 @@ whatever their actual durations may be, we can do the following:
        cx q[0], q[1];
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
-       delay[stretchinf] q[0], q[1];
-       delay[stretchinf] q[2];
-       delay[stretchinf] q[3], q[4];
+       stretch s;
+       delay[s] q[0], q[1];
+       delay[s] q[2];
+       delay[s] q[3], q[4];
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
@@ -110,29 +111,8 @@ the stretchy delays (:numref:`fig_alignment`\b):
        delay[2*g];
        barrier q;
 
-Lastly, we distinguish different “orders" of stretch via ``stretchN`` types, where N
-is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. Higher
-order stretches will suppress lower order stretches whenever they appear
-in the same scope on the same qubits. A ``stretchinf`` keyword is defined as an
-infinitely stretchable duration. It will always take precedence, and will
-not changed if arithmetic operations are done on it. This is most useful
-as a “don’t care" mechanism to specify delays that will just fill
-whatever gap is present.
-
-.. code-block:: c
-
-       // stretchable duration, with min=0 and max=inf
-       stretch e;
-       delay[e];
-       // higher-order stretch which always mutes lower-order stretch
-       stretch2 f;
-       delay[2*f];
-       // infinitely stretchable duration, always anonymous.
-       // other instruction don't care about the value to which this resolves.
-       delay[stretchinf];
-
-The concepts of ``box`` and ``stretch`` are inspired by the concept of “boxes and glues" in
-the TeX language :cite:`knuth1984texbook`. This similarity
+The concepts of ``box`` (see :ref:`Boxed expressions`) and ``stretch`` are inspired by the
+concept of “boxes and glues" in the TeX language :cite:`knuth1984texbook`. This similarity
 is natural; TeX aims to resolve the spacing between characters in order
 to typeset a page, and the size of characters depend on the backend
 font. In OpenQASM we intend to resolve the timing of different
@@ -154,12 +134,12 @@ durations, including stretches, will be resolved to constants.
 .. code-block:: c
 
        duration a = 300ns;
-       duration b = lengthof({x $0});
+       duration b = durationof({x $0});
        stretch c;
        // stretchy duration with min=300ns
-       duration d = a + 2 * c;
+       stretch d = a + 2 * c;
        // stretchy duration with backtracking by up to half b
-       duration e = -0.5 * b + c;
+       stretch e = -0.5 * b + c;
 
 Delays (and other duration-based instructions)
 ----------------------------------------------
@@ -168,7 +148,7 @@ OpenQASM and OpenPulse have a ``delay`` instruction, whose duration is defined b
 a ``duration``. If the duration passed to the delay contains stretch, it will become a
 stretchy delay. We use square bracket notation to pass these duration
 parameters, to distinguish them from regular parameters (the compiler
-will resolve these square-bracket parameters when resolving timing ).
+will resolve these square-bracket parameters when resolving timing).
 
 Even though a ``delay`` instruction implements the identity operator in the ideal
 case, it is intended to provide explicit timing. Therefore an explicit ``delay``
@@ -263,9 +243,9 @@ to properly take into account the finite duration of each gate.
 
    stretch s;
    stretch t;
-   duration start_stretch = s - .5 * lengthof({x $0;})
-   duration middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
-   duration end_stretch = s - .5 * lengthof({y $0;})
+   duration start_stretch = s - .5 * durationof({x $0;})
+   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;}
+   duration end_stretch = s - .5 * durationof({y $0;})
 
    delay[start_stretch] $0;
    x $0;
@@ -282,6 +262,8 @@ to properly take into account the finite duration of each gate.
    cx $1, $2;
    u $3;
 
+.. _Boxed expressions
+
 Boxed expressions
 -----------------
 
@@ -294,38 +276,44 @@ box by knowing the unitary implemented by the box. Delays that are
 within a box are implementation details of the box; they are invisible
 to the outside scope and therefore do not prevent commutation.
 
-We introduce a ``boxas`` expression for labeling a box. We primarily use this to
-later refer to the duration of this box. Boxed expressions are good for
-this because their contents are isolated and cannot be combined with
-gates outside the box. Therefore, no matter how the contents of the box
-get optimized, the ``lengthof(boxlabel)`` has a well-defined meaning.
-
 .. code-block:: c
 
-       boxas mybox {
-           cx q[0], q[1];
-           delay[200ns] q[0];
-       }
-       delay[duration(mybox)] q[2], q[3];
-       cx q[2], q[3];
+  rx(5*π/12) q;
+  box {
+    delay[ddt] q;
+    x q;
+    delay[ddt] q;
+    x q;
+    delay[ddt] q;
+  }
 
-We introduce a ``boxto`` expression. The contents of it will be boxed, and in
-addition a total duration will be assigned to the box. This is useful
-for conditionals where the box will declare a hard deadline. The natural
-duration of the box must be smaller than the declared boxto duration,
-otherwise a compile-time error will be raised. The stretch inside the
-box will always be set to fill the difference between the declared
+Boxes can take an optional bracketed duration argument to enforce the
+timing of the ``box``. This is useful in scenarios where the duration of
+A given code block is not apparent prior to runtime, but where assigning
+an explicit duration makes sense in terms of scheduling for the larger circuit.
+The natural duration of the box must be smaller than the declared duration,
+otherwise a compile-time error will be raised. A ``stretch`` inside the
+``box`` will always be set to fill the difference between the declared
 duration and the natural duration.
 
 .. code-block:: c
 
-      // defines a 1ms box whose content is just a centered CNOT
-       boxto 1ms {
-           stretch a;
-           delay[a] q;
-           cx q[0], q[1];
-           delay[a] q;
-       }
+  // defines a 1ms box whose content is just a centered CNOT
+  box [1ms] {
+    stretch a;
+    delay[a] q;
+    cx q[0], q[1];
+    delay[a] q;
+  }
+
+  // defines a stretchy box sub-circuit and later delays for that entire duration
+  stretch mybox_dur;
+  box [mybox_dur] {
+      cx q[0], q[1];
+      delay[200ns] q[0];
+  }
+  delay[mybox_dur] q[2], q[3];
+  cx q[2], q[3];
 
 Barrier instruction
 -------------------

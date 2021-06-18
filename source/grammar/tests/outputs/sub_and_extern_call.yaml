@@ -67,8 +67,7 @@ reference: |
                       ,
                       expression
                         expressionTerminator
-                          timingTerminator
-                            timingIdentifier
-                              10dt
+                          timingIdentifier
+                            10dt
                     )
         ;

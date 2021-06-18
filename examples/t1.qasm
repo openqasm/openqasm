@@ -34,7 +34,7 @@ for p in [0 : points-1] {
         // wait for a fixed time indicated by loop counter
         delay[p * stride] $0;
         // wait for a fixed time indicated by loop counters
-        delay[p * lengthof({x $1;})];
+        delay[p * durationof({x $1;})];
         // read out qubit states
         c0 = measure $0;
         c1 = measure $1;

@@ -41,9 +41,9 @@ delay[s] q[1];
 h q[1];
 measure q[1] -> c[0];
 delay[s] q[1];
-boxto[maxdur] { // fixed-duration anonymous subroutine
+box [maxdur] { // fixed-duration anonymous subroutine
     if (c==0) U(0.1, 0.2, 0.3) q[1];  // duration depends on result of measurement
-    delay[s];                 // glue to allow to stretch (can be implicit)
-} // throw runtime error if `box` does not conclude by maxduration
+    delay[s] q[1];                 // glue to allow to stretch (can be implicit)
+} // throw runtime error if `box` does not conclude by maxdur
 delay[s] q[1];
 barrier q[0], q[1];

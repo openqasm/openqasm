@@ -14,10 +14,6 @@ source: |
   duration dur = 1000dt;
   duration dur2 = dur + 200ns;
   stretch s;
-  stretch1 s1;
-  stretch10 s10;
-  stretch100 s100;
-  stretch255 s255;
 reference: |
   program
     header
@@ -182,9 +178,8 @@ reference: |
               =
               expression
                 expressionTerminator
-                  timingTerminator
-                    timingIdentifier
-                      1000dt
+                  timingIdentifier
+                    1000dt
         ;
     statement
       classicalDeclarationStatement
@@ -197,20 +192,23 @@ reference: |
             equalsExpression
               =
               expression
-                xOrExpression
-                  bitAndExpression
-                    bitShiftExpression
-                      additiveExpression
-                        additiveExpression
-                          multiplicativeExpression
-                            expressionTerminator
-                              dur
-                        +
-                        multiplicativeExpression
-                          expressionTerminator
-                            timingTerminator
-                              timingIdentifier
-                                200ns
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    expressionTerminator
+                                      dur
+                                +
+                                multiplicativeExpression
+                                  expressionTerminator
+                                    timingIdentifier
+                                      200ns
         ;
     statement
       classicalDeclarationStatement
@@ -220,40 +218,4 @@ reference: |
               timingType
                 stretch
             s
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch1
-            s1
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch10
-            s10
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch100
-            s100
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch255
-            s255
         ;

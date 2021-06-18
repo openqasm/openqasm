@@ -88,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : quantumArgument ( COMMA quantumArgument )* 
+    : quantumArgument ( COMMA quantumArgument )*
     ;
 
 /** Classical Types **/
@@ -165,7 +165,7 @@ classicalArgument
     ;
 
 classicalArgumentList
-    : classicalArgument ( COMMA classicalArgument )* 
+    : classicalArgument ( COMMA classicalArgument )*
     ;
 
 /** Aliasing **/
@@ -182,7 +182,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : indexIdentifier ( COMMA indexIdentifier )* 
+    : indexIdentifier ( COMMA indexIdentifier )*
     ;
 
 rangeDefinition
@@ -375,7 +375,7 @@ expressionTerminator
     | builtInCall
     | externCall
     | subroutineCall
-    | timingTerminator
+    | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
@@ -396,7 +396,7 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
     ;
 
 castOperator
@@ -404,7 +404,7 @@ castOperator
     ;
 
 expressionList
-    : expression ( COMMA expression )* 
+    : expression ( COMMA expression )*
     ;
 
 equalsExpression
@@ -486,21 +486,16 @@ pragma
 
 timingType
     : 'duration'
-    | StretchN
+    | 'stretch'
     ;
 
 timingBox
-    : 'boxas' Identifier quantumBlock
-    | 'boxto' TimingLiteral quantumBlock
-    ;
-
-timingTerminator
-    : timingIdentifier | 'stretchinf'
+    : 'box' designator? quantumBlock
     ;
 
 timingIdentifier
     : TimingLiteral
-    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'durationof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -583,7 +578,6 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
-StretchN : 'stretch' Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
