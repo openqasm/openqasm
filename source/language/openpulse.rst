@@ -58,28 +58,28 @@ device) and receive channels (reading output from a quantum device).
 A channel is only used to specify the physical resource on which to play a pulse or from which
 to capture data. This specification should be done by providing a mapping between a qubit list +
 name and the configured hardware channel. The hardware can then be accessed as
-OpenPulse ``txchannel``/``rxchannel``'s via "get" functions.
+OpenPulse ``channel``'s via the "getch" function which allows identifying a channel by a variadic combination
+of string name and qubits.
 
 .. code-block:: c
 
-    txch(qubit q0, ..., qubit qn, str name) -> txchannel  // get transmit channel
-    rxch(qubit q0, ..., qubit qn, str name) -> rxchannel  // get receive channel
+    getch(qubit q0, ..., qubit qn, str name) -> channel  // get a channel
 
 The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
-``txch($0, $1, "control")`` and ``txch($1, $0, "control")`` may be used to implement distinct
+``getch($0, $1, "control")`` and ``getch($1, $0, "control")`` may be used to implement distinct
 cross-resonance gates. It is also possible to access a channel by its full name, without supplying
-any qubits, if that has been implemented by the vendor. For instance, ``txch("<channel_name>")``
+any qubits, if that has been implemented by the vendor. For instance, ``getch("<channel_name>")``
 may refer to a transmit channel with an arbitrary name.
 
 .. code-block:: c
 
-    txchannel d0 = txch($0, "drive");  // channel for driving at qubit $0's freq
-    txchannel cr1_2 = txch($1, $2, "coupler");  // channel for a coupler between two qubits
-    txchannel m2 = txch($2, "measure");  // channel for transmitting measurement stimulus
+    channel d0 = getch($0, "drive");  // channel for driving at qubit $0's freq
+    channel cr1_2 = getch($1, $2, "coupler");  // channel for a coupler between two qubits
+    channel m2 = getch($2, "measure");  // channel for transmitting measurement stimulus
 
     // capture channels for capturing qubits $0 and $1
-    rxchannel cap0 = rxch($0, "capture");
-    rxchannel cap1 = rxch($1, "capture");
+    channel cap0 = getch($0, "capture");
+    channel cap1 = getch($1, "capture");
 
 Frames
 ------
