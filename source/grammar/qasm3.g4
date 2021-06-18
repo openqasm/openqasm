@@ -9,7 +9,7 @@ program
     ;
 
 header
-    : version? include*
+    : version? include* io*
     ;
 
 version
@@ -18,6 +18,14 @@ version
 
 include
     : 'include' StringLiteral SEMICOLON
+    ;
+
+ioIdentifier
+    : 'input'
+    | 'output'
+    ;
+io
+    : ioIdentifier classicalType Identifier SEMICOLON
     ;
 
 globalStatement
