@@ -151,9 +151,14 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
      driveframe.phase += pi/4;
    }
 
+   // The following is an example only. Frames as arrays has not been agreed on.
+   // This conceptually must be compile-time arrays and treat qubits as indices
+   // which also has not been well-defined. We are exploring other solutions to
+   // the problem of mapping qubits to pulse-level resources.
+
    // Example 2: Define a calibration for the rz gate on all 8 physical qubits
    cal {
-     frame[8] rz_frames;
+     array[frame, 8] rz_frames;
      frame[0] = newframe(...);
      // and so on
    }
