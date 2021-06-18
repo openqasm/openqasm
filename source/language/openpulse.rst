@@ -30,7 +30,7 @@ and hardware. At the core of the OpenPulse grammar are the concepts of ``frames`
 ``frames`` are used to schedule the playing of a ``waveform`` or capturing of data
 via a ``channel`` on the target device. A ``channel`` is a software abstraction which allows the
 programmer to be agnostic to complexities of the device's underlying pulse generation hardware. It
-is the responsibility of the target device's compiler to map ``frames`` to the applied channels in
+is the responsibility of the target device's compiler to map ``frames`` to the applied ``channel``s in
 target hardware.
 
 
