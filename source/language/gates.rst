@@ -163,9 +163,6 @@ and applies the controlled gate
   0 & 0 & e^{-i\tau/2} & 0 \\
   0 & 0 & 0 & e^{i\tau/2} \end{array}\right).
 
-``gphase(γ)`` may optionally take qubit arguments to apply the phase directly to the qubit. This is
-typically used in conjunction with a gate modifier such as control.
-
 .. _sec:macros:
 
 Hierarchically defined unitary gates
@@ -291,15 +288,17 @@ If the control bit is 1, :math:`U` acts on the target bit. Mathematically, the c
 gate is defined as :math:`C_U = I \otimes U^c`, where :math:`c` is the integer value of the control
 bit and :math:`C_U` is the controlled-:math:`U` gate. The new control qubit is prepended to the
 argument list for the controlled-:math:`U` gate. The modified gate does not use any additional
-scratch space and may require compilation to be executed. A special case is the controlled phase
-gate, which is defined as :math:`ctrl @ gphase(a) = U(0,0,a)`.
+scratch space and may require compilation to be executed.
+
+We define a special case, the controlled *global* phase gate, as
+:math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
 
 .. code-block:: c
 
    // Define a controlled Rz operation using the ctrl gate modifier.
    // q1 is control, q2 is target
    gate crz(θ) q1, q2 {
-       ctrl @ U(θ, 0, 0) q1, q2;
+       ctrl @ rz(θ) q1, q2;
    }
 
 The modifier ``negctrl @`` generates controlled gates with negative polarity, ie conditioned on a
@@ -359,6 +358,10 @@ order of the gates in its definition and replacing each of those with their inve
    // Define a negative z rotation and the inverse of a positive z rotation
    gate rzm(θ) q1 {
        inv @ rzp(θ) q1;
+   }
+   // Equivalently, this can be written as
+   gate rzm(θ) q1 {
+       rzp(-θ) q1;
    }
 
 The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
