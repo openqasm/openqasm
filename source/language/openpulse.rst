@@ -65,25 +65,25 @@ of string name and qubits.
 
 .. code-block:: c
 
-    getchannel(qubit q0, ..., qubit qn, str name) -> channel  // get a channel
+    getchannel(str name, qubit q0, ..., qubit qn) -> channel  // get a channel
 
 The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
-``getchannel($0, $1, "control")`` and ``getchannel($1, $0, "control")`` may be used to implement distinct
+``getchannel("control", $0, $1)`` and ``getchannel("control", $1, $0)`` may be used to implement distinct
 cross-resonance gates. It is also possible to access a channel by its full name, without supplying
 any qubits, if that has been implemented by the vendor. For instance, ``getchannel("<channel_name>")``
 may refer to a transmit channel with an arbitrary name.
 
 .. code-block:: c
 
-    channel d0 = getchannel($0, "drive");  // channel for driving at qubit $0's freq
-    channel cr1_2 = getchannel($1, $2, "coupler");  // channel for a coupler between two qubits
-    channel m2 = getchannel($2, "measure");  // channel for transmitting measurement stimulus
+    channel d0 = getchannel("drive", $0);  // channel for driving at qubit $0's freq
+    channel cr1_2 = getchannel("coupler", $1, $2);  // channel for a coupler between two qubits
+    channel m2 = getchannel("measure", $2);  // channel for transmitting measurement stimulus
 
     channel global_field = getchannel("global_field"); // channel not associated with any qubits
 
     // capture channels for capturing qubits $0 and $1
-    channel cap0 = getchannel($0, "capture");
-    channel cap1 = getchannel($1, "capture");
+    channel cap0 = getchannel("capture", $0);
+    channel cap1 = getchannel("capture", $1);
 
 Frames
 ------
@@ -332,8 +332,8 @@ discriminated using user-defined boxcar and discrimination ``extern``s.
 
     defcal measure $0 -> bit {
         // Define the channels
-        channel m0 = getchannel($0, "measure");
-        channel cap0 = getchannel($0, "capture");
+        channel m0 = getchannel("measure", $0);
+        channel cap0 = getchannel("capture", $0);
 
         // Force time of carrier to 0 for consistent phase for discrimination.
         frame stimulus_frame = newframe(5e9, 0);
@@ -409,8 +409,8 @@ Cross-resonance gate
 
   defcal cross_resonance $0, $1 {
       // Access globally (or externally) defined channels
-      channel d0 = getchannel($0, "drive");
-      channel d1 = getchannel($1, "drive");
+      channel d0 = getchannel("drive", $0);
+      channel d1 = getchannel("drive", $1);
 
       waveform wf1 = gaussian_square(1., 1024dt, 128dt, 32dt);
       waveform wf2 = gaussian_square(0.1, 1024dt, 128dt, 32dt);
@@ -445,7 +445,7 @@ Geometric gate
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       // Access globally defined channels
-      channel dq = getchannel($q, “drive”);
+      channel dq = getchannel("drive", $q);
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
       // envelopes (no sideband)
@@ -480,9 +480,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
   defcal neutral_atoms {
     // Access globally defined channels
-    channel eom_a_channel = getchannel(0, "eom_a");
-    channel eom_a_channel = getchannel(1, "eom_b");
-    channel aod_channel = getchannel(0, "aod");
+    channel eom_a_channel = getchannel("eom_a", 0);
+    channel eom_a_channel = getchannel("eom_b", 1);
+    channel aod_channel = getchannel("aod", 0);
 
     // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
     // and offset from each other by the qubit_freq
@@ -550,8 +550,8 @@ many (just adding more frames, waveforms, plays, and captures).
   defcal multiplexed_readout_and_capture $0, $1 {
 
       // the transmission/captures channels are the same for $0 and $1
-      channel ro_tx = getchannel($0, "readout_tx");
-      channel ro_rx = getchannel($0, "readout_rx");
+      channel ro_tx = getchannel("readout_tx", $0);
+      channel ro_rx = getchannel("readout_rx", $0);
 
       // readout frames of different frequencies
       frame q0_frame = newframe(q0_ro_freq, 0); // time 0
@@ -588,8 +588,8 @@ For example,
 .. code-block:: javascript
 
   defcal incommensurate_rates_interval $q
-    channel tx0 = getchannel(0, "tx0"); # sample per 1 ns
-    channel tx1 = getchannel(1, "tx1"); # sample per 2 ns
+    channel tx0 = getchannel("tx0", 0); # sample per 1 ns
+    channel tx1 = getchannel("tx1", 1); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 13ns, ...);
 
@@ -609,8 +609,8 @@ produces
 .. code-block:: javascript
 
   defcal incommensurate_lengths $q
-    channel tx0 = getchannel(0, "tx0"); # sample per 1 ns
-    channel tx1 = getchannel(1, "tx1"); # sample per 2 ns
+    channel tx0 = getchannel("tx0", 0); # sample per 1 ns
+    channel tx1 = getchannel("tx1", 1); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 12dt, ...); // this means different lengths to different channels
 
@@ -630,3 +630,4 @@ Open Questions
 - How do we express general calibration experiments within defcals and call them within an openqasm program.
 - How do we differentiate channel resource types?
 - Is timing on frames, and channels as resources clear?
+- How will hardware attributes be handled?
