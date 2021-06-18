@@ -68,7 +68,7 @@ OpenPulse ``txchannel``/``rxchannel``'s via "get" functions.
 The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
 ``txch($0, $1, "control")`` and ``txch($1, $0, "control")`` may be used to implement distinct
 cross-resonance gates. It is also possible to access a channel by its full name, without supplying
-any qubits, if that has between implemented by the vendor. For instance, ``txch("<channel_name>")``
+any qubits, if that has been implemented by the vendor. For instance, ``txch("<channel_name>")``
 may refer to a transmit channel with an arbitrary name.
 
 .. code-block:: c
