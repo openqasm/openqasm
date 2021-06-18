@@ -413,21 +413,18 @@ Cross-resonance gate
       waveform wf1 = gaussian_square(1., 1024dt, 128dt, 32dt);
       waveform wf2 = gaussian_square(0.1, 1024dt, 128dt, 32dt);
 
-      // phase update some virtual Z gate
-      frame0.phase += pi/2;
-
       /*** Do pre-rotation ***/
-      {...}
 
       // generate new frame for second drive that is locally scoped
       frame temp_frame = copyframe(frame0);
-      temp_frame.phase = frame0.phase + pi/2;
 
+      // Pulses below occur simultaneously
+      barrier(frame0, temp_frame);
       play(d0, wf1, frame0);
       play(d1, wf2, temp_frame);
 
       /*** Do post-rotation ***/
-      {...}
+
   }
 
 Geometric gate
