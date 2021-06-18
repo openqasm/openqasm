@@ -8,8 +8,7 @@ that give additional information to compiler passes and the target
 system or simulator. Ideally the meaning of the program does not change
 if some or all of the directives are ignored, so they can be interpreted
 at the discretion of the consuming process.
-<<<<<<< Updated upstream
-=======
+
 
 Input/output
 ============
