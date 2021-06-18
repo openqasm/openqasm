@@ -188,8 +188,8 @@ Waveforms are of type ``waveform`` and can either be:
 
 A value of type ``waveform`` is retrieved by explicitly constructing the complex samples
 or by calling one of the built-in waveform template functions. The latter are initialized by
-assigning a ``waveform`` to the result of a (kernel) function call. Note that each of these
-kernel functions takes a type ``length`` as a first argument, since waveforms need to have a
+assigning a ``waveform`` to the result of a (extern) function call. Note that each of these
+extern functions takes a type ``length`` as a first argument, since waveforms need to have a
 definite length. Using the hardware dependent ``dt`` unit is recommended for this length,
 since the compiler may need to down-sample a higher precision waveform to physically realize it.
 
@@ -201,34 +201,34 @@ since the compiler may need to down-sample a higher precision waveform to physic
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   kernel gaussian(complex[size] amp, length l, length sigma) -> waveform;
+   extern gaussian(complex[size] amp, length l, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   kernel sech(complex[size] amp, length l, length sigma) -> waveform;
+   extern sech(complex[size] amp, length l, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // square_width is the width of the square waveform component
    // sigma is the standard deviation of waveform
-   kernel gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
+   extern gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   kernel drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
+   extern drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
 
    // amp is waveform amplitude
    // l is the overall length of the waveform
-   kernel constant(complex[size] amp, length l) -> waveform;
+   extern constant(complex[size] amp, length l) -> waveform;
 
    // amp is waveform amplitude
    // l is the overall length of the waveform
    // frequency is the frequency of the waveform
    // phase is the phase of the waveform
-   kernel sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
+   extern sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
@@ -237,14 +237,14 @@ new waveforms (this list may be updated as more functionality is required).
 
     // Multiply two input waveforms entry by entry to produce a new waveform
     // :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
-    kernel mix(waveform wf1, waveform wf2) -> waveform;
+    extern mix(waveform wf1, waveform wf2) -> waveform;
 
     // Sum two input waveforms entry by entry to produce a new waveform
     // :math:`wf(t_i) = wf_1(t_i) + wf_2(t_i)`
-    kernel sum(waveform wf1, waveform wf2) -> waveform;
+    extern sum(waveform wf1, waveform wf2) -> waveform;
 
     // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`)
-    kernel phase_shift(waveform wf, angle ang) -> waveform;
+    extern phase_shift(waveform wf, angle ang) -> waveform;
 
 Play instruction
 ----------------
@@ -291,21 +291,21 @@ The following are possible parameters that might be included:
   result into a single IQ value
 
 Again it is up to the hardware vendor to determine the parameters and write a
-kernel definition at the top-level, such as:
+extern definition at the top-level, such as:
 
 .. code-block:: javascript
 
    // Minimum requirement
-   kernel capture(channel chan, frame output) -> complex[32];
+   extern capture(channel chan, frame output) -> complex[32];
 
    // A capture command that returns an iq value
-   kernel capture(channel chan, waveform filter, frame output) -> complex[32];
+   extern capture(channel chan, waveform filter, frame output) -> complex[32];
 
    // A capture command that returns a discrimnated bit
-   kernel capture(channel chan, waveform filter, frame output) -> bit;
+   extern capture(channel chan, waveform filter, frame output) -> bit;
 
    // A capture command that returns a raw waveform data
-   kernel capture(channel chan, length len, frame output) -> waveform;
+   extern capture(channel chan, length len, frame output) -> waveform;
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie. a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -313,14 +313,14 @@ value. It could be a classified bit. Or it could even have no return value,
 pushing the results into some buffer which is then accessed outside the program.
 
 For example, the ``capture`` instruction could return raw waveform data that is then
-discriminated using user-defined boxcar and discrimination ``kernel``s.
+discriminated using user-defined boxcar and discrimination ``extern``s.
 
 .. code-block:: javascript
 
     // Use a boxcar function to generate IQ data from raw waveform
-    kernel boxcar(waveform input) -> complex[64];
+    extern boxcar(waveform input) -> complex[64];
     // Use a linear discriminator to generate bits from IQ data
-    kernel discriminate(complex[64] iq) -> bit;
+    extern discriminate(complex[64] iq) -> bit;
 
     defcal measure $0 -> bit {
         // Define the channels
@@ -339,7 +339,7 @@ discriminated using user-defined boxcar and discrimination ``kernel``s.
         // Align measure and capture channels
         barrier(stimulus_frame, capture_frame);
         // Capture transmitted data after interaction with measurement resonator
-        // kernel capture(channel chan, frame capture_frame) -> waveform;
+        // extern capture(channel chan, frame capture_frame) -> waveform;
         waveform raw_output = receive(cap0, meas_pulse.duration);
 
         // Kernel and discriminate
@@ -562,7 +562,7 @@ many (just adding more frames, waveforms, plays, and captures).
       waveform ro_kernel = constant(amp=1, l=...);
 
       // multiplexed capture
-      // kernel capture(channel chan, waveform ro_kernel, frame capture_frame) -> bit;
+      // extern capture(channel chan, waveform ro_kernel, frame capture_frame) -> bit;
       bit q0_bit = capture(ro_rx, ro_kernel, q0_frame);
       bit q1_bit = capture(ro_rx, ro_kernel, q1_frame);
       ...
