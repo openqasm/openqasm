@@ -11,16 +11,16 @@ pulse-level quantum programs defined in the paper `Qiskit Backend Specifications
 and OpenPulse Experiment`_:cite:`mckay2018`. The textual format described
 here has several advantages over the original JSON format:
 
-- Improved readability
+- Improved readability.
 - Pulse timing is based on instruction ordering and works with programs containing branching
-  control flow
+  control flow.
 - Reusable gate calibrations enable more succinct calibration descriptions.
 - Pulse definitions are declared as a calibration for individual circuit instructions attached to
   physical qubits enabling the microcoding of gate level operations.
 - Richer ability to compose complex pulses through natural DSP-like operations.
 - Clearly defined relationship between pulses, channels and the phases of compilation to
   hardware resources.
-- Use of multiple frames on a single channel at the same time (see :ref:`Geometric gate`)
+- Use of multiple frames on a single channel at the same time (see :ref:`Geometric gate`).
 
 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes
@@ -245,9 +245,9 @@ Play instruction
 Waveforms are scheduled using the ``play`` instruction. These instructions may
 only appear inside a ``defcal`` block and have three required parameters:
 
-- the channel on which to play the pulse
-- a value of type ``waveform`` representing the waveform envelope
-- the frame to use for the pulse
+- The channel on which to play the pulse.
+- A value of type ``waveform`` representing the waveform envelope.
+- The frame to use for the pulse.
 
 .. code-block:: javascript
 
