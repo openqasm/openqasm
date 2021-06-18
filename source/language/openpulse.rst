@@ -6,10 +6,12 @@ with ``defcal`` blocks . Calibration grammars are open to extension for system i
 this document, we outline one such grammar, OpenPulse, which may be selected within a supporting
 compiler through the declaration defcalgrammar "openpulse" <VERSION>.
 
-This grammar is motivated by the original OpenPulse specification, a JSON wire-format for
+This grammar is primarily motivated by the original OpenPulse specification, a JSON wire-format for
 pulse-level quantum programs defined in the paper `Qiskit Backend Specifications for OpenQASM
-and OpenPulse Experiment`_:cite:`mckay2018`. The textual format described
-here has several advantages over the original JSON format:
+and OpenPulse Experiment`_:cite:`mckay2018`, however, is also inspired directly or indirectly through
+other `efforts in the field`_:cite:`alexanderQiskitPulseProgramming2020a,DiCarloLabDelftPycQEDPy32021,ExperimentalMicroarchitectureSuperconducting,nguyenEnablingPulselevelProgramming2020,QuillangQuil2021`.
+
+The textual format described here has several advantages over the original JSON format:
 
 - Improved readability.
 - Pulse timing is based on instruction ordering and works with programs containing branching
