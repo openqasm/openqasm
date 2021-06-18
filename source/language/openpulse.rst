@@ -345,8 +345,8 @@ discriminated using user-defined boxcar and discrimination ``extern``s.
         // Align measure and capture channels
         barrier(stimulus_frame, capture_frame);
         // Capture transmitted data after interaction with measurement resonator
-        // extern capture(channel chan, frame capture_frame) -> waveform;
-        waveform raw_output = capture(cap0, 16000dt);
+        // extern capture(channel chan, length duration, frame capture_frame) -> waveform;
+        waveform raw_output = capture(cap0, 16000dt, capture_frame);
 
         // Kernel and discriminate
         complex[32] iq = boxcar(raw_output);
