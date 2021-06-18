@@ -465,7 +465,7 @@ Neutral atoms
 In this simple example, the signal chain is composed of two electro-optic modulators (EOM) and
 an acousto-optic deflector (AOD). The EOMs put sidebands on the laser light while the AOD diffracts
 the light in an amount proportional to the frequency of the RF drive. This example was chosen
-because it is similar in spirit to the work by Levine et al.:cite:`levine2019` except that phase
+because it is similar in spirit to the work by Levine et al._:cite:`levine2019` except that phase
 control is exerted using virtual Z gates on the AODs -- requiring frame tracking of the qubit
 frequency yet application of a tone that maps to the qubit position (i.e. requires the use of a
 sideband).
