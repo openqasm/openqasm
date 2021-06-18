@@ -59,8 +59,8 @@ performs a measurement in a basis given by an input parameter:
 
     // Some complicated circuit...
 
-    if (basis == 0) {h q;}
-    else if (basis == 1) {rx(π/2) q;}
+    if (basis == 0) h q;
+    else if (basis == 1) rx(π/2) q;
     result = measure q;
 
 For a second example, consider the Variable Quantum Eigensolver (VQE) algorithm :cite:`peruzzo2014variational`.
