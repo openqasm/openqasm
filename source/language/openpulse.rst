@@ -246,6 +246,9 @@ new waveforms (this list may be updated as more functionality is required).
     // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`)
     extern phase_shift(waveform wf, angle ang) -> waveform;
 
+    // Scale the amplitude of a waveform's samples producing a new waveform
+    extern scale(waveform wf, float factor) -> waveform;
+
 Play instruction
 ----------------
 
