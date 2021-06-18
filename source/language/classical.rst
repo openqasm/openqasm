@@ -263,4 +263,4 @@ model, the kernel functions are assumed to run concurrently with other classical
 .. [3]
    This clearly allows users to write code that does not terminate. We
    do not discuss implementation details here, but one possibility is to
-   compile into target code that imposes iteration limits
+   compile into target code that imposes iteration limits.
