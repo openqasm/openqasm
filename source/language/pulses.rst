@@ -90,10 +90,7 @@ Users specify the grammar used inside ``defcal`` blocks with a
 
 .. code-block:: c
 
-   defcalgrammar "openpulse" 1;
-
-where ``1`` is the version number of the grammar. The ``defcalgrammar`` line
-must appear prior to any ``defcal`` definition.
+   defcalgrammar "openpulse";
 
 Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
 define unitary transformation rules to the compiler. The compiler may
@@ -118,7 +115,7 @@ In practice, calibration grammars such as OpenPulse may apply a global scope to 
 .. code-block:: c
 
    OPENQASM 3;
-   defcalgrammar "openpulse" 1;
+   defcalgrammar "openpulse";
 
 
    cal {
