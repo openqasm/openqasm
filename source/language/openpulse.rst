@@ -432,9 +432,9 @@ Geometric gate
 
 .. code-block:: javascript
 
-  float[32] fq_01 = 5e9; // hardcode or pull from some function
-  float[32] anharm = 300e6; // hardcode or pull from some function
   cal {
+      float fq_01 = 5e9; // hardcode or pull from some function
+      float anharm = 300e6; // hardcode or pull from some function
       frame frame_01 = newframe(fq_01, 0);
       frame frame_12 = newframe(fq_01 + anharm, 0);
   }
