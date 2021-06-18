@@ -38,12 +38,12 @@ values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
 [0,2\pi)` in this base gate are angles whose precision is implementation
 dependent [1]_. This specifies any element of :math:`U(2)` up to a
 global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
-P
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
 
 .. code-block:: c
+   :force:
 
    gate h q {
       U(π/2, 0, π) q;
@@ -58,6 +58,7 @@ Controlled gates can be constructed by adding a control modifier to an existing 
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
 .. code-block:: c
+   :force:
 
    gate CX c, t {
       ctrl @ U(π, 0, π) c, t;
@@ -136,12 +137,13 @@ allows the inclusion of arbitrary global phases on circuits. The instruction ``g
 of :math:`e^{i\gamma}` to the scope containing the instruction. For example
 
 .. code-block:: c
+   :force:
 
-  gate rz(tau) q {
-    gphase(-tau/2);
-    U(0, 0, tau) q;
-  }
-  ctrl @ rz(π/2) q[1], q[0];
+   gate rz(tau) q {
+     gphase(-tau/2);
+     U(0, 0, tau) q;
+   }
+   ctrl @ rz(π/2) q[1], q[0];
 
 constructs the gate
 
@@ -174,6 +176,7 @@ operation is shown schematically in :numref:`fig_gate`
 corresponding OpenQASM code is
 
 .. code-block:: c
+   :force:
 
    gate cphase(θ) a, b
    {
@@ -294,6 +297,7 @@ We define a special case, the controlled *global* phase gate, as
 :math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
 
 .. code-block:: c
+   :force:
 
    // Define a controlled Rz operation using the ctrl gate modifier.
    // q1 is control, q2 is target
@@ -307,6 +311,7 @@ given by :math:`N_U = I \otimes U^{1-c}`, where :math:`c` is the integer value o
 and :math:`N_U` is the negative controlled-:math:`U` gate.
 
 .. code-block:: c
+   :force:
 
    // Define a negative controlled X operation using the negctrl gate modifier.
    // q1 is control, q2 is target
@@ -329,6 +334,7 @@ where :math:`c_1`, :math:`c_2`, ..., :math:`c_n` are the integer values of the c
 respectively.
 
 .. code-block:: c
+   :force:
 
    // A reversible boolean function
    // Demonstrates use of ``ctrl(n) @`` and ``negctrl(n) @``

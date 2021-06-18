@@ -8,33 +8,41 @@ reference: |
     statement
       expressionStatement
         expression
-          xOrExpression
-            bitAndExpression
-              bitShiftExpression
-                additiveExpression
-                  additiveExpression
-                    multiplicativeExpression
-                      expressionTerminator
-                        2
-                  +
-                  multiplicativeExpression
-                    expressionTerminator
-                      2
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
+                        additiveExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                2
+                          +
+                          multiplicativeExpression
+                            expressionTerminator
+                              2
         ;
     statement
       expressionStatement
         expression
-          xOrExpression
-            bitAndExpression
-              bitShiftExpression
-                bitShiftExpression
-                  additiveExpression
-                    multiplicativeExpression
-                      expressionTerminator
-                        x
-                <<
-                additiveExpression
-                  multiplicativeExpression
-                    expressionTerminator
-                      y
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              expressionTerminator
+                                x
+                        <<
+                        additiveExpression
+                          multiplicativeExpression
+                            expressionTerminator
+                              y
         ;
