@@ -122,8 +122,8 @@ Frames can be constructed using the ``newframe`` command e.g.
 
   frame driveframe = newframe(5e9, 0.0); // newframe(float[size] frequency, angle[size] phase)
 
-would construct a frame with frequency `f`  5 GHz and phase :math:`\theta` 0.0. When
-instantiated, the frame time starts at 0. ``frame``s can also be copied using the
+would construct a frame with a frequency of 5 GHz and a phase of 0.0. When
+instantiated, the frame time starts at 0. ``frame``\s can also be copied using the
 ``copyframe`` command
 
 .. code-block:: javascript
