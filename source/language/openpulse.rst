@@ -299,7 +299,7 @@ extern definition at the top-level, such as:
 .. code-block:: javascript
 
    // Minimum requirement
-   extern capture(channel chan, frame output) -> complex[32];
+   extern capture(channel chan, frame output);
 
    // A capture command that returns an iq value
    extern capture(channel chan, waveform filter, frame output) -> complex[32];
