@@ -406,9 +406,9 @@ Cross-resonance gate
   }
 
   defcal cross_resonance $0, $1 {
-      // Access globally defined channels
-      channel d0 = txch($0, "drive");
-      channel d1 = txch($1, "drive");
+      // Access globally (or externally) defined channels
+      channel d0 = getch($0, "drive");
+      channel d1 = getch($1, "drive");
 
       waveform wf1 = gaussian_square(1., 1024dt, 128dt, 32dt);
       waveform wf2 = gaussian_square(0.1, 1024dt, 128dt, 32dt);
