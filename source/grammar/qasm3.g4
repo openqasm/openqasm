@@ -9,7 +9,7 @@ program
     ;
 
 header
-    : version? include*
+    : version? include* io*
     ;
 
 version
@@ -18,6 +18,14 @@ version
 
 include
     : 'include' StringLiteral SEMICOLON
+    ;
+
+ioIdentifier
+    : 'input'
+    | 'output'
+    ;
+io
+    : ioIdentifier classicalType Identifier SEMICOLON
     ;
 
 globalStatement
@@ -80,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : ( quantumArgument COMMA )* quantumArgument
+    : quantumArgument ( COMMA quantumArgument )* 
     ;
 
 /** Classical Types **/
@@ -157,7 +165,7 @@ classicalArgument
     ;
 
 classicalArgumentList
-    : ( classicalArgument COMMA )* classicalArgument
+    : classicalArgument ( COMMA classicalArgument )* 
     ;
 
 /** Aliasing **/
@@ -174,7 +182,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
+    : indexIdentifier ( COMMA indexIdentifier )* 
     ;
 
 rangeDefinition
@@ -256,15 +264,18 @@ quantumGateCall
 /*** Classical Instructions ***/
 
 unaryOperator
-    : '~' | '!'
+    : '~' | '!' | '-'
     ;
 
-relationalOperator
+comparisonOperator
     : '>'
     | '<'
     | '>='
     | '<='
-    | '=='
+    ;
+
+equalityOperator
+    : '=='
     | '!='
     ;
 
@@ -282,8 +293,8 @@ expression
     : expressionTerminator
     | unaryExpression
     // expression hierarchy
-    | xOrExpression
-    | expression '|' xOrExpression
+    | logicalAndExpression
+    | expression '||' logicalAndExpression
     ;
 
 /**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
@@ -294,18 +305,43 @@ expression
     Multiplicative
     Additive
     Bit Shift
+    Comparison
+    Equality
     Bit And
     Exlusive Or (xOr)
     Bit Or
+    Logical And
+    Logical Or
 **/
+
+logicalAndExpression
+    : bitOrExpression
+    | logicalAndExpression '&&' bitOrExpression
+    ;
+
+bitOrExpression
+    : xOrExpression
+    | bitOrExpression '|' xOrExpression
+    ;
+
 xOrExpression
     : bitAndExpression
     | xOrExpression '^' bitAndExpression
     ;
 
 bitAndExpression
+    : equalityExpression
+    | bitAndExpression '&' equalityExpression
+    ;
+
+equalityExpression
+    : comparisonExpression
+    | equalityExpression equalityOperator comparisonExpression
+    ;
+
+comparisonExpression
     : bitShiftExpression
-    | bitAndExpression '&' bitShiftExpression
+    | comparisonExpression comparisonOperator bitShiftExpression
     ;
 
 bitShiftExpression
@@ -340,7 +376,6 @@ expressionTerminator
     | externCall
     | subroutineCall
     | timingTerminator
-    | MINUS expressionTerminator
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
@@ -369,21 +404,8 @@ castOperator
     ;
 
 expressionList
-    : ( expression COMMA )* expression
+    : expression ( COMMA expression )* 
     ;
-
-/** Boolean expression hierarchy **/
-booleanExpression
-    : membershipTest
-    | comparisonExpression
-    | booleanExpression logicalOperator comparisonExpression
-    ;
-
-comparisonExpression
-    : expression  // if (expression)
-    | expression relationalOperator expression
-    ;
-/** End boolean expression hierarchy **/
 
 equalsExpression
     : EQUALS expression
@@ -392,10 +414,6 @@ equalsExpression
 assignmentOperator
     : EQUALS
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-membershipTest
-    : Identifier 'in' setDeclaration
     ;
 
 setDeclaration
@@ -410,12 +428,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
-    : 'for' membershipTest
-    | 'while' LPAREN booleanExpression RPAREN
+    : 'for' Identifier 'in' setDeclaration
+    | 'while' LPAREN expression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;

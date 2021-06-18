@@ -79,6 +79,7 @@ used in lower parts of the compilation stack when emitting physical
 circuits.
 
 .. code-block:: c
+   :force:
 
    // Declare a qubit
    qubit gamma;
@@ -163,6 +164,7 @@ indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
 .. code-block:: c
+   :force:
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -181,6 +183,7 @@ parameters with ``angle`` types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
 .. code-block:: c
+   :force:
 
    // Declare an angle with 20 bits of precision and assign it a value of π/2
    angle[20] my_angle = π / 2;
@@ -228,6 +231,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__.
 
 .. code-block:: c
+   :force:
 
    // Declare a constant
    const my_const = 1234;
