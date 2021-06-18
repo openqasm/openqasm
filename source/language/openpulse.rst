@@ -388,7 +388,7 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
      delay[20dt] driveframe1;
      // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
      barrier(driveframe1, driveframe2);
-     // `driveframe2` will now play a pulse 120dt after `driveframe1` finishes playing
+     // `driveframe2` will now play a pulse 20dt after `driveframe1` finishes playing
      play(tx0, p, driveframe2);
    }
 
