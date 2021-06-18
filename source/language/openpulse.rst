@@ -330,8 +330,8 @@ discriminated using user-defined boxcar and discrimination ``extern``s.
 
     defcal measure $0 -> bit {
         // Define the channels
-        txchannel m0 = txch($0, "measure");
-        rxchannel cap0 = rxch($0, "capture");
+        channel m0 = getch($0, "measure");
+        channel cap0 = getch($0, "capture");
 
         // Force time of carrier to 0 for consistent phase for discrimination.
         frame stimulus_frame = newframe(5e9, 0);
@@ -443,7 +443,7 @@ Geometric gate
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       // Access globally defined channels
-      tx_channel dq = txch($q, “drive”);
+      channel dq = getch($q, “drive”);
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
       // envelopes (no sideband)
@@ -476,9 +476,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
   defcal neutral_atoms {
     // Access globally defined channels
-    channel eom_a_channel = txch(0, "eom_a");
-    channel eom_a_channel = txch(1, "eom_b");
-    channel aod_channel = txch(0, "aod");
+    channel eom_a_channel = getch(0, "eom_a");
+    channel eom_a_channel = getch(1, "eom_b");
+    channel aod_channel = getch(0, "aod");
 
     // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
     // and offset from each other by the qubit_freq
@@ -538,16 +538,16 @@ Multiplexed readout and capture
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this example, we want to perform readout and capture of a pair of qubits, but mediated by a
-single physical tx and rx channel. The example is for just two qubits, but works the same for
+single physical transmission and capture channel. The example is for just two qubits, but works the same for
 many (just adding more frames, waveforms, plays, and captures).
 
 .. code-block:: javascript
 
   defcal multiplexed_readout_and_capture $0, $1 {
 
-      // the tx/rx channel is the same for $0 and $1
-      channel ro_tx = txch($0, "readout");
-      channel ro_rx = rxch($0, "readout");
+      // the transmission/captures channels are the same for $0 and $1
+      channel ro_tx = getch($0, "readout_tx");
+      channel ro_rx = getch($0, "readout_rx");
 
       // readout frames of different frequencies
       frame q0_frame = newframe(q0_ro_freq, 0); // time 0
@@ -584,8 +584,8 @@ For example,
 .. code-block:: javascript
 
   defcal incommensurate_rates_interval $q
-    channel tx0 = txch(0, "tx0"); # sample per 1 ns
-    channel tx1 = txch(1, "tx1"); # sample per 2 ns
+    channel tx0 = getch(0, "tx0"); # sample per 1 ns
+    channel tx1 = getch(1, "tx1"); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 13ns, ...);
 
@@ -605,8 +605,8 @@ produces
 .. code-block:: javascript
 
   defcal incommensurate_lengths $q
-    channel tx0 = txch(0, "tx0"); # sample per 1 ns
-    channel tx1 = txch(1, "tx1"); # sample per 2 ns
+    channel tx0 = getch(0, "tx0"); # sample per 1 ns
+    channel tx1 = getch(1, "tx1"); # sample per 2 ns
 
     waveform wf = gaussian_square(0.1, 12dt, ...); // this means different lengths to different channels
 
