@@ -619,3 +619,12 @@ produces
   }
 
 This is considered well-defined behavior.
+
+Open Questions
+~~~~~~~~~~~~~~
+
+- How do we handle mapping wildcarded qubits to arbitrary pulse-level resources?
+- Do we define scheduling primitives for aligning pulses within defcals?
+- How do we express general calibration experiments within defcals and call them within an openqasm program.
+- How do we differentiate channel resource types?
+- Is timing on frames, and channels as resources clear?

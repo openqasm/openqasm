@@ -122,7 +122,7 @@ In practice, calibration grammars such as OpenPulse may apply a global scope to 
       // declare global channel
       getchannel d0 = getch($0, "drive");
       // declare global frame
-      frame d0f = newframe(5.0e9, 0.0);
+      frame d0f = nrame(5.0e9, 0.0);
 
    }
 
