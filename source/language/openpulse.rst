@@ -77,6 +77,8 @@ may refer to a transmit channel with an arbitrary name.
     channel cr1_2 = getch($1, $2, "coupler");  // channel for a coupler between two qubits
     channel m2 = getch($2, "measure");  // channel for transmitting measurement stimulus
 
+    channel global_field = getch("global_field"); // channel not associated with any qubits
+
     // capture channels for capturing qubits $0 and $1
     channel cap0 = getch($0, "capture");
     channel cap1 = getch($1, "capture");
