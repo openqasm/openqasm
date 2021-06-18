@@ -474,6 +474,8 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
 .. code-block:: javascript
 
+  // TODO: This example is incomplete, missing constant definitions and calling workflow.
+
   defcal neutral_atoms {
     // Access globally defined channels
     channel eom_a_channel = getch(0, "eom_a");
@@ -509,7 +511,7 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
         play(aod_channel, q1_π_half_sig, q3_frame);
 
         // Time delay all
-        delay(τ/2)
+        delay(τ/2);
 
         // π pulse on qubit 1 only -- composed of two π/2 pulses
         for _ in [0:1]:
