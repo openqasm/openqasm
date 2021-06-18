@@ -414,6 +414,7 @@ the program.
 Here we want to sweep the frequency of a long pulse that saturates the qubit transition.
 
 .. code-block:: javascript
+
   // sweep parameters would be programmed in by some higher level bindings
   const float frequency_start = 4.5e9;
   const float frequency_step = 1e6
@@ -445,6 +446,7 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
 Here we want to sweep the time of the pulse and observe coherent Rabi flopping dynamics.
 
 .. code-block:: javascript
+
   const duration pulse_length_start = 20dt;
   const duration pulse_length_step = 1dt;
   const int pulse_length_num_steps = 100;
