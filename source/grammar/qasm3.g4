@@ -88,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : ( quantumArgument COMMA )* quantumArgument
+    : quantumArgument ( COMMA quantumArgument )* 
     ;
 
 /** Classical Types **/
@@ -165,7 +165,7 @@ classicalArgument
     ;
 
 classicalArgumentList
-    : ( classicalArgument COMMA )* classicalArgument
+    : classicalArgument ( COMMA classicalArgument )* 
     ;
 
 /** Aliasing **/
@@ -182,7 +182,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
+    : indexIdentifier ( COMMA indexIdentifier )* 
     ;
 
 rangeDefinition
@@ -404,7 +404,7 @@ castOperator
     ;
 
 expressionList
-    : ( expression COMMA )* expression
+    : expression ( COMMA expression )* 
     ;
 
 equalsExpression
