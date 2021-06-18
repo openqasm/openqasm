@@ -310,6 +310,9 @@ extern definition at the top-level, such as:
    // A capture command that returns a raw waveform data
    extern capture(channel chan, length len, frame output) -> waveform;
 
+  // A capture that returns a count e.g. number of photons detected
+  kernel capture(channel chan, length len, frame output) -> int
+
 The return type of a ``capture`` command varies. It could be a raw trace, ie. a
 list of samples taken over a short period of time. It could be some averaged IQ
 value. It could be a classified bit. Or it could even have no return value,
