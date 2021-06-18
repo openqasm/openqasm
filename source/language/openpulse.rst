@@ -496,9 +496,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
     // put a sideband on the signal construction to target the qubit position while maintainig the
     // desired Rabi rate.
-    waveform q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, q1_pos_freq-qubit_freq, 0.0, π_half_time));
-    waveform q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, q2_pos_freq-qubit_freq, 0.0, π_half_time));
-    waveform q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, q3_pos_freq-qubit_freq, 0.0, π_half_time));
+    waveform q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, π_half_time, q1_pos_freq-qubit_freq, 0.0));
+    waveform q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, π_half_time, q2_pos_freq-qubit_freq, 0.0));
+    waveform q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, π_half_time, q3_pos_freq-qubit_freq, 0.0));
 
     for τ in [0: T]:
         // Simultaneous π/2 pulses
