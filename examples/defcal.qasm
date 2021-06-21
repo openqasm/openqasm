@@ -13,9 +13,9 @@ defcal rz(angle[20]:theta) $q {
 }
 
 defcal measure $0 -> bit {
-  complex[24] iq;
+  complex[int[24]] iq;
   bit state;
-  complex[12] k0[1024] = [i0 + q0*j, i1 + q1*j, i2 + q2*j, ...];
+  complex[int[12]] k0[1024] = [i0 + q0*j, i1 + q1*j, i2 + q2*j, ...];
   play measure($0), flat_top_gaussian(...);
   iq = capture acquire($0), 2048, kernel(k0);
   return threshold(iq, 1234);

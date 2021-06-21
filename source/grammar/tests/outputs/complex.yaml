@@ -1,38 +1,46 @@
 # indent w/ 2 spaces
 source: |
-  complex[10] a;
-  complex[20] b = 4-5.5im;
-  complex[10] c = b+7.5*1e9im;
-  complex[10] d = a + b;
+  complex[int[32]] a;
+  complex[float[40]] b = 4-5.5im;
+  complex[fixed[5,7]] c = b+7.5*1e9im;
+  complex[angle[20]] d = a + b;
 reference: |
   program
     header
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          singleDesignatorDeclaration
-            singleDesignatorType
-              complex
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+          complexDeclaration
+            complex
+            [
+            numericType
+              singleDesignatorType
+                int
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
+            ]
             a
         ;
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          singleDesignatorDeclaration
-            singleDesignatorType
-              complex
-            designator
-              [
-              expression
-                expressionTerminator
-                  20
-              ]
+          complexDeclaration
+            complex
+            [
+            numericType
+              singleDesignatorType
+                float
+              designator
+                [
+                expression
+                  expressionTerminator
+                    40
+                ]
+            ]
             b
             equalsExpression
               =
@@ -57,15 +65,23 @@ reference: |
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          singleDesignatorDeclaration
-            singleDesignatorType
-              complex
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+          complexDeclaration
+            complex
+            [
+            numericType
+              doubleDesignatorType
+                fixed
+              doubleDesignator
+                [
+                expression
+                  expressionTerminator
+                    5
+                ,
+                expression
+                  expressionTerminator
+                    7
+                ]
+            ]
             c
             equalsExpression
               =
@@ -94,15 +110,19 @@ reference: |
     statement
       classicalDeclarationStatement
         classicalDeclaration
-          singleDesignatorDeclaration
-            singleDesignatorType
-              complex
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+          complexDeclaration
+            complex
+            [
+            numericType
+              singleDesignatorType
+                angle
+              designator
+                [
+                expression
+                  expressionTerminator
+                    20
+                ]
+            ]
             d
             equalsExpression
               =

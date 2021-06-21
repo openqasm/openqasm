@@ -111,6 +111,13 @@ classicalType
     | doubleDesignatorType doubleDesignator
     | noDesignatorType
     | bitType designator?
+    | 'complex' LBRACKET numericType RBRACKET
+    ;
+
+// numeric OpenQASM types
+numericType
+    : singleDesignatorType designator
+    | doubleDesignatorType doubleDesignator
     ;
 
 constantDeclaration
@@ -135,11 +142,16 @@ bitDeclaration
     : ( 'creg' Identifier designator? | 'bit' designator? Identifier ) equalsExpression?
     ;
 
+complexDeclaration
+    : 'complex' LBRACKET numericType RBRACKET Identifier equalsExpression?
+    ;
+
 classicalDeclaration
     : singleDesignatorDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
+    | complexDeclaration
     ;
 
 classicalTypeList
@@ -155,6 +167,7 @@ classicalArgument
     ) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
+    | 'complex' LBRACKET numericType designator RBRACKET Identifier
     ;
 
 classicalArgumentList

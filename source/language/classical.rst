@@ -119,12 +119,12 @@ assignment operators.
 
 .. code-block:: c
 
-   complex[64] a = 10.0 + 5.0im;
-   complex[64] b = -2.0 - 7.0im;
-   complex[64] c = a + b; // c = 8.0 - 2.0im
-   complex[64] d = a - b; // d = 12.0+12.0im;
-   complex[64] e = a*b; // e = 15.0-80.0im;
-   complex[64] f = a/b; // f = (-55.0+60.0im)/53.0
+   complex[float[64]] a = 10.0 + 5.0im;
+   complex[float[64]] b = -2.0 - 7.0im;
+   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b; // d = 12.0+12.0im;
+   complex[float[64]] e = a*b; // e = 15.0-80.0im;
+   complex[float[64]] f = a/b; // f = (-55.0+60.0im)/53.0
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
