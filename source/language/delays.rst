@@ -337,3 +337,6 @@ barrier, or cancelled by a compiler.
 A ``barrier`` is similar to ``delay[0]``. The main difference is that ``delay`` indicates a fully
 scheduled series of instructions, whereas ``barrier`` implies an ordering constraint that will be
 resolved by the compiler at a later stage.
+
+A barrier can also be invoked without arguments, in which case the argument is assumed to be all
+qubits.
