@@ -267,13 +267,13 @@ Duration
 We introduce a ``duration`` type to express timing.
 Durations are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``durationof()`` is an intrinsic function used to reference the duration of
-another part of the program or the duration of a calibrated gate.
+the backend. ``durationof()`` is an intrinsic function used to reference the duration of a calibrated gate.
 
 .. code-block:: c
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
+   duration c = durationof({x $3);
 
 ``duration`` is further discussed in :any:`duration-and-stretch`
 

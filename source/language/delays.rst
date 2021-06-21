@@ -51,9 +51,7 @@ Below are some examples of values of type ``duration``.
        // fixed duration, backend dependent
        duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = durationof(defcal);
-       // dynamic duration, referencing a box within its context
-       duration d = durationof(box);
+       duration c = durationof({x $3);
 
 We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
 have variable non-negative duration that are permitted to grow as necessary

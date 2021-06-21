@@ -3,7 +3,7 @@ Classical instructions
 
 We envision two levels of classical control: simple, low-level instructions embedded as
 part of a quantum circuit and high-level external functions which perform more complex
-classical computations. The low-level functions are fast, apply control flow and allow basic
+classical computations. The low-level functions allow basic
 computations on lower-level parallel control processors. These instructions are likely
 to have known durations and many such instructions might be executed
 within the qubit coherence time. The external, or ``extern``, functions execute
