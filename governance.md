@@ -12,7 +12,7 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 **Member** - individuals that participate in the OpenQASM project and community. These people must adhere to the Qiskit Code of Conduct but have no specific further responsibilities.
 
-**Contributor** - a **Member** who is an active contributor to the OpenQASM community. This person has a *sustained history* of authoring, commenting on, and reviewing issues and PRs. They post questions or responses to the community Slack (#open-qasm in the Qiskit workspace). Contributors are selected by nomination of at least 2 current TSC Members. *Contributors may participate in WGs and attend TSC meetings, but do not vote.* **Contributor** status may be revoked at the discretion of the TSC.
+**Contributor** - a **Member** who is an active contributor to the OpenQASM community. This person has a *sustained history* of authoring, commenting on, and reviewing issues and PRs. They post questions or responses to the community Slack (#open-qasm in the Qiskit workspace). Contributors are selected by nomination of at least 2 current TSC Members. *Contributors may participate in WGs and attend TSC meetings, but do not vote.* **Contributors** will be given commit access to the OpenQASM repository. **Contributor** status may be revoked at the discretion of the TSC.
 
 **TSC Member** - a **Contributor** who also regularly attends and has voting rights at Technical Steering Committee meetings.
 
