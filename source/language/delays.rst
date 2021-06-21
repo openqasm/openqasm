@@ -17,13 +17,13 @@ we want to provide the ability to capture *design intent* such as “space
 these gates evenly to implement a higher-order echo decoupling sequence"
 or “implement this gate as late as possible".
 
-.. _length-and-stretch:
+.. _duration-and-stretch:
 
-length and stretch types
-------------------------
+Duration and stretch types
+---------------------------
 
-The ``length`` type is used denote duration of time. Lengths are positive real numbers
-that are manipulated at compile time. Lengths must be followed by time units which can be
+The ``duration`` type is used denote increments of time. Durations are positive real numbers
+that are manipulated at compile time. Durations must be followed by time units which can be
 any of the following:
 
 -  SI units of time: ``ns, µs or us, ms, s``
@@ -38,31 +38,29 @@ It is often useful to reference the duration of other parts of the
 circuit. For example, we may want to delay a gate for twice the duration
 of a particular sub-circuit, without knowing the exact value to which
 that duration will resolve. Alternatively, we may want to calibrate a
-gate using some pulses, and use its duration as a new ``length`` in order to delay
-other parts of the circuit. The ``lengthof()`` intrinsic function can be used for this
+gate using some pulses, and use its duration as a new ``duration`` in order to delay
+other parts of the circuit. The ``durationof()`` intrinsic function can be used for this
 type of referential timing.
 
-Below are some examples of values of type ``length``.
+Below are some examples of values of type ``duration``.
 
 .. code-block:: c
 
-       // fixed length, in standard units
-       length a = 300ns;
-       // fixed length, backend dependent
-       length b = 800dt;
-       // fixed length, referencing the duration of a calibrated gate
-       length c = lengthof(defcal);
-       // dynamic length, referencing a box within its context
-       length d = lengthof(box);
+       // fixed duration, in standard units
+       duration a = 300ns;
+       // fixed duration, backend dependent
+       duration b = 800dt;
+       // fixed duration, referencing the duration of a calibrated gate
+       duration c = durationof({x $3);
 
-We further introduce a ``stretch`` type which is a sub-type of ``length``. Stretchable lengths
-have variable non-negative length that is permitted to grow as necessary
+We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
+have variable non-negative duration that are permitted to grow as necessary
 to satisfy constraints. Stretch variables are resolved at compile time
 into target-appropriate durations that satisfy a user’s specified design
 intent.
 
-Instructions whose duration is specified in this way become “stretchy",
-meaning they can extend beyond their “natural length" to fill a span of
+Instructions whose duration are specified in this way become “stretchy",
+meaning they can extend beyond their “natural duration" to fill a span of
 time. Stretchy ``delay``'s are the most obvious use case, but this can be extended
 to other instructions too, e.g. rotating a spectator qubit while another
 gate is in progress. Similarly, a ``gate`` whose definition contains stretchy
@@ -91,9 +89,10 @@ whatever their actual durations may be, we can do the following:
        cx q[0], q[1];
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
-       delay[stretchinf] q[0], q[1];
-       delay[stretchinf] q[2];
-       delay[stretchinf] q[3], q[4];
+       stretch s;
+       delay[s] q[0], q[1];
+       delay[s] q[2];
+       delay[s] q[3], q[4];
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
@@ -110,67 +109,46 @@ the stretchy delays (:numref:`fig_alignment`\b):
        delay[2*g];
        barrier q;
 
-Lastly, we distinguish different “orders" of stretch via ``stretchN`` types, where N
-is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. Higher
-order stretches will suppress lower order stretches whenever they appear
-in the same scope on the same qubits. A ``stretchinf`` keyword is defined as an
-infinitely stretchable length. It will always take precedence, and will
-not changed if arithmetic operations are done on it. This is most useful
-as a “don’t care" mechanism to specify delays that will just fill
-whatever gap is present.
-
-.. code-block:: c
-
-       // stretchable length, with min=0 and max=inf
-       stretch e;
-       delay[e];
-       // higher-order stretch which always mutes lower-order stretch
-       stretch2 f;
-       delay[2*f];
-       // infinitely stretchable length, always anonymous.
-       // other instruction don't care about the value to which this resolves.
-       delay[stretchinf];
-
-The concepts of ``box`` and ``stretch`` are inspired by the concept of “boxes and glues" in
-the TeX language :cite:`knuth1984texbook`. This similarity
+The concepts of ``box`` (see :ref:`Boxed expressions`) and ``stretch`` are inspired by the
+concept of “boxes and glues" in the TeX language :cite:`knuth1984texbook`. This similarity
 is natural; TeX aims to resolve the spacing between characters in order
 to typeset a page, and the size of characters depend on the backend
 font. In OpenQASM we intend to resolve the timing of different
 instructions in order to meet high-level design intents, while the true
-length of operations depend on the backend and compilation context.
+duration of operations depend on the backend and compilation context.
 There are however some key differences. Quantum operations can be
-non-local, meaning the lengths set on one qubit can have side effects on
-other qubits. The definition of ``length``-type variables and ability to define
+non-local, meaning the durations set on one qubit can have side effects on
+other qubits. The definition of ``duration``-type variables and ability to define
 multi-qubit stretches is intended to alleviate potential problems from
 these side effects. Also contrary to TeX, we prohibit overlapping gates.
 
-Operations on lengths
----------------------
+Operations on durations
+-----------------------
 
-We can add two lengths, or multiply them by a constant, to get new
-lengths. These are compile time operations since ultimately all lengths,
-including stretches, will be resolved to constants.
+We can add/subtract two durations, or multiply them by a constant, to get new
+duration. The result must be positive. These are compile time operations since ultimately all
+durations, including stretches, will be resolved to constants.
 
 .. code-block:: c
 
-       length a = 300ns;
-       length b = lengthof({x $0});
+       duration a = 300ns;
+       duration b = durationof({x $0});
        stretch c;
-       // stretchy length with min=300ns
-       length d = a + 2 * c;
-       // stretchy length with backtracking by up to half b
-       length e = -0.5 * b + c;
+       // stretchy duration with min=300ns
+       stretch d = a + 2 * c;
+       // stretchy duration with backtracking by up to half b
+       stretch e = -0.5 * b + c;
 
-Delays (and other lengthened instructions)
-------------------------------------------
+Delays (and other duration-based instructions)
+----------------------------------------------
 
 OpenQASM and OpenPulse have a ``delay`` instruction, whose duration is defined by
-a ``length``. If the length passed to the delay contains stretch, it will become a
-stretchy delay. We use square bracket notation to pass these length
+a ``duration``. If the duration passed to the delay contains stretch, it will become a
+stretchy delay. We use square bracket notation to pass these duration
 parameters, to distinguish them from regular parameters (the compiler
-will resolve these square-bracket parameters when resolving timing ).
+will resolve these square-bracket parameters when resolving timing).
 
-Even though a ``delay`` instruction implements the identity channel in the ideal
+Even though a ``delay`` instruction implements the identity operator in the ideal
 case, it is intended to provide explicit timing. Therefore an explicit ``delay``
 instruction will prevent commutation of gates that would otherwise
 commute. For example in
@@ -192,10 +170,10 @@ gate commutation is prohibited (Figure :numref:`fig_delaycommute`\b).
    is not part of the circuit description. Thus this circuit does not care about
    timing and the :math:`RZ` gate is free to commute on the top wire. b) An explicit
    delay is part of the circuit description. The timing is consistent and can
-   be resolved if and only if this delay is exactly the same length as :math:`RY` on
+   be resolved if and only if this delay is exactly the same duration as :math:`RY` on
    :math:`[1]`. The delay is like a barrier in that it prevents commutation on that
    wire. However :math:`RZ` can still commute before the :math:`CNOT` if it has
-   length :math:`0`.
+   duration :math:`0`.
 
 
 .. _fig_dcg:
@@ -210,7 +188,7 @@ gate commutation is prohibited (Figure :numref:`fig_delaycommute`\b).
    rotary gates are stretchy, and the design intent is to interleave a "winding"
    and "unwinding" that is equal to the total duration of the CNOT. We do this
    without knowledge of the CNOT duration, and the compiler resolves them to the
-   correct length during lowering to the target backend.
+   correct duration during lowering to the target backend.
 
 .. _fig_dd:
 .. multifigure::
@@ -219,15 +197,15 @@ gate commutation is prohibited (Figure :numref:`fig_delaycommute`\b).
 
    Dynamical decoupling of a spectator qubit using finite-duration DD pulses.
    The boxes are intentionally drawn to scale to give a sense of how finite gate
-   lengths affect circuit timing. This design intent can be expressed by
+   durations affect circuit timing. This design intent can be expressed by
    defining a single stretch variable "equal" that corresponds to the distance
-   between equidistant gate centers. The other lengths which correspond to
-   actual circuit delays are derived by simple arithmetic on lengths. Given a
+   between equidistant gate centers. The other durations which correspond to
+   actual circuit delays are derived by simple arithmetic. Given a
    target system with calibrated X and Y gates, the solution to the stretch
    problem can be found.
 
 Instructions other than delay can also have variable duration, if they
-are explicitly defined as such. They can be called by passing a valid ``length`` as
+are explicitly defined as such. They can be called by passing a valid ``duration`` as
 their duration. Consider for example a rotation called ``rotary`` that is applied
 for the entire duration of some other gate.
 
@@ -241,9 +219,7 @@ for the entire duration of some other gate.
 A multi-qubit ``delay`` instruction is *not* equivalent to multiple single-qubit
 ``delay`` instructions. Instead a multi-qubit delay acts as a synchronization
 point on the qubits, where the delay begins from the latest non-idle
-time across all qubits, and ends simultaneously across all qubits. For
-this reason, a ``barrier`` instruction is exactly equivalent to a ``delay`` of a length zero
-on the qubits involved.
+time across all qubits, and ends simultaneously across all qubits.
 
 .. code-block:: c
 
@@ -252,22 +228,22 @@ on the qubits involved.
        // delay for 200 samples starting from the end of the longest cx
        delay[200dt] q[0:3];
 
-A ``length`` can be composed of positive or negative natural length, and of
-positive stretch. After resolving the stretch, the instruction must end
+A ``duration`` can be composed of positive or negative durations, and of
+positive stretches. After resolving the stretches, the instruction must end
 up with non-negative duration.
 
 For example, the code below inserts a dynamical decoupling sequence
 where the \*centers\* of pulses are equidistant from each other. We
-specify correct lengths for the delays by using backtracking operations
-to properly take into account the finite length of each gate.
+specify correct durations for the delays by using backtracking operations
+to properly take into account the finite duration of each gate.
 
 .. code-block:: c
 
    stretch s;
    stretch t;
-   length start_stretch = s - .5 * lengthof({x $0;})
-   length middle_stretch = s - .5 * lengthof({x $0;}) - .5 * lengthof({y $0;}
-   length end_stretch = s - .5 * lengthof({y $0;})
+   duration start_stretch = s - .5 * durationof({x $0;})
+   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;}
+   duration end_stretch = s - .5 * durationof({y $0;})
 
    delay[start_stretch] $0;
    x $0;
@@ -284,6 +260,8 @@ to properly take into account the finite length of each gate.
    cx $1, $2;
    u $3;
 
+.. _Boxed expressions
+
 Boxed expressions
 -----------------
 
@@ -296,38 +274,44 @@ box by knowing the unitary implemented by the box. Delays that are
 within a box are implementation details of the box; they are invisible
 to the outside scope and therefore do not prevent commutation.
 
-We introduce a ``boxas`` expression for labeling a box. We primarily use this to
-later refer to the length of this box. Boxed expressions are good for
-this because their contents are isolated and cannot be combined with
-gates outside the box. Therefore, no matter how the contents of the box
-get optimized, the ``lengthof(boxlabel`` has a well-defined meaning.
+.. code-block:: c
+
+  rx(5*π/12) q;
+  box {
+    delay[ddt] q;
+    x q;
+    delay[ddt] q;
+    x q;
+    delay[ddt] q;
+  }
+
+Boxes can take an optional bracketed duration argument to enforce the
+timing of the ``box``. This is useful in scenarios where the duration of
+A given code block is not apparent prior to runtime, but where assigning
+an explicit duration makes sense in terms of scheduling for the larger circuit.
+The natural duration of the box must be smaller than the declared duration,
+otherwise a compile-time error will be raised. A ``stretch`` inside the
+``box`` will always be set to fill the difference between the declared
+duration and the natural duration.
 
 .. code-block:: c
 
-       boxas mybox {
-           cx q[0], q[1];
-           delay[200ns] q[0];
-       }
-       delay[length(mybox)] q[2], q[3];
-       cx q[2], q[3];
+  // defines a 1ms box whose content is just a centered CNOT
+  box [1ms] {
+    stretch a;
+    delay[a] q;
+    cx q[0], q[1];
+    delay[a] q;
+  }
 
-We introduce a ``boxto`` expression. The contents of it will be boxed, and in
-addition a total duration will be assigned to the box. This is useful
-for conditionals where the box will declare a hard deadline. The natural
-length of the box must be smaller than the declared boxto duration,
-otherwise a compile-time error will be raised. The stretch inside the
-box will always be set to fill the difference between the declared
-length and the natural length.
-
-.. code-block:: c
-
-      // defines a 1ms box whose content is just a centered CNOT
-       boxto 1ms {
-           stretch a;
-           delay[a] q;
-           cx q[0], q[1];
-           delay[a] q;
-       }
+  // defines a stretchy box sub-circuit and later delays for that entire duration
+  stretch mybox_dur;
+  box [mybox_dur] {
+      cx q[0], q[1];
+      delay[200ns] q[0];
+  }
+  delay[mybox_dur] q[2], q[3];
+  cx q[2], q[3];
 
 Barrier instruction
 -------------------
@@ -349,3 +333,7 @@ in the following example
 This will prevent an attempt to combine the CNOT gates but will not
 constrain the pair of ``h s[0];`` gates, which might be executed before or after the
 barrier, or cancelled by a compiler.
+
+A ``barrier`` is similar to ``delay[0]``. The main difference is that ``delay`` indicates a fully
+scheduled series of instructions, whereas ``barrier`` implies an ordering constraint that will be
+resolved by the compiler at a later stage.

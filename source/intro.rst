@@ -25,7 +25,7 @@ Version 3.0 of the OpenQASM specification aims to extend OpenQASM to include:
 
 * **A broader family of computation with classical logic**. We introduce classical control flow,
   instructions, and data types to define circuits that include real-time computations on
-  classical data. A *kernel* mechanism allows opaque references to generic classical
+  classical data. A *extern* mechanism allows opaque references to generic classical
   computations acting upon run-time data.
 
 * **Explicit timing**. We introduce a flexible mechanism to describe *design intent* of
