@@ -79,6 +79,7 @@ used in lower parts of the compilation stack when emitting physical
 circuits.
 
 .. code-block:: c
+   :force:
 
    // Declare a qubit
    qubit gamma;
@@ -163,6 +164,7 @@ indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
 .. code-block:: c
+   :force:
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -181,6 +183,7 @@ parameters with ``angle`` types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
 .. code-block:: c
+   :force:
 
    // Declare an angle with 20 bits of precision and assign it a value of π/2
    angle[20] my_angle = π / 2;
@@ -235,7 +238,7 @@ has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
 declarations. Real constants are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
-calculator-like operations on run-time values require kernel function
+calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
 constants can be cast to other types. Casting attempts to preserve the
 semantics, but information can be lost, since variables have fixed
@@ -246,6 +249,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__.
 
 .. code-block:: c
+   :force:
 
    // Declare a constant
    const my_const = 1234;
@@ -276,36 +280,32 @@ Note that `e` is a valid identifier. `e/E` are also used in scientific notation 
 Types related to timing
 -----------------------
 
-length
-~~~~~~
+Duration
+~~~~~~~~
 
-We introduce a ``length`` type and several keywords to express lengths of time.
-Lengths are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
+We introduce a ``duration`` type to express timing.
+Durations are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``lengthof()`` is an intrinsic function used to reference the duration of
-another part of the program or the duration of a calibrated gate.
+the backend. ``durationof()`` is an intrinsic function used to reference the duration of a calibrated gate.
 
 .. code-block:: c
 
-   length one_second = 1000ms;
-   length thousand_cycles = 1000dt;
+   duration one_second = 1000ms;
+   duration thousand_cycles = 1000dt;
+   duration c = durationof({x $3);
 
-``length`` is further discussed in :any:`length-and-stretch`
+``duration`` is further discussed in :any:`duration-and-stretch`
 
-stretch
+Stretch
 ~~~~~~~
 
-We further introduce a ``stretch`` type which is a sub-type of ``length``. Stretchable lengths
-have variable non-negative length that is permitted to grow as necessary
+We further introduce a ``stretch`` type which is a sub-type of ``duration``. ``stretch`` types
+have variable non-negative duration that is permitted to grow as necessary
 to satisfy constraints. Stretch variables are resolved at compile time
 into target-appropriate durations that satisfy a user’s specified design
-intent. We distinguish different “orders" of stretch via ``stretchN`` types, where N
-is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. At the
-timing resolution stage of the compiler, higher order stretches will
-suppress lower order stretches whenever they appear in the same scope on
-the same qubits.
+intent.
 
-``stretch`` is further discussed in :any:`length-and-stretch`
+``stretch`` is further discussed in :any:`duration-and-stretch`
 
 Aliasing
 --------

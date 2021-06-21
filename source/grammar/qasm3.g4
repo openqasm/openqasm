@@ -9,7 +9,7 @@ program
     ;
 
 header
-    : version? include*
+    : version? include* io*
     ;
 
 version
@@ -20,9 +20,17 @@ include
     : 'include' StringLiteral SEMICOLON
     ;
 
+ioIdentifier
+    : 'input'
+    | 'output'
+    ;
+io
+    : ioIdentifier classicalType Identifier SEMICOLON
+    ;
+
 globalStatement
     : subroutineDefinition
-    | kernelDeclaration
+    | externDeclaration
     | quantumGateDefinition
     | calibration
     | quantumDeclarationStatement  // qubits are declared globally
@@ -80,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : ( quantumArgument COMMA )* quantumArgument
+    : quantumArgument ( COMMA quantumArgument )*
     ;
 
 /** Classical Types **/
@@ -171,7 +179,7 @@ classicalArgument
     ;
 
 classicalArgumentList
-    : ( classicalArgument COMMA )* classicalArgument
+    : classicalArgument ( COMMA classicalArgument )*
     ;
 
 /** Aliasing **/
@@ -188,7 +196,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
+    : indexIdentifier ( COMMA indexIdentifier )*
     ;
 
 rangeDefinition
@@ -256,7 +264,7 @@ quantumMeasurementAssignment
     ;
 
 quantumBarrier
-    : 'barrier' indexIdentifierList
+    : 'barrier' indexIdentifierList?
     ;
 
 quantumGateModifier
@@ -380,9 +388,9 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | kernelCall
+    | externCall
     | subroutineCall
-    | timingTerminator
+    | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
@@ -403,7 +411,7 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
     ;
 
 castOperator
@@ -411,7 +419,7 @@ castOperator
     ;
 
 expressionList
-    : ( expression COMMA )* expression
+    : expression ( COMMA expression )*
     ;
 
 equalsExpression
@@ -458,12 +466,12 @@ controlDirective
     | returnStatement
     ;
 
-kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+externDeclaration
+    : 'extern' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
     ;
 
-// if have kernel w/ out args, is ambiguous; may get matched as identifier
-kernelCall
+// if have extern w/ out args, is ambiguous; may get matched as identifier
+externCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
@@ -492,22 +500,17 @@ pragma
 /*** Circuit Timing ***/
 
 timingType
-    : 'length'
-    | StretchN
+    : 'duration'
+    | 'stretch'
     ;
 
 timingBox
-    : 'boxas' Identifier quantumBlock
-    | 'boxto' TimingLiteral quantumBlock
-    ;
-
-timingTerminator
-    : timingIdentifier | 'stretchinf'
+    : 'box' designator? quantumBlock
     ;
 
 timingIdentifier
     : TimingLiteral
-    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'durationof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -592,7 +595,6 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
-StretchN : 'stretch' Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
