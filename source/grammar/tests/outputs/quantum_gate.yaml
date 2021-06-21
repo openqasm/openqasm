@@ -48,19 +48,24 @@ reference: |
                 gphase
                 (
                 expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          multiplicativeExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                -
-                                expressionTerminator
-                                  theta
-                            /
-                            expressionTerminator
-                              2
+                  logicalAndExpression
+                    bitOrExpression
+                      xOrExpression
+                        bitAndExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    multiplicativeExpression
+                                      unaryExpression
+                                        unaryOperator
+                                          -
+                                        expressionTerminator
+                                          theta
+                                    /
+                                    expressionTerminator
+                                      2
                 )
             ;
           quantumStatement
