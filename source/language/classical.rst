@@ -102,13 +102,14 @@ Fixed-point numbers and angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Fixed-point and angle types support addition, subtraction,
-multiplication, and division and the corresponding assignment operators.
+multiplication, division and power and the corresponding assignment operators.
 
 .. code-block:: c
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
    a + b; // 3/2 * pi
+   a ** b; // 4.1316...
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
 
@@ -123,9 +124,9 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
-      | ``**``                                 | Power                              |
-      +----------------------------------------+------------------------------------+
       | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      +----------------------------------------+------------------------------------+
+      | ``**``                                 | Power                              |
       +----------------------------------------+------------------------------------+
       | ``!``, ``-``, ``~``                    | Unary                              |
       +----------------------------------------+------------------------------------+
