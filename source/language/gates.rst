@@ -43,6 +43,7 @@ New gates are associated to a unitary transformation by defining them as a seque
 previously defined gates. For example the ``gate`` block
 
 .. code-block:: c
+   :force:
 
    gate h q {
       U(π/2, 0, π) q;
@@ -57,6 +58,7 @@ Controlled gates can be constructed by adding a control modifier to an existing 
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
 .. code-block:: c
+   :force:
 
    gate CX c, t {
       ctrl @ U(π, 0, π) c, t;
@@ -135,12 +137,13 @@ allows the inclusion of arbitrary global phases on circuits. The instruction ``g
 of :math:`e^{i\gamma}` to the scope containing the instruction. For example
 
 .. code-block:: c
+   :force:
 
-  gate rz(tau) q {
-    gphase(-tau/2);
-    U(0, 0, tau) q;
-  }
-  ctrl @ rz(π/2) q[1], q[0];
+   gate rz(tau) q {
+     gphase(-tau/2);
+     U(0, 0, tau) q;
+   }
+   ctrl @ rz(π/2) q[1], q[0];
 
 constructs the gate
 
@@ -174,6 +177,7 @@ operation is shown schematically in :numref:`fig_gate`
 corresponding OpenQASM code is
 
 .. code-block:: c
+   :force:
 
    gate cphase(θ) a, b
    {
@@ -289,6 +293,7 @@ those with their inverse. The base case is given by replacing ``inv @ CX`` with 
 ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)``.
 
 .. code-block:: c
+   :force:
 
    gate rzm(theta) q1 {
        inv @ rzp(theta) q1;
@@ -301,6 +306,7 @@ of the original gate, although more efficient implementations may be
 possible.
 
 .. code-block:: c
+   :force:
 
    // define x as sqrt(x)
    gate x q1 {
@@ -314,6 +320,7 @@ not use any additional scratch space. A target may or may not be able to
 execute the gate without further compilation.
 
 .. code-block:: c
+   :force:
 
    // Define a controlled Rz operation using the ctrl gate modifier.
    gate crz(θ) q1, q2 {

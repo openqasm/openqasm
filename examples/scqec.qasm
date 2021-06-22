@@ -14,9 +14,9 @@ const n = d^2;       // number of code qubits
 
 uint[32] failures;  // number of observed failures
 
-kernel zfirst(creg[n - 1], int[32], int[32]);
-kernel send(creg[n -1 ], int[32], int[32], int[32]);
-kernel zlast(creg[n], int[32], int[32]) -> bit;
+extern zfirst(creg[n - 1], int[32], int[32]);
+extern send(creg[n -1 ], int[32], int[32], int[32]);
+extern zlast(creg[n], int[32], int[32]) -> bit;
 
 qubit[n] data;  // code qubits
 qubit[n-1] ancilla;  // syndrome qubits
