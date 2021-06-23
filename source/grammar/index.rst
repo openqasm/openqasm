@@ -13,8 +13,8 @@ It should be noted, however, that the ANTLR grammar (and the associated parser) 
 intended to be used in production. The ANTLR parser does not attempt to be performant or construct
 an AST. Furthermore, it does not conduct any semantic analysis.
 
-Thus, the ANTLR grammar should serve as a guide when developing compiler tooling for OpenQASM3, but
-should not itself be used as an OpenQASM parser.
+Thus, the ANTLR grammar should serve as a guide when developing compiler tooling for OpenQASM3, but it
+is not recommended to be used as the basis for a production-grade OpenQASM parser.
 
 .. _ANTLR: https://www.antlr.org/
 
