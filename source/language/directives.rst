@@ -9,6 +9,7 @@ system or simulator. Ideally the meaning of the program does not change
 if some or all of the directives are ignored, so they can be interpreted
 at the discretion of the consuming process.
 
+
 Input/output
 ============
 
@@ -48,56 +49,61 @@ file, which only has to be compiled once, amortizing the cost of compilation
 across many runs. For an example, we may consider a parameterized circuit which
 performs a measurement in a basis given by an input parameter:
 
-
 .. code-block:: c
+   :force:
 
-    input int basis; // 0 = X basis, 1 = Y basis, 2 = Z basis
-    output bit result;
-    qubit q;
+   input int basis; // 0 = X basis, 1 = Y basis, 2 = Z basis
+   output bit result;
+   qubit q;
 
-    // Some complicated circuit...
+   // Some complicated circuit...
 
-    if (basis == 0) h q;
-    else if (basis == 1) rx(π/2) q;
-    result = measure q;
+   if (basis == 0) h q;
+   else if (basis == 1) rx(π/2) q;
+   result = measure q;
 
-For a second example, consider the Variable Quantum Eigensolver (VQE) algorithm 
-:cite:`peruzzo2014variational`. In this algorithm the same circuit is repeated
+For a second example, consider the Variable Quantum Eigensolver (VQE) algorithm :cite:`peruzzo2014variational`.
+In this algorithm the same circuit is repeated
 many times using different sets of free parameters to minimize an expectation 
 value. The following is an example, in which there is also more than one input
 variable:
 
 .. code-block:: c
 
-    input angle[32] param1;
-    input angle[32] param2;
-    qubit q;
+   input angle[32] param1;
+   input angle[32] param2;
+   qubit q;
 
-    // Build an ansatz using the above free parameters, eg.
-    rx(param1) q;
-    ry(param2) q;
+   // Build an ansatz using the above free parameters, eg.
+   rx(param1) q;
+   ry(param2) q;
 
-    // Estimate the expectation value and store in an output variable
+   // Estimate the expectation value and store in an output variable
 
 The following Python pseudocode illustrates the differences between using and
 not using parameterized circuits in a quantum program for the case of the VQE:
 
-.. code-block:: c
+.. code-block:: python
+   :force:
 
-    # Example without using parametric circuits:
-    for theta in thetas:
-    # Create an OpenQASM circuit with θ defined
-    circuit = subsitute_theta(read("circuit.qasm"))
-    # The slow compilation step is run on each iteration of the inner loop
-    binary = compile_qasm(circuit)
-    result = run_program(binary)
-    # Example using parametric circuits:
-    # parametric_circuit.qasm begins with the line "input angle θ;"
-    circuit = read("parametric_circuit.qasm")
-    # The slow compilation step only happens once
-    binary = compile_qasm(circuit)
-    for theta in thetas:
-    # Each iteration of the inner loop is reduced to only running the circuit
-    result = run_program(binary, θ=theta)
+   # Example without using parametric circuits:
 
+   for theta in thetas:
+       # Create an OpenQASM circuit with θ defined
+       circuit = subsitute_theta(read("circuit.qasm"))
 
+       # The slow compilation step is run on each iteration of the inner loop
+       binary = compile_qasm(circuit)
+       result = run_program(binary)
+
+   # Example using parametric circuits:
+
+   # parametric_circuit.qasm begins with the line "input angle θ;"
+   circuit = read("parametric_circuit.qasm")
+
+   # The slow compilation step only happens once
+   binary = compile_qasm(circuit)
+
+   for theta in thetas:
+       # Each iteration of the inner loop is reduced to only running the circuit
+       result = run_program(binary, θ=theta)
