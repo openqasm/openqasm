@@ -37,7 +37,7 @@ Qubits
 
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. The statement ``qubit name;``
-declares a reference to a quantum bit. These qubits are referred to as "virtual qubits" (in distinction to "physical qubits" on actual hardware; see below.) The statement ``qreg name[size];`` or ``qubit name[size];`` declares a
+declares a reference to a quantum bit. These qubits are referred to as "virtual qubits" (in distinction to "physical qubits" on actual hardware; see below.) The statement ``qreg name[size];`` or ``qubit[size] name;`` declares a
 quantum register with the given name identifier. Quantum registers are static
 arrays of qubits that cannot be dynamically resized. The keyword ``qreg`` is included
 for backwards compatibility and will be removed in the future. Sizes
