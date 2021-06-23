@@ -52,7 +52,7 @@ performs a measurement in a basis given by an input parameter:
 .. code-block:: c
    :force:
 
-   input int[16] basis; // 0 = X basis, 1 = Y basis, 2 = Z basis
+   input int basis; // 0 = X basis, 1 = Y basis, 2 = Z basis
    output bit result;
    qubit q;
 

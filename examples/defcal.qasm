@@ -17,7 +17,7 @@ defcal measure $0 -> bit {
   bit state;
   complex[int[12]] k0[1024] = [i0 + q0*j, i1 + q1*j, i2 + q2*j, ...];
   play measure($0), flat_top_gaussian(...);
-  iq = capture acquire($0), 2048, kernel(k0);
+  iq = capture acquire($0), 2048, extern(k0);
   return threshold(iq, 1234);
 }
 
