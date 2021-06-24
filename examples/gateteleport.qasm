@@ -4,7 +4,7 @@ include "stdgates.inc";
 
 // declarations
 const n = 3;
-kernel vote(bit[n]) -> bit;
+extern vote(bit[n]) -> bit;
 
 def logical_meas qubit[3] d -> bit {
     bit[3] c;
