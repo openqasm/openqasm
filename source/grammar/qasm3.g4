@@ -460,18 +460,18 @@ controlDirective
     ;
 
 externDeclaration
-    : 'extern' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+    : 'extern' Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON
     ;
 
 // if have function call w/ out args, is ambiguous; may get matched as identifier
 externOrSubroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )?
+    : Identifier LPAREN expressionList? RPAREN
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN anyTypeArgumentList? RPAREN )?
+    : 'def' Identifier LPAREN anyTypeArgumentList? RPAREN
     returnSignature? subroutineBlock
     ;
 

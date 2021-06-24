@@ -16,7 +16,7 @@ const shots = 1000;   // number of shots per Pauli observable
 // Parameters could be written to local variables for this
 // iteration, but we will request them using extern functions
 extern get_parameter(uint[prec], uint[prec]) -> angle[prec];
-extern get_npaulis -> uint[prec];
+extern get_npaulis() -> uint[prec];
 extern get_pauli(int[prec]) -> bit[2 * n];
 
 // The energy calculation uses fixed point division,
@@ -73,7 +73,7 @@ def counts_for_term(bit[2*n] spec, qubit[n] q) -> uint[prec] {
 // Estimate the expected energy
 def estimate_energy(qubit[n] q) -> fixed[prec,prec] {
   fixed[prec, prec] energy;
-  uint[prec] npaulis = get_npaulis;
+  uint[prec] npaulis = get_npaulis();
   for t in [0:npaulis-1] {
     bit[2*n] spec = get_pauli(t);
     uint[prec] counts;
