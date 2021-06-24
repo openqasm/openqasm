@@ -61,11 +61,13 @@ reference: |
                                       unaryExpression
                                         unaryOperator
                                           -
-                                        expressionTerminator
-                                          theta
+                                        powerExpression
+                                          expressionTerminator
+                                            theta
                                     /
-                                    expressionTerminator
-                                      2
+                                    powerExpression
+                                      expressionTerminator
+                                        2
                 )
             ;
           quantumStatement

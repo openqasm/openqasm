@@ -22,16 +22,18 @@ reference: |
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                x
+                              powerExpression
+                                expressionTerminator
+                                  x
                     equalityOperator
                       ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression
                           multiplicativeExpression
-                            expressionTerminator
-                              a
+                            powerExpression
+                              expressionTerminator
+                                a
         )
         programBlock
           {

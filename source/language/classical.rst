@@ -83,9 +83,9 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
-and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
-increment ``++`` and decrement ``--``.
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``,
+modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=`` and 
+``**=``; as well as increment ``++`` and decrement ``--``.
 
 .. code-block:: c
 
@@ -95,6 +95,7 @@ increment ``++`` and decrement ``--``.
    a * b; // 6
    b / a; // 1
    b % a; // 1
+   a ** b; // 8
    a += 4; // a == 6
    a++; // a == 7
 
@@ -102,13 +103,14 @@ Fixed-point numbers and angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Fixed-point and angle types support addition, subtraction,
-multiplication, and division and the corresponding assignment operators.
+multiplication, division and power and the corresponding assignment operators.
 
 .. code-block:: c
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
    a + b; // 3/2 * pi
+   a ** b; // 4.1316...
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
 
@@ -124,6 +126,8 @@ OpenQASM evaluates expressions from left to right.
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
       | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      +----------------------------------------+------------------------------------+
+      | ``**``                                 | Power                              |
       +----------------------------------------+------------------------------------+
       | ``!``, ``-``, ``~``                    | Unary                              |
       +----------------------------------------+------------------------------------+
@@ -141,7 +145,7 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | ``^``                                  | Bitwise XOR                        |
       +----------------------------------------+------------------------------------+
-      | ``|``                                  | Bitwise OR                         |
+      | ``\|``                                 | Bitwise OR                         |
       +----------------------------------------+------------------------------------+
       | ``&&``                                 | Logical AND                        |
       +----------------------------------------+------------------------------------+
