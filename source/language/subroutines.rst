@@ -60,13 +60,13 @@ follows
    result = parity(c || c2);
 
 We require that we know the signature at compile time, as we do in this
-example. We could also just as easily have used a kernel function for
+example. We could also just as easily have used an extern function for
 this
 
 .. code-block:: c
 
    const n = /* size of c + size of c2 */;
-   kernel parity(bit[n]) -> bit;
+   extern parity(bit[n]) -> bit;
    qubit q;
    qubit r;
    c = measure q;

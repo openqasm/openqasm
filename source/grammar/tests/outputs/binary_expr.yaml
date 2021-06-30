@@ -1,6 +1,7 @@
 # indent w/ 2 spaces
 source: |
   2+2;
+  2**2;
   x << y;
 reference: |
   program
@@ -8,33 +9,65 @@ reference: |
     statement
       expressionStatement
         expression
-          xOrExpression
-            bitAndExpression
-              bitShiftExpression
-                additiveExpression
-                  additiveExpression
-                    multiplicativeExpression
-                      expressionTerminator
-                        2
-                  +
-                  multiplicativeExpression
-                    expressionTerminator
-                      2
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
+                        additiveExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              powerExpression
+                                expressionTerminator
+                                  2
+                          +
+                          multiplicativeExpression
+                            powerExpression
+                              expressionTerminator
+                                2
         ;
     statement
       expressionStatement
         expression
-          xOrExpression
-            bitAndExpression
-              bitShiftExpression
-                bitShiftExpression
-                  additiveExpression
-                    multiplicativeExpression
-                      expressionTerminator
-                        x
-                <<
-                additiveExpression
-                  multiplicativeExpression
-                    expressionTerminator
-                      y
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            powerExpression
+                              expressionTerminator
+                                2
+                              **
+                              powerExpression
+                                expressionTerminator
+                                  2
+        ;
+    statement
+      expressionStatement
+        expression
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    comparisonExpression
+                      bitShiftExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              powerExpression
+                                expressionTerminator
+                                  x
+                        <<
+                        additiveExpression
+                          multiplicativeExpression
+                            powerExpression
+                              expressionTerminator
+                                y
         ;

@@ -7,6 +7,7 @@ source: |
   a[0] = b[1];
   x += int[10](a[1]);
   a = measure q[1:2];
+  b = a == 0;
 reference: |
   program
     header
@@ -143,4 +144,34 @@ reference: |
                     expressionTerminator
                       2
                   ]
+        ;
+    statement
+      assignmentStatement
+        classicalAssignment
+          b
+          assignmentOperator
+            =
+          expression
+            logicalAndExpression
+              bitOrExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      equalityExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                powerExpression
+                                  expressionTerminator
+                                    a
+                      equalityOperator
+                        ==
+                      comparisonExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              powerExpression
+                                expressionTerminator
+                                  0
         ;

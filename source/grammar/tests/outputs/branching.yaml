@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  if (x in a) {
+  if (x == a) {
     for i in [0:2:4] x[i]++;
   }
   else CX x[0], x[1];
@@ -11,12 +11,29 @@ reference: |
       branchingStatement
         if
         (
-        booleanExpression
-          membershipTest
-            x
-            in
-            setDeclaration
-              a
+        expression
+          logicalAndExpression
+            bitOrExpression
+              xOrExpression
+                bitAndExpression
+                  equalityExpression
+                    equalityExpression
+                      comparisonExpression
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              powerExpression
+                                expressionTerminator
+                                  x
+                    equalityOperator
+                      ==
+                    comparisonExpression
+                      bitShiftExpression
+                        additiveExpression
+                          multiplicativeExpression
+                            powerExpression
+                              expressionTerminator
+                                a
         )
         programBlock
           {
@@ -24,24 +41,23 @@ reference: |
             loopStatement
               loopSignature
                 for
-                membershipTest
-                  i
-                  in
-                  setDeclaration
-                    rangeDefinition
-                      [
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          2
-                      :
-                      expression
-                        expressionTerminator
-                          4
-                      ]
+                i
+                in
+                setDeclaration
+                  rangeDefinition
+                    [
+                    expression
+                      expressionTerminator
+                        0
+                    :
+                    expression
+                      expressionTerminator
+                        2
+                    :
+                    expression
+                      expressionTerminator
+                        4
+                    ]
               programBlock
                 statement
                   expressionStatement
