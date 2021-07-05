@@ -25,15 +25,17 @@ reference: |
                           bitShiftExpression
                             additiveExpression
                               multiplicativeExpression
-                                expressionTerminator
-                                  i
+                                powerExpression
+                                  expressionTerminator
+                                    i
                         comparisonOperator
                           <
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                10
+                              powerExpression
+                                expressionTerminator
+                                  10
           )
         programBlock
           {
@@ -89,16 +91,18 @@ reference: |
                               bitShiftExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      i
+                                    powerExpression
+                                      expressionTerminator
+                                        i
                           equalityOperator
                             ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    8
+                                  powerExpression
+                                    expressionTerminator
+                                      8
               )
               programBlock
                 controlDirective

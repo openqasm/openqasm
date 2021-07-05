@@ -242,7 +242,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN expression RPAREN
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
     ;
 
 quantumReset
@@ -263,11 +263,19 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN expression RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | powModifier | ctrlModifier ) '@'
+    ;
+
+powModifier
+    : 'pow' LPAREN expression RPAREN
+    ;
+
+ctrlModifier
+    : ( 'ctrl' | 'negctrl' ) ( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/
@@ -365,13 +373,18 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : expressionTerminator
+    : powerExpression
     | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
     ;
 
 unaryExpression
-    : unaryOperator expressionTerminator
+    : unaryOperator powerExpression
+    ;
+
+powerExpression
+    : expressionTerminator
+    | expressionTerminator '**' powerExpression
     ;
 
 expressionTerminator
@@ -421,7 +434,7 @@ equalsExpression
 
 assignmentOperator
     : EQUALS
-    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
+    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
 setDeclaration

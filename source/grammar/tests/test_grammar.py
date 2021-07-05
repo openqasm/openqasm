@@ -115,13 +115,18 @@ class TestGrammar:
         """Test header."""
         self.load_and_compare_yaml("header.yaml")
 
-    def test_global_statement(self):
-        """Test global statements."""
+    def test_subroutine_kernel(self):
+        """Test subroutines and kernels."""
         self.load_and_compare_yaml("subroutine.yaml")
         self.load_and_compare_yaml("extern.yaml")
         self.load_and_compare_yaml("quantum_gate.yaml")
         self.load_and_compare_yaml("empty_gate.yaml")
         # TODO: Add calibration test when pulse grammar is filled in
+
+    def test_gate(self):
+        """Test gates."""
+        self.load_and_compare_yaml("quantum_gate.yaml")
+        self.load_and_compare_yaml("gate_modifiers.yaml")
 
     def test_declaration(self):
         """Test classical and quantum declaration."""

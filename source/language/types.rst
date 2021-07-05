@@ -172,7 +172,7 @@ vendors may not support manipulating these values at run-time.
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
-Fixed-point angles are interpreted as 2π times a 0:1:n-1
+Fixed-point angles are interpreted as 2π times a 0:0:n
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
 2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
