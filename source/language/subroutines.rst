@@ -5,19 +5,20 @@ Subroutines are declared using the statement ``def name(parameters) qargs -> out
 Zero or more quantum bits
 and registers are passed to the subroutine by reference or name in ``qargs``.
 Classical types are passed by value in ``parameters``. The parentheses may be omitted if no
-``parameters`` are passed. The subroutines return up to
-one classical type. All arguments are declared together with their type,
-for example ``qubit: ancilla`` would define a quantum bit argument named ``ancilla``. Qubit
-declarations are not allowed within subroutines as they are global. A subroutine
+``parameters`` are passed. The subroutines return up to one value of classical type, signified by the
+``return`` keyword. If there is no return type, the empty ``return``
+keyword may be used to immediately exit from the subroutine. All arguments are declared together
+with their type, for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
+Qubit declarations are not allowed within subroutines as they are global. A subroutine
 is invoked with the syntax ``name(parameters) qargs`` and may be assigned to an ``output`` as
 needed via an assignment operator (``=``, ``+=``, etc). ``parameters`` and ``qargs`` are literals
 and ``output`` is a variable.
 
 Using subroutines, we can define an X-basis measurement with the program
-``def xmeasure qubit:q -> bit { h q; return measure q; }``.
+``def xmeasure qubit q -> bit { h q; return measure q; }``.
 We can also define more general classes of single-qubit measurements
 as
-``def pmeasure(angle[32]: theta) qubit:q -> bit { rz(theta) q; h q; return
+``def pmeasure(angle[32] theta) qubit q -> bit { rz(theta) q; h q; return
 measure q; }``.
 The type declarations are necessary if we want to mix qubit and
 register arguments. For example, we might define a parity check
@@ -25,7 +26,7 @@ subroutine that takes qubits and registers
 
 .. code-block:: c
 
-   def xcheck qubit[4]:d, qubit:a -> bit {
+   def xcheck qubit[4] d, qubit a -> bit {
      reset a;
      for i in [0: 3] cx d[i], a;
      return measure a;
@@ -38,7 +39,7 @@ instructions, like
 .. code-block:: c
 
    const n = /* some size, known at compile time */;
-   def parity(bit[n]:cin) -> bit {
+   def parity(bit[n] cin) -> bit {
      bit c;
      for i in [0: n - 1] {
        c ^= cin[i];
@@ -51,21 +52,23 @@ follows
 
 .. code-block:: c
 
-   qubit q, r;
+   qubit q;
+   qubit r;
    c = measure q;
    c2 = measure r;
    bit result;
    result = parity(c || c2);
 
 We require that we know the signature at compile time, as we do in this
-example. We could also just as easily have used a kernel function for
+example. We could also just as easily have used an extern function for
 this
 
 .. code-block:: c
 
    const n = /* size of c + size of c2 */;
-   kernel parity(bit[n]) -> bit;
-   qubit q, r;
+   extern parity(bit[n]) -> bit;
+   qubit q;
+   qubit r;
    c = measure q;
    c2 = measure r;
    bit result;

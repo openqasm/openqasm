@@ -19,8 +19,8 @@
   \setlength{\termlen}{\dimexpr(\eqlen-\ylen/2)\relax}
   \setlength{\longlen}{\dimexpr(\eqlen*5)\relax}
   \begin{yquant*}[operator/separation=0mm, register/separation=3mm]
-    nobit p;
-    qubit {} q[3];
+    bit p;
+    qubit[3] q;
     hspace {5mm} p;
     ["equal", name=eq0, x radius=\eqlen, draw=none] box {} p;
     ["equal", name=eq1, x radius=\eqlen, draw=none] box {} p;

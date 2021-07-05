@@ -8,7 +8,7 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{yquant}
-    qubit q[5];
+    qubit[5] q;
     cnot q[1] | q[0];
     box {$U(\pi/4, 0, \pi/2)$} q[2];
     cnot q[3] | q[4];

@@ -8,18 +8,34 @@ Types and Casting
 Generalities
 ------------
 
-Variable identifiers must begin with a letter [A-Za-z], an underscore, a
-percent sign, or an element from the Unicode character categories
-Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
-Continuation characters may contain numbers. Variable identifiers may
-not override a reserved identifier.
+Variable identifiers must begin with a letter [A-Za-z], an underscore or an element from the Unicode character categories
+Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
+continuation characters consists of all members of the aforementioned character
+sets with the addition of decimal numerals [0-9]. Variable identifiers may not
+override a reserved identifier.
 
 In addition to being assigned values within a program, all of the classical
-types can be initialized on declaration. Multiple comma-separated declarations
-can occur after the typename with optional assignment on declaration for each.
-Any classical variable or Boolean that is not explicitly initialized is
-undefined. Classical types can be mutually cast to one another using the
-typename.
+types can be initialized on declaration. Any classical variable or Boolean that is not explicitly
+initialized is undefined. Classical types can be mutually cast to one another using the typename.
+
+Declaration and initialization must be done one variable at a time for both quantum and classical
+types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
+example, to declare a set of qubits one must do
+
+.. code-block:: c
+
+   qubit q0;
+   qubit q1;
+   qubit q2;
+
+and to declare a set of classical variables
+
+.. code-block:: c
+
+   int[32] x;
+   float[32] y = 5.5;
+   bit[3] c;
+   bool my_bool = false;
 
 We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers,
 where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the
@@ -37,13 +53,19 @@ Qubits
 
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. The statement ``qubit name;``
-declares a reference to a quantum bit. These qubits are referred to as "virtual qubits" (in distinction to "physical qubits" on actual hardware; see below.) The statement ``qreg name[size];`` or ``qubit[size] name;`` declares a
-quantum register with the given name identifier. Quantum registers are static
-arrays of qubits that cannot be dynamically resized. The keyword ``qreg`` is included
-for backwards compatibility and will be removed in the future. Sizes
-must always be constant positive integers. The label ``name[j]`` refers to a qubit
-of this register, where
+declares a reference to a quantum bit. These qubits are referred 
+to as "virtual qubits" (in distinction to "physical qubits" on 
+actual hardware; see below). The statement ``qubit[size] name;`` 
+declares a quantum register with ``size`` qubits.
+Sizes must always be constant positive integers. The label ``name[j]`` 
+refers to a qubit of this register, where
 :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+Quantum registers are static arrays of qubits 
+that cannot be dynamically resized. 
+
+The keyword ``qreg`` is included
+for backwards compatibility and will be removed in the future. 
+
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
 
@@ -57,20 +79,22 @@ Physical Qubits
 ~~~~~~~~~~~~~~~
 
 While program qubits can be named, hardware qubits are referenced only
-by integers with the syntax ``%0``, ``%1``, ..., ``%n``. These qubit types are
+by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
+references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits.
 
 .. code-block:: c
+   :force:
 
    // Declare a qubit
    qubit gamma;
    // Declare a qubit with a Unicode name
    qubit γ;
-   // Declare a qubit array with 20 qubits
-   qubit qubit_array[20];
+   // Declare a qubit register with 20 qubits
+   qubit[20] qubit_array;
    // CNOT gate between physical qubits 0 and 1
-   CX %0, %1;
+   CX $0, $1;
 
 Classical types
 ---------------
@@ -81,11 +105,14 @@ Classical bits and registers
 There is a classical bit type that takes values 0 or 1. Classical
 registers are static arrays of bits. The classical registers model part
 of the controller state that is exposed within the OpenQASM program. The
-statement ``bit name;`` declares a classical bit, and ``creg name[size];`` or ``bit name[size];`` declares an array of bits
-(register). The keyword ``creg`` is deprecated and will be removed in the future.
-The label ``name[j]`` refers to a bit of this register, where :math:`j\in
-\{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer. For
-convenience, classical registers can be assigned a text string
+statement ``bit name;`` declares a classical bit, and or ``bit[size] name;`` declares a register of
+``size`` bits. The label ``name[j]`` refers to a bit of this register, where :math:`j\in
+\{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+
+Bit registers may also be declared as ``creg name[size]``. This is included for backwards
+compatibility and may be removed in the future.
+
+For convenience, classical registers can be assigned a text string
 containing zeros and ones of the same length as the size of the
 register. It is interpreted to assign each bit of the register to
 corresponding value 0 or 1 in the string, where the least-significant
@@ -93,10 +120,10 @@ bit is on the right.
 
 .. code-block:: c
 
-   // Declare an array of 20 bits
-   bit bit_array[20]
-   // Declare and assign an array of bits with decimal value of 15
-   bit name[8] = "00001111";
+   // Declare a register of 20 bits
+   bit[20] bit_array;
+   // Declare and assign a rgister of bits with decimal value of 15
+   bit[8] name = "00001111";
 
 Integers
 ~~~~~~~~
@@ -143,6 +170,7 @@ indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
 .. code-block:: c
+   :force:
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -150,7 +178,7 @@ vendors may not support manipulating these values at run-time.
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
-Fixed-point angles are interpreted as 2π times a 0:1:n-1
+Fixed-point angles are interpreted as 2π times a 0:0:n
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
 2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
@@ -161,6 +189,7 @@ parameters with ``angle`` types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
 .. code-block:: c
+   :force:
 
    // Declare an angle with 20 bits of precision and assign it a value of π/2
    angle[20] my_angle = π / 2;
@@ -197,7 +226,7 @@ has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
 declarations. Real constants are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
-calculator-like operations on run-time values require kernel function
+calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
 constants can be cast to other types. Casting attempts to preserve the
 semantics, but information can be lost, since variables have fixed
@@ -208,6 +237,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__.
 
 .. code-block:: c
+   :force:
 
    // Declare a constant
    const my_const = 1234;
@@ -237,32 +267,32 @@ Note that `e` is a valid identifier. `e/E` are also used in scientifier notation
 Types related to timing
 -----------------------
 
-length
-~~~~~~
+Duration
+~~~~~~~~
 
-We introduce a ``length`` type and several keywords to express lengths of time.
-Lengths are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
+We introduce a ``duration`` type to express timing.
+Durations are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``lengthof()`` is an intrinsic function used to reference the duration of
-another part of the program or the duration of a calibrated gate.
+the backend. ``durationof()`` is an intrinsic function used to reference the duration of a calibrated gate.
 
 .. code-block:: c
 
-   length one_second = 1000ms;
-   length thousand_cycles = 1000dt;
+   duration one_second = 1000ms;
+   duration thousand_cycles = 1000dt;
+   duration c = durationof({x $3);
 
-stretch
+``duration`` is further discussed in :any:`duration-and-stretch`
+
+Stretch
 ~~~~~~~
 
-We further introduce a ``stretch`` type which is a sub-type of ``length``. Stretchable lengths
-have variable non-negative length that is permitted to grow as necessary
+We further introduce a ``stretch`` type which is a sub-type of ``duration``. ``stretch`` types
+have variable non-negative duration that is permitted to grow as necessary
 to satisfy constraints. Stretch variables are resolved at compile time
 into target-appropriate durations that satisfy a user’s specified design
-intent. We distinguish different “orders" of stretch via ``stretchN`` types, where N
-is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. At the
-timing resolution stage of the compiler, higher order stretches will
-suppress lower order stretches whenever they appear in the same scope on
-the same qubits.
+intent.
+
+``stretch`` is further discussed in :any:`duration-and-stretch`
 
 Aliasing
 --------
@@ -272,7 +302,7 @@ another name as long as the alias is in scope.
 
 .. code-block:: c
 
-  qubit q[5];
+  qubit[5] q;
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
 

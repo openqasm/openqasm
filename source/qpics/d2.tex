@@ -8,7 +8,7 @@
 \begin{document}
 \begin{tikzpicture}
   \begin{yquant}
-    qubit {$\%{\idx}$} q[5];
+    qubit[5] {$\%{\idx}$} q];
     [x radius=39mm] box {$CX [300 ns]$} (q[0], q[1]);
     [x radius=6.5mm] box {$U [50 ns]$} q[2];
     [x radius=26mm] box {$CX [200 ns]$} (q[3], q[4]);

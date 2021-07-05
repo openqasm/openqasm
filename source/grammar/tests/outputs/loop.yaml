@@ -15,14 +15,27 @@ reference: |
           while
           (
           expression
-            expression
-              expressionTerminator
-                i
-            binaryOperator
-              <
-            expression
-              expressionTerminator
-                10
+            logicalAndExpression
+              bitOrExpression
+                xOrExpression
+                  bitAndExpression
+                    equalityExpression
+                      comparisonExpression
+                        comparisonExpression
+                          bitShiftExpression
+                            additiveExpression
+                              multiplicativeExpression
+                                powerExpression
+                                  expressionTerminator
+                                    i
+                        comparisonOperator
+                          <
+                        bitShiftExpression
+                          additiveExpression
+                            multiplicativeExpression
+                              powerExpression
+                                expressionTerminator
+                                  10
           )
         programBlock
           {
@@ -30,31 +43,29 @@ reference: |
             loopStatement
               loopSignature
                 for
-                membershipTest
-                  j
-                  in
-                  setDeclaration
-                    {
-                    expressionList
-                      expression
-                        expressionTerminator
-                          1
-                      ,
-                      expression
-                        expressionTerminator
-                          4
-                      ,
-                      expression
-                        expressionTerminator
-                          6
-                    }
+                j
+                in
+                setDeclaration
+                  {
+                  expressionList
+                    expression
+                      expressionTerminator
+                        1
+                    ,
+                    expression
+                      expressionTerminator
+                        4
+                    ,
+                    expression
+                      expressionTerminator
+                        6
+                  }
               programBlock
                 statement
                   quantumStatement
                     quantumInstruction
-                      quantumGateCall
-                        quantumGateName
-                          reset
+                      quantumReset
+                        reset
                         indexIdentifierList
                           indexIdentifier
                             q
@@ -70,31 +81,40 @@ reference: |
               if
               (
               expression
-                expression
-                  expressionTerminator
-                    i
-                binaryOperator
-                  ==
-                expression
-                  expressionTerminator
-                    8
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    powerExpression
+                                      expressionTerminator
+                                        i
+                          equalityOperator
+                            ==
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                multiplicativeExpression
+                                  powerExpression
+                                    expressionTerminator
+                                      8
               )
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      break
-                    ;
+                controlDirective
+                  break
+                  ;
               else
               programBlock
-                statement
-                  controlDirectiveStatement
-                    controlDirective
-                      continue
-                    ;
+                controlDirective
+                  continue
+                  ;
           }
     statement
-      controlDirectiveStatement
-        controlDirective
-          end
+      endStatement
+        end
         ;

@@ -1,9 +1,11 @@
 # indent w/ 2 spaces
 source: |
-  gate test_gate(angle[5]:theta) a, b {
+  gate test_gate(theta) a, b {
     reset a;
     barrier b;
+    gphase(-theta/2);
     CX a, b;
+    barrier;
   }
 reference: |
   program
@@ -12,22 +14,11 @@ reference: |
       quantumGateDefinition
         gate
         quantumGateSignature
-          test_gate
+          quantumGateName
+            test_gate
           (
-          classicalArgumentList
-            classicalArgument
-              classicalType
-                singleDesignatorType
-                  angle
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      5
-                  ]
-              association
-                :
-                theta
+          identifierList
+            theta
           )
           identifierList
             a
@@ -37,9 +28,8 @@ reference: |
           {
           quantumStatement
             quantumInstruction
-              quantumGateCall
-                quantumGateName
-                  reset
+              quantumReset
+                reset
                 indexIdentifierList
                   indexIdentifier
                     a
@@ -54,6 +44,34 @@ reference: |
             ;
           quantumStatement
             quantumInstruction
+              quantumPhase
+                gphase
+                (
+                expression
+                  logicalAndExpression
+                    bitOrExpression
+                      xOrExpression
+                        bitAndExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    multiplicativeExpression
+                                      unaryExpression
+                                        unaryOperator
+                                          -
+                                        powerExpression
+                                          expressionTerminator
+                                            theta
+                                    /
+                                    powerExpression
+                                      expressionTerminator
+                                        2
+                )
+            ;
+          quantumStatement
+            quantumInstruction
               quantumGateCall
                 quantumGateName
                   CX
@@ -63,5 +81,10 @@ reference: |
                   ,
                   indexIdentifier
                     b
+            ;
+          quantumStatement
+            quantumInstruction
+              quantumBarrier
+                barrier
             ;
           }

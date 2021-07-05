@@ -2,6 +2,9 @@
 source: |
   OPENQASM 3.0;
   include "std_gates.inc";
+  input angle[32] param1;
+  input angle[32] param2;
+  output bit result;
 reference: |
   program
     header
@@ -12,4 +15,40 @@ reference: |
       include
         include
         "std_gates.inc"
+        ;
+      io
+        ioIdentifier
+          input
+        classicalType
+          singleDesignatorType
+            angle
+          designator
+            [
+            expression
+              expressionTerminator
+                32
+            ]
+        param1
+        ;
+      io
+        ioIdentifier
+          input
+        classicalType
+          singleDesignatorType
+            angle
+          designator
+            [
+            expression
+              expressionTerminator
+                32
+            ]
+        param2
+        ;
+      io
+        ioIdentifier
+          output
+        classicalType
+          bitType
+            bit
+        result
         ;

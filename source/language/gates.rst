@@ -38,12 +38,12 @@ values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
 [0,2\pi)` in this base gate are angles whose precision is implementation
 dependent [1]_. This specifies any element of :math:`U(2)` up to a
 global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
-P
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
 
 .. code-block:: c
+   :force:
 
    gate h q {
       U(π/2, 0, π) q;
@@ -54,22 +54,23 @@ defined ``h``, we can use it in later ``gate`` blocks. The definition does not i
 implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
 the user and/or compiler, given information about the instructions supported by a particular target.
 
-Controled gates can be constructed by adding a control modifier to an existing gate. For example,
+Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
 .. code-block:: c
+   :force:
 
    gate CX c, t {
       ctrl @ U(π, 0, π) c, t;
    }
-   
+
    CX q[1], q[0];
 
 defines the gate
 
 .. math::
 
-   \mathrm{CX} := I\oplus X = \left(\begin{array}{cccc}
+   \mathrm{CX} := I\times X = \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 1 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
@@ -136,12 +137,13 @@ allows the inclusion of arbitrary global phases on circuits. The instruction ``g
 of :math:`e^{i\gamma}` to the scope containing the instruction. For example
 
 .. code-block:: c
+   :force:
 
-  gate rz(tau) q {
-    gphase(-tau/2);
-    U(0, 0, tau) q;
-  }
-  ctrl @ rz(π/2) q[1], q[0];
+   gate rz(tau) q {
+     gphase(-tau/2);
+     U(0, 0, tau) q;
+   }
+   ctrl @ rz(π/2) q[1], q[0];
 
 constructs the gate
 
@@ -157,12 +159,11 @@ and applies the controlled gate
 
 .. math::
 
-  I\oplus R_z(\pi/2) = \left(\begin{array}{cccc}
+  I\otimes R_z(\pi/2) = \left(\begin{array}{cccc}
   1 & 0 & 0 & 0 \\
   0 & 1 & 0 & 0 \\
   0 & 0 & e^{-i\tau/2} & 0 \\
   0 & 0 & 0 & e^{i\tau/2} \end{array}\right).
-
 
 .. _sec:macros:
 
@@ -175,8 +176,9 @@ operation is shown schematically in :numref:`fig_gate`
 corresponding OpenQASM code is
 
 .. code-block:: c
+   :force:
 
-   gate cphase(angle[32]: θ) a, b
+   gate cphase(θ) a, b
    {
      U(0, 0, θ / 2) a;
      CX a, b;
@@ -212,8 +214,8 @@ In general, new gates are defined by statements of the form
 
 where the optional parameter list ``params`` is a comma-separated list of variable
 parameters, and the argument list ``qargs`` is a comma-separated list of qubit
-arguments. The parameters are identifiers with angular types and default
-to 32-bits. The qubit arguments are identifiers. If there are no
+arguments. The parameters are identifiers with arbitrary-precision numeric types.
+The qubit arguments are identifiers. If there are no
 variable parameters, the parentheses are optional. At least one qubit
 argument is required. The arguments in ``qargs`` cannot be indexed within the body
 of the gate definition.
@@ -234,14 +236,21 @@ of the gate definition.
 Only built-in gate statements, calls to previously defined gates, and
 timing directives can appear in ``body``. For example, it is not valid to
 declare a classical register in a gate body. Looping constructs over these quantum
-statements are valid. The statements in the body
+statements are valid.
+
+The statements in the body
 can only refer to the symbols given in the parameter or argument list,
-and these symbols are scoped only to the subroutine body. An empty body
-corresponds to the identity gate. Gates must be declared before use and
-cannot call themselves. The statement ``name(params) qargs;`` applies the gate, and the variable
-parameters ``params`` can have any numeric type. The gate can be applied to any
-combination of qubits and quantum registers *of the same size* as shown
-in the following example. The quantum circuit given by
+and these symbols are scoped only to the subroutine body.
+
+An empty body corresponds to the identity gate.
+
+Gates must be declared before use and
+cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
+and the variable parameters ``params`` can have any numeric type.
+
+The gate can be applied to any combination of qubit registers *of the same size*, as shown in the following example.
+
+The quantum circuit given by
 
 .. code-block:: c
 
@@ -254,13 +263,16 @@ in the following example. The quantum circuit given by
    qubit qr2[3];
    qubit qr3[2];
    g qr0[0], qr1, qr2[0], qr3; // ok
-   g qr0[0], qr2, qr1[0], qr3; // error!
+   g qr0[0], qr2, qr1[0], qr3; // error! qr2 and qr3 differ in size
 
 has a second-to-last line that means
 
 .. code-block:: c
 
    // FIXME: insert translation of algorithmic block from TeX source.
+
+   for j ← 0, 1 do
+       g qr0[0],qr1[j],qr2[0],qr3[j];
 
 We provide this so that user-defined gates can be applied in parallel
 like the built-in gates.
@@ -273,42 +285,102 @@ A gate modifier is a keyword that applies to a gate. A modifier
 on the same or larger Hilbert space. We include modifiers in OpenQASM
 both for programming convenience and compiler analysis.
 
-The modifier ``inv @`` replaces its gate argument :math:`U` with its inverse
-:math:`U^\dagger`. The inverse of any gate can be defined recursively by
-reversing the order of the gates in its definition and replacing each of
-those with their inverse. The base case is given by replacing ``inv @ CX`` with ``CX`` and
-``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)``.
-
-.. code-block:: c
-
-   gate rzm(theta) q1 {
-       inv @ rzp(theta) q1;
-   }
-
-The modifier ``pow[k] @`` replaces its gate argument :math:`U` by its :math:`k`\ th
-power :math:`U^k` for some positive integer :math:`k` (not necessarily
-constant). Such a gate can be trivially defined as :math:`k` repetitions
-of the original gate, although more efficient implementations may be
-possible.
-
-.. code-block:: c
-
-   // define x as sqrt(x)
-   gate x q1 {
-       pow[2] @ sx q1;
-   }
-
 The modifier ``ctrl @`` replaces its gate argument :math:`U` by a
-controlled-:math:`U` gate. The new control qubit is prepended to the
-argument list for the controlled-:math:`U` gate. The modified gate does
-not use any additional scratch space. A target may or may not be able to
-execute the gate without further compilation.
+controlled-:math:`U` gate. If the control bit is 0, nothing happens to the target bit.
+If the control bit is 1, :math:`U` acts on the target bit. Mathematically, the controlled-:math:`U`
+gate is defined as :math:`C_U = I \otimes U^c`, where :math:`c` is the integer value of the control
+bit and :math:`C_U` is the controlled-:math:`U` gate. The new control qubit is prepended to the
+argument list for the controlled-:math:`U` gate. The modified gate does not use any additional
+scratch space and may require compilation to be executed.
+
+We define a special case, the controlled *global* phase gate, as
+:math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
 
 .. code-block:: c
+   :force:
 
    // Define a controlled Rz operation using the ctrl gate modifier.
+   // q1 is control, q2 is target
    gate crz(θ) q1, q2 {
-       ctrl @ U(θ, 0, 0) q1, q2;
+       ctrl @ rz(θ) q1, q2;
+   }
+
+The modifier ``negctrl @`` generates controlled gates with negative polarity, ie conditioned on a
+controlled value of 0 rather than 1. Mathematically, the negative controlled-:math:`U` gate is
+given by :math:`N_U = I \otimes U^{1-c}`, where :math:`c` is the integer value of the control bit
+and :math:`N_U` is the negative controlled-:math:`U` gate.
+
+.. code-block:: c
+   :force:
+
+   // Define a negative controlled X operation using the negctrl gate modifier.
+   // q1 is control, q2 is target
+   gate neg_cx(θ) q1, q2 {
+       negctrl @ x q1, q2;
+   }
+
+``ctrl`` and ``negctrl`` both accept an optional positive integer argument ``n``, specifying the
+number of control bits (omission means ``n=1``). ``n`` must be a compile-time constant. For an ``N``
+qubit operation, these operations are mathematically defined as
+
+.. math::
+
+   C^n_U = I_1 \otimes I_2 ... \otimes I_n \otimes U^{c_1*c_2*...*c_n}
+
+   N^n_U = I_1 \otimes I_2 ... \otimes I_n \otimes U^{1 - c_1*c_2*...*c_n}
+
+where :math:`c_1`, :math:`c_2`, ..., :math:`c_n` are the integer values of the control bits and
+:math:`C^n_U` are the n-bit controlled-:math:`U` and n-bit negative controlled-:math:`U` gates,
+respectively.
+
+.. code-block:: c
+   :force:
+
+   // A reversible boolean function
+   // Demonstrates use of ``ctrl(n) @`` and ``negctrl(n) @``
+   qubit[5] a;
+   qubit f;
+   reset f;
+   negctrl(2) @ ctrl(3) @ x a, f;
+   negctrl(2) @ ctrl(2) @ x a[0], a[3], a[1], a[2], f;
+   negctrl @ ctrl(3) @ x a[0], a[1], a[3], a[4], f;
+   negctrl @ ctrl(3) @ x a[1], a[0], a[3], a[4], f;
+   ctrl(3) @ x a[0], a[1], a[2], f;
+   negctrl(3) @ ctrl @ x a[0], a[1], a[2], a[3], f;
+
+The modifier ``inv @`` replaces its gate argument :math:`U` with its inverse
+:math:`U^\dagger`. This can be computed from gate :math:`U` via the following rules
+
+- The inverse of any gate :math:`U=U_m U_{m-1} ... U_1` can be defined recursively by reversing the
+order of the gates in its definition and replacing each of those with their inverse
+:math:`U^\dagger = U_1^\dagger U_2^\dagger ... U_m^\dagger`.
+- The inverse of a controlled operation is defined by inverting the control unitary. That is,
+``inv @ ctrl @ U = ctrl @ inv @ U``.
+- The base case is given by replacing ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)`` and
+``inv @ gphase(a)`` by ``gphase(-a)``.
+
+.. code-block:: c
+
+   // Define a negative z rotation and the inverse of a positive z rotation
+   gate rzm(θ) q1 {
+       inv @ rzp(θ) q1;
+   }
+   // Equivalently, this can be written as
+   gate rzm(θ) q1 {
+       rzp(-θ) q1;
+   }
+
+The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
+power :math:`U^k` for some positive integer or floating point number :math:`k` (not necessarily
+constant). In the case that :math:`k` is an integer, the gate can be implemented (albeit
+inefficiently) by :math:`k` repetitions of :math:`U` for :math:`k > 0` and :math:`k`
+repetitions of ``inv @ U`` for :math:`k < 0`.
+
+.. code-block:: c
+
+   // define x as the square of sqrt(x) ``sx`` gate
+   gate x q1 {
+       pow(2) @ sx q1;
    }
 
 .. [1]

@@ -1,7 +1,7 @@
 # indent w/ 2 spaces
 source: |
-  bit x = sub_call(10, "01") q1, q2;
-  int[2] y = kern_call(0.5, 10dt);
+  bit x = sub_call(10, "01", q1[0], q2);
+  int[2] y = extern_call(0.5, 10dt);
 reference: |
   program
     header
@@ -9,15 +9,13 @@ reference: |
       classicalDeclarationStatement
         classicalDeclaration
           bitDeclaration
-            bitType
-              bit
-            indexEqualsAssignmentList
-              indexIdentifier
-                x
-              equalsExpression
-                =
-                expression
-                  subroutineCall
+            bit
+            x
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  externOrSubroutineCall
                     sub_call
                     (
                     expressionList
@@ -28,15 +26,21 @@ reference: |
                       expression
                         expressionTerminator
                           "01"
-                    )
-                    expressionList
+                      ,
                       expression
                         expressionTerminator
-                          q1
+                          expressionTerminator
+                            q1
+                          [
+                          expression
+                            expressionTerminator
+                              0
+                          ]
                       ,
                       expression
                         expressionTerminator
                           q2
+                    )
         ;
     statement
       classicalDeclarationStatement
@@ -50,13 +54,13 @@ reference: |
                 expressionTerminator
                   2
               ]
-            equalsAssignmentList
-              y
-              equalsExpression
-                =
-                expression
-                  kernelCall
-                    kern_call
+            y
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  externOrSubroutineCall
+                    extern_call
                     (
                     expressionList
                       expression
@@ -65,8 +69,7 @@ reference: |
                       ,
                       expression
                         expressionTerminator
-                          timingTerminator
-                            timingIdentifier
-                              10dt
+                          timingIdentifier
+                            10dt
                     )
         ;
