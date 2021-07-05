@@ -33,7 +33,7 @@ The TSC may have a **Secretary**  who organizes the meeting (e.g. prepares and d
 
 The TSC will, from time to time, elect to create **Working Groups** to study issues. The TSC will appoint a **Contributor** as chair for each WG. These WGs should come back to the TSC with a proposal in the form of a language RFC or pull request to the OpenQASM specification. A WG will be automatically disbanded upon acceptance or (final) rejection of an RFC.
 
-**TSC Members** will serve a 2-year term, with the exception of the founding TSC which will have staggered terms to avoid an election of an entire TSC all at once. New **TSC Members** will be selected by nomination of the TSC, followed by a vote which is open to all **Contributors**. Outgoing **TSC Members** participate in the nomination process which selects their successors. Note that **TSC Members** may be re-elected to serve additional 2-year terms. The same process will be used in the even that a **TSC Member** resigns prior to the end of their term.
+**TSC Members** will serve a 2-year term, with the exception of the founding TSC which will have staggered terms to avoid an election of an entire TSC all at once. New **TSC Members** will be selected by nomination of the TSC, followed by a vote which is open to all **Contributors**. Outgoing **TSC Members** participate in the nomination process which selects their successors. Note that **TSC Members** may be re-elected to serve additional 2-year terms. The same process will be used in the event that a **TSC Member** resigns prior to the end of their term.
 
 ## Open Questions
 
