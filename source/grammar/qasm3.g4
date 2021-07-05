@@ -168,6 +168,15 @@ classicalArgumentList
     : classicalArgument ( COMMA classicalArgument )*
     ;
 
+anyTypeArgument
+    : classicalArgument
+    | quantumArgument
+    ;
+
+anyTypeArgumentList
+    : ( anyTypeArgument COMMA )* anyTypeArgument
+    ;
+
 /** Aliasing **/
 aliasStatement
     : 'let' Identifier EQUALS indexIdentifier SEMICOLON
@@ -386,8 +395,7 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | externCall
-    | subroutineCall
+    | externOrSubroutineCall
     | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
@@ -465,28 +473,23 @@ controlDirective
     ;
 
 externDeclaration
-    : 'extern' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+    : 'extern' Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON
     ;
 
-// if have extern w/ out args, is ambiguous; may get matched as identifier
-externCall
+// if have function call w/ out args, is ambiguous; may get matched as identifier
+externOrSubroutineCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier LPAREN anyTypeArgumentList? RPAREN
     returnSignature? subroutineBlock
     ;
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
-    ;
-
-// if have subroutine w/ out args, is ambiguous; may get matched as identifier
-subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/

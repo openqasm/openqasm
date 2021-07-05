@@ -88,19 +88,19 @@ reference: |
         programBlock
           {
           statement
-            expressionStatement
-              expression
-                expressionTerminator
-                  subroutineCall
+            quantumStatement
+              quantumInstruction
+                quantumGateCall
+                  quantumGateName
                     x
-                    indexIdentifierList
-                      indexIdentifier
-                        q
-                        [
-                        expressionList
-                          expression
-                            expressionTerminator
-                              i
-                        ]
+                  indexIdentifierList
+                    indexIdentifier
+                      q
+                      [
+                      expressionList
+                        expression
+                          expressionTerminator
+                            i
+                      ]
               ;
           }
