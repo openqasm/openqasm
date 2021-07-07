@@ -250,7 +250,7 @@ quantumReset
     ;
 
 quantumMeasurement
-    : 'measure' indexIdentifierList
+    : 'measure' indexIdentifier
     ;
 
 quantumMeasurementAssignment
