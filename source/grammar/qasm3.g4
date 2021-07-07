@@ -9,7 +9,7 @@ program
     ;
 
 header
-    : version? include*
+    : version? include* io*
     ;
 
 version
@@ -20,9 +20,17 @@ include
     : 'include' StringLiteral SEMICOLON
     ;
 
+ioIdentifier
+    : 'input'
+    | 'output'
+    ;
+io
+    : ioIdentifier classicalType Identifier SEMICOLON
+    ;
+
 globalStatement
     : subroutineDefinition
-    | kernelDeclaration
+    | externDeclaration
     | quantumGateDefinition
     | calibration
     | quantumDeclarationStatement  // qubits are declared globally
@@ -80,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : ( quantumArgument COMMA )* quantumArgument
+    : quantumArgument ( COMMA quantumArgument )*
     ;
 
 /** Classical Types **/
@@ -157,7 +165,16 @@ classicalArgument
     ;
 
 classicalArgumentList
-    : ( classicalArgument COMMA )* classicalArgument
+    : classicalArgument ( COMMA classicalArgument )*
+    ;
+
+anyTypeArgument
+    : classicalArgument
+    | quantumArgument
+    ;
+
+anyTypeArgumentList
+    : ( anyTypeArgument COMMA )* anyTypeArgument
     ;
 
 /** Aliasing **/
@@ -174,7 +191,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
+    : indexIdentifier ( COMMA indexIdentifier )*
     ;
 
 rangeDefinition
@@ -225,7 +242,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN expression RPAREN
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
     ;
 
 quantumReset
@@ -242,29 +259,40 @@ quantumMeasurementAssignment
     ;
 
 quantumBarrier
-    : 'barrier' indexIdentifierList
+    : 'barrier' indexIdentifierList?
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN expression RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | powModifier | ctrlModifier ) '@'
+    ;
+
+powModifier
+    : 'pow' LPAREN expression RPAREN
+    ;
+
+ctrlModifier
+    : ( 'ctrl' | 'negctrl' ) ( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/
 
 unaryOperator
-    : '~' | '!'
+    : '~' | '!' | '-'
     ;
 
-relationalOperator
+comparisonOperator
     : '>'
     | '<'
     | '>='
     | '<='
-    | '=='
+    ;
+
+equalityOperator
+    : '=='
     | '!='
     ;
 
@@ -282,8 +310,8 @@ expression
     : expressionTerminator
     | unaryExpression
     // expression hierarchy
-    | xOrExpression
-    | expression '|' xOrExpression
+    | logicalAndExpression
+    | expression '||' logicalAndExpression
     ;
 
 /**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
@@ -294,18 +322,43 @@ expression
     Multiplicative
     Additive
     Bit Shift
+    Comparison
+    Equality
     Bit And
     Exlusive Or (xOr)
     Bit Or
+    Logical And
+    Logical Or
 **/
+
+logicalAndExpression
+    : bitOrExpression
+    | logicalAndExpression '&&' bitOrExpression
+    ;
+
+bitOrExpression
+    : xOrExpression
+    | bitOrExpression '|' xOrExpression
+    ;
+
 xOrExpression
     : bitAndExpression
     | xOrExpression '^' bitAndExpression
     ;
 
 bitAndExpression
+    : equalityExpression
+    | bitAndExpression '&' equalityExpression
+    ;
+
+equalityExpression
+    : comparisonExpression
+    | equalityExpression equalityOperator comparisonExpression
+    ;
+
+comparisonExpression
     : bitShiftExpression
-    | bitAndExpression '&' bitShiftExpression
+    | comparisonExpression comparisonOperator bitShiftExpression
     ;
 
 bitShiftExpression
@@ -320,13 +373,18 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : expressionTerminator
+    : powerExpression
     | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
     ;
 
 unaryExpression
-    : unaryOperator expressionTerminator
+    : unaryOperator powerExpression
+    ;
+
+powerExpression
+    : expressionTerminator
+    | expressionTerminator '**' powerExpression
     ;
 
 expressionTerminator
@@ -337,10 +395,8 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | kernelCall
-    | subroutineCall
-    | timingTerminator
-    | MINUS expressionTerminator
+    | externOrSubroutineCall
+    | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
     | expressionTerminator incrementor
@@ -361,7 +417,7 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
     ;
 
 castOperator
@@ -369,21 +425,8 @@ castOperator
     ;
 
 expressionList
-    : ( expression COMMA )* expression
+    : expression ( COMMA expression )*
     ;
-
-/** Boolean expression hierarchy **/
-booleanExpression
-    : membershipTest
-    | comparisonExpression
-    | booleanExpression logicalOperator comparisonExpression
-    ;
-
-comparisonExpression
-    : expression  // if (expression)
-    | expression relationalOperator expression
-    ;
-/** End boolean expression hierarchy **/
 
 equalsExpression
     : EQUALS expression
@@ -391,11 +434,7 @@ equalsExpression
 
 assignmentOperator
     : EQUALS
-    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
-    ;
-
-membershipTest
-    : Identifier 'in' setDeclaration
+    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
 setDeclaration
@@ -410,12 +449,12 @@ programBlock
     ;
 
 branchingStatement
-    : 'if' LPAREN booleanExpression RPAREN programBlock ( 'else' programBlock )?
+    : 'if' LPAREN expression RPAREN programBlock ( 'else' programBlock )?
     ;
 
 loopSignature
-    : 'for' membershipTest
-    | 'while' LPAREN booleanExpression RPAREN
+    : 'for' Identifier 'in' setDeclaration
+    | 'while' LPAREN expression RPAREN
     ;
 
 loopStatement: loopSignature programBlock ;
@@ -433,29 +472,24 @@ controlDirective
     | returnStatement
     ;
 
-kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+externDeclaration
+    : 'extern' Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON
     ;
 
-// if have kernel w/ out args, is ambiguous; may get matched as identifier
-kernelCall
+// if have function call w/ out args, is ambiguous; may get matched as identifier
+externOrSubroutineCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier LPAREN anyTypeArgumentList? RPAREN
     returnSignature? subroutineBlock
     ;
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
-    ;
-
-// if have subroutine w/ out args, is ambiguous; may get matched as identifier
-subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/
@@ -467,22 +501,17 @@ pragma
 /*** Circuit Timing ***/
 
 timingType
-    : 'length'
-    | StretchN
+    : 'duration'
+    | 'stretch'
     ;
 
 timingBox
-    : 'boxas' Identifier quantumBlock
-    | 'boxto' TimingLiteral quantumBlock
-    ;
-
-timingTerminator
-    : timingIdentifier | 'stretchinf'
+    : 'box' designator? quantumBlock
     ;
 
 timingIdentifier
     : TimingLiteral
-    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'durationof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -565,7 +594,6 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
-StretchN : 'stretch' Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
