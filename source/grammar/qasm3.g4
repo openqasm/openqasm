@@ -237,7 +237,7 @@ quantumMeasurement
     ;
 
 quantumMeasurementAssignment
-    : quantumMeasurement ARROW indexIdentifier
+    : quantumMeasurement ( ARROW indexIdentifier )?
     | indexIdentifier EQUALS quantumMeasurement
     ;
 
