@@ -120,7 +120,6 @@ class TestGrammar:
         self.load_and_compare_yaml("subroutine.yaml")
         self.load_and_compare_yaml("extern.yaml")
         self.load_and_compare_yaml("quantum_gate.yaml")
-        self.load_and_compare_yaml("empty_gate.yaml")
         # TODO: Add calibration test when pulse grammar is filled in
 
     def test_gate(self):
