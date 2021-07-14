@@ -108,9 +108,9 @@ Inline calibration blocks
 
 As calibration grammars may require the ability to insert top-level configuration information, perform program setup, or make inline calls
 to calibration-level instructions, OpenQASM supports the ability to declare a ``cal`` block. Within the ``cal`` block the
-semantics of the selected calibration grammar are valid. The scope of this block is at the determination of the calibration grammar designer.
-In practice, calibration grammars such as OpenPulse may apply a global scope to all identifiers in order to communicate state between
-``defcal`` calls.
+semantics of the selected calibration grammar are valid. The ``cal`` block may capture values from the enclosing scope, but the scope of values declared within ``cal``
+block are determined by the calibration grammar designers. In practice, calibration grammars such as OpenPulse may apply
+a global scope to all identifiers in order to declare values shared across all ``defcal`` calls thereby linking them together.
 
 .. code-block:: c
 
