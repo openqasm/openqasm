@@ -39,8 +39,8 @@ target hardware.
 Channels
 --------
 
-Channels map to a hardware resource, which can play pulses to manipulate a qubit
-or capture data from the qubit to perform a measurement. There is a many-to-many
+Channels map to hardware resources, which can play pulses stimuli or capture data. In practice,
+channels are used to manipulate and observe qubits. There is a many-to-many
 relationship between qubits and channels. One qubit may have multiple channels
 connecting to it. Pulses on different channels would have different physical
 interactions with that qubit and thereby control different operations. A channel may also have many qubits. For instance,
