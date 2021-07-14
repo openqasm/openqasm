@@ -43,7 +43,7 @@ Channels map to a hardware resource, which can play pulses to manipulate a qubit
 or capture data from the qubit to perform a measurement. There is a many-to-many
 relationship between qubits and channels. One qubit may have multiple channels
 connecting to it. Pulses on different channels would have different physical
-interactions with that qubit. A channel may also have many qubits. For instance,
+interactions with that qubit and thereby control different operations. A channel may also have many qubits. For instance,
 a channel could manipulate the coupling between two neighboring qubits, or
 could even reference multiple qubits in a chain.
 
