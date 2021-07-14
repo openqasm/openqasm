@@ -135,7 +135,7 @@ instantiated, the frame time starts at 0. ``frame``\s can also be copied using t
   driveframe2.phase = driveframe1.phase + pi/2;
 
 This will generate a :math:`\pi/2` phase incremented copy of ``driveframe1`` with the same
-Frame manipulation
+frame manipulation
 ~~~~~~~~~~~~~~~~~~
 
 The (frequency, phase) tuple of a frame can be manipulated throughout program
