@@ -148,7 +148,7 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
 
 .. code-block:: javascript
 
-   // Example 1: Shift phase of the "drive" frame by pi/4, eg. an rz gate with angle -pi/4
+   // Example 1: Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
    cal {
      driveframe.phase += pi/4;
    }
