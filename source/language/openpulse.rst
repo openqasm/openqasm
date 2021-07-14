@@ -113,7 +113,7 @@ The frame is composed of three parts:
 The ``frame`` type is a virtual resource and the exact precision of these parameters is
 hardware specific. It is thus up to the compiler to choose how to implement the required
 transformations to physical resources in hardware (e.g. mapping multiple frames to a
-single NCO).
+single `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_).
 
 Frame Construction
 ~~~~~~~~~~~~~~~~~~
