@@ -374,7 +374,8 @@ of the clocks given as arguments.
 
 ``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
 meaning that those clocks are guaranteed to be aligned at the start of the block.
-These blocks also need to have a well-defined length, similar to the ``boxas`` block.
+These blocks also need to have a well-defined length calculable at compile-time
+to enable scheduling at the circuit level.
 
 .. code-block:: javascript
 
