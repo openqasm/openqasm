@@ -384,7 +384,7 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
      frame driveframe2 = newframe(6.0e9, 0);
    }
 
-   defcal aligned_gates {
+   defcal aligned_gates $0, $1 {
      // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
      play(tx0, p, driveframe1);
      delay[20dt] driveframe1;
