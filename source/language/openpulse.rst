@@ -88,7 +88,7 @@ may refer to a transmit channel with an arbitrary name.
 Frames
 ------
 
-When interacting with qubits, it is powerful to track of a frame of reference, akin to the rotating
+When interacting with qubits, it is necessary to keep track of a frame of reference, akin to the rotating
 frame of a Hamiltonian, throughout the execution of a program. Openpulse provides the ``frame``
 type which is responsible for tracking two properties:
 
