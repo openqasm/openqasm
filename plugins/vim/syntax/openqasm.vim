@@ -11,20 +11,7 @@ if exists("b:current_syntax")
 endif
 let b:current_syntax = "openqasm"
 
-" Assign a default value of the OpenQASM version for files which do not yet have
-" the 'OPENQASM <v>;' header.  The header is parsed during the filetype
-" detection, if present.
-if exists("g:openqasm_version_override")
-    let b:openqasm_version = g:openqasm_version_override
-endif
-if exists("b:openqasm_version")
-    let s:openqasm_version = b:openqasm_version
-else if exists("g:openqasm_version_fallback")
-    let s:openqasm_version = g:openqasm_version_fallback
-else
-    let s:openqasm_version = 3.0
-endif
-
+let s:openqasm_version = openqasm#get_version()
 
 " Spelling only occurs in comments.
 syntax spell default
