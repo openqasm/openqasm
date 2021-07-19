@@ -1,0 +1,63 @@
+*openqasm.txt*                 OpenQASM Vim plugin                   *openqasm*
+
+1. About openqasm.vim                               |openqasm-about|
+2. Quick Start                                      |openqasm-quickstart|
+3. Options                                          |openqasm-options|
+
+=============================================================================
+1. ABOUT OPENQASM.VIM ~
+                                                             *openqasm-about*
+
+`openqasm.vim` is an IBM-maintained Vim plugin for working with OpenQASM
+files.  Initially, the plugin only offers syntax highlighting for both
+OpenQASM 2.0 and 3.0 files.
+
+=============================================================================
+2. QUICK START ~
+                                                        *openqasm-quickstart*
+                                                           *openqasm-install*
+
+`openqasm.vim` will mostly just work out-of-the-box, with no configuration.
+To install, clone its repository somewhere to your local storage, and make
+sure the subdirectory `plugins/vim` is on the |runtimepath|, for example
+    
+  set rtp+='<repo path>/plugins/vim'
+
+If you use a plugin manager like `Vundle` or `vim-plug`, you should instead
+write
+
+  Plug[in] 'Qiskit/openqasm', {'rtp': 'plugins/vim'}
+
+within the plugin definitions section of your configuration file.  The command
+is `Plug` for `vim-plug` and `Plugin` for `Vundle`.  You must reload your
+configuration after this, and if using a plugin manager, call the requisite
+plugin installation command.
+
+After installation, files matching `*.qasm` will be registered as OpenQASM
+files.  To turn on OpenQASM syntax highlighting for a different, open buffer,
+set its |filetype| to `openqasm`, for example by
+
+  set filetype=openqasm
+
+=============================================================================
+3. OPTIONS ~
+                                                           *openqasm-options*
+
+*g:openqasm_version_fallback*
+  Set to a float to define what version of OpenQASM to assume if no
+  
+    OPENQASM <version>;
+
+  header statement is present in the file.  This may be the case for include
+  files.
+
+  Default value: 3.0
+
+*g:openqasm_version_override*
+  Set to a float to override all file version checks, and instead always
+  assume this version of OpenQASM.  Unset to disable.
+
+  Default value: not set
+
+=============================================================================
+" vim: set expandtab sts=2 ts=2 sw=2 tw=78 ft=help norl:
