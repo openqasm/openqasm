@@ -15,7 +15,7 @@ For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM
 
 ## About this project
 
-On this repository, you'll find all the documentation related to OpenQASM and some useful OpenQASM examples.
+On this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
 
 ### Language specs
 
@@ -69,6 +69,11 @@ rz(pi - arccos(3 / 5)) input;
 h input;
 output = measure input;  // should get zero
 ```
+
+## Plugins
+
+This repository also contains a plugin for working with OpenQASM 2.0 and 3.0 files in vim.
+You can find its full documentation in the [plugins/vim](plugins/vim) directory.
 
 ## Citation format
 
