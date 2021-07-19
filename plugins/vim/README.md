@@ -2,6 +2,8 @@
 
 A Vim plugin for syntax highlighting of OpenQASM files.
 
+<img alt="Example syntax highlighting of an OpenQASM file with the solarized-dark color scheme" src="https://user-images.githubusercontent.com/5968590/126172538-2863ad68-89da-4d43-b7f4-a9895586b70a.png" width=343px /> <img alt="Example syntax highlighting of an OpenQASM file with the solarized-light color scheme" src="https://user-images.githubusercontent.com/5968590/126172543-ce9b23e3-5ba0-4ced-b233-25f4bc7c90c7.png" width=343px />
+
 
 ## Installation
 
