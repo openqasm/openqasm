@@ -28,13 +28,13 @@ The textual format described here has several advantages over the original JSON 
 
 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes
-and hardware. At the core of the OpenPulse grammar are the concepts of ``frames``, ``waveforms`` and ``channels``.
-``frames`` are used to schedule the playing of a ``waveform`` or capturing of data
-via a ``channel`` on the target device. A ``channel`` is a software abstraction which allows the
-programmer to be agnostic to complexities of the device's underlying pulse generation hardware. It
-is the responsibility of the target device's compiler to map ``frames`` to the applied ``channel``s in
-target hardware.
-
+and hardware. At the core of the OpenPulse grammar are the concepts of ``channel``s ``waveform``s and, ``frame``s.
+A ``channel`` is a software abstraction which allows the programmer to be agnostic to the complexities
+of the device's underlying pulse generation hardware, representing an input or output channel to various components
+controlling qubits such as microwave lines. A ``waveform`` is a time-dependent stimulus that is emitted on these channels,
+such as a microwave pulse. The ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
+via a ``channel`` on the target device. It acts as both a *clock* within the quantum program with its time being incremented on
+each usage and also tracks the phase and frequency of the underlying reference frame.
 
 Channels
 --------
