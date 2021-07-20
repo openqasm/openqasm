@@ -186,14 +186,15 @@ Waveforms are of type ``waveform`` and can either be:
 - An array of complex samples which define the points for the waveform envelope
 - An abstract mathematical function representing a waveform. This will later be
   materialized into a list of complex samples, either by the compiler or the hardware
-  using the parameters provided to the pulse template.
+  using the parameters provided to the ``extern`` defined pulse template.
 
-A value of type ``waveform`` is retrieved by explicitly constructing the complex samples
-or by calling one of the built-in waveform template functions. The latter are initialized by
-assigning a ``waveform`` to the result of a function call. Note that each of these
-extern functions takes a type ``length`` as a first argument, since waveforms need to have a
-definite length. Using the hardware dependent ``dt`` unit is recommended for this length,
-since the compiler may need to down-sample a higher precision waveform to physically realize it.
+A value of type ``waveform`` may be defined either by explicitly constructing the complex samples
+or by calling one of the waveform template functions provided by the target device.
+Note that each of these extern functions takes a type ``length`` as a first argument,
+since waveforms must have a definite length.
+Using the hardware dependent ``dt`` unit is recommended for this length,
+since otherwise the compiler may need to down-sample a higher precision
+waveform to physically realize it.
 
 .. code-block:: javascript
 
@@ -203,34 +204,34 @@ since the compiler may need to down-sample a higher precision waveform to physic
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   gaussian(complex[size] amp, length l, length sigma) -> waveform;
+   extern gaussian(complex[size] amp, length l, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
-   sech(complex[size] amp, length l, length sigma) -> waveform;
+   extern sech(complex[size] amp, length l, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // square_width is the width of the square waveform component
    // sigma is the standard deviation of waveform
-   gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
+   extern gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // l is the overall length of the waveform
    // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
+   extern drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
 
    // amp is waveform amplitude
    // l is the overall length of the waveform
-   constant(complex[size] amp, length l) -> waveform;
+   extern constant(complex[size] amp, length l) -> waveform;
 
    // amp is waveform amplitude
    // l is the overall length of the waveform
    // frequency is the frequency of the waveform
    // phase is the phase of the waveform
-   sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
+   extern sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
