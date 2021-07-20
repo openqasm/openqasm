@@ -31,15 +31,16 @@ Openpulse provides a flexible programming model that should extend to many quant
 and hardware. At the core of the OpenPulse grammar are the concepts of ``channel``s ``waveform``s and, ``frame``s.
 A ``channel`` is a software abstraction which allows the programmer to be agnostic to the complexities
 of the device's underlying pulse generation hardware, representing an input or output channel to various components
-controlling qubits such as microwave lines. A ``waveform`` is a time-dependent stimulus that is emitted on these channels,
-such as a microwave pulse. The ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
+controlling qubits such as microwave lines. A ``waveform`` is a time-dependent envelope that is emitted a channel in
+conjunction with a ``frame``. The ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
 via a ``channel`` on the target device. It acts as both a *clock* within the quantum program with its time being incremented on
-each usage and also tracks the phase and frequency of the underlying reference frame.
+each usage and also a stateful `carrier signal <https://en.wikipedia.org/wiki/Carrier_wave>`_ defined by a frequency and phase that
+a ``waveform`` will be mixed with when emitted on a ``channel``.
 
 Channels
 --------
 
-Channels map to hardware resources, which can play pulses stimuli or capture data. In practice,
+Channels map to hardware resources, which can play waveform stimuli or capture data. In practice,
 channels are used to manipulate and observe qubits. There is a many-to-many
 relationship between qubits and channels. One qubit may have multiple channels
 connecting to it. Pulses on different channels would have different physical
