@@ -132,13 +132,9 @@ syntax keyword qasmDefine gate nextgroup=qasmFunction skipwhite skipempty
 
 " For historical reasons, the designator from a register defined by "qreg" (as
 " opposed to "qubit") comes _after_ the identifier, unlike every other type.
-syntax keyword qasmType qreg
+syntax keyword qasmType qreg creg
     \ nextgroup=qasmRegIdentifier skipwhite skipempty
-if s:openqasm_version < 3
-    syntax keyword qasmType creg
-        \ nextgroup=qasmRegIdentifier skipwhite skipempty
-endif
-syntax match qasmRegIdentifier #\v<\K\k># contained nextgroup=qasmDesignator skipwhite skipempty
+syntax match qasmRegIdentifier #\v<\K\k*># contained nextgroup=qasmDesignator skipwhite skipempty
 
 highlight link qasmRegIdentifier qasmIdentifier
 
@@ -146,10 +142,7 @@ if s:openqasm_version < 3
     syntax keyword qasmDefine opaque nextgroup=qasmFunction skipwhite skipempty
 else
     syntax keyword qasmInclude defcalgrammar
-    " The current OpenQASM 3 grammar has 'creg' behave like other classical
-    " types (i.e. with the designator immediately after the type name), even
-    " though this clashes with OpenQASM 2.
-    syntax keyword qasmType bit qubit int uint float fixed bool angle duration stretch creg
+    syntax keyword qasmType bit qubit int uint float fixed bool angle duration stretch
         \ nextgroup=qasmDesignator skipwhite skipempty
     syntax keyword qasmIO input output
     syntax keyword qasmBuiltinQuantum durationof box
@@ -251,6 +244,7 @@ endif
 
 "" Language literals.
 syntax region qasmString start=#"# end=#"#
+syntax region qasmString start=#'# end=#'#
 syntax match qasmInteger #\v<\d+# nextgroup=qasmTimeUnit
 syntax match qasmReal #\v<\d+\.\d*([eE][+-]?\d+)?# nextgroup=qasmTimeUnit skipwhite skipempty
 if s:openqasm_version >= 3
