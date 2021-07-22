@@ -197,6 +197,12 @@ Using the hardware dependent ``dt`` unit is recommended for this length,
 since otherwise the compiler may need to down-sample a higher precision
 waveform to physically realize it.
 
+NB: We provide the ``waveform`` type in addition to the complex list of samples to
+provide more context to compilers and hardware. For example, some hardware pulse
+generators may have optimized implementations of common pulse shapes like gaussians.
+Providing structured gaussian parameters instead of the materialized list of complex
+samples provides optimization opportunities that wouldn't be available otherwise.
+
 .. code-block:: javascript
 
    // arbitrary complex samples
