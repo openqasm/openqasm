@@ -28,22 +28,23 @@ The textual format described here has several advantages over the original JSON 
 
 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes
-and hardware. At the core of the OpenPulse grammar are the concepts of ``frames``, ``waveforms`` and ``channels``.
-``frames`` are used to schedule the playing of a ``waveform`` or capturing of data
-via a ``channel`` on the target device. A ``channel`` is a software abstraction which allows the
-programmer to be agnostic to complexities of the device's underlying pulse generation hardware. It
-is the responsibility of the target device's compiler to map ``frames`` to the applied ``channel``s in
-target hardware.
-
+and hardware. At the core of the OpenPulse grammar are the concepts of ``channel``s ``waveform``s and, ``frame``s.
+A ``channel`` is a software abstraction which allows the programmer to be agnostic to the complexities
+of the device's underlying pulse generation hardware, representing an input or output channel to various components
+controlling qubits such as microwave lines. A ``waveform`` is a time-dependent envelope that is emitted a channel in
+conjunction with a ``frame``. The ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
+via a ``channel`` on the target device. It acts as both a *clock* within the quantum program with its time being incremented on
+each usage and also a stateful `carrier signal <https://en.wikipedia.org/wiki/Carrier_wave>`_ defined by a frequency and phase that
+a ``waveform`` will be mixed with when emitted on a ``channel``.
 
 Channels
 --------
 
-Channels map to a hardware resource, which can play pulses to manipulate a qubit
-or capture data from the qubit to perform a measurement. There is a many-to-many
+Channels map to hardware resources, which can play waveform stimuli or capture data. In practice,
+channels are used to manipulate and observe qubits. There is a many-to-many
 relationship between qubits and channels. One qubit may have multiple channels
 connecting to it. Pulses on different channels would have different physical
-interactions with that qubit. A channel may also have many qubits. For instance,
+interactions with that qubit and thereby control different operations. A channel may also have many qubits. For instance,
 a channel could manipulate the coupling between two neighboring qubits, or
 could even reference multiple qubits in a chain.
 
@@ -88,7 +89,7 @@ may refer to a transmit channel with an arbitrary name.
 Frames
 ------
 
-When interacting with qubits, it is powerful to track of a frame of reference, akin to the rotating
+When interacting with qubits, it is necessary to keep track of a frame of reference, akin to the rotating
 frame of a Hamiltonian, throughout the execution of a program. Openpulse provides the ``frame``
 type which is responsible for tracking two properties:
 
@@ -113,7 +114,7 @@ The frame is composed of three parts:
 The ``frame`` type is a virtual resource and the exact precision of these parameters is
 hardware specific. It is thus up to the compiler to choose how to implement the required
 transformations to physical resources in hardware (e.g. mapping multiple frames to a
-single NCO).
+single `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_).
 
 Frame Construction
 ~~~~~~~~~~~~~~~~~~
@@ -186,14 +187,15 @@ Waveforms are of type ``waveform`` and can either be:
 - An array of complex samples which define the points for the waveform envelope
 - An abstract mathematical function representing a waveform. This will later be
   materialized into a list of complex samples, either by the compiler or the hardware
-  using the parameters provided to the pulse template.
+  using the parameters provided to the ``extern`` defined pulse template.
 
-A value of type ``waveform`` is retrieved by explicitly constructing the complex samples
-or by calling one of the built-in waveform template functions. The latter are initialized by
-assigning a ``waveform`` to the result of a (extern) function call. Note that each of these
-extern functions takes a type ``length`` as a first argument, since waveforms need to have a
-definite length. Using the hardware dependent ``dt`` unit is recommended for this length,
-since the compiler may need to down-sample a higher precision waveform to physically realize it.
+A value of type ``waveform`` may be defined either by explicitly constructing the complex samples
+or by calling one of the waveform template functions provided by the target device.
+Note that each of these extern functions takes a type ``length`` as a first argument,
+since waveforms must have a definite length.
+Using the hardware dependent ``dt`` unit is recommended for this length,
+since otherwise the compiler may need to down-sample a higher precision
+waveform to physically realize it.
 
 .. code-block:: javascript
 
@@ -239,17 +241,17 @@ new waveforms (this list may be updated as more functionality is required).
 
     // Multiply two input waveforms entry by entry to produce a new waveform
     // :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
-    extern mix(waveform wf1, waveform wf2) -> waveform;
+    mix(waveform wf1, waveform wf2) -> waveform;
 
     // Sum two input waveforms entry by entry to produce a new waveform
     // :math:`wf(t_i) = wf_1(t_i) + wf_2(t_i)`
-    extern sum(waveform wf1, waveform wf2) -> waveform;
+    sum(waveform wf1, waveform wf2) -> waveform;
 
     // Add a relative phase to a waveform (ie multiply by :math:`e^{\imag \theta}`)
-    extern phase_shift(waveform wf, angle ang) -> waveform;
+    phase_shift(waveform wf, angle ang) -> waveform;
 
     // Scale the amplitude of a waveform's samples producing a new waveform
-    extern scale(waveform wf, float factor) -> waveform;
+    scale(waveform wf, float factor) -> waveform;
 
 Play instruction
 ----------------
@@ -285,7 +287,7 @@ Acquisition is scheduled by a ``capture`` instruction. This is a special
 ``extern`` function which is specified by a hardware vendor. The measurement
 process is difficult to describe generically due to the wide variety of
 hardware and measurement methods. Like the play instruction, these instructions
-may only appear inside a ``defcal`` block!
+may only appear inside a ``defcal`` or ``cal`` block.
 
 The only required parameters are the ``channel`` and the ``frame``.
 
@@ -315,7 +317,7 @@ extern definition at the top-level, such as:
   // A capture that returns a count e.g. number of photons detected
   kernel capture(channel chan, length len, frame output) -> int
 
-The return type of a ``capture`` command varies. It could be a raw trace, ie. a
+The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
 value. It could be a classified bit. Or it could even have no return value,
 pushing the results into some buffer which is then accessed outside the program.
@@ -374,7 +376,8 @@ of the clocks given as arguments.
 
 ``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
 meaning that those clocks are guaranteed to be aligned at the start of the block.
-These blocks also need to have a well-defined length, similar to the ``boxas`` block.
+These blocks also need to have a well-defined length calculable at compile-time
+to enable scheduling at the circuit level.
 
 .. code-block:: javascript
 
@@ -384,7 +387,7 @@ These blocks also need to have a well-defined length, similar to the ``boxas`` b
      frame driveframe2 = newframe(6.0e9, 0);
    }
 
-   defcal aligned_gates {
+   defcal aligned_gates $0, $1 {
      // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
      play(tx0, p, driveframe1);
      delay[20dt] driveframe1;
