@@ -245,7 +245,7 @@ The user would then include the ``backend.inc`` in their own program and use the
 
    // Defcal using frames from backend.inc enabling the calibration
    // to "plugin" to the existing calibrations.
-   defcal $0 Y90p {
+   defcal Y90p $0 {
       waveform y90p = drag(0.1-0.2*Im, 160dt, 40dt, 0.05);
       play(q0, y90p, q0_frame);
    }
