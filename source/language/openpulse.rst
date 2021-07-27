@@ -4,7 +4,7 @@ OpenPulse Grammar
 *The OpenPulse grammar is still in active development and is liable to change.*
 
 OpenQASM allows users to provide the target system's implementation of quantum operations
-with ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
+with ``cal`` and ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
 this document, we outline one such grammar, OpenPulse, which may be selected within a supporting
 compiler through the declaration ``defcalgrammar "openpulse";``.
 
@@ -30,12 +30,14 @@ The textual format described here has several advantages over the original JSON 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes
 and hardware. At the core of the OpenPulse grammar are the concepts of ``channel``s ``waveform``s and, ``frame``s.
 A ``channel`` is a software abstraction which allows the programmer to be agnostic to the complexities
-of the device's underlying pulse generation hardware, representing an input or output channel to various components
+of the device's underlying pulse generation or capture hardware, representing an input or output channel to various components
 controlling qubits such as microwave lines. A ``waveform`` is a time-dependent envelope that is emitted a channel in
-conjunction with a ``frame``. The ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
+conjunction with a ``frame``. A ``frame`` is used to schedule the playing of a ``waveform`` or capturing of data
 via a ``channel`` on the target device. It acts as both a *clock* within the quantum program with its time being incremented on
 each usage and also a stateful `carrier signal <https://en.wikipedia.org/wiki/Carrier_wave>`_ defined by a frequency and phase that
-a ``waveform`` will be mixed with when emitted on a ``channel``.
+a ``waveform`` will be mixed with when emitted on a ``channel``. As such, herein "pulses" refer to the resulting
+mixed ``waveform`` applied at the time specified by the ``frame`` and the duration specified by the
+``waveform``.
 
 Channels
 --------
@@ -107,9 +109,9 @@ The frame is composed of three parts:
 
 1. A frequency ``frequency`` of type ``float``.
 2. A phase ``phase`` of type ``angle``.
-3. A time which is manipulated implicitly and cannot be modified other
-   than through existing timing instructions like ``delay`` and ``barrier``. The time increment
-   is determined by the channel on which the frame is played (see :ref:`Timing` section).
+3. A time of type ``duration`` which is manipulated implicitly and cannot be modified other
+   than through existing timing instructions like ``delay``, ``play``, ``capture``,  and ``barrier``.
+   The time increment is determined by the channel on which the frame is played (see :ref:`Timing` section).
 
 The ``frame`` type is a virtual resource and the exact precision of these parameters is
 hardware specific. It is thus up to the compiler to choose how to implement the required
@@ -148,6 +150,8 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
 ``driveframe``:
 
 .. code-block:: javascript
+
+  ...
 
    // Example 1: Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
    cal {
@@ -191,9 +195,9 @@ Waveforms are of type ``waveform`` and can either be:
 
 A value of type ``waveform`` may be defined either by explicitly constructing the complex samples
 or by calling one of the waveform template functions provided by the target device.
-Note that each of these extern functions takes a type ``length`` as a first argument,
-since waveforms must have a definite length.
-Using the hardware dependent ``dt`` unit is recommended for this length,
+Note that each of these extern functions takes a type ``duration`` as an argument,
+since waveforms must have a definite duration.
+Using the hardware dependent ``dt`` unit is recommended for this duration,
 since otherwise the compiler may need to down-sample a higher precision
 waveform to physically realize it.
 
@@ -203,36 +207,36 @@ waveform to physically realize it.
    waveform arb_waveform = [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
 
    // amp is waveform amplitude at center
-   // l is the overall length of the waveform
+   // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
-   extern gaussian(complex[size] amp, length l, length sigma) -> waveform;
+   extern gaussian(complex[size] amp, duration d, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
-   // l is the overall length of the waveform
+   // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
-   extern sech(complex[size] amp, length l, length sigma) -> waveform;
+   extern sech(complex[size] amp, duration d, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
-   // l is the overall length of the waveform
+   // d is the overall duration of the waveform
    // square_width is the width of the square waveform component
    // sigma is the standard deviation of waveform
-   extern gaussian_square(complex[size] amp, length l, length square_width, length sigma) -> waveform;
+   extern gaussian_square(complex[size] amp, duration d, duration square_width, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
-   // l is the overall length of the waveform
+   // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   extern drag(complex[size] amp, length l, length sigma, float[size] beta) -> waveform;
+   extern drag(complex[size] amp, duration d, duration sigma, float[size] beta) -> waveform;
 
    // amp is waveform amplitude
-   // l is the overall length of the waveform
-   extern constant(complex[size] amp, length l) -> waveform;
+   // d is the overall duration of the waveform
+   extern constant(complex[size] amp, duration d) -> waveform;
 
    // amp is waveform amplitude
-   // l is the overall length of the waveform
+   // d is the overall duration of the waveform
    // frequency is the frequency of the waveform
    // phase is the phase of the waveform
-   extern sine(complex[size] amp, length  l, float[size] frequency, angle[size] phase) -> waveform;
+   extern sine(complex[size] amp, duration  d, float[size] frequency, angle[size] phase) -> waveform;
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
@@ -280,20 +284,24 @@ For example,
    play(tx1, gaussian(...), f1);
   }
 
+If the ``waveform`` duration is not realizable by the sample rate of the associated ``channel``,
+the compiler shall raise a compile-time error.
+
+
 Capture Instruction
 -------------------
 
 Acquisition is scheduled by a ``capture`` instruction. This is a special
 ``extern`` function which is specified by a hardware vendor. The measurement
 process is difficult to describe generically due to the wide variety of
-hardware and measurement methods. Like the play instruction, these instructions
+hardware and measurement methods. Like the ``play`` instruction, these instructions
 may only appear inside a ``defcal`` or ``cal`` block.
 
 The only required parameters are the ``channel`` and the ``frame``.
 
 The following are possible parameters that might be included:
 
-- A "duration" of type ``length``, if it cannot be inferred from other parameters.
+- A "duration" of type ``duration``, if it cannot be inferred from other parameters.
 - A "filter" of type ``waveform``, which is dot product-ed with the measured IQ to distill the
   result into a single IQ value
 
@@ -312,10 +320,10 @@ extern definition at the top-level, such as:
    extern capture(channel chan, waveform filter, frame output) -> bit;
 
    // A capture command that returns a raw waveform data
-   extern capture(channel chan, length len, frame output) -> waveform;
+   extern capture(channel chan, duration len, frame output) -> waveform;
 
   // A capture that returns a count e.g. number of photons detected
-  kernel capture(channel chan, length len, frame output) -> int
+  kernel capture(channel chan, duration len, frame output) -> int
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -323,7 +331,7 @@ value. It could be a classified bit. Or it could even have no return value,
 pushing the results into some buffer which is then accessed outside the program.
 
 For example, the ``capture`` instruction could return raw waveform data that is then
-discriminated using user-defined boxcar and discrimination ``extern``s.
+discriminated using user-defined boxcar and discrimination ``extern``\s.
 
 .. code-block:: javascript
 
@@ -347,9 +355,9 @@ discriminated using user-defined boxcar and discrimination ``extern``s.
         // Play the stimulus
         play(m0, meas_wf, stimulus_frame);
         // Align measure and capture channels
-        barrier(stimulus_frame, capture_frame);
+        barrier stimulus_frame, capture_frame;
         // Capture transmitted data after interaction with measurement resonator
-        // extern capture(channel chan, length duration, frame capture_frame) -> waveform;
+        // extern capture(channel chan, duration duration, frame capture_frame) -> waveform;
         waveform raw_output = capture(cap0, 16000dt, capture_frame);
 
         // Kernel and discriminate
@@ -359,43 +367,137 @@ discriminated using user-defined boxcar and discrimination ``extern``s.
         return result;
     }
 
+If the ``duration`` argument or the ``waveform`` duration are not realizable by the sample rate of
+the associated ``channel``, the compiler shall raise a compile-time error.
 
 Timing
 ------
 
-Each frame maintains its own "clock". When a pulse is played the clock for
-that frame advances by the length of the pulse.
+Each frame maintains its own "clock" of type ``duration``, which can only be manipulated implicitly
+through the existing timing instructions of ``delay``, ``play``, ``capture``,  and ``barrier``.
 
-For frames, everything behaves analogous to qubits in the
-`Delays <delays.html>`_ section of this specification. There are however some
-small differences.
+Delay
+~~~~~
 
-The ``delay`` instruction may take a frame instead of a qubit. The ``barrier``
-instruction may also take a list of frames instead of a list of qubits and aligns the time
-of the clocks given as arguments.
-
-``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
-meaning that those clocks are guaranteed to be aligned at the start of the block.
-These blocks also need to have a well-defined length calculable at compile-time
-to enable scheduling at the circuit level.
+When a ``delay`` instruction is issued for a list of ``frame``\s, the ``frame`` clocks advance
+by the requested duration.
 
 .. code-block:: javascript
 
-   cal {
-     waveform p = ...; // some 100dt waveform
-     frame driveframe1 = newframe(5.0e9, 0);
-     frame driveframe2 = newframe(6.0e9, 0);
-   }
+  ...
 
-   defcal aligned_gates $0, $1 {
-     // driveframe1 and driveframe2 used in this defcal, so clocks are aligned
-     play(tx0, p, driveframe1);
-     delay[20dt] driveframe1;
-     // Clocks now unaligned by 120dt, so we use a `barrier` to re-align
-     barrier(driveframe1, driveframe2);
-     // `driveframe2` will now play a pulse 20dt after `driveframe1` finishes playing
-     play(tx0, p, driveframe2);
-   }
+  // driveframe advances by 13ns
+  delay[13ns] driveframe;
+
+
+Play and Capture
+~~~~~~~~~~~~~~~~~~
+
+When a ``play`` or ``capture`` instruction is issued, the ``frame`` clock advances in two stages.
+Firstly, it advances to align to the next time point realizable by the sample rate of the
+associated ``channel`` argument. Secondly, it advances by the duration of the associated
+``waveform`` argument.
+
+.. code-block:: javascript
+
+  ...
+
+  cal {
+    channel d0 = getchannel("drive", $0); // sample per 4 ns
+    frame driveframe = newframe(5.0e9, 0.0);
+    waveform wf = gaussian(0.5, 16ns, 4ns);
+  }
+
+  delay[13ns] driveframe;
+
+  // driveframe.time is now 13ns
+
+  // Frame clock advances in two stages
+  // 1. Advance clock to align to 4ns interval realizable by ``d0`` --> driveframe.time == 16ns
+  // 2. Advance clock by duration of ``wf`` --> driveframe.time == 32ns
+  play(d0, wf, driveframe);
+
+Barrier
+~~~~~~~~
+
+When a ``barrier`` instruction is issued for a list of ``frame``\s, the ``frame`` clocks are
+aligned to the least-common-multiple (LCM) period of the all ``channel``\s in the current scope.
+
+.. code-block:: javascript
+
+  cal {
+    channel d0 = getchannel("drive", $0); // sample per 1 ns
+    channel d1 = getchannel("drive", $1); // sample per 2 ns
+    channel d2 = getchannel("drive", $2); // sample per 3 ns
+
+    driveframe1 = newframe(5.1e9, 0.0);
+    driveframe2 = newframe(5.2e9, 0.0);
+  }
+
+  delay[13ns] driveframe1, driveframe2;
+
+  // driveframe1.time == driveframe2.time == 13ns
+
+  // Align to nearest LCM period of all `channel`s in current scope
+  // ``d0``, ``d1``, and ``d2`` have a LCM period of 6 ns
+  barrier driveframe1, driveframe2;
+
+  // driveframe1.time == driveframe2.time == 18ns
+
+Alternatively, a specific resolution interval can instead be supplied to
+the ``barrier`` instruction in square brackets.
+
+.. code-block:: javascript
+
+  cal {
+    channel d0 = getchannel("drive", $0); // sample per 1 ns
+    channel d1 = getchannel("drive", $1); // sample per 2 ns
+    channel d2 = getchannel("drive", $2); // sample per 3 ns
+
+    driveframe1 = newframe(5.1e9, 0.0);
+    driveframe2 = newframe(5.2e9, 0.0);
+    delay[13ns] driveframe1, driveframe2;
+
+    // driveframe1.time == driveframe2.time == 13ns
+
+    // align frames next nearest 2 ns time boundary
+    barrier[2ns] driveframe1, driveframe2;
+
+    // driveframe1.time == driveframe2.time == 14ns
+  }
+
+Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame that enters the block,
+with alignment to the least-common-multiple (LCM) period of the all ``channel``\s referenced
+in the ``defcal`` scope.
+
+.. code-block:: javascript
+
+  cal {
+    channel tx0 = getchannel("drive", $0); // sample per 1 ns
+    channel tx0 = getchannel("drive", $0); // sample per 2 ns
+    waveform p = ...; // some 100ns waveform
+    frame driveframe1 = newframe(5.0e9, 0);
+    frame driveframe2 = newframe(6.0e9, 0);
+  }
+
+  // When entering defcal, implicit barrier on driveframe1 and drivefram2
+  // will be applied using a LCM period of 2ns given the two channels in
+  // scope: ``tx0`` and ``tx1``
+  defcal aligned_gates $0, $1 {
+    play(tx0, p, driveframe1);
+    play(tx1, p, driveframe2);
+
+    delay[20ns] driveframe1;
+    // Clocks now unaligned by 20ns
+
+    // Use a ``barrier`` to re-align to nearest 2ns boundary
+    barrier driveframe1, driveframe2;
+
+    // driveframe1.time === driveframe2.time == 120ns
+
+    // ``driveframe2`` will now play another pulse 20ns after it finishes playing its first pulse
+    play(tx0, p, driveframe2);
+  }
 
 Examples
 --------
@@ -423,7 +525,7 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
   const float frequency_step = 1e6
   const int frequency_num_steps = 301;
 
-  // define a long saturation pulse of a set length and amplitude
+  // define a long saturation pulse of a set duration and amplitude
   defcal saturation_pulse $0 {
       // assume channel and frame can be linked from a vendor supplied `cal` block
       play(tx0, constant(0.1, 100e-6), driveframe);
@@ -490,7 +592,7 @@ Cross-resonance gate
       frame temp_frame = copyframe(frame0);
 
       // Pulses below occur simultaneously
-      barrier(frame0, temp_frame);
+      barrier frame0, temp_frame;
       play(d0, wf1, frame0);
       play(d1, wf2, temp_frame);
 
@@ -533,7 +635,7 @@ Geometric gate
 Neutral atoms
 ~~~~~~~~~~~~~
 
-In this simple example, the signal chain is composed of two electro-optic modulators (EOM) and
+In this example, the signal chain is composed of two electro-optic modulators (EOM) and
 an acousto-optic deflector (AOD). The EOMs put sidebands on the laser light while the AOD diffracts
 the light in an amount proportional to the frequency of the RF drive. This example was chosen
 because it is similar in spirit to the work by Levine et al._:cite:`levine2019` except that phase
@@ -545,67 +647,103 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
 .. code-block:: javascript
 
-  // TODO: This example is incomplete, missing constant definitions and calling workflow.
+  // Raman transition detuning Δ from the  5S1/2 to 5P1/2 transition
+  const float Δ = ...;
 
-  defcal neutral_atoms {
-    // Access globally defined channels
+  // Hyperfine qubit frequency
+  const float qubit_freq = ...;
+
+  // Positional frequencies for the AODS to target the specific qubit
+  const float q1_pos_freq = ...;
+  const float q2_pos_freq = ...;
+  const float q3_pos_freq = ...;
+
+  // Calibrated amplitudes and durations for the Raman pulses supplied via the AOD envelopes
+  const float q1_π_half_amp = ...;
+  const float q2_π_half_amp = ...;
+  const float q3_π_half_amp = ...;
+  const duration π_half_time = ...;
+
+  // Time-proportional phase increment
+  const float tppi_1 = ...;
+  const float tppi_2 = ...;
+  const float tppi_3 = ...;
+
+
+  cal {
     channel eom_a_channel = getchannel("eom_a", 0);
     channel eom_a_channel = getchannel("eom_b", 1);
     channel aod_channel = getchannel("aod", 0);
 
     // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
     // and offset from each other by the qubit_freq
-    frame raman_a_frame = newframe(Δ, 0.0)
-    frame raman_b_frame = newframe(Δ-qubit_freq, 0.0)
+    frame raman_a_frame = newframe(Δ, 0.0);
+    frame raman_b_frame = newframe(Δ-qubit_freq, 0.0);
 
-    // Three copies of qubit freq to track phase of each qubit
+    // Three frames to phase track each qubit's rotating frame of reference at it's frequency
     frame q1_frame = newframe(qubit_freq, 0)
     frame q2_frame = newframe(qubit_freq, 0)
     frame q3_frame = newframe(qubit_freq, 0)
 
     // Generic gaussian envelope
-    waveform π_half_sig = gaussian(..., π_half_time, ...)
+    waveform π_half_sig = gaussian(..., π_half_time, ...);
 
     // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
-    // put a sideband on the signal construction to target the qubit position while maintainig the
+    // put a sideband on the outgoing pulse. This helps us target the qubit position while maintainig the
     // desired Rabi rate.
     waveform q1_π_half_sig = mix(π_half_sig, sine(q1_π_half_amp, π_half_time, q1_pos_freq-qubit_freq, 0.0));
     waveform q2_π_half_sig = mix(π_half_sig, sine(q2_π_half_amp, π_half_time, q2_pos_freq-qubit_freq, 0.0));
     waveform q3_π_half_sig = mix(π_half_sig, sine(q3_π_half_amp, π_half_time, q3_pos_freq-qubit_freq, 0.0));
-
-    for τ in [0: T]:
-        // Simultaneous π/2 pulses
-        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-        play(aod_channel, q1_π_half_sig, q1_frame);
-        play(aod_channel, q1_π_half_sig, q2_frame);
-        play(aod_channel, q1_π_half_sig, q3_frame);
-
-        // Time delay all
-        delay(τ/2);
-
-        // π pulse on qubit 1 only -- composed of two π/2 pulses
-        for _ in [0:1]:
-            play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-            play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-            play(aod_channel, q1_π_half_sig, q1_frame);
-
-        // Barrier all then time delay all
-        barrier();
-        delay(τ/2);
-
-        // Phase shift the signals by a different amount
-        q1_frame.phase += tppi_1 * τ;
-        q2_frame.phase += tppi_2 * τ;
-        q3_frame.phase += tppi_3 * τ;
-
-        // Simultaneous π/2 pulses
-        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
-        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
-        play(aod_channel, q1_π_half_sig, q1_frame);
-        play(aod_channel, q1_π_half_sig, q2_frame);
-        play(aod_channel, q1_π_half_sig, q3_frame);
   }
+
+  // π/2 pulses on all three qubits
+  defcal rx(π/2) $1 $2 $3 {
+
+        // Simultaneous π/2 pulses
+        play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+        play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+        play(aod_channel, q1_π_half_sig, q1_frame);
+        play(aod_channel, q2_π_half_sig, q2_frame);
+        play(aod_channel, q3_π_half_sig, q3_frame);
+  }
+
+  // π/2 pulse on only qubit $2
+  defcal rx(π/2) $2 {
+      play(eom_a_channel, constant(raman_a_amp, π_half_time) , raman_a_frame);
+      play(eom_b_channel, constant(raman_b_amp, π_half_time) , raman_b_frame);
+      play(aod_channel, q2_π_half_sig, q2_frame);
+  }
+
+  // Ramsey sequence on qubit 1 and 3, Hahn echo on qubit 2
+  for τ in [0:10us:1ms] {
+
+    // First π/2 pulse
+    rx(π/2) $0, $1, $2;
+
+    // First half of evolution time
+    cal {
+      delay[τ/2] raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
+    }
+
+    // Hahn echo π pulse composed of two π/2 pulses
+    for ct in [0:1]:
+      rx(π/2) $2;
+
+    cal {
+      // Align all frames
+      barrier raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
+
+      // Second half of evolution time
+      delay[τ/2] raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
+
+      // Time-proportional phase increment signals different amount
+      q1_frame.phase += tppi_1 * τ;
+      q2_frame.phase += tppi_2 * τ;
+      q3_frame.phase += tppi_3 * τ;
+    }
+
+    // Second π/2 pulse
+    rx(π/2) $0, $1, $2;
 
 Multiplexed readout and capture
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -616,80 +754,42 @@ many (just adding more frames, waveforms, plays, and captures).
 
 .. code-block:: javascript
 
-  defcal multiplexed_readout_and_capture $0, $1 {
+  const duration electrical_delay = ...;
+
+  defcal multiplexed_readout_and_capture $0, $1 -> bit[2] {
+      bit[2] b;
 
       // the transmission/captures channels are the same for $0 and $1
       channel ro_tx = getchannel("readout_tx", $0);
       channel ro_rx = getchannel("readout_rx", $0);
 
-      // readout frames of different frequencies
-      frame q0_frame = newframe(q0_ro_freq, 0); // time 0
-      frame q1_frame = newframe(q1_ro_freq, 0); // time 0
+      // readout stimulus and capture frames of different frequencies
+      frame q0_stimulus_frame = newframe(q0_ro_freq, 0); // time 0
+      frame q0_capture_frame = newframe(q0_ro_freq, 0); // time 0
+      frame q1_stimulus_frame = newframe(q1_ro_freq, 0); // time 0
+      frame q1_capture_frame = newframe(q1_ro_freq, 0); // time 0
 
       // flat-top readout waveforms
-      waveform q0_ro_wf = constant(amp=0.1, l=...);
-      waveform q1_ro_wf = constant(amp=0.2, l=...);
+      waveform q0_ro_wf = constant(amp=0.1, d=...);
+      waveform q1_ro_wf = constant(amp=0.2, d=...);
 
       // multiplexed readout
-      play(ro_tx, q0_ro_wf, q0_frame);
-      play(ro_tx, q1_ro_wf, q1_frame);
+      play(ro_tx, q0_ro_wf, q0_stimulus_frame);
+      play(ro_tx, q1_ro_wf, q1_stimulus_frame);
 
       // simple boxcar kernel
-      waveform ro_kernel = constant(amp=1, l=...);
+      waveform ro_kernel = constant(amp=1, d=...);
+
+      barrier q0_stimulus_frame q1_stimulus_frame q0_capture_frame q1_capture_frame;
+      delay[electrical_delay] q0_capture_frame q1_capture_frame;
 
       // multiplexed capture
       // extern capture(channel chan, waveform ro_kernel, frame capture_frame) -> bit;
-      bit q0_bit = capture(ro_rx, ro_kernel, q0_frame);
-      bit q1_bit = capture(ro_rx, ro_kernel, q1_frame);
-      ...
+      b[1] = capture(ro_rx, ro_kernel, q0_capture_frame);
+      b[2] = capture(ro_rx, ro_kernel, q1_capture_frame);
+
+      return b;
   }
-
-
-Sample rate collisions
------------------------
-
-Incommensurate Rates
-~~~~~~~~~~~~~~~~~~~~
-
-Since the frame can be played on multiple channels, there may be an issue with sample rates.
-For example,
-
-.. code-block:: javascript
-
-  defcal incommensurate_rates_interval $q
-    channel tx0 = getchannel("tx0", 0); # sample per 1 ns
-    channel tx1 = getchannel("tx1", 1); # sample per 2 ns
-
-    waveform wf = gaussian_square(0.1, 13ns, ...);
-
-    play(tx0, wf, driveframe);
-    // now driveframe.time is at 13ns
-    play(tx1, wf, driveframe); // does not support 13 ns -- either 12ns or 14 ns
-  }
-
-The implementation of this behavior is up to the vendor.
-
-Incommensurate Lengths
-~~~~~~~~~~~~~~~~~~~~~~
-
-If the samples are defined dt, then playing the same waveform on two different channels
-produces
-
-.. code-block:: javascript
-
-  defcal incommensurate_lengths $q
-    channel tx0 = getchannel("tx0", 0); # sample per 1 ns
-    channel tx1 = getchannel("tx1", 1); # sample per 2 ns
-
-    waveform wf = gaussian_square(0.1, 12dt, ...); // this means different lengths to different channels
-
-    play(tx0, wf, driveframe);
-    // now driveframe.time is at 12ns
-    play(tx1, wf, driveframe);
-    // now driveframe.time is at 36ns
-  }
-
-This is considered well-defined behavior.
 
 Open Questions
 ~~~~~~~~~~~~~~
