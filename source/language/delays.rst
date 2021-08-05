@@ -289,11 +289,11 @@ Boxed expressions
 
 We introduce a ``box`` statement for scoping the timing of a particular part of the circuit.
 A boxed subcircuit is different from a ``gate`` or ``def`` subroutine, in that it is merely 
-a pointer to a piece of code within the larger scope which constains it. This can be used to
+an enclosure to a piece of code within the larger scope which constains it. This can be used to
 signal permissible logical-level optimizations to the compiler: optimizing operations within
 a ``box`` definition is permitted, and optimizations that move operations from one side to
 the other side of a box are permitted, but moving operations either into or out of the box as
-part of an optimization is forbidden. The compiler can also be given a description of the
+part of an optimization is forbidden. The compiler can also infer a description of the
 operation which a ``box`` definition is meant to realise, allowing it to re-order gates around
 the box. For example, consider a dynamical decoupling sequence inserted in a part of the circuit:
 
@@ -344,104 +344,6 @@ require more than 150ns for all valid combinations:
         mygate2(a, a-b) q[1], q[2];
         mygate1(a-b, b) q[0], q[1];
     }
-
-Boxes can be dressed by a ``verbatim`` modifier to prevent the compiler from optimizing the code
-piece inside.  The ``verbatim`` modifier is simply a compiler flag to let compiler passes ignore the
-boxed region. For example, gates will not be re-ordered or be cancelled in a ``verbatim`` box. The
-only two compiler passes that look inside a ``verbatim`` box are (1) the pass the resolves timing and
-duration (2) the pass that links gates to their ``defcal``. As a result, having any high-level constructs
-in a ``verbatim`` box that requires other compiler passes will result in a runtime error since related 
-compiler passes will not be able to look inside to properly compile them. Examples include:
-
--  Virtual qubits
-
--  Composite gates without a ``defcal``
-
--  Subroutine/kernel calls
-
-``verbatim`` box is to give experienced users precice control of the boxed operations, it also
-means that users themselves have to be responsible for potential runtime errors.
-
-``verbatim`` box is useful in low-level calibration programs or error mitigation protocols. 
-For example, ``verbatim`` box can be used in digital zero noise extrapolation:
-
-.. code-block:: c
-
-    bit c;
-
-    verbatim box {
-        h $0;  // assume h has a defcal
-        h $0;
-        h $0;
-    }
-    cx $0, $1;
-    measure $0 -> c;
-
-``verbatim`` levels are defined for the convenience of some applications. The default ``verbatim``
-box is of level 0. Level 1 ``verbatim`` box admits qubit mapping. The following is an example of 
-using level 1 ``verbatim`` box:
-
-.. code-block:: c
-    
-    //a randomized benchmarking program
-    qubit q[2];
-    bit c[2];
-
-    reset q;
-    verbatim(1) box {
-        //assuming h, cz, s have a defcal
-        h q[0];
-        cz q[0], q[1];
-        s q[0];
-        cz q[0], q[1];
-        s q[0];
-        z q[0];
-        h q[0];
-        measure q -> c;
-    }
-
-Level 2 ``verbatim`` box allows both virtual qubits and composite gates inside. An application for
-level 2 ``verbatim`` box is the flag qubit scheme in quantum error correction:
-
-.. code-block:: c
-
-	// Flag fault-tolerant circuit for measuring the logical Hadamard
-	// operator of the [[7, 1, 3]] Steane code. Taken from page 6,
-	// https://quantum-journal.org/papers/q-2019-05-20-143/pdf/.
-
-	qubit steane_reg[7];
-	qubit flag_reg[4];
-	def ft_ctrl_hadamard qubit[7]: logical_qubits,
-						 qubit[1]: ancilla,
-						 qubit[4] flag_qubits -> bool {
-		bool success;
-		verbatim(2) box{
-			bit checks[4];
-			x ancilla; // prepare |+>
-			ch ancilla, logical_qubits[0];
-			cx flag_qubits[0], ancilla;
-			ch ancilla, logical_qubits[1];
-			cx flag_qubits[1], ancilla;
-			ch ancilla, logical_qubits[2];
-			cx flag_qubits[2], ancilla;
-			cx flag_qubits[1], ancilla;
-			cx flag_qubits[3], ancilla;
-			ch ancilla, logical_qubits[5];
-			cx flag_qubits[3], ancilla;
-			cx flag_qubits[2], ancilla;
-			ch ancilla, logical_qubits[3];
-			ch ancilla, logical_qubits[6];
-			cx flag_qubits[0], ancilla;
-			ch ancilla, logical_qubits[4];
-			checks = measure flag_qubits;
-		}
-	  success = ~(bool(checks[0]) | bool(checks[1]) |
-				  bool(checks[2]) | bool(checks[3]))
-	  return success;
-	}
-
-Also, the ``inline`` modifier is introduced to work with ``verbatim`` to allow composite gates for
-better readability. Thus, a ``verbatim(2) box`` is functionally equivalent to a ``verbatim(1) inline box``. 
 
 Barrier instruction
 -------------------
