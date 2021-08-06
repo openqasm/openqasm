@@ -55,7 +55,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : Identifier designator? ( assignmentOperator expression )?
+    : Identifier designator? assignmentOperator expression
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
