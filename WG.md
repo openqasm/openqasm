@@ -12,7 +12,7 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 
 **Objective**: ...
 
-Chair: Niel Beaudrap  
+Chair: Niel de Beaudrap  
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson
 
 ### Grammar
@@ -34,7 +34,7 @@ Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, S
  * Is an int equivalent to an array of bits?
 
 Chair: Michael Healy (IBM Quantum)  
-Members: Niels, Hiroshi, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah 
+Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi
 
 
 
