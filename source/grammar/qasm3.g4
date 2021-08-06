@@ -182,6 +182,15 @@ classicalArgumentList
     : classicalArgument ( COMMA classicalArgument )*
     ;
 
+anyTypeArgument
+    : classicalArgument
+    | quantumArgument
+    ;
+
+anyTypeArgumentList
+    : ( anyTypeArgument COMMA )* anyTypeArgument
+    ;
+
 /** Aliasing **/
 aliasStatement
     : 'let' Identifier EQUALS indexIdentifier SEMICOLON
@@ -247,7 +256,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN expression RPAREN
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
     ;
 
 quantumReset
@@ -268,11 +277,19 @@ quantumBarrier
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN expression RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | powModifier | ctrlModifier ) '@'
+    ;
+
+powModifier
+    : 'pow' LPAREN expression RPAREN
+    ;
+
+ctrlModifier
+    : ( 'ctrl' | 'negctrl' ) ( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/
@@ -370,13 +387,18 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : expressionTerminator
+    : powerExpression
     | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
     ;
 
 unaryExpression
-    : unaryOperator expressionTerminator
+    : unaryOperator powerExpression
+    ;
+
+powerExpression
+    : expressionTerminator
+    | expressionTerminator '**' powerExpression
     ;
 
 expressionTerminator
@@ -388,8 +410,7 @@ expressionTerminator
     | Identifier
     | StringLiteral
     | builtInCall
-    | externCall
-    | subroutineCall
+    | externOrSubroutineCall
     | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
@@ -428,7 +449,7 @@ equalsExpression
 
 assignmentOperator
     : EQUALS
-    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
+    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
 setDeclaration
@@ -467,28 +488,23 @@ controlDirective
     ;
 
 externDeclaration
-    : 'extern' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+    : 'extern' Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON
     ;
 
-// if have extern w/ out args, is ambiguous; may get matched as identifier
-externCall
+// if have function call w/ out args, is ambiguous; may get matched as identifier
+externOrSubroutineCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier LPAREN anyTypeArgumentList? RPAREN
     returnSignature? subroutineBlock
     ;
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
-    ;
-
-// if have subroutine w/ out args, is ambiguous; may get matched as identifier
-subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/

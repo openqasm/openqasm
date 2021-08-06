@@ -18,18 +18,20 @@ reference: |
                           additiveExpression
                             additiveExpression
                               multiplicativeExpression
-                                expressionTerminator
+                                powerExpression
                                   expressionTerminator
-                                    a
-                                  [
-                                  expression
                                     expressionTerminator
-                                      1
-                                  ]
+                                      a
+                                    [
+                                    expression
+                                      expressionTerminator
+                                        1
+                                    ]
                             +
                             multiplicativeExpression
-                              expressionTerminator
-                                2
+                              powerExpression
+                                expressionTerminator
+                                  2
               |
               xOrExpression
                 bitAndExpression
@@ -39,53 +41,58 @@ reference: |
                         additiveExpression
                           multiplicativeExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                c
+                              powerExpression
+                                expressionTerminator
+                                  c
                             *
-                            expressionTerminator
-                              (
-                              expression
-                                logicalAndExpression
-                                  bitOrExpression
-                                    xOrExpression
+                            powerExpression
+                              expressionTerminator
+                                (
+                                expression
+                                  logicalAndExpression
+                                    bitOrExpression
                                       xOrExpression
+                                        xOrExpression
+                                          bitAndExpression
+                                            equalityExpression
+                                              comparisonExpression
+                                                bitShiftExpression
+                                                  additiveExpression
+                                                    multiplicativeExpression
+                                                      powerExpression
+                                                        expressionTerminator
+                                                          builtInCall
+                                                            builtInMath
+                                                              sin
+                                                            (
+                                                            expressionList
+                                                              expression
+                                                                expressionTerminator
+                                                                  y
+                                                            )
+                                        ^
                                         bitAndExpression
                                           equalityExpression
                                             comparisonExpression
                                               bitShiftExpression
                                                 additiveExpression
                                                   multiplicativeExpression
-                                                    expressionTerminator
-                                                      builtInCall
-                                                        builtInMath
-                                                          sin
-                                                        (
-                                                        expressionList
-                                                          expression
-                                                            expressionTerminator
-                                                              y
-                                                        )
-                                      ^
-                                      bitAndExpression
-                                        equalityExpression
-                                          comparisonExpression
-                                            bitShiftExpression
-                                              additiveExpression
-                                                multiplicativeExpression
-                                                  multiplicativeExpression
-                                                    unaryExpression
-                                                      unaryOperator
-                                                        !
+                                                    multiplicativeExpression
+                                                      unaryExpression
+                                                        unaryOperator
+                                                          !
+                                                        powerExpression
+                                                          expressionTerminator
+                                                            3.5
+                                                    *
+                                                    powerExpression
                                                       expressionTerminator
-                                                        3.5
-                                                  *
-                                                  expressionTerminator
-                                                    expressionTerminator
-                                                      d
-                                                    [
-                                                    expression
-                                                      expressionTerminator
-                                                        3
-                                                    ]
-                              )
+                                                        expressionTerminator
+                                                          d
+                                                        [
+                                                        expression
+                                                          expressionTerminator
+                                                            3
+                                                        ]
+                                )
         ;

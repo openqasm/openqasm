@@ -52,13 +52,19 @@ Qubits
 ~~~~~~
 
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
-two-level subsystem of a quantum state. Quantum registers are static
-arrays of qubits that cannot be dynamically resized. The statement ``qubit name;``
-declares a reference to a quantum bit. The statement ``qubit[size] name;`` declares a
-quantum register with ``size`` qubits. Sizes must always be constant positive integers.
+two-level subsystem of a quantum state. The statement ``qubit name;``
+declares a reference to a quantum bit. These qubits are referred 
+to as "virtual qubits" (in distinction to "physical qubits" on 
+actual hardware; see below). The statement ``qubit[size] name;`` 
+declares a quantum register with ``size`` qubits.
+Sizes must always be constant positive integers. The label ``name[j]`` 
+refers to a qubit of this register, where
+:math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+Quantum registers are static arrays of qubits 
+that cannot be dynamically resized. 
 
-Qubit registers may also be declared as ``qreg name[size]``. This keyword is included for backwards
-compatibility and may not be supported in the future.
+The keyword ``qreg`` is included
+for backwards compatibility and will be removed in the future. 
 
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
@@ -76,7 +82,7 @@ While program qubits can be named, hardware qubits are referenced only
 by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
 references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
-circuits.
+circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
 
 .. code-block:: c
    :force:
@@ -172,7 +178,7 @@ vendors may not support manipulating these values at run-time.
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
-Fixed-point angles are interpreted as 2π times a 0:1:n-1
+Fixed-point angles are interpreted as 2π times a 0:0:n
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
 2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
