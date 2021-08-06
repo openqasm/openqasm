@@ -15,7 +15,7 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 Chair: Niel Beaudrap  
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson
 
-### Grammar working group
+### Grammar
 
 **Objective**: 
 
