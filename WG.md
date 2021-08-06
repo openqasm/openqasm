@@ -8,12 +8,42 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 
 ## Current Working Groups
 
+### Generics and circuit families
+
+**Objective**: ...
+
+Chair: Niel Beaudrap  
+Members: Colm Ryan, Andrew, Ali, Blake Johnson
+
+### Grammar working group
+
+**Objective**: 
+
+Chair: Li Chen
+Hiroshi, Healy, Luciano, Jeff, Yunong, Steve
+
+### Types and casting
+
+**Objective**: Define type hierarchy and implicit casting rules.  
+**Questions**:
+
+ * Any implicit casts?
+ * What explicit casts are allowed?
+ * Registers vs arrays?
+ * Can you index into integers and get bit value?
+ * Is an int equivalent to an array of bits?
+
+Chair: Michael Healy (IBM Quantum)  
+Members: Niels, Hiroshi, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah 
+
+
+
 ### OpenPulse
 
-Objective: Define a pulse grammar "openpulse" to be used for microcoding of gate instructions with
+**Objective**: Define a pulse grammar "openpulse" to be used for microcoding of gate instructions with
 OpenQASM `defcal`'s.
-Chair: Thomas Alexander (IBM Quantum)
-Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy,
-Prasahnt Sivarajah, Yunong Shi, Steven Heidel, Zachary Schoenfeld
+
+Chair: Thomas Alexander (IBM Quantum)  
+Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel, Zachary Schoenfeld
 
 ## Past Working Groups
