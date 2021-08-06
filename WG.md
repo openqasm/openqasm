@@ -13,14 +13,14 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 **Objective**: ...
 
 Chair: Niel Beaudrap  
-Members: Colm Ryan, Andrew, Ali, Blake Johnson
+Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson
 
 ### Grammar working group
 
 **Objective**: 
 
-Chair: Li Chen
-Hiroshi, Healy, Luciano, Jeff, Yunong, Steve
+Chair: Li Chen  
+Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steve Heidel
 
 ### Types and casting
 
@@ -45,5 +45,6 @@ OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel, Zachary Schoenfeld
+
 
 ## Past Working Groups
