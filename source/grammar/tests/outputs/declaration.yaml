@@ -202,13 +202,15 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      dur
+                                    powerExpression
+                                      expressionTerminator
+                                        dur
                                 +
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    timingIdentifier
-                                      200ns
+                                  powerExpression
+                                    expressionTerminator
+                                      timingIdentifier
+                                        200ns
         ;
     statement
       classicalDeclarationStatement

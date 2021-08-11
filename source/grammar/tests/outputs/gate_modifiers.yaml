@@ -72,19 +72,26 @@ reference: |
                 pow
                 (
                 expression
-                  xOrExpression
-                    bitAndExpression
-                      bitShiftExpression
-                        additiveExpression
-                          multiplicativeExpression
-                            multiplicativeExpression
-                              expressionTerminator
-                                -
-                                expressionTerminator
-                                  1
-                            /
-                            expressionTerminator
-                              2
+                  logicalAndExpression
+                    bitOrExpression
+                      xOrExpression
+                        bitAndExpression
+                          equalityExpression
+                            comparisonExpression
+                              bitShiftExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    multiplicativeExpression
+                                      unaryExpression
+                                        unaryOperator
+                                          -
+                                        powerExpression
+                                          expressionTerminator
+                                            1
+                                    /
+                                    powerExpression
+                                      expressionTerminator
+                                        2
                 )
               @
             quantumGateName
