@@ -83,9 +83,7 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``,
-modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=`` and 
-``**=``; as well as increment ``++`` and decrement ``--``.
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``, modulo ``%``, and power ``**``, as well as the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=``, and ``**=``.
 
 .. code-block:: c
 
@@ -97,7 +95,6 @@ modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``
    b % a; // 1
    a ** b; // 8
    a += 4; // a == 6
-   a++; // a == 7
 
 Fixed-point numbers and angles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +122,7 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
-      | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      | ``()``, ``[]``, ``(type)(x)``          | Call, index, cast                  |
       +----------------------------------------+------------------------------------+
       | ``**``                                 | Power                              |
       +----------------------------------------+------------------------------------+
@@ -206,7 +203,7 @@ within the while loop body.
        h q;
        result = measure q;
        if (result) {
-           i++;
+           i += 1;
        }
    }
 
@@ -220,7 +217,7 @@ preceding, ``{ program }`` can also be replaced by a statement without the brace
    int[32] i = 0;
 
    while (i < 10) {
-       i++;
+       i += 1;
        // continue to next loop iteration
        if (i == 2) {
            continue;

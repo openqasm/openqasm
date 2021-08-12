@@ -218,7 +218,7 @@ execute 'syntax match qasmComparisonOperator #\V\\(' . join(s:comparison_operato
 if s:openqasm_version >= 3
     let s:general_operators = [ '',
         \ '~', ':', '||', '|', '&&', '&', '^', '*', '/', '>>', '<<', '%', '**',
-        \ '++', '+', '--', '-',
+        \ '+', '-',
     \ '', ]
     execute 'syntax match qasmOperator #\V\\('
         \ . join(s:general_operators, '\|')
