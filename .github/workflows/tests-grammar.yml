@@ -1,0 +1,32 @@
+name: Tests (Grammar)
+
+on:
+  [push, pull_request]
+
+jobs:
+  tests:
+    name: ANTLR grammar tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install ANTLR4
+        run: |
+          sudo apt install antlr4
+      - name: Install Python dependencies
+        working-directory: source/grammar
+        run: |
+          set -e
+          python -mpip install --upgrade pip
+          python -mpip install --upgrade -r requirements.txt -r requirements-dev.txt
+      - name: Generate grammar
+        working-directory: source/grammar
+        run: |
+          antlr4 -Dlanguage=Python3 qasm3.g4
+      - name: Run tests
+        working-directory: source/grammar
+        run: |
+          pytest -vv --color=yes tests
