@@ -399,17 +399,11 @@ expressionTerminator
     | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
-    | expressionTerminator incrementor
     ;
 /** End expression hierarchy **/
 
 booleanLiteral
     : 'true' | 'false'
-    ;
-
-incrementor
-    : '++'
-    | '--'
     ;
 
 builtInCall
