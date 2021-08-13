@@ -18,14 +18,15 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 ## Structures
 
-We will form a **Technical Steering Committee**. The TSC shall be composed of 5 Contributors. The initial TSC will include:
+We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The initial TSC will include:
 * Ali Javadi (IBM Quantum)
 * Lev S Bishop (IBM Quantum)
 * Blake Johnson (IBM Quantum)
 * Steven Heidel (AWS)
-* TBD (another non-IBM member, to be selected by the TSC)
+* Bettina Heim (Microsoft)
+* Philipp Schindler (Innsbruck)
 
-TSC meetings shall be open to all **Contributors**. The TSC may invite additional guests at its discretion. The TSC will make decisions by simple majority vote of its members. TSC meetings shall require a quorum of 60% of voting members present to make a decision by vote (ie, 3 members for the initial TSC). If a TSC meeting does not have quorum, it may still discuss and record minutes. The TSC may make decisions outside of meetings (e.g. on a pull request) so long as voting/approval in that forum meets the quorum requirement. Upon request from any TSC member, any decision must be deferred until the next TSC meeting, to enable live discussion.
+TSC meetings shall be open to all **Contributors**. The TSC may invite additional guests at its discretion. The TSC will make decisions by simple majority vote of its members. TSC meetings shall require a quorum of 66% of voting members present to make a decision by vote (ie, 4 members for the initial TSC). If a TSC meeting does not have quorum, it may still discuss and record minutes. The TSC may make decisions outside of meetings (e.g. on a pull request) so long as voting/approval in that forum meets the quorum requirement. Upon request from any TSC member, any decision must be deferred until the next TSC meeting, to enable live discussion.
 
 The TSC responsibility is to balance a desire to allow a voice to the broad OpenQASM community with lightweight processes to enable moving fast and maintaining a consistent philosophy for the language. Thus, for example, this governance document does give the freedom to the TSC to make decisions without calling a meeting and explicitly involving contributors, but the idea is that the TSC should make use of this power judiciously. The TSC aims to build consensus among **Contributors** prior to voting in most cases. Voting to resolve disagreements is ideally expected to happen less often than voting to accept the consensus. The TSC has authority to make all decisions regarding OpenQASM (including amendments to this governance document), but should apply more process and seek more community input on constitutional changes than for simple fixes to the language specification.
 
