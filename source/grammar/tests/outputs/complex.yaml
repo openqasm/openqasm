@@ -55,12 +55,14 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      4
+                                    powerExpression
+                                      expressionTerminator
+                                        4
                                 -
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    5.5im
+                                  powerExpression
+                                    expressionTerminator
+                                      5.5im
         ;
     statement
       classicalDeclarationStatement
@@ -96,16 +98,19 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      b
+                                    powerExpression
+                                      expressionTerminator
+                                        b
                                 +
                                 multiplicativeExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      7.5
+                                    powerExpression
+                                      expressionTerminator
+                                        7.5
                                   *
-                                  expressionTerminator
-                                    1e9im
+                                  powerExpression
+                                    expressionTerminator
+                                      1e9im
         ;
     statement
       classicalDeclarationStatement
@@ -137,10 +142,12 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    expressionTerminator
-                                      a
+                                    powerExpression
+                                      expressionTerminator
+                                        a
                                 +
                                 multiplicativeExpression
-                                  expressionTerminator
-                                    b
+                                  powerExpression
+                                    expressionTerminator
+                                      b
         ;
