@@ -203,7 +203,11 @@ Using the hardware dependent ``dt`` unit is recommended for this duration,
 since otherwise the compiler may need to down-sample a higher precision
 waveform to physically realize it.
 
-NB: We provide the ``waveform`` type in addition to the complex list of samples to
+Like other extern functions, ``extern waveform`` functions will be compiled.
+But for static waveforms, the optimizing compiler should decide to execute this
+at compile time and load the waveform into memory once.
+For dynamic waveforms, the compiler just compiles and links this, to be executed at runtime.
+We provide the ``waveform`` type in addition to the complex list of samples to
 provide more context to compilers and hardware. For example, some hardware pulse
 generators may have optimized implementations of common pulse shapes like gaussians.
 Providing structured gaussian parameters instead of the materialized list of complex
