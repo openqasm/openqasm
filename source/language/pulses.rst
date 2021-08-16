@@ -144,16 +144,16 @@ a global scope to all identifiers in order to declare values shared across all `
 Restrictions on defcal bodies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The contents of ``defcal`` bodies are subject to the restriction they must have a definite length
+The contents of ``defcal`` bodies are subject to the restriction they must have a definite duration
 known at compile time, regardless of the parameters passed in or the state of the system when
-called. This allows the compiler to properly resolve ``lengthof(...)`` calls and
+called. This allows the compiler to properly resolve ``durationof(...)`` calls and
 allows for optimizations. If there is to be control flow in the ``defcal``, each branch of the
-control flow must have definite and equivalent length resolvable at compile time. Similarly, loops
-must be have a resolvable definite length at compile time.
+control flow must have definite and equivalent duration resolvable at compile time. Similarly, loops
+must be have a resolvable definite duration at compile time.
 
 For example,  consider the case of a ``reset`` gate. The ``defcal`` for a
 ``reset`` gate can be composed of a single if statement, provided each branch
-of the if statement has definite and equivalent length.
+of the if statement has definite and equivalent duration.
 
 .. code-block:: c
 
@@ -178,10 +178,12 @@ system it is expected that the target system provider will provide an include
 file to the user. This will contain the declaration of the ``defcalgrammar``, constants,
 ``defcal``s and other grammar and system specific components such as ``channel``s,
 ``waveform``s and ``frame``s in the `OpenPulse defcalgrammar <openpulse.html>`. The user
-may than plugin to the existing calibrations by defining new calibrations, or overwriting
+may then plugin to the existing calibrations by defining new calibrations, or overwriting
 existing ones by using the same ``channel``s and ``frame``s.
 The example below demonstrates this in practice for a two-qubit,
 cross-resonance device using a ``backend.inc`` include file.
+The name ``backend.inc`` is arbitrary - it's just a file to be included using the
+existing ``include`` mechanism.
 
 .. code-block:: c
 
