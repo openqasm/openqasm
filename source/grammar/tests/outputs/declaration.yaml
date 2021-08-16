@@ -11,11 +11,9 @@ source: |
   bool o=false;
   const c = 5.5e3;
   const d=5;
+  duration dur = 1000dt;
+  duration dur2 = dur + 200ns;
   stretch s;
-  stretch1 s1;
-  stretch10 s10;
-  stretch100 s100;
-  stretch255 s255;
 reference: |
   program
     header
@@ -174,42 +172,52 @@ reference: |
           noDesignatorDeclaration
             noDesignatorType
               timingType
+                duration
+            dur
+            equalsExpression
+              =
+              expression
+                expressionTerminator
+                  timingIdentifier
+                    1000dt
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
+                duration
+            dur2
+            equalsExpression
+              =
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    powerExpression
+                                      expressionTerminator
+                                        dur
+                                +
+                                multiplicativeExpression
+                                  powerExpression
+                                    expressionTerminator
+                                      timingIdentifier
+                                        200ns
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          noDesignatorDeclaration
+            noDesignatorType
+              timingType
                 stretch
             s
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch1
-            s1
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch10
-            s10
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch100
-            s100
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          noDesignatorDeclaration
-            noDesignatorType
-              timingType
-                stretch255
-            s255
         ;

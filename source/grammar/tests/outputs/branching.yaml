@@ -1,7 +1,7 @@
 # indent w/ 2 spaces
 source: |
   if (x == a) {
-    for i in [0:2:4] x[i]++;
+    for i in [0:2:4] x[i] += 1;
   }
   else CX x[0], x[1];
 reference: |
@@ -22,16 +22,18 @@ reference: |
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                x
+                              powerExpression
+                                expressionTerminator
+                                  x
                     equalityOperator
                       ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression
                           multiplicativeExpression
-                            expressionTerminator
-                              a
+                            powerExpression
+                              expressionTerminator
+                                a
         )
         programBlock
           {
@@ -58,19 +60,20 @@ reference: |
                     ]
               programBlock
                 statement
-                  expressionStatement
-                    expression
-                      expressionTerminator
-                        expressionTerminator
+                  assignmentStatement
+                    classicalAssignment
+                      x
+                      designator
+                        [
+                        expression
                           expressionTerminator
-                            x
-                          [
-                          expression
-                            expressionTerminator
-                              i
-                          ]
-                        incrementor
-                          ++
+                            i
+                        ]
+                      assignmentOperator
+                        +=
+                      expression
+                        expressionTerminator
+                          1
                     ;
           }
         else

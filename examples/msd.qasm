@@ -7,7 +7,7 @@ include "stdgates.inc";
 const buffer_size = 6;  // size of magic state buffer
 
 // Y-basis measurement
-def ymeasure qubit q -> bit {
+def ymeasure(qubit q) -> bit {
   s q;
   h q;
   return measure q;
@@ -20,7 +20,7 @@ def ymeasure qubit q -> bit {
  * The subroutine returns a success bit that is true
  * on success and false otherwise (see arXiv:1811.00566).
  */
-def distill qubit[10] magic, qubit[3] scratch -> bool {
+def distill(qubit[10] magic, qubit[3] scratch) -> bool {
   bit temp;
   bit[3] checks;
   // Encode two magic states in the [[4,2,2]] code
@@ -33,22 +33,22 @@ def distill qubit[10] magic, qubit[3] scratch -> bool {
   // Body of distillation circuit
   cy magic[2], scratch[0];
   h magic[1];
-  temp = ymeasure magic[2];
+  temp = ymeasure(magic[2]);
   if(temp == 1) { ry(-pi / 2) scratch[0]; }
   reset scratch[2];
   h scratch[2];
   cz scratch[2], scratch[0];
   cy magic[3], scratch[0];
-  temp = ymeasure magic[3];
+  temp = ymeasure(magic[3]);
   if(temp==0) { ry(pi / 2) scratch[0]; }
   h scratch[0];
   s scratch[0];
   cy magic[4], scratch[1];
-  temp = ymeasure magic[4];
+  temp = ymeasure(magic[4]);
   if(temp==1) { ry(-pi / 2) scratch[1]; }
   cz scratch[3], scratch[2];
   cy magic[5], scratch[1];
-  temp = ymeasure magic[5];
+  temp = ymeasure(magic[5]);
   if(temp==0) { ry(pi / 2) scratch[1]; }
   cy scratch[0], magic[1];
   inv @ s scratch[1];
@@ -56,19 +56,19 @@ def distill qubit[10] magic, qubit[3] scratch -> bool {
   h scratch[0];
   cy scratch[1], magic[1];
   cy magic[6], scratch[0];
-  temp = ymeasure magic[6];
+  temp = ymeasure(magic[6]);
   if(temp == 1) { ry(-pi / 2) scratch[0]; }
   cz scratch[2], scratch[1];
   cz scratch[2], scratch[0];
   cy magic[7], scratch[0];
-  temp = ymeasure magic[7];
+  temp = ymeasure(magic[7]);
   if(temp == 0) ry(pi / 2) scratch[0];
   cy magic[8], scratch[1];
-  temp = ymeasure magic[8];
+  temp = ymeasure(magic[8]);
   if(temp==1) { ry(-pi / 2) scratch[1]; }
   cz scratch[2], scratch[1];
   cy magic[9], scratch[1];
-  temp = ymeasure magic[9];
+  temp = ymeasure(magic[9]);
   if(temp == 0) { ry(pi / 2) scratch[1]; }
   h scratch[2];
   // Decode [[4,2,2]] code
@@ -83,12 +83,12 @@ def distill qubit[10] magic, qubit[3] scratch -> bool {
 }
 
 // Repeat level-0 distillation until success
-def rus_level_0 qubit[10] magic, qubit[3] scratch {
+def rus_level_0(qubit[10] magic, qubit[3] scratch) {
   bool success;
   while(~success) {
     reset magic;
     ry(pi / 4) magic;
-    success = distill magic, scratch;
+    success = distill(magic, scratch);
   }
 }
 
@@ -101,7 +101,7 @@ def rus_level_0 qubit[10] magic, qubit[3] scratch {
  * errors on both outputs.
  * Put the requested even number of copies into the buffer.
  */
-def distill_and_buffer(int[32] num) qubit[33] work, qubit[buffer_size] buffer {
+def distill_and_buffer(int[32] num, qubit[33] work, qubit[buffer_size] buffer) {
   int[32] index;
   bit success_0;
   bit success_1;
@@ -119,8 +119,8 @@ def distill_and_buffer(int[32] num) qubit[33] work, qubit[buffer_size] buffer {
   }
 
   // Run two second level circuits simultaneously
-  success_0 = distill magic_lvl1_0, scratch;
-  success_1 = distill magic_lvl1_1, scratch;
+  success_0 = distill(magic_lvl1_0, scratch);
+  success_1 = distill(magic_lvl1_1, scratch);
 
   // Move usable magic states into the buffer register
   if(success_0 && index < buffer_size) {
@@ -135,10 +135,10 @@ def distill_and_buffer(int[32] num) qubit[33] work, qubit[buffer_size] buffer {
 
 // Apply Ry(pi/4) to a qubit by consuming a magic state
 // from the magic state buffer at address "addr"
-def Ty(int[32] addr) qubit q, qubit[buffer_size] buffer {
+def Ty(int[32] addr, qubit q, qubit[buffer_size] buffer) {
   bit outcome;
   cy buffer[addr], q;
-  outcome = ymeasure buffer[addr];
+  outcome = ymeasure(buffer[addr]);
   if(outcome == 1) ry(pi / 2) q;
 }
 
@@ -160,10 +160,10 @@ distill_and_buffer(buffer_size) workspace, buffer;
 h q[0];
 cx q[0], q[1];
 Ty(address) q[0], buffer;
-address++;
+address += 1;
 cx q[0], q[1];
 Ty(address) q[1], buffer;
-address++;
+address += 1;
 
 // In principle each Ty gate can execute as soon as the magic
 // state is available at the address in the buffer register.

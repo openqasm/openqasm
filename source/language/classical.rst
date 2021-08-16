@@ -1,17 +1,18 @@
 Classical instructions
 ======================
 
-We envision two levels of classical control that we call low-level
-instructions and high-level kernel functions. Simple, fast instructions
-control the flow of the program and allow basic computations on
-lower-level parallel control processors. These instructions are likely
+We envision two levels of classical control: simple, low-level instructions embedded as
+part of a quantum circuit and high-level external functions which perform more complex
+classical computations. The low-level functions allow basic
+computations on lower-level parallel control processors. These instructions are likely
 to have known durations and many such instructions might be executed
-within the qubit coherence time. High-level kernel functions execute
-arbitrary user-defined classical subroutines that may be neither fast
-nor guaranteed to return. These assume a mechanism for passing data to
-and from higher-level processors. The kernel functions run on the global
-processor concurrently with operations on the local processors, if
-possible. Kernel functions can write to the global controller’s memory,
+within the qubit coherence time. The external, or ``extern``, functions execute
+complex blocks of classical code that may be neither fast nor guaranteed to return. In order
+to connect with classical compilation infrastucture, ``extern`` functions are defined outside of
+OpenQASM. The compiler toolchain is expected to link ``extern`` functions when building an
+executable. This strategy allows the programmer to use existing libraries without porting them into
+OpenQASM. ``extern`` functions run on a global processor concurrently with operations on local
+processors, if possible. ``extern`` functions can write to the global controller’s memory,
 which may not be directly accessible by the local controllers.
 
 Low-level classical instructions
@@ -82,9 +83,7 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``
-and modulo ``%``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=`` and ``%=``; as well as
-increment ``++`` and decrement ``--``.
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``, modulo ``%``, and power ``**``, as well as the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=``, and ``**=``.
 
 .. code-block:: c
 
@@ -94,23 +93,38 @@ increment ``++`` and decrement ``--``.
    a * b; // 6
    b / a; // 1
    b % a; // 1
+   a ** b; // 8
    a += 4; // a == 6
-   a++; // a == 7
 
-Fixed-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fixed-point numbers, floating-point numbers and angles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixed-point and angle types support addition, subtraction,
-multiplication, and division and the corresponding assignment operators.
+Fixed-point, floating-point, and angle types support addition, subtraction,
+multiplication, division, and power and the corresponding assignment operators.
 
 .. code-block:: c
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
    a + b; // 3/2 * pi
+   a ** b; // 4.1316...
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
 
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+assignment operators.
+
+.. code-block:: c
+
+   complex[float[64]] a = 10.0 + 5.0im;
+   complex[float[64]] b = -2.0 - 7.0im;
+   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b; // d = 12.0+12.0im;
+   complex[float[64]] e = a*b; // e = 15.0-80.0im;
+   complex[float[64]] f = a/b; // f = (-55.0+60.0im)/53.0
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
@@ -122,7 +136,9 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
-      | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      | ``()``, ``[]``, ``(type)(x)``          | Call, index, cast                  |
+      +----------------------------------------+------------------------------------+
+      | ``**``                                 | Power                              |
       +----------------------------------------+------------------------------------+
       | ``!``, ``-``, ``~``                    | Unary                              |
       +----------------------------------------+------------------------------------+
@@ -140,7 +156,7 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | ``^``                                  | Bitwise XOR                        |
       +----------------------------------------+------------------------------------+
-      | ``|``                                  | Bitwise OR                         |
+      | ``\|``                                 | Bitwise OR                         |
       +----------------------------------------+------------------------------------+
       | ``&&``                                 | Logical AND                        |
       +----------------------------------------+------------------------------------+
@@ -201,7 +217,7 @@ within the while loop body.
        h q;
        result = measure q;
        if (result) {
-           i++;
+           i += 1;
        }
    }
 
@@ -215,7 +231,7 @@ preceding, ``{ program }`` can also be replaced by a statement without the brace
    int[32] i = 0;
 
    while (i < 10) {
-       i++;
+       i += 1;
        // continue to next loop iteration
        if (i == 2) {
            continue;
@@ -231,26 +247,28 @@ preceding, ``{ program }`` can also be replaced by a statement without the brace
        // more program
    }
 
-Kernel function calls
+Extern function calls
 ---------------------
 
-Kernel functions are declared by giving their signature using the
-statement ``kernel name(inputs) -> output;`` where ``inputs`` is a comma-separated list of type names and
-``output`` is a single type name. The parentheses may be omitted if there are no ``inputs``.
+``extern`` functions are declared by giving their signature using the
+statement ``extern name(inputs) -> output;`` where ``inputs`` is a comma-separated list of type
+names and ``output`` is a single type name. The parentheses may be omitted if there are no ``inputs``.
 
-Kernel functions can take of any number of arguments whose types correspond to the classical types of OpenQASM.
-Inputs are passed by value. They can return zero or one value whose type
+``extern`` functions can take of any number of arguments whose types correspond to the classical
+types of OpenQASM. Inputs are passed by value. They can return zero or one value whose type
 is any classical type in OpenQASM except real constants. If necessary,
 multiple return values can be accommodated by concatenating registers.
 The type and size of each argument must be known at compile time to
 define data flow and enable scheduling. We do not address issues such as
-how the kernel functions are defined and registered.
+how the ``extern`` functions are defined and registered.
 
-Kernel functions are invoked using the statement ``name(inputs);`` and the result may be assigned to
-``output`` as needed via an assignment operator (``=``, ``+=``, etc). ``inputs`` are literals and
-``output`` is a variable, corresponding to the types in the signature. The functions are not required to
-be idempotent. They may change the state of the process providing the function. In our computational
-model, the kernel functions are assumed to run concurrently with other classical and quantum computations.
+``extern`` functions are invoked using the statement ``name(inputs);`` and the result may be
+assigned to ``output`` as needed via an assignment operator (``=``, ``+=``, etc). ``inputs`` are
+literals and ``output`` is a variable, corresponding to the types in the signature. The functions
+are not required to be idempotent. They may change the state of the process providing the function.
+In our computational model, ``extern`` functions may run concurrently with other classical and
+quantum computations. That is, invoking an ``extern`` function will  *schedule* a classical
+computation, but does not wait for that computation to terminate.
 
 .. [1]
    ``popcount`` computes the Hamming weight of the input register.
