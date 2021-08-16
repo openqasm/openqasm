@@ -96,11 +96,11 @@ Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, i
    a ** b; // 8
    a += 4; // a == 6
 
-Fixed-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fixed-point numbers, floating-point numbers and angles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixed-point and angle types support addition, subtraction,
-multiplication, division and power and the corresponding assignment operators.
+Fixed-point, floating-point, and angle types support addition, subtraction,
+multiplication, division, and power and the corresponding assignment operators.
 
 .. code-block:: c
 
@@ -111,6 +111,20 @@ multiplication, division and power and the corresponding assignment operators.
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
 
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+assignment operators.
+
+.. code-block:: c
+
+   complex[float[64]] a = 10.0 + 5.0im;
+   complex[float[64]] b = -2.0 - 7.0im;
+   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b; // d = 12.0+12.0im;
+   complex[float[64]] e = a*b; // e = 15.0-80.0im;
+   complex[float[64]] f = a/b; // f = (-55.0+60.0im)/53.0
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
