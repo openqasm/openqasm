@@ -102,7 +102,6 @@ singleDesignatorType
     | 'uint'
     | 'float'
     | 'angle'
-    | 'complex'
     ;
 
 doubleDesignatorType
@@ -175,7 +174,7 @@ classicalArgument
     ) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
-    | 'complex' LBRACKET numericType designator RBRACKET Identifier
+    | 'complex' LBRACKET numericType RBRACKET Identifier
     ;
 
 classicalArgumentList
