@@ -44,7 +44,7 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
-Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel, Zachary Schoenfeld
+Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
 
 
 ## Past Working Groups
