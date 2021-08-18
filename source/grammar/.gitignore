@@ -1,7 +1,5 @@
-qasm3.interp
-qasm3.tokens
-qasm3Lexer.interp
+qasm3*.interp
+qasm3*.tokens
 qasm3Lexer.py
-qasm3Lexer.tokens
 qasm3Listener.py
 qasm3Parser.py
