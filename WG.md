@@ -13,7 +13,7 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 **Objective**: ...
 
 Chair: Niel de Beaudrap  
-Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson
+Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
 ### Grammar
 
