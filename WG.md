@@ -20,7 +20,7 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson
 **Objective**: 
 
 Chair: Li Chen  
-Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steve Heidel
+Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steven Heidel
 
 ### Types and casting
 
