@@ -22,22 +22,24 @@ reference: |
                           bitShiftExpression
                             additiveExpression
                               multiplicativeExpression
-                                expressionTerminator
+                                powerExpression
                                   expressionTerminator
-                                    spec
-                                  [
-                                  expression
                                     expressionTerminator
-                                      i
-                                  ]
+                                      spec
+                                    [
+                                    expression
+                                      expressionTerminator
+                                        i
+                                    ]
                       equalityOperator
                         ==
                       comparisonExpression
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                0
+                              powerExpression
+                                expressionTerminator
+                                  0
             &&
             bitOrExpression
               xOrExpression
@@ -48,53 +50,57 @@ reference: |
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
+                              powerExpression
                                 expressionTerminator
-                                  spec
-                                [
-                                expression
-                                  logicalAndExpression
-                                    bitOrExpression
-                                      xOrExpression
-                                        bitAndExpression
-                                          equalityExpression
-                                            comparisonExpression
-                                              bitShiftExpression
-                                                additiveExpression
+                                  expressionTerminator
+                                    spec
+                                  [
+                                  expression
+                                    logicalAndExpression
+                                      bitOrExpression
+                                        xOrExpression
+                                          bitAndExpression
+                                            equalityExpression
+                                              comparisonExpression
+                                                bitShiftExpression
                                                   additiveExpression
+                                                    additiveExpression
+                                                      multiplicativeExpression
+                                                        powerExpression
+                                                          expressionTerminator
+                                                            n
+                                                    +
                                                     multiplicativeExpression
-                                                      expressionTerminator
-                                                        n
-                                                  +
-                                                  multiplicativeExpression
-                                                    expressionTerminator
-                                                      i
-                                ]
+                                                      powerExpression
+                                                        expressionTerminator
+                                                          i
+                                  ]
                     equalityOperator
                       ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression
                           multiplicativeExpression
-                            expressionTerminator
-                              1
+                            powerExpression
+                              expressionTerminator
+                                1
         )
         programBlock
           {
           statement
-            expressionStatement
-              expression
-                expressionTerminator
-                  subroutineCall
+            quantumStatement
+              quantumInstruction
+                quantumGateCall
+                  quantumGateName
                     x
-                    indexIdentifierList
-                      indexIdentifier
-                        q
-                        [
-                        expressionList
-                          expression
-                            expressionTerminator
-                              i
-                        ]
+                  indexIdentifierList
+                    indexIdentifier
+                      q
+                      [
+                      expressionList
+                        expression
+                          expressionTerminator
+                            i
+                      ]
               ;
           }

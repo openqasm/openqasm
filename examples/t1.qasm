@@ -4,14 +4,14 @@
 OPENQASM 3.0;
 include "stdgates.inc";
 
-length stride = 1us;            // time resolution of points taken
+duration stride = 1us;            // time resolution of points taken
 const points = 50;              // number of points taken
 const shots = 1000;             // how many shots per point
 
 int[32] counts0;
 int[32] counts1 = 0;   // surviving |1> populations of qubits
 
-kernel tabulate(int[32], int[32], int[32]);
+extern tabulate(int[32], int[32], int[32]);
 
 bit c0;
 bit c1;
@@ -34,7 +34,7 @@ for p in [0 : points-1] {
         // wait for a fixed time indicated by loop counter
         delay[p * stride] $0;
         // wait for a fixed time indicated by loop counters
-        delay[p * lengthof({x $1;})];
+        delay[p * durationof({x $1;})];
         // read out qubit states
         c0 = measure $0;
         c1 = measure $1;

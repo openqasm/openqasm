@@ -10,6 +10,7 @@ reference: |
           unaryExpression
             unaryOperator
               !
-            expressionTerminator
-              my_var
+            powerExpression
+              expressionTerminator
+                my_var
         ;

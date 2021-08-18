@@ -9,7 +9,7 @@ program
     ;
 
 header
-    : version? include*
+    : version? include* io*
     ;
 
 version
@@ -20,9 +20,17 @@ include
     : 'include' StringLiteral SEMICOLON
     ;
 
+ioIdentifier
+    : 'input'
+    | 'output'
+    ;
+io
+    : ioIdentifier classicalType Identifier SEMICOLON
+    ;
+
 globalStatement
     : subroutineDefinition
-    | kernelDeclaration
+    | externDeclaration
     | quantumGateDefinition
     | calibration
     | quantumDeclarationStatement  // qubits are declared globally
@@ -47,7 +55,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : Identifier designator? ( assignmentOperator expression )?
+    : Identifier designator? assignmentOperator expression
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -80,7 +88,7 @@ quantumArgument
     ;
 
 quantumArgumentList
-    : ( quantumArgument COMMA )* quantumArgument
+    : quantumArgument ( COMMA quantumArgument )*
     ;
 
 /** Classical Types **/
@@ -110,6 +118,13 @@ classicalType
     | doubleDesignatorType doubleDesignator
     | noDesignatorType
     | bitType designator?
+    | 'complex' LBRACKET numericType RBRACKET
+    ;
+
+// numeric OpenQASM types
+numericType
+    : singleDesignatorType designator
+    | doubleDesignatorType doubleDesignator
     ;
 
 constantDeclaration
@@ -134,11 +149,16 @@ bitDeclaration
     : ( 'creg' Identifier designator? | 'bit' designator? Identifier ) equalsExpression?
     ;
 
+complexDeclaration
+    : 'complex' LBRACKET numericType RBRACKET Identifier equalsExpression?
+    ;
+
 classicalDeclaration
     : singleDesignatorDeclaration
     | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
+    | complexDeclaration
     ;
 
 classicalTypeList
@@ -154,10 +174,20 @@ classicalArgument
     ) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
+    | 'complex' LBRACKET numericType RBRACKET Identifier
     ;
 
 classicalArgumentList
-    : ( classicalArgument COMMA )* classicalArgument
+    : classicalArgument ( COMMA classicalArgument )*
+    ;
+
+anyTypeArgument
+    : classicalArgument
+    | quantumArgument
+    ;
+
+anyTypeArgumentList
+    : ( anyTypeArgument COMMA )* anyTypeArgument
     ;
 
 /** Aliasing **/
@@ -174,7 +204,7 @@ indexIdentifier
     ;
 
 indexIdentifierList
-    : ( indexIdentifier COMMA )* indexIdentifier
+    : indexIdentifier ( COMMA indexIdentifier )*
     ;
 
 rangeDefinition
@@ -225,7 +255,7 @@ quantumInstruction
     ;
 
 quantumPhase
-    : 'gphase' LPAREN expression RPAREN
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
     ;
 
 quantumReset
@@ -242,15 +272,23 @@ quantumMeasurementAssignment
     ;
 
 quantumBarrier
-    : 'barrier' indexIdentifierList
+    : 'barrier' indexIdentifierList?
     ;
 
 quantumGateModifier
-    : ( 'inv' | 'pow' LPAREN expression RPAREN | 'ctrl' ) '@'
+    : ( 'inv' | powModifier | ctrlModifier ) '@'
+    ;
+
+powModifier
+    : 'pow' LPAREN expression RPAREN
+    ;
+
+ctrlModifier
+    : ( 'ctrl' | 'negctrl' ) ( LPAREN expression RPAREN )?
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList? RPAREN )? indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
     ;
 
 /*** Classical Instructions ***/
@@ -348,29 +386,33 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : expressionTerminator
+    : powerExpression
     | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( expressionTerminator | unaryExpression )
+    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
     ;
 
 unaryExpression
-    : unaryOperator expressionTerminator
+    : unaryOperator powerExpression
+    ;
+
+powerExpression
+    : expressionTerminator
+    | expressionTerminator '**' powerExpression
     ;
 
 expressionTerminator
     : Constant
     | Integer
     | RealNumber
+    | ImagNumber
     | booleanLiteral
     | Identifier
     | StringLiteral
     | builtInCall
-    | kernelCall
-    | subroutineCall
-    | timingTerminator
+    | externOrSubroutineCall
+    | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
-    | expressionTerminator incrementor
     ;
 /** End expression hierarchy **/
 
@@ -378,17 +420,12 @@ booleanLiteral
     : 'true' | 'false'
     ;
 
-incrementor
-    : '++'
-    | '--'
-    ;
-
 builtInCall
     : ( builtInMath | castOperator ) LPAREN expressionList RPAREN
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount' | 'lengthof'
+    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
     ;
 
 castOperator
@@ -396,7 +433,7 @@ castOperator
     ;
 
 expressionList
-    : ( expression COMMA )* expression
+    : expression ( COMMA expression )*
     ;
 
 equalsExpression
@@ -405,7 +442,7 @@ equalsExpression
 
 assignmentOperator
     : EQUALS
-    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>='
+    | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
 setDeclaration
@@ -443,29 +480,24 @@ controlDirective
     | returnStatement
     ;
 
-kernelDeclaration
-    : 'kernel' Identifier ( LPAREN classicalTypeList? RPAREN )? returnSignature? SEMICOLON
+externDeclaration
+    : 'extern' Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON
     ;
 
-// if have kernel w/ out args, is ambiguous; may get matched as identifier
-kernelCall
+// if have function call w/ out args, is ambiguous; may get matched as identifier
+externOrSubroutineCall
     : Identifier LPAREN expressionList? RPAREN
     ;
 
 /*** Subroutines ***/
 
 subroutineDefinition
-    : 'def' Identifier ( LPAREN classicalArgumentList? RPAREN )? quantumArgumentList?
+    : 'def' Identifier LPAREN anyTypeArgumentList? RPAREN
     returnSignature? subroutineBlock
     ;
 
 subroutineBlock
     : LBRACE statement* returnStatement? RBRACE
-    ;
-
-// if have subroutine w/ out args, is ambiguous; may get matched as identifier
-subroutineCall
-    : Identifier ( LPAREN expressionList? RPAREN )? indexIdentifierList
     ;
 
 /*** Directives ***/
@@ -477,22 +509,17 @@ pragma
 /*** Circuit Timing ***/
 
 timingType
-    : 'length'
-    | StretchN
+    : 'duration'
+    | 'stretch'
     ;
 
 timingBox
-    : 'boxas' Identifier quantumBlock
-    | 'boxto' TimingLiteral quantumBlock
-    ;
-
-timingTerminator
-    : timingIdentifier | 'stretchinf'
+    : 'box' designator? quantumBlock
     ;
 
 timingIdentifier
     : TimingLiteral
-    | 'lengthof' LPAREN ( Identifier | quantumBlock ) RPAREN
+    | 'durationof' LPAREN ( Identifier | quantumBlock ) RPAREN
     ;
 
 timingInstructionName
@@ -561,6 +588,8 @@ MUL : '*';
 DIV : '/';
 MOD : '%';
 
+IMAG: 'im';
+ImagNumber : ( Integer | RealNumber ) IMAG ;
 
 Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
@@ -575,13 +604,12 @@ fragment Letter : [A-Za-z] ;
 fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
 fragment GeneralIdCharacter : FirstIdCharacter | Integer;
 
-StretchN : 'stretch' Digit* ;
 Identifier : FirstIdCharacter GeneralIdCharacter* ;
 
 fragment SciNotation : [eE] ;
 fragment PlusMinus : PLUS | MINUS ;
 fragment Float : Digit+ DOT Digit* ;
-RealNumber : Float (SciNotation PlusMinus? Integer )? ;
+RealNumber : (Integer | Float ) (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units

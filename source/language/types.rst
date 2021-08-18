@@ -52,13 +52,19 @@ Qubits
 ~~~~~~
 
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
-two-level subsystem of a quantum state. Quantum registers are static
-arrays of qubits that cannot be dynamically resized. The statement ``qubit name;``
-declares a reference to a quantum bit. The statement ``qubit[size] name;`` declares a
-quantum register with ``size`` qubits. Sizes must always be constant positive integers.
+two-level subsystem of a quantum state. The statement ``qubit name;``
+declares a reference to a quantum bit. These qubits are referred 
+to as "virtual qubits" (in distinction to "physical qubits" on 
+actual hardware; see below). The statement ``qubit[size] name;`` 
+declares a quantum register with ``size`` qubits.
+Sizes must always be constant positive integers. The label ``name[j]`` 
+refers to a qubit of this register, where
+:math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+Quantum registers are static arrays of qubits 
+that cannot be dynamically resized. 
 
-Qubit registers may also be declared as ``qreg name[size]``. This keyword is included for backwards
-compatibility and may not be supported in the future.
+The keyword ``qreg`` is included
+for backwards compatibility and will be removed in the future. 
 
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
@@ -76,9 +82,10 @@ While program qubits can be named, hardware qubits are referenced only
 by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
 references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
-circuits.
+circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
 
 .. code-block:: c
+   :force:
 
    // Declare a qubit
    qubit gamma;
@@ -163,6 +170,7 @@ indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
 .. code-block:: c
+   :force:
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -170,7 +178,7 @@ vendors may not support manipulating these values at run-time.
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
 
-Fixed-point angles are interpreted as 2π times a 0:1:n-1
+Fixed-point angles are interpreted as 2π times a 0:0:n
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
 2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
@@ -181,12 +189,31 @@ parameters with ``angle`` types may be necessary for those parameters to be
 compatible with run-time values on some platforms.
 
 .. code-block:: c
+   :force:
 
    // Declare an angle with 20 bits of precision and assign it a value of π/2
    angle[20] my_angle = π / 2;
    float[32] float_pi = π;
    // equivalent to pi_by_2 up to rounding errors
    angle[20](float_pi / 2);
+
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers may be declared as ``complex[type[size]] name``, for a numeric OpenQASM classical type
+``type`` (``int``, ``fixed``, ``float``, ``angle``) and a number of bits ``size``. The real
+and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
+would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
+``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
+``a + b im``, where ``a`` and ``b`` must be of the same type as ``type[size]``. ``b`` must occur to the
+left of ``im`` and the two can only be seperated by spaces/tabs (or nothing at all).
+
+.. code-block:: c
+
+   complex[float[64]] c;
+   c = 2.5 + 3.5im; // 2.5, 3.5 are resolved to be ``float[64]`` types
+   complex[float[64]] d = 2.0+sin(π) + 3.1*5.5 im;
+   complex[int[32]] f = 2 + 5 im; // 2, 5 are resolved to be ``int[32]`` types
 
 Boolean types
 ~~~~~~~~~~~~~
@@ -217,7 +244,7 @@ has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
 declarations. Real constants are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
-calculator-like operations on run-time values require kernel function
+calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
 constants can be cast to other types. Casting attempts to preserve the
 semantics, but information can be lost, since variables have fixed
@@ -228,6 +255,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__.
 
 .. code-block:: c
+   :force:
 
    // Declare a constant
    const my_const = 1234;
@@ -253,40 +281,37 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       | Euler’s number                | euler        | ℇ            | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
 
-Note that `e` is a valid identifier. `e/E` are also used in scientifier notation where appropriate.
+Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
+
 Types related to timing
 -----------------------
 
-length
-~~~~~~
+Duration
+~~~~~~~~
 
-We introduce a ``length`` type and several keywords to express lengths of time.
-Lengths are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
+We introduce a ``duration`` type to express timing.
+Durations are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``lengthof()`` is an intrinsic function used to reference the duration of
-another part of the program or the duration of a calibrated gate.
+the backend. ``durationof()`` is an intrinsic function used to reference the duration of a calibrated gate.
 
 .. code-block:: c
 
-   length one_second = 1000ms;
-   length thousand_cycles = 1000dt;
+   duration one_second = 1000ms;
+   duration thousand_cycles = 1000dt;
+   duration c = durationof({x $3);
 
-``length`` is further discussed in :any:`length-and-stretch`
+``duration`` is further discussed in :any:`duration-and-stretch`
 
-stretch
+Stretch
 ~~~~~~~
 
-We further introduce a ``stretch`` type which is a sub-type of ``length``. Stretchable lengths
-have variable non-negative length that is permitted to grow as necessary
+We further introduce a ``stretch`` type which is a sub-type of ``duration``. ``stretch`` types
+have variable non-negative duration that is permitted to grow as necessary
 to satisfy constraints. Stretch variables are resolved at compile time
 into target-appropriate durations that satisfy a user’s specified design
-intent. We distinguish different “orders" of stretch via ``stretchN`` types, where N
-is an integer between 0 to 255. ``stretch0`` is an alias for the regular ``stretch``. At the
-timing resolution stage of the compiler, higher order stretches will
-suppress lower order stretches whenever they appear in the same scope on
-the same qubits.
+intent.
 
-``stretch`` is further discussed in :any:`length-and-stretch`
+``stretch`` is further discussed in :any:`duration-and-stretch`
 
 Aliasing
 --------

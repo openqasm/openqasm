@@ -162,14 +162,16 @@ reference: |
                           bitShiftExpression
                             additiveExpression
                               multiplicativeExpression
-                                expressionTerminator
-                                  a
+                                powerExpression
+                                  expressionTerminator
+                                    a
                       equalityOperator
                         ==
                       comparisonExpression
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              expressionTerminator
-                                0
+                              powerExpression
+                                expressionTerminator
+                                  0
         ;

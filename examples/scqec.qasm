@@ -14,9 +14,9 @@ const n = d^2;       // number of code qubits
 
 uint[32] failures;  // number of observed failures
 
-kernel zfirst(creg[n - 1], int[32], int[32]);
-kernel send(creg[n -1 ], int[32], int[32], int[32]);
-kernel zlast(creg[n], int[32], int[32]) -> bit;
+extern zfirst(creg[n - 1], int[32], int[32]);
+extern send(creg[n -1 ], int[32], int[32], int[32]);
+extern zlast(creg[n], int[32], int[32]) -> bit;
 
 qubit[n] data;  // code qubits
 qubit[n-1] ancilla;  // syndrome qubits
@@ -32,7 +32,7 @@ bit outcome;  // logical outcome
 
 /* Declare a sub-circuit for Hadamard gates on ancillas
  */
-def hadamard_layer qubit[n-1] ancilla {
+def hadamard_layer(qubit[n-1] ancilla) {
   // Hadamards in the bulk
   for row in [0: d-2] {
     for col in [0: d-2] {
@@ -49,7 +49,7 @@ def hadamard_layer qubit[n-1] ancilla {
 
 /* Declare a sub-circuit for a syndrome cycle.
  */
-def cycle qubit[n] data, qubit[n-1] ancilla -> bit[n-1] {
+def cycle(qubit[n] data, qubit[n-1] ancilla) -> bit[n-1] {
   reset ancilla;
   hadamard_layer ancilla;
 
@@ -83,12 +83,12 @@ for shot in [1: shots] {
 
   // Initialize
   reset data;
-  layer = cycle data, ancilla;
+  layer = cycle(data, ancilla);
   zfirst(layer, shot, d);
 
   // m cycles of syndrome measurement
   for i in [1: m] {
-    layer = cycle data, ancilla;
+    layer = cycle(data, ancilla);
     send(layer, shot, i, d);
   }
 
