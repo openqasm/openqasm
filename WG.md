@@ -17,6 +17,8 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
 ### Grammar
 
+Note: this working group will begin working in September 2021.
+
 **Objective**: 
 
 Chair: Li Chen  
