@@ -14,7 +14,7 @@ You could also follow [these instructions](https://github.com/antlr/antlr4/blob/
 Running the Python version of the parser also requires the ANTLR Python runtime.
 You can install this with `pip` by
 ```bash
-$ pip install antlr4-python3-runtime==<version>
+pip install antlr4-python3-runtime==<version>
 ```
 where `<version>` should exactly match the version of ANTLR 4 you installed.
 If you let `pip` do this automatically when it installs the reference parser, it will likely pull the wrong version, and produce errors during use.
@@ -22,7 +22,10 @@ If you let `pip` do this automatically when it installs the reference parser, it
 
 ## Building the Python Parser
 
-1. Build the grammar files into the package directory with `<antlr command> -o openqasm_reference_parser -Dlanguage=Python3 qasm3.g4`.
+1. Build the grammar files into the package directory with 
+    ```bash
+    <antlr command> -o openqasm_reference_parser -Dlanguage=Python3 qasm3.g4
+    ```
    `<antlr command>` is however you invoke ANTLR.
    If you used a package manager, it is likely `antlr4` or `antlr`.
    If you followed the "Getting Started" instructions, it is likely just the `antlr4` alias, or it might be `java -jar <path/to/antlr.jar>`.
