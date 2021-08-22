@@ -10,7 +10,7 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 
 ### Generics and circuit families
 
-**Objective**: ...
+**Objective**: Recommend what range of generics / parameterised circuit family functionality (beyond angle parameters) would be suitable for inclusion in OpenQASM, and what syntax should be used for it.
 
 Chair: Niel de Beaudrap  
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
