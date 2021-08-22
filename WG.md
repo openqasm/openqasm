@@ -36,7 +36,7 @@ Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, S
  * Is an int equivalent to an array of bits?
 
 Chair: Michael Healy (IBM Quantum)  
-Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi
+Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
 
 
