@@ -26,7 +26,7 @@ If you let `pip` do this automatically when it installs the reference parser, it
     ```bash
     <antlr command> -o openqasm_reference_parser -Dlanguage=Python3 qasm3.g4
     ```
-   `<antlr command>` is however you invoke ANTLR.
+   `<antlr command>` should be replaced with however you invoke ANTLR on your system.
    If you used a package manager, it is likely `antlr4` or `antlr`.
    If you followed the "Getting Started" instructions, it is likely just the `antlr4` alias, or it might be `java -jar <path/to/antlr.jar>`.
 2. Install the Python package with `pip install -e .`.
