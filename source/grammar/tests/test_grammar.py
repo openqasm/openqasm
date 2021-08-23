@@ -1,173 +1,148 @@
-import io
+import itertools
 import os
-from contextlib import redirect_stderr
-import pytest
+import pathlib
+from typing import List, Union, Sequence
 
+import pytest
 import yaml
 
-from antlr4 import *
-from antlr4.tree.Trees import Trees
+import openqasm_reference_parser
 
-# add lexer, parser to Python path and import
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from qasm3Lexer import qasm3Lexer
-from qasm3Parser import qasm3Parser
+TEST_DIR = pathlib.Path(__file__).parent
+REPO_DIR = TEST_DIR.parents[2]
 
 
-def get_pretty_tree(
-    tree: "ParseTree", rule_names: list = None, parser: Parser = None, level: int = 0
-) -> str:
-    """Take antlr ``ParseTree`` and return indented tree format for test comparison.
-
-    Adapted from ``antrl4.tree.Trees.toStringTree()`` method.
+def find_files(
+    directory: Union[str, os.PathLike], suffix: str = "", raw: bool = False
+) -> List:
+    """Recursively find all files in ``directory`` that end in ``suffix``.
 
     Args:
-        tree: The antlr parse tree.
-        rule_names: Names of parser rules.
-        parser: The parser used to generated the tree.
-        level: Level of tree (used for indentation).
+        directory: the (absolute) directory to search for the files.
+        suffix: the string that filenames should end in to be returned.  Files
+            without this suffix are ignored.  This is useful for limiting files
+            to those with a particular extension.
+        raw: If false (the default), the output elements are all
+        ``pytest.param`` instances with nice ids.  If true, then only the file
+        names are returned, without the wrapping parameter.
 
     Returns:
-        Pretty tree format (indents of one space at each level).
+        By default, a list of ``pytest`` parameters, where the value is a string
+        of the absolute path to a file, and the id is a string of the path
+        relative to the given directory.  If ``raw`` is given, then just a list
+        of the files as ``pathlib.Path`` instances.
     """
-    indent_value = "  "  # indent using two spaces to match ``yaml`` reference files
+    directory = pathlib.Path(directory).absolute()
 
-    if parser is not None:
-        rule_names = parser.ruleNames
+    if raw:
 
-    node_text = Trees.getNodeText(tree, rule_names)
-    pretty_tree = level * indent_value + node_text + "\n"
+        def output_format(root, file):
+            return str(pathlib.Path(root) / file)
 
-    if tree.getChildCount() > 0:
-        for i in range(0, tree.getChildCount()):
-            pretty_tree += get_pretty_tree(tree.getChild(i), rule_names=rule_names, level=level + 1)
+    else:
 
-    return pretty_tree
+        def output_format(root, file):
+            path = pathlib.Path(root) / file
+            return pytest.param(str(path), id=str(path.relative_to(directory)))
+
+    return [
+        output_format(root, file)
+        for root, _, files in os.walk(directory)
+        for file in files
+        if file.endswith(suffix)
+    ]
 
 
-def build_parse_tree(input_str: str, using_file: bool = False) -> str:
-    """Build indented parse tree in string format.
+def cases_from_lines(
+    files: Union[str, os.PathLike, Sequence[Union[str, os.PathLike]]],
+    skip_comments: bool = True,
+    root: Union[str, os.PathLike] = TEST_DIR,
+):
+    """Parametrize test cases from the lines of a series of files.
+
+    Whitespace at the start and end of the lines is stripped from the case.
 
     Args:
-        input_str: Input program or file path.
-        using_file: Whether input string is source program or file path.
-
-    Raises:
-        Exception: If build fails (at any stage: lexing or parsing).
+        files: The name of a file or files to draw the test cases from.  Can be
+            the output of :obj:`~find_files` with ``raw=True`` to do discovery.
+        skip_comments: Whether to skip lines which begin with the line-comment
+            sequence "//".
+        root: The directory to quote the filenames relative to, when generating
+            the test id.
 
     Returns:
-        Parse tree string in indented format.
+        A sequence of pytest parameters with the individual test cases and their
+        ids.  The id is formed of the file name and the line number the case was
+        taken from.
     """
-    input = FileStream(input_str, encoding='utf-8') if using_file else InputStream(input_str)
-    pretty_tree = ""
-    # antlr errors (lexing and parsing) sent to stdout -> redirect to variable err
-    with io.StringIO() as err, redirect_stderr(err):
-        lexer = qasm3Lexer(input)
-        stream = CommonTokenStream(lexer)
-        parser = qasm3Parser(stream)
-        tree = parser.program()
+    if isinstance(files, (str, os.PathLike)):
+        files = (files,)
+    root = pathlib.Path(root)
 
-        pretty_tree = get_pretty_tree(tree, None, parser)
+    def output_format(line, filename, line_number):
+        relative_filename = pathlib.Path(filename).relative_to(root)
+        return pytest.param(
+            line,
+            id=f"{relative_filename}:{line_number + 1}",
+        )
 
-        error = err.getvalue()
-        if error:
-            raise Exception("Parse tree build failed. Error:\n" + error)
+    out = []
+    for filename in files:
+        with open(filename, "r") as file:
+            for line_number, line in enumerate(file):
+                line = line.strip()
+                if not line or (skip_comments and line.startswith("//")):
+                    continue
+                out.append(output_format(line, filename, line_number))
+    return out
 
-    return pretty_tree
 
-class TestGrammar:
-    """Test the ANTLR grammar w/ pytest."""
+@pytest.mark.parametrize(
+    "filename",
+    find_files(TEST_DIR / "reference", suffix=".yaml"),
+)
+def test_reference_output(filename):
+    """Test that the reference files parse to the exact expected output."""
+    with open(filename, "r") as file:
+        obj = yaml.load(file, Loader=yaml.FullLoader)
+    # Make sure the YAML files have only the correct keys.
+    assert set(obj) == {"reference", "source"}
+    parsed = openqasm_reference_parser.pretty_tree(program=obj["source"])
+    assert parsed == obj["reference"]
 
-    @pytest.fixture(scope="function", autouse=True)
-    def setup(self):
-        test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
-        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
-        self.examples_path = os.path.join(root_dir, "examples/")
-        self.test_path = os.path.join(test_dir, "outputs")
 
-    def load_and_compare_yaml(self, test_str):
-        """Process test yaml files. Yaml is expected to contain OpenQasm3.0 source code, which is
-        parsed. The resulting parse tree is compared to a reference output.
+@pytest.mark.parametrize(
+    "filename",
+    find_files(REPO_DIR / "examples", suffix=".qasm"),
+)
+def test_examples_parse(filename):
+    """Test that the example QASM3 files all parse without error."""
+    openqasm_reference_parser.pretty_tree(file=filename)
 
-        The yaml keys are ``source`` and ``reference``, respectively.
 
-        Args:
-            test_str (str): Relative path of test yaml file, ie ``add.yaml``.
-        """
-        if not "yaml" in test_str:
-            raise ValueError("Test file should be in YAML format.")
+class TestInvalidProgramsFailToParse:
+    @pytest.mark.parametrize(
+        "statement",
+        cases_from_lines(
+            find_files(TEST_DIR / "invalid" / "statements", ".qasm", raw=True),
+            root=TEST_DIR / "invalid" / "statements",
+        ),
+    )
+    def test_single_global_statement(self, statement):
+        with pytest.raises(openqasm_reference_parser.Qasm3ParserError):
+            openqasm_reference_parser.pretty_tree(program=statement)
 
-        test_path = os.path.join(self.test_path, test_str)
-        with open(test_path) as test_file:
-            test_dict = yaml.load(test_file, Loader=yaml.FullLoader)
-
-        if sorted(list(test_dict.keys())) != ["reference", "source"]:
-            raise KeyError("Reference YAML file contain only ``source`` and ``reference`` keys.")
-
-        qasm_source = test_dict["source"]
-        parse_tree = build_parse_tree(qasm_source)
-
-        reference = test_dict["reference"]
-        assert parse_tree == reference
-
-    def test_header(self):
-        """Test header."""
-        self.load_and_compare_yaml("header.yaml")
-
-    def test_subroutine_kernel(self):
-        """Test subroutines and kernels."""
-        self.load_and_compare_yaml("subroutine.yaml")
-        self.load_and_compare_yaml("extern.yaml")
-        self.load_and_compare_yaml("quantum_gate.yaml")
-        # TODO: Add calibration test when pulse grammar is filled in
-
-    def test_gate(self):
-        """Test gates."""
-        self.load_and_compare_yaml("quantum_gate.yaml")
-        self.load_and_compare_yaml("gate_modifiers.yaml")
-
-    def test_declaration(self):
-        """Test classical and quantum declaration."""
-        self.load_and_compare_yaml("declaration.yaml")
-        self.load_and_compare_yaml("complex.yaml")
-
-    def test_pragma(self):
-        """Test pragma directive."""
-        self.load_and_compare_yaml("pragma.yaml")
-
-    def test_expression(self):
-        """Test expressions."""
-        self.load_and_compare_yaml("binary_expr.yaml")
-        self.load_and_compare_yaml("order_of_ops.yaml")
-        self.load_and_compare_yaml("unary_expr.yaml")
-        self.load_and_compare_yaml("built_in_call.yaml")
-        self.load_and_compare_yaml("sub_and_extern_call.yaml")
-
-    def test_assignment(self):
-        """Test assignment statements."""
-        self.load_and_compare_yaml("assignment.yaml")
-
-    def test_branching(self):
-        """Test branching statements."""
-        self.load_and_compare_yaml("branching.yaml")
-        self.load_and_compare_yaml("branch_binop.yaml")
-
-    def test_loop_and_control_directive(self):
-        """Test loop and control directive statements."""
-        self.load_and_compare_yaml("loop.yaml")
-
-    def test_aliasing(self):
-        """Test alias statements."""
-        self.load_and_compare_yaml("alias.yaml")
-
-    def test_examples(self):
-        """Loop through all example files, parse and verify that no errors are raised.
-
-        Examples located at: ``openqasm/examples``.
-        """
-        examples = os.listdir(self.examples_path)
-        for e in examples:
-            example_file = os.path.join(self.examples_path, e)
-            if os.path.isfile(example_file):
-                tree = build_parse_tree(example_file, using_file=True)
+    @pytest.mark.parametrize(
+        "statement",
+        cases_from_lines(
+            TEST_DIR / "valid" / "statements" / "globals.qasm",
+            root=TEST_DIR / "valid" / "statements",
+        )
+    )
+    def test_scoped_global_statements(self, statement):
+        # Check that the statement is a valid global statement ...
+        openqasm_reference_parser.pretty_tree(program=statement)
+        # ... but it fails if not in the global scope.
+        scoped = f"if (true) {{ {statement} }}"
+        with pytest.raises(openqasm_reference_parser.Qasm3ParserError):
+            openqasm_reference_parser.pretty_tree(program=scoped)
