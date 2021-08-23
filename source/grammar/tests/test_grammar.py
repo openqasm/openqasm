@@ -158,7 +158,7 @@ class TestInvalidProgramsFailToParse:
         "output myvar;",
     ]
     invalid_const = [
-        pytest.param("const myvar;", marks=pytest.mark.xfail),
+        "const myvar;",
         "const myvar = ;",
         "const int[8] myvar = 8;",
         "input const myvar = 8;",
