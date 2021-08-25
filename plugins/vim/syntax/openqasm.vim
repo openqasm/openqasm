@@ -118,7 +118,7 @@ syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transpar
 " statements to be matched correctly, when the test includes a function call.
 syntax region qasmParams start="(" end=")" transparent contained
 syntax region qasmDesignator start=#\v\[# end=#\v\]# transparent contained
-    \ contains=qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
+    \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
 
 " General keywords.
 syntax keyword qasmInclude include
@@ -142,7 +142,7 @@ if s:openqasm_version < 3
     syntax keyword qasmDefine opaque nextgroup=qasmFunction skipwhite skipempty
 else
     syntax keyword qasmInclude defcalgrammar
-    syntax keyword qasmType bit qubit int uint float fixed bool angle duration stretch
+    syntax keyword qasmType bit qubit int uint float fixed bool angle duration stretch complex
         \ nextgroup=qasmDesignator skipwhite skipempty
     syntax keyword qasmIO input output
     syntax keyword qasmBuiltinQuantum durationof box
