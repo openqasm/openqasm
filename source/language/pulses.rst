@@ -125,19 +125,19 @@ a global scope to all identifiers in order to declare values shared across all `
    cal {
       // Defined within `cal`, so it may not leak back out to the enclosing blocks scope
       float new_freq = 5.2e9;
-      // declare global channel
-      channel d0 = getchannel("drive", $0);
+      // declare global port
+      port d0 = getport("drive", $0);
       // reference `freq` variable from enclosing blocks scope
-      frame d0f = newframe(freq, 0.0);
+      frame d0f = newframe(d0, freq, 0.0);
 
    }
 
    defcal x $0 {
       waveform xp = gaussian(1.0, 160t, 40dt);
-      // References channel, frame, and `new_freq` declared in top-level cal block
-      play(d0, xp, d0f);
+      // References frame and `new_freq` declared in top-level cal block
+      play(xp, d0f);
       frame.frequency = new_freq;
-      play(d0, xp, d0f);
+      play(xp, d0f);
    }
 
 
@@ -176,10 +176,10 @@ The majority of OpenQASM users will use the default calibrations, however,
 for those that want more control, but do not want to bootstrap calibrations for an entire
 system it is expected that the target system provider will provide an include
 file to the user. This will contain the declaration of the ``defcalgrammar``, constants,
-``defcal``s and other grammar and system specific components such as ``channel``s,
+``defcal``s and other grammar and system specific components such as ``port``s,
 ``waveform``s and ``frame``s in the `OpenPulse defcalgrammar <openpulse.html>`. The user
 may then plugin to the existing calibrations by defining new calibrations, or overwriting
-existing ones by using the same ``channel``s and ``frame``s.
+existing ones by using the same ``port``s and ``frame``s.
 The example below demonstrates this in practice for a two-qubit,
 cross-resonance device using a ``backend.inc`` include file.
 The name ``backend.inc`` is arbitrary - it's just a file to be included using the
@@ -199,11 +199,11 @@ existing ``include`` mechanism.
       extern drag(complex[size] amp, duration l, duration sigma, float[size] beta) -> waveform;
       extern gaussian_square(complex[size] amp, duration l, duration square_width, duration sigma) -> waveform;
 
-      channel q0 = getchannel("q", $0);
-      channel q1 = getchannel("q", $1);
+      port q0 = getport("q", $0);
+      port q1 = getport("q", $1);
 
-      frame q0_frame = newframe(q0_freq, 0);
-      frame q1_frame = newframe(q1_freq, 0);
+      frame q0_frame = newframe(q0, q0_freq, 0);
+      frame q1_frame = newframe(q1, q1_freq, 0);
    }
 
    defcal rz(angle theta) $0 {
@@ -216,12 +216,12 @@ existing ``include`` mechanism.
 
    defcal sx $0 {
       waveform sx_wf = drag(0.2+0.1*Im, 160dt, 40dt, 0.05);
-      play(q0, sx_wf, q0_frame);
+      play(sx_wf, q0_frame);
    }
 
    defcal sx $1 {
       waveform sx_wf = drag(0.1+0.05*Im, 160dt, 40dt, 0.1);
-      play(q1, sx_wf, q1_frame);
+      play(sx_wf, q1_frame);
    }
 
    defcal cx $1, $0 {
@@ -231,14 +231,14 @@ existing ``include`` mechanism.
       rz(pi/2) $0; rz(-pi/2) $1;
       sx $0; sx $1;
       barrier $0, $1;
-      play(q1, CR90p, q0_frame);
+      play(CR90p, q0_frame);
       barrier $0, $1;
       sx $0;
       sx $0;
       barrier $0, $1;
       rz(-pi/2) $0; rz(pi/2) $1;
       sx $0; sx $1;
-      play(q1, CR90m, q0_frame);
+      play(CR90m, q0_frame);
    }
 
 The user would then include the ``backend.inc`` in their own program and use them as demonstrated below
@@ -253,7 +253,7 @@ The user would then include the ``backend.inc`` in their own program and use the
    // to "plugin" to the existing calibrations.
    defcal Y90p $0 {
       waveform y90p = drag(0.1-0.2*Im, 160dt, 40dt, 0.05);
-      play(q0, y90p, q0_frame);
+      play(y90p, q0_frame);
    }
 
    // Teach the compiler what the unitary of a Y90p is
