@@ -265,53 +265,64 @@ to properly take into account the finite duration of each gate.
 Boxed expressions
 -----------------
 
-We introduce a ``box`` expression for scoping a particular part of the circuit.
-A boxed subcircuit can never be inlined (until target code generation
-time), and optimizations across the boundary of a box are forbidden. The
-contents inside the box can be optimized. The contents around the box
-can be optimized too, e.g. it is permissible to commute a gate past a
-box by knowing the unitary implemented by the box. Delays that are
-within a box are implementation details of the box; they are invisible
-to the outside scope and therefore do not prevent commutation.
+We introduce a ``box`` statement for scoping the timing of a particular part of the circuit.
+A boxed subcircuit is different from a ``gate`` or ``def`` subroutine, in that it is merely 
+an enclosure to a piece of code within the larger scope which constains it. This can be used to
+signal permissible logical-level optimizations to the compiler: optimizing operations within
+a ``box`` definition is permitted, and optimizations that move operations from one side to
+the other side of a box are permitted, but moving operations either into or out of the box as
+part of an optimization is forbidden. The compiler can also infer a description of the
+operation which a ``box`` definition is meant to realise, allowing it to re-order gates around
+the box. For example, consider a dynamical decoupling sequence inserted in a part of the circuit:
 
 .. code-block:: c
 
-  rx(5*π/12) q;
-  box {
-    delay[ddt] q;
-    x q;
-    delay[ddt] q;
-    x q;
-    delay[ddt] q;
-  }
+    rx(2*π/12) q;
+    box {
+        delay[ddt] q;
+        x q;
+        delay[ddt] q;
+        x q;
+        delay[ddt] q;
+    }
+    rx(3*π/12) q;
 
-Boxes can take an optional bracketed duration argument to enforce the
-timing of the ``box``. This is useful in scenarios where the duration of
-A given code block is not apparent prior to runtime, but where assigning
-an explicit duration makes sense in terms of scheduling for the larger circuit.
-The natural duration of the box must be smaller than the declared duration,
-otherwise a compile-time error will be raised. A ``stretch`` inside the
-``box`` will always be set to fill the difference between the declared
-duration and the natural duration.
+By boxing the sequence, we create a box that implements the identity. The compiler is now free
+to commute a gate past the box by knowing the unitary implemented by the box:
 
 .. code-block:: c
 
-  // defines a 1ms box whose content is just a centered CNOT
-  box [1ms] {
-    stretch a;
-    delay[a] q;
-    cx q[0], q[1];
-    delay[a] q;
-  }
+    rx(5*π/12) q;
+    box {
+        delay[ddt] q;
+        x q;
+        delay[ddt] q;
+        x q;
+        delay[ddt] q;
+    }
 
-  // defines a stretchy box sub-circuit and later delays for that entire duration
-  stretch mybox_dur;
-  box [mybox_dur] {
-      cx q[0], q[1];
-      delay[200ns] q[0];
-  }
-  delay[mybox_dur] q[2], q[3];
-  cx q[2], q[3];
+The compiler can thus perform optimizations without interfering with the implmentation of the
+dynamical decoupling sequence. 
+
+As with other operations, we may use square brakets to assign a duration to a box: this can be
+used to put hard constraints on the execution of a particular sub-circuit by requiring it to
+have the assigned duration. This can be useful in scenarios where the exact duration of a piece
+of code is unknown (*e.g.*, if it is runtime dependent), but where it would be helpful to impose
+a duration on it for the purpose of scheduling the larger circuit. For example, if the duration
+of the parameterized gates ``mygate1(a, b), mygate2(a, b)`` depend on values of the variables
+``a`` and ``b`` in a complex way, but an offline calculation has shown that the total will never
+require more than 150ns for all valid combinations:
+
+.. code-block:: c
+
+    // some complicated circuit that gives runtime values to a, b
+    box [150ns] {
+        delay[str1] q1; // Schedule as late as possible within the box
+        mygate1(a, a+b) q[0], q[1];
+        mygate2(a, a-b) q[1], q[2];
+        mygate1(a-b, b) q[0], q[1];
+    }
+
 
 Barrier instruction
 -------------------
