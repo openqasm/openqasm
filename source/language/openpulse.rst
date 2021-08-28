@@ -95,18 +95,19 @@ Frames
 ------
 
 When interacting with qubits, it is necessary to keep track of a frame of reference, akin to the rotating
-frame of a Hamiltonian, throughout the execution of a program. Openpulse provides the ``frame``
-type which is responsible for tracking two properties:
+frame of a Hamiltonian, throughout the execution of a program. Openpulse provides a software abstraction of
+``frame`` type which is responsible for tracking two properties:
 
 - Tracking time appropriately so programs do not need to deal in absolute time or with the
   bookkeeping of advancing time in a sequence of pulses.
-- Tracking phase by producing a complex value given an input time (i.e. via the mathematical
+- Tracking accrued phase by producing a complex value given an input time (i.e. via the mathematical
   relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
-  :math:`\theta` is phase). One motivation for keeping track of phase is to allow pulses to be
-  defined in the rotating frame with the effect being an equivalent application in the lab
-  frame (i.e. with the carrier supplied by the ``frame``). Another motivation is to more naturally
-  implement a "virtual Z-gate", which does not require a physical pulse but rather shifts the phase
-  of all future pulses on that frame.
+  :math:`\theta` is the accrued phase). In this way,  a ``frame`` type behaves analogously to
+  a `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_).
+  One motivation for keeping track of accured phase is to allow pulses to be defined in the rotating frame with the
+  effect being an equivalent application in the lab frame (i.e. with the carrier supplied by the ``frame``).
+  Another motivation is to more naturally implement a "virtual Z-gate", which does not require a physical pulse but
+  rather shifts the phase of all future pulses on that frame.
 
 The frame is composed of four parts:
 
@@ -119,9 +120,7 @@ The frame is composed of four parts:
 
 Much like a port, a ``frame`` type is a virtual resource and it is up to the hardware vendor's backend compiler
 to choose how to implement the required transformations to physical resources in hardware during the machine code
-generation phase. One example of such a transformation is mapping the ``frame`` type to
-a `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_) resource
-in a data converter, but this is only one possible transformation.
+generation phase.
 
 Frame Initialization
 ~~~~~~~~~~~~~~~~~~
@@ -134,8 +133,11 @@ Frames can be initialized using the ``newframe`` command by providing the ``port
   frame driveframe0 = newframe(drive0, 5e9, 0.0); // newframe(port pr, float[size] frequency, angle[size] phase)
 
 would initialize a frame on the ``drive0`` port with a frequency of 5 GHz, and phase of 0.0. Importantly,
-the time with which the frame is initialized is 0 **relative** to the start time of the containing
-block (see :ref:`Timing` section for more details).
+a frame can be initializated in either a ``cal`` or ``defcal`` block which means that the time with which it is
+initialized is 0 **relative** to the start time of the containing block (see :ref:`Timing` section for more details).
+
+If a compiler toolchain is unable to support the initialization of ``frame``s within ``defcal``s, it is expected
+to raise a compile-time error when such an initialization is encountered.
 
 Note that multiple frames may address the same port e.g.
 
@@ -157,10 +159,11 @@ Frame Manipulation
 ~~~~~~~~~~~~~~~~~~
 
 The (frequency, phase) tuple of a frame can be manipulated throughout program
-by referencing ``.frequency``, and ``.phase``. Operations must be
-appropriate for the respective type, ``float`` for frequency and ``angle`` for
-phase. Again, the exact precision of these calculations is hardware specific. The frequency
-and phase updates will applied immediately at the current time of the frame.
+by referencing ``.frequency``, and ``.phase``, with updates applied immediately
+at the current time of the frame. Operations must be appropriate for the respective type,
+``float`` for frequency and ``angle`` for phase. Again, the exact precision of these calculations
+is hardware specific. If either the frequency or phase are set to values that are invalid for
+the hardware, the compiler shall raise a compile-time error.
 
 Here's an example of manipulating the phase to calibrate an ``rz`` gate on a frame called
 ``driveframe``:
@@ -195,7 +198,7 @@ Manipulating frames based on the state of other frames is also permitted:
 .. code-block:: javascript
 
    // Swap phases between two frames
-   const temp = frame1.phase;
+   const angle temp = frame1.phase;
    frame1.phase = frame2.phase;
    frame2.phase = temp;
 
@@ -239,34 +242,34 @@ samples provides optimization opportunities that wouldn't be available otherwise
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
-   extern gaussian(complex[size] amp, duration d, duration sigma) -> waveform;
+   extern gaussian(complex[float[size]] amp, duration d, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
-   extern sech(complex[size] amp, duration d, duration sigma) -> waveform;
+   extern sech(complex[float[size]] amp, duration d, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
    // square_width is the width of the square waveform component
    // sigma is the standard deviation of waveform
-   extern gaussian_square(complex[size] amp, duration d, duration square_width, duration sigma) -> waveform;
+   extern gaussian_square(complex[float[size]] amp, duration d, duration square_width, duration sigma) -> waveform;
 
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
    // sigma is the standard deviation of waveform
    // beta is the Y correction amplitude, see the DRAG paper
-   extern drag(complex[size] amp, duration d, duration sigma, float[size] beta) -> waveform;
+   extern drag(complex[float[size]] amp, duration d, duration sigma, float[size] beta) -> waveform;
 
    // amp is waveform amplitude
    // d is the overall duration of the waveform
-   extern constant(complex[size] amp, duration d) -> waveform;
+   extern constant(complex[float[size]] amp, duration d) -> waveform;
 
    // amp is waveform amplitude
    // d is the overall duration of the waveform
    // frequency is the frequency of the waveform
    // phase is the phase of the waveform
-   extern sine(complex[size] amp, duration  d, float[size] frequency, angle[size] phase) -> waveform;
+   extern sine(complex[float[size]] amp, duration  d, float[size] frequency, angle[size] phase) -> waveform;
 
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
@@ -371,9 +374,9 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
 .. code-block:: javascript
 
     // Use a boxcar function to generate IQ data from raw waveform
-    extern boxcar(waveform input) -> complex[64];
+    extern boxcar(waveform input) -> complex[float[64]];
     // Use a linear discriminator to generate bits from IQ data
-    extern discriminate(complex[64] iq) -> bit;
+    extern discriminate(complex[float[64]] iq) -> bit;
 
     defcal measure $0 -> bit {
         // Define the ports
@@ -398,7 +401,7 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
         waveform raw_output = capture(16000dt, capture_frame);
 
         // Kernel and discriminate
-        complex[32] iq = boxcar(raw_output);
+        complex[float[32]] iq = boxcar(raw_output);
         bit result = discriminate(iq);
 
         return result;
@@ -543,6 +546,70 @@ Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters t
   single_qubit_gate $1;
   // Implicit alignment of `driveframe1` and `driveframe2` when entering `two_qubit_gate` block
   two_qubit_gate $1 $2;
+
+
+Phase tracking
+~~~~~~~~~~~~~~
+
+As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a frame can be manipulated
+throughout a program by referencing ``.phase``. The phase is also implicitly manipulated when the time
+of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction e.g.
+
+  cal {
+    port tx0 = getport("drive", $0);
+    waveform p = ...; // some 100ns waveform
+
+    // Frame initialized with accured phase of 0
+    frame driveframe0 = newframe(tx0, 5.0e9, 0);
+  }
+
+  defcal single_qubit_gate $0 {
+    play(wf, driveframe0);
+  }
+
+  defcal single_qubit_delay $0 {
+    delay[13ns] driveframe0;
+  }
+
+  // driveframe0.phase = 0
+  single_qubit_gate $0;
+  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * durationof(wf)
+                                             += 2π * 5e9 * 100e-9
+
+  // Change the frequency
+  cal {
+    driveframe0.frequency = 6e9;
+  }
+
+  single_qubit_delay $0;
+  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * 13e-9
+                                             += 2π * 6e9 * 13e-9
+
+
+
+This is a key property required for pulses to be defined in the rotating frame with the effect
+being an equivalent application in the lab frame.
+
+Collisions
+~~~~~~~~~~~~~~~~~
+
+If a frame is scheduled to be played simultaneously in two ``defcal`` blocks, it is considered
+a compile-time error e.g.
+
+  ...
+
+  defcal single_qubit_gate $0 {
+    play(wf, driveframe1);
+  }
+
+  defcal single_qubit_gate $1 {
+    play(wf, driveframe1);
+  }
+
+  ...
+
+  // Compile-time error when requesting parallel scheduling using the same frame
+  single_qubit_gate $0 $1;
 
 Examples
 --------
