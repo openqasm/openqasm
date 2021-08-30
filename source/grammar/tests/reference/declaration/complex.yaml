@@ -2,7 +2,6 @@
 source: |
   complex[int[32]] a;
   complex[float[40]] b = 4-5.5im;
-  complex[fixed[5,7]] c = b+7.5*1e9im;
   complex[angle[20]] d = a + b;
 reference: |
   program
@@ -63,54 +62,6 @@ reference: |
                                   powerExpression
                                     expressionTerminator
                                       5.5im
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
-            complex
-            [
-            numericType
-              doubleDesignatorType
-                fixed
-              doubleDesignator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ,
-                expression
-                  expressionTerminator
-                    7
-                ]
-            ]
-            c
-            equalsExpression
-              =
-              expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        b
-                                +
-                                multiplicativeExpression
-                                  multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        7.5
-                                  *
-                                  powerExpression
-                                    expressionTerminator
-                                      1e9im
         ;
     statement
       classicalDeclarationStatement
