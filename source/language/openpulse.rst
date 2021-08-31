@@ -574,7 +574,7 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
   // driveframe0.phase = 0
   single_qubit_gate $0;
   // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * durationof(wf)
-                                             += 2π * 5e9 * 100e-9
+//                                           += 2π * 5e9 * 100e-9
 
   // Change the frequency
   cal {
