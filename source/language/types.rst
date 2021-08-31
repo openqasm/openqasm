@@ -17,6 +17,7 @@ override a reserved identifier.
 In addition to being assigned values within a program, all of the classical
 types can be initialized on declaration. Any classical variable or Boolean that is not explicitly
 initialized is undefined. Classical types can be mutually cast to one another using the typename.
+See :ref:`castingSpecifics` for more details on casting.
 
 Declaration and initialization must be done one variable at a time for both quantum and classical
 types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
@@ -290,9 +291,10 @@ Duration
 ~~~~~~~~
 
 We introduce a ``duration`` type to express timing.
-Durations are positive numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
+Durations are numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``durationof()`` is an intrinsic function used to reference the duration of a calibrated gate.
+the backend. ``durationof()`` is an intrinsic function used to reference the 
+duration of a calibrated gate.
 
 .. code-block:: c
 
@@ -373,3 +375,150 @@ variables whose values may only be known at run time.
    let last_three = two[-4:-1];
    // Concatenate two alias in another one
    let both = sliced || last_three;
+
+.. _castingSpecifics:
+
+Casting specifics
+-----------------
+
+Allowed casts
+~~~~~~~~~~~~~
+
+.. role:: gbg
+
+.. raw:: html
+
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+   <script>
+     $(document).ready(function() {
+       $('.gbg').parent().addClass('gbg-parent');
+     });
+   </script>
+   <style>
+      .gbg-parent {text-align:center;background-color:#c6efce;color:#006100;}
+   </style>
+
+.. role:: rbg
+
+.. raw:: html
+
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+   <script>
+     $(document).ready(function() {
+       $('.rbg').parent().addClass('rbg-parent');
+     });
+   </script>
+   <style>
+      .rbg-parent {text-align:center;background-color:#ffc7ce;color:#9c0006;}
+   </style>
+
+.. role:: center
+   
+.. raw:: html
+
+   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+   <script>
+     $(document).ready(function() {
+       $('.center').parent().addClass('center-parent');
+     });
+   </script>
+   <style>
+      .center-parent {text-align: center}
+   </style>
+
++--------------+--------------------------------------------------------------------------------------------------------+
+|              |                                       :center:`Casting To`                                             |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| Casting From | bool       | int        | uint       | float       | angle      | bit        | duration   | qubit      |
++==============+============+============+============+=============+============+============+============+============+
+| **bool**     | :center:`-`| :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **int**      | :gbg:`Yes` | :center:`-`| :gbg:`Yes` | :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **uint**     | :gbg:`Yes` | :gbg:`Yes` | :center:`-`| :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **float**    | :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes` | :center:`-` | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **angle**    | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  | :gbg:`Yes`  | :center:`-`| :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **bit**      | :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes` | :rbg:`No`   | :gbg:`Yes` | :center:`-`| :rbg:`No`  | :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **duration** | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :rbg:`No*`  | :rbg:`No`  | :rbg:`No`  | :center:`-`| :rbg:`No`  |
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+| **qubit**    | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :rbg:`No`   | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :center:`-`|
++--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+
+Casting from bool
+~~~~~~~~~~~~~~~~~
+
+``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or 
+an equivalent representation. ``bool`` values can only be cast to ``bit[1]`` 
+(a single bit), so explicit slicing syntax must be given if the target ``bit``
+has more than 1 bit of precision.
+
+Casting from int/uint
+~~~~~~~~~~~~~~~~~~~~~
+
+``int[n]`` and ``uint[n]`` values cast to the standard types mimicking ``C``
+behavior. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target 
+``bit`` has more or less precision, then explicit slicing syntax must be given.
+
+Casting from float
+~~~~~~~~~~~~~~~~~~
+
+``float[n]`` values cast to the standard types mimicking ``C`` behavior. 
+Casting a ``float`` value to an ``angle[m]`` is accomplished by first 
+performing a modulo 2π operation on the float value. The resulting value 
+is then converted to the nearest ``angle[m]`` possible. In the event of a 
+tie between two possible nearest values the result is the one with an even 
+least significant bit (*i.e* round to nearest, ties to even).
+
+Casting from angle
+~~~~~~~~~~~~~~~~~~
+
+``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``. 
+Casting to ``float[m]`` is accomplished by first converting the angle value 
+to the nearest float, with ties going to the value with the even least 
+significant bit, and then multiplying the resulting value by 2π as a 
+``float[m]`` value. Casting to ``bit[m]`` values is only allowed when 
+``n==m``, otherwise explicit slicing synatx must be provided. 
+
+When casting between angles of differing precisions (``n!=m``): if the target 
+has more significant bits, then the value is padded with ``m-n`` least 
+significant bits of ``0``; if the target has fewer significant bits, then 
+there are two acceptable behaviors that can be supported by compilers: 
+rounding and truncation. For rounding the value is rounded to the nearest 
+value, with ties going to the value with the even least significant bit.
+Trunction is likely to have more hardware support. This behavior can be
+controlled by the use of a ``#pragma``.
+
+Casting from bit
+~~~~~~~~~~~~~~~~
+
+``bit[n]`` values cast to ``bool`` using the convention ``val != 0``. Casting to 
+``int[m]`` or ``uint[m]`` is done assuming a little endian 2's complement 
+representation, and is only allowed when ``n==m``, otherwise explicit slicing 
+syntax must be given. Likewise, ``bit[n]`` can only be cast to ``angle[m]`` 
+when ``n==m``, in which case an exact per-bit copy is done using little-endian 
+bit order. Finally, casting between bits of differing precisions is not 
+allowed, explicit slicing syntax must be given.
+
+.. _divideDuration:
+
+Converting duration to other types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Casting from or to duration values is not allowed, however, operations on 
+durations that produce values of different types is allowed. For example, 
+dividing a duration by a compile-time constant produces a machine-precision 
+``float``.
+
+.. code-block:: c
+
+   const one_ns = 1e-9;
+   duration a = 500ns;
+   float a_in_ns = a / one_ns; // results in 500.0
+
+   float one = 1.0;
+   duration b = 1ms;
+   float b_float = b / one; // results in 1e-3
