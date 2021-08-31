@@ -583,7 +583,7 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
 
   single_qubit_delay $0;
   // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * 13e-9
-                                             += 2π * 6e9 * 13e-9
+//                                           += 2π * 6e9 * 13e-9
 
 
 
