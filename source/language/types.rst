@@ -448,6 +448,8 @@ Allowed casts
 | **qubit**    | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :rbg:`No`   | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :center:`-`|
 +--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
 
+\*Note: ``duration`` values can be converted to ``float`` using the division operator. See :ref:`divideDuration`
+
 Casting from bool
 ~~~~~~~~~~~~~~~~~
 
