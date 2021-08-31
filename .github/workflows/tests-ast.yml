@@ -42,6 +42,18 @@ jobs:
       - name: Install Python package
         run: python -mpip install -e .[all]
 
+      - name: Install Additional Python packages for AST
+        run: python -mpip install -r requirements-dev.txt
+        working-directory: source/open_node
+
+      - name: Check format
+        run: black --check --diff .
+        working-directory: source/open_node
+
+      - name: Check style
+        run: pylint .
+        working-directory: source/open_node
+
       - name: Run tests
         run: pytest -vv --color=yes tests
         working-directory: source/open_node
