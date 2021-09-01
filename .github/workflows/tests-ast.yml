@@ -37,7 +37,7 @@ jobs:
         run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
 
       - name: Generate grammar
-        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../open_note/parser/antlr/ -Dlanguage=Python3 -visitor qasm3.g4
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../open_node/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
 
       - name: Install Python packages for AST
         run: python -mpip install -r requirements.txt -r requirements-dev.txt
