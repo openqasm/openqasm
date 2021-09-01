@@ -4,9 +4,9 @@ import warnings
 from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
 from antlr4.tree.Tree import TerminalNode
 
-from openqasm_reference_parser.qasm3Lexer import qasm3Lexer
-from openqasm_reference_parser.qasm3Parser import qasm3Parser
-from openqasm_reference_parser.qasm3Visitor import qasm3Visitor
+from .qasm3Lexer import qasm3Lexer
+from .qasm3Parser import qasm3Parser
+from .qasm3Visitor import qasm3Visitor
 from open_node.ast import (
     AliasStatement,
     AssignmentOperator,

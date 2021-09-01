@@ -14,7 +14,7 @@ using the visitor.
 
 1. Build grammar following the [README under grammar](../README.md).
 2. Change to the current directory and install additional requirements with 
-`pip install -r requirements-dev.txt`.
+`pip install -r requirements.txt -r requirements-dev.txt`.
 3. Format python code: `black .`.
 4. Check style: `bylint .`.
 5. Run tests: `pytest`.
