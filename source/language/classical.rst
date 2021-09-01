@@ -96,7 +96,7 @@ Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, i
    a += 4; // a == 6
 
 Floating-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Floating-point and angle types support addition, subtraction,
 multiplication, division, and power and the corresponding assignment operators.
