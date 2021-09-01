@@ -125,9 +125,9 @@ these side effects. Also contrary to TeX, we prohibit overlapping gates.
 Operations on durations
 -----------------------
 
-We can add/subtract two durations, or multiply them by a constant, to get a new
-duration. Division by compile time constants (either ``duration``, ``float``, or ``const``) results 
-in a machine-precision float (see :ref:`divideDuration`). Negative durations are allowed, however
+We can add/subtract two durations, or multiply or divide them by a constant, to get a new
+duration. Division of two durations results in a machine-precision float 
+(see :ref:`divideDuration`). Negative durations are allowed, however
 passing a negative duration to a ``gate[duration]`` or ``box[duration]`` expression will result in an error.
 All durations are compile time operations since ultimately all
 durations, including stretches, will be resolved to constants.

@@ -455,25 +455,28 @@ Casting from bool
 
 ``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or 
 an equivalent representation. ``bool`` values can only be cast to ``bit[1]`` 
-(a single bit), so explicit slicing syntax must be given if the target ``bit``
+(a single bit), so explicit index syntax must be given if the target ``bit``
 has more than 1 bit of precision.
 
 Casting from int/uint
 ~~~~~~~~~~~~~~~~~~~~~
 
-``int[n]`` and ``uint[n]`` values cast to the standard types mimicking ``C``
+``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C
 behavior. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target 
 ``bit`` has more or less precision, then explicit slicing syntax must be given.
+As noted, the conversion is done assuming a little-endian 2's complement 
+representation.
 
 Casting from float
 ~~~~~~~~~~~~~~~~~~
 
-``float[n]`` values cast to the standard types mimicking ``C`` behavior. 
+``float[n]`` values cast to the standard types mimicking C behavior (*i.e.* 
+discarding the fractional part for integer-type targets). 
 Casting a ``float`` value to an ``angle[m]`` is accomplished by first 
 performing a modulo 2π operation on the float value. The resulting value 
 is then converted to the nearest ``angle[m]`` possible. In the event of a 
 tie between two possible nearest values the result is the one with an even 
-least significant bit (*i.e* round to nearest, ties to even).
+least significant bit (*i.e.* round to nearest, ties to even).
 
 Casting from angle
 ~~~~~~~~~~~~~~~~~~
@@ -512,15 +515,13 @@ Converting duration to other types
 
 Casting from or to duration values is not allowed, however, operations on 
 durations that produce values of different types is allowed. For example, 
-dividing a duration by a compile-time constant produces a machine-precision 
-``float``.
+dividing a duration by a duration produces a machine-precision ``float``.
 
 .. code-block:: c
 
-   const one_ns = 1e-9;
+   duration one_ns = 1ns;
    duration a = 500ns;
-   float a_in_ns = a / one_ns; // results in 500.0
+   float a_in_ns = a / one_ns;  // 500.0
 
-   float one = 1.0;
-   duration b = 1ms;
-   float b_float = b / one; // results in 1e-3
+   duration one_s = 1s;
+   float a_in_s = a / one_s; // 5e-7
