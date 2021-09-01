@@ -381,6 +381,10 @@ variables whose values may only be known at run time.
 Casting specifics
 -----------------
 
+In general, for any cast between standard types that results in loss of 
+precision, if the source value is larger than can be represented in the target 
+type, the exact behavior is implementation specific.
+
 Allowed casts
 ~~~~~~~~~~~~~
 
@@ -462,7 +466,9 @@ Casting from int/uint
 ~~~~~~~~~~~~~~~~~~~~~
 
 ``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C
-behavior. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target 
+behavior. As noted above, if the value is too large to be represented in the 
+target type the result is implementation-specific. Casting to ``bit[m]`` 
+is only allowed when ``m==n``. If the target 
 ``bit`` has more or less precision, then explicit slicing syntax must be given.
 As noted, the conversion is done assuming a little-endian 2's complement 
 representation.
@@ -471,7 +477,9 @@ Casting from float
 ~~~~~~~~~~~~~~~~~~
 
 ``float[n]`` values cast to the standard types mimicking C behavior (*i.e.* 
-discarding the fractional part for integer-type targets). 
+discarding the fractional part for integer-type targets). As noted above, 
+if the value is too large to be represented in the 
+target type the result is implementation-specific. 
 Casting a ``float`` value to an ``angle[m]`` is accomplished by first 
 performing a modulo 2π operation on the float value. The resulting value 
 is then converted to the nearest ``angle[m]`` possible. In the event of a 
