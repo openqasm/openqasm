@@ -126,7 +126,7 @@ a global scope to all identifiers in order to declare values shared across all `
       // Defined within `cal`, so it may not leak back out to the enclosing blocks scope
       float new_freq = 5.2e9;
       // declare global port
-      port d0 = getport("drive", $0);
+      extern port d0;
       // reference `freq` variable from enclosing blocks scope
       frame d0f = newframe(d0, freq, 0.0);
 
@@ -199,8 +199,8 @@ existing ``include`` mechanism.
       extern drag(complex[size] amp, duration l, duration sigma, float[size] beta) -> waveform;
       extern gaussian_square(complex[size] amp, duration l, duration square_width, duration sigma) -> waveform;
 
-      port q0 = getport("q", $0);
-      port q1 = getport("q", $1);
+      extern port q0;
+      extern port q1;
 
       frame q0_frame = newframe(q0, q0_freq, 0);
       frame q1_frame = newframe(q1, q1_freq, 0);
