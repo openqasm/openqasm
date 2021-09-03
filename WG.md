@@ -19,7 +19,13 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
 Note: this working group will begin working in September 2021.
 
-**Objective**: 
+**Objective**: Improve ANTLR reference implementation of OpenQASM grammar
+**Questions**:
+
+ * Are their pain points in the grammar?
+ * Are their places we can improve?
+ * Can we improve the performance?
+ * Can we improve the style?
 
 Chair: Li Chen  
 Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steven Heidel
