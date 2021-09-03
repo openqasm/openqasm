@@ -1,7 +1,7 @@
 OpenPulse Grammar
 =================
 
-*The OpenPulse grammar is still in active development and is liable to change.*
+*The OpenPulse grammar is still in active development and is liable to change. If you are working on an implementation and find this specification unclear or not supporting your use-cases, please join our community effort to improve pulse-level support in OpenQasm.*
 
 OpenQASM allows users to provide the target system's implementation of quantum operations
 with ``cal`` and ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
