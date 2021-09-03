@@ -36,6 +36,13 @@ carrier frequency, and it's phase offset (see :ref:`Play`  section for more deta
 at minimum a ``frame`` determines the time at which the signal is captured (see :ref:`Capture` section
 for more details).
 
+Note that this proposal fully supports and specifies scheduling when resources map to the qubits specified within
+the defcal. However, it is possible for pulse-level resources to manipulate qubits that are not specified in the
+``defcal``'s signature. As a future extension the language may support conveying to the scheduling layer which
+resources are acted upon by a ``defcal``  such that the scheduler may faithfully schedule the target program to
+hardware resources.
+
+
 Ports
 --------
 
@@ -64,32 +71,17 @@ There are two kinds of ports: transmit ports (sending input to a quantum
 device) and receive ports (reading output from a quantum device).
 
 A port is only used to specify the physical resource on which to play a pulse or from which
-to capture data. This specification should be done by providing a mapping between a qubit list +
-name and the configured hardware port. The hardware can then be accessed as
-OpenPulse ``port``'s via the "getport" function which allows identifying a port by a variadic combination
-of string name and qubits.
+to capture data. The hardware can be accessed as OpenPulse ``port``'s via ``extern``
+identifier that specifies an external linkage that will be resolved at compile-time via vendor
+supplied translation units.
 
 .. code-block:: c
 
-    getport(str name, qubit q0, ..., qubit qn) -> port  // get a port
+    extern port drive_port0
 
-The qubits must be **physical** qubits. Furthermore, ordering of qubits is important. For instance,
-``getport("control", $0, $1)`` and ``getport("control", $1, $0)`` may be used to implement distinct
-cross-resonance gates. It is also possible to access a port by its full name, without supplying
-any qubits, if that has been implemented by the vendor. For instance, ``getport("<port_name>")``
-may refer to a transmit port with an arbitrary name.
 
-.. code-block:: c
-
-    port d0 = getport("drive", $0);  // port for driving at qubit $0's freq
-    port cr1_2 = getport("coupler", $1, $2);  // port for a coupler between two qubits
-    port m2 = getport("measure", $2);  // port for transmitting measurement stimulus
-
-    port global_field = getport("global_field"); // port not associated with any qubits
-
-    // capture ports for capturing qubits $0 and $1
-    port cap0 = getport("capture", $0);
-    port cap1 = getport("capture", $1);
+It is expected that a hardware vendor provide some documentation as to the associated
+functionality of a port (e.g. `drive_port0` referse to the XY control line of a qubit 0).
 
 Frames
 ------
@@ -118,7 +110,13 @@ The frame is composed of four parts:
    than through the existing timing instructions of ``delay``, ``play``, ``capture``,  and ``barrier``.
    The time increment is determined by the port on which the frame is played (see :ref:`Timing` section).
 
-Much like a port, a ``frame`` type is a virtual resource and it is up to the hardware vendor's backend compiler
+A ``frame`` from an existing calibration can also be accessed via an ``extern`` identifier
+
+.. code-block:: c
+
+    extern frame xy_frame0
+
+Note that a ``frame`` type is a virtual resource and it is up to the hardware vendor's backend compiler
 to choose how to implement the required transformations to physical resources in hardware during the machine code
 generation phase.
 
@@ -129,12 +127,12 @@ Frames can be initialized using the ``newframe`` command by providing the ``port
 
 .. code-block:: javascript
 
-  port drive0 = getport("drive", $0);
+  extern port drive0;
   frame driveframe0 = newframe(drive0, 5e9, 0.0); // newframe(port pr, float[size] frequency, angle[size] phase)
 
 would initialize a frame on the ``drive0`` port with a frequency of 5 GHz, and phase of 0.0. Importantly,
 a frame can be initializated in either a ``cal`` or ``defcal`` block which means that the time with which it is
-initialized is 0 **relative** to the start time of the containing block (see :ref:`Timing` section for more details).
+initialized is the start time of the containing block (see :ref:`Timing` section for more details).
 
 If a compiler toolchain is unable to support the initialization of ``frame``s within ``defcal``s, it is expected
 to raise a compile-time error when such an initialization is encountered.
@@ -143,7 +141,7 @@ Note that multiple frames may address the same port e.g.
 
 .. code-block:: javascript
 
-  port measure_port = getport("measure");
+  extern port measure_port;
   frame measure_frame_0 = newframe(measure_port, 5e9, 0.0);
   frame measure_frame_1 = newframe(measure_port, 5e9, 0.0);
   frame measure_frame_2 = newframe(measure_port, 5e9, 0.0);
@@ -378,10 +376,13 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
     // Use a linear discriminator to generate bits from IQ data
     extern discriminate(complex[float[64]] iq) -> bit;
 
-    defcal measure $0 -> bit {
+    cal {
         // Define the ports
-        port m0 = getport("measure", $0);
-        port cap0 = getport("capture", $0);
+        extern port m0;
+        extern port cap0;
+    }
+
+    defcal measure $0 -> bit {
 
         // Force time of carrier to 0 for consistent phase for discrimination.
         frame stimulus_frame = newframe(m0, 5e9, 0);
@@ -420,7 +421,7 @@ Initial Time
 ~~~~~~~~~~~~~
 
 As briefly discussed in the :ref:`Frame Initialization` section, a ``frame`` initialized via a
-``newframe`` command is initialized with a time 0 **relative** to the start time of the containing
+``newframe`` command has its ``.time`` set to the time at the beginning of the containing
 ``cal`` or ``defcal`` block. Since a ``cal`` block is globally scoped in OpenPulse, this time
 would be absolute 0. Meanwhile, a ``defcal``s start time is determined by when it is scheduled
 (see :ref:`Timing` section for more details) e.g.
@@ -430,7 +431,7 @@ would be absolute 0. Meanwhile, a ``defcal``s start time is determined by when i
   ...
 
   cal {
-    port d0 = getport("drive", $0);
+    extern port d0;
     // initialized with absolute time 0 because `cal` is global scope
     frame driveframe1 = newframe(d0, 5.0e9, 0.0);
     waveform wf = gaussian(0.5, 16ns, 4ns);
@@ -441,13 +442,13 @@ would be absolute 0. Meanwhile, a ``defcal``s start time is determined by when i
   }
 
   defcal my_gate2 $0 {
-    // initialized with time 0 relative to start of defcal
+    // initialized to time at beginning of `my_gate2`
     frame driveframe2 = newframe(d0, 5.0e9, 0.0);
     play(wf, driveframe2);
   }
 
   defcal my_gate3 $0 {
-    // initialized with time 0 relative to start of defcal
+    // initialized to time at beginning of `my_gate3`
     frame driveframe3 = newframe(d0, 5.0e9, 0.0);
     play(wf, driveframe3);
   }
@@ -486,7 +487,7 @@ by the duration of the associated ``waveform`` argument.
   ...
 
   cal {
-    port d0 = getport("drive", $0);
+    extern port d0;
     frame driveframe = newframe(d0, 5.0e9, 0.0);
     waveform wf = gaussian(0.5, 16ns, 4ns);
   }
@@ -506,28 +507,29 @@ aligned to the latest time of the all ``frame``\s listed.
 .. code-block:: javascript
 
   cal {
-    port d0 = getport("drive", $0);
-    port d1 = getport("drive", $1);
+    extern port d0;
+    extern port d1;
 
     driveframe1 = newframe(d0, 5.1e9, 0.0);
     driveframe2 = newframe(d1, 5.2e9, 0.0);
+
+    delay[13ns] driveframe1;
+
+    // driveframe1.time == 13ns, driveframe2.time == 0ns
+
+    // Align frames
+    barrier driveframe1, driveframe2;
+
+    // driveframe1.time == driveframe2.time == 13ns
   }
 
-  delay[13ns] driveframe1;
-
-  // driveframe1.time == 13ns, driveframe2.time == 0ns
-
-  // Align frames
-  barrier driveframe1, driveframe2;
-
-  // driveframe1.time == driveframe2.time == 13ns
-
 Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters the block e.g.
+
 .. code-block:: javascript
 
   cal {
-    port tx0 = getport("drive", $0);
-    port tx1 = getport("drive", $1);
+    extern port tx0;
+    extern port tx1;
     waveform p = ...; // some 100ns waveform
     frame driveframe1 = newframe(tx0, 5.0e9, 0);
     frame driveframe2 = newframe(tx1, 6.0e9, 0);
@@ -540,6 +542,7 @@ Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters t
   }
 
   defcal single_qubit_gate $1 {
+    // implicit: barrier driveframe1;
     play(wf, driveframe1);
   }
 
@@ -555,8 +558,10 @@ As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a fr
 throughout a program by referencing ``.phase``. The phase is also implicitly manipulated when the time
 of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction e.g.
 
+.. code-block:: javascript
+
   cal {
-    port tx0 = getport("drive", $0);
+    extern port tx0;
     waveform p = ...; // some 100ns waveform
 
     // Frame initialized with accured phase of 0
@@ -574,7 +579,7 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
   // driveframe0.phase = 0
   single_qubit_gate $0;
   // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * durationof(wf)
-//                                           += 2π * 5e9 * 100e-9
+  //                                         += 2π * 5e9 * 100e-9
 
   // Change the frequency
   cal {
@@ -583,7 +588,7 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
 
   single_qubit_delay $0;
   // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * 13e-9
-//                                           += 2π * 6e9 * 13e-9
+  //                                         += 2π * 6e9 * 13e-9
 
 
 
@@ -593,8 +598,10 @@ being an equivalent application in the lab frame.
 Collisions
 ~~~~~~~~~~~~~~~~~
 
-If a frame is scheduled to be played simultaneously in two ``defcal`` blocks, it is considered
-a compile-time error e.g.
+If a frame is scheduled or referenced simultaneously in two ``defcal`` or ``cal`` blocks, it is
+considered a compile-time error e.g.
+
+.. code-block:: javascript
 
   ...
 
@@ -608,7 +615,7 @@ a compile-time error e.g.
 
   ...
 
-  // Compile-time error when requesting parallel scheduling using the same frame
+  // Compile-time error when requesting parallel usage of the same frame
   single_qubit_gate $0 $1;
 
 Examples
@@ -688,8 +695,8 @@ Cross-resonance gate
 
   cal {
      // Access globally (or externally) defined ports
-     port d0 = getport("drive", $0);
-     port d1 = getport("drive", $1);
+     extern port d0;
+     extern port d1;
      frame frame0 = newframe(d0, 5.0e9, 0);
   }
 
@@ -700,7 +707,7 @@ Cross-resonance gate
       /*** Do pre-rotation ***/
 
       // generate new frame for second drive that is locally scoped
-      // initialized with time 0 relative to beginning of `cross_resonance` defcal
+      // initialized to time at the beginning of `cross_resonance`
       frame temp_frame = newframe(d1, frame0.frequency, frame0.phase);
 
       play(wf1, frame0);
@@ -716,7 +723,7 @@ Geometric gate
 .. code-block:: javascript
 
   cal {
-      port dq = getport("drive", $q);
+      extern port dq;
       float fq_01 = 5e9; // hardcode or pull from some function
       float anharm = 300e6; // hardcode or pull from some function
       frame frame_01 = newframe(dq, fq_01, 0);
@@ -779,9 +786,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
 
 
   cal {
-    port eom_a_port = getport("eom_a", 0);
-    port eom_b_port = getport("eom_b", 1);
-    port aod_port = getport("aod", 0);
+    extern port eom_a_port;
+    extern port eom_b_port;
+    extern port aod_port;
 
     // Define the Raman frames, which are detuned by an amount Δ from the  5S1/2 to 5P1/2 transition
     // and offset from each other by the qubit_freq
@@ -867,8 +874,8 @@ many (just adding more frames, waveforms, plays, and captures).
 
   cal {
     // the transmission/captures ports are the same for $0 and $1
-    port ro_tx = getport("readout_tx", $0);
-    port ro_rx = getport("readout_rx", $0);
+    extern port ro_tx;
+    extern port ro_rx;
 
     // readout stimulus and capture frames of different frequencies
     frame q0_stimulus_frame = newframe(ro_tx, q0_ro_freq, 0);
@@ -906,6 +913,5 @@ Open Questions
 ~~~~~~~~~~~~~~
 
 - How do we handle mapping wildcarded qubits to arbitrary pulse-level resources?
-- How do we differentiate port resource types?
 - Is timing on frames, and ports as resources clear?
 - How will hardware attributes be handled?
