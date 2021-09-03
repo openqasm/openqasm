@@ -490,11 +490,18 @@ Casting from angle
 ~~~~~~~~~~~~~~~~~~
 
 ``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``. 
+Casting to ``bit[m]`` values is only allowed when 
+``n==m``, otherwise explicit slicing synatx must be provided.
 Casting to ``float[m]`` is accomplished by first converting the angle value 
 to the nearest float, with ties going to the value with the even least 
 significant bit, and then multiplying the resulting value by 2π as a 
-``float[m]`` value. Casting to ``bit[m]`` values is only allowed when 
-``n==m``, otherwise explicit slicing synatx must be provided. 
+``float[m]`` value. Note: the ring-like behavior of the angle type can
+result in unexpected behavior. If the angle value is very close to 0 or 2π 
+then the conversion process could produce either value, especially when the 
+precision of the angle is larger than can be represented by the mantissa of 
+the float. Additionally, run-time conversion of angles to floats may not be 
+supported by all compilers and systems as hardware support is necessary to 
+avoid costly software-based conversion.
 
 When casting between angles of differing precisions (``n!=m``): if the target 
 has more significant bits, then the value is padded with ``m-n`` least 
