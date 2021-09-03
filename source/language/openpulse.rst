@@ -37,7 +37,7 @@ at minimum a ``frame`` determines the time at which the signal is captured (see 
 for more details).
 
 Note that this proposal fully supports and specifies scheduling when resources map to the qubits specified within
-the defcal. It is however possible for pulse-level resources to manipulate qubits that are not specified in the
+the defcal. However, it is possible for pulse-level resources to manipulate qubits that are not specified in the
 ``defcal``'s signature. As a future extension the language may support conveying to the scheduling layer which
 resources are acted upon by a ``defcal``  such that the scheduler may faithfully schedule the target program to
 hardware resources.
@@ -71,10 +71,9 @@ There are two kinds of ports: transmit ports (sending input to a quantum
 device) and receive ports (reading output from a quantum device).
 
 A port is only used to specify the physical resource on which to play a pulse or from which
-to capture data. This specification should be done by providing a mapping between a qubit list +
-name and the configured hardware port. The hardware can then be accessed as
-OpenPulse ``port``'s via ``extern`` identifier to specify an external linkage
-that will be resolved at compile-time via vendor supplied translation units.
+to capture data. The hardware can be accessed as OpenPulse ``port``'s via ``extern``
+identifier that specifies an external linkage that will be resolved at compile-time via vendor
+supplied translation units.
 
 .. code-block:: c
 
@@ -111,7 +110,13 @@ The frame is composed of four parts:
    than through the existing timing instructions of ``delay``, ``play``, ``capture``,  and ``barrier``.
    The time increment is determined by the port on which the frame is played (see :ref:`Timing` section).
 
-Much like a port, a ``frame`` type is a virtual resource and it is up to the hardware vendor's backend compiler
+A ``frame`` from an existing calibration can also be accessed via an ``extern`` identifier
+
+.. code-block:: c
+
+    extern frame xy_frame0
+
+Note that a ``frame`` type is a virtual resource and it is up to the hardware vendor's backend compiler
 to choose how to implement the required transformations to physical resources in hardware during the machine code
 generation phase.
 
@@ -371,10 +376,13 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
     // Use a linear discriminator to generate bits from IQ data
     extern discriminate(complex[float[64]] iq) -> bit;
 
-    defcal measure $0 -> bit {
+    cal {
         // Define the ports
         extern port m0;
         extern port cap0;
+    }
+
+    defcal measure $0 -> bit {
 
         // Force time of carrier to 0 for consistent phase for discrimination.
         frame stimulus_frame = newframe(m0, 5e9, 0);
