@@ -466,7 +466,7 @@ has more than 1 bit of precision.
 Casting from int/uint
 ~~~~~~~~~~~~~~~~~~~~~
 
-``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C
+``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C99
 behavior. As noted above, if the value is too large to be represented in the 
 target type the result is implementation-specific. Casting to ``bit[m]`` 
 is only allowed when ``m==n``. If the target 
@@ -477,7 +477,7 @@ representation.
 Casting from float
 ~~~~~~~~~~~~~~~~~~
 
-``float[n]`` values cast to the standard types mimicking C behavior (*i.e.* 
+``float[n]`` values cast to the standard types mimicking C99 behavior (*e.g.* 
 discarding the fractional part for integer-type targets). As noted above, 
 if the value is too large to be represented in the 
 target type the result is implementation-specific. 
