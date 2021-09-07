@@ -383,7 +383,8 @@ Casting specifics
 
 In general, for any cast between standard types that results in loss of 
 precision, if the source value is larger than can be represented in the target 
-type, the exact behavior is implementation specific.
+type, the exact behavior is implementation specific and must be documented by 
+the vendor.
 
 Allowed casts
 ~~~~~~~~~~~~~
