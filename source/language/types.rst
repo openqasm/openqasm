@@ -381,6 +381,10 @@ variables whose values may only be known at run time.
 Casting specifics
 -----------------
 
+The classical types are divided into the 'standard' classical types (bool, int, 
+uint, and float) that exist in languages like C, and the 'special' classical 
+types (bit, angle, duration, and stretch) that do not.
+
 In general, for any cast between standard types that results in loss of 
 precision, if the source value is larger than can be represented in the target 
 type, the exact behavior is implementation specific and must be documented by 
