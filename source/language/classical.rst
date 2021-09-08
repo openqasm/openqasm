@@ -281,4 +281,4 @@ computation, but does not wait for that computation to terminate.
 .. [3]
    This clearly allows users to write code that does not terminate. We
    do not discuss implementation details here, but one possibility is to
-   compile into target code that imposes iteration limits
+   compile into target code that imposes iteration limits.

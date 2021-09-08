@@ -423,3 +423,96 @@
    year={2014},
    month={Jul}
 }
+
+@article{levine2019,
+    author = {H.~Levine and A.~Keesling and G.~Semeghini and A.~Omran and T.T.~Wang and S.~Ebadi and H.~Bernien and M.~Greiner and V.~Vuleti{\'{c}} and H.~Pichler and M.D.~Lukin},
+    title = {Parallel Implementation of High-Fidelity Multiqubit Gates with Neutral Atoms},
+    journal = {Phys. Rev. Lett.},
+    volume = {123},
+    number = {17},
+    year = {2019}
+}
+
+@article{mckay2018,
+    author = {D.C.~Mckay and and T.~Alexander and L.~Bello and M.J.~Biercuk and L.~Bishop and J.~Chen and J.M.~Chow and D.C.~Antonio and D.~Egger and S.~Filipp and J.~Gomez and M.~Hush and A.~Javadi-Abhari and D.~Moreda and P.~Nation and B.~Paulovicks and E.~Winston and C.J.~Wood and J.~Wootton and J.M.~Gambetta},
+    title = {Qiskit Backend Specifications for OpenQASM and OpenPulse Experiments},
+    year = {2018},
+    eprint = {1809.03452v1},
+    archivePrefix = {arXiv},
+    primaryClass={quant-ph},
+    journal= {Arxiv}
+}
+
+
+@article{alexanderQiskitPulseProgramming2020a,
+  title = {Qiskit Pulse: Programming Quantum Computers through the Cloud with Pulses},
+  shorttitle = {Qiskit Pulse},
+  author = {Alexander, Thomas and Kanazawa, Naoki and Egger, Daniel J. and Capelluto, Lauren and Wood, Christopher J. and {Javadi-Abhari}, Ali and McKay, David C.},
+  year = {2020},
+  month = aug,
+  volume = {5},
+  pages = {044006},
+  publisher = {{IOP Publishing}},
+  issn = {2058-9565},
+  doi = {10.1088/2058-9565/aba404},
+  abstract = {The quantum circuit model is an abstraction that hides the underlying physical implementation of gates and measurements on a quantum computer. For precise control of real quantum hardware, the ability to execute pulse and readout-level instructions is required. To that end, we introduce Qiskit Pulse, a pulse-level programming paradigm implemented as a module within Qiskit-Terra [1]. To demonstrate the capabilities of Qiskit Pulse, we calibrate both un-echoed and echoed variants of the cross-resonance entangling gate with a pair of qubits on an IBM Quantum system accessible through the cloud. We perform Hamiltonian characterization of both single and two-pulse variants of the cross-resonance entangling gate with varying amplitudes on a cloud-based IBM Quantum system. We then transform these calibrated sequences into a high-fidelity CNOT gate by applying pre and post local-rotations to the qubits, achieving average gate fidelities of F = 0.981 and F = 0.979 for the un-echoed and echoed respectively. This is comparable to the standard backend CNOT fidelity of FCX = 0.984. Furthermore, to illustrate how users can access their results at different levels of the readout chain, we build a custom discriminator to investigate qubit readout correlations. Qiskit Pulse allows users to explore advanced control schemes such as optimal control theory, dynamical decoupling, and error mitigation that are not available within the circuit model.},
+  file = {/Users/thomas/Zotero/storage/9T2I8LM7/Alexander et al. - 2020 - Qiskit pulse programming quantum computers throug.pdf},
+  journal = {Quantum Science and Technology},
+  language = {en},
+  number = {4}
+}
+
+@misc{DiCarloLabDelftPycQEDPy32021,
+  title = {{{DiCarloLab}}-{{Delft}}/{{PycQED}}\_py3},
+  year = {2021},
+  month = may,
+  abstract = {Python3 version of PycQED using QCoDeS as backend},
+  copyright = {MIT},
+  howpublished = {DiCarlo Lab}
+}
+
+@misc{ExperimentalMicroarchitectureSuperconducting,
+  title = {An Experimental Microarchitecture for a Superconducting Quantum Processor | {{Proceedings}} of the 50th {{Annual IEEE}}/{{ACM International Symposium}} on {{Microarchitecture}}},
+  file = {/Users/thomas/Zotero/storage/SL9Z43CX/3123939.html},
+  howpublished = {https://dl.acm.org/doi/10.1145/3123939.3123952}
+}
+
+@article{freyProgrammingFullStack2021,
+  title = {Programming the Full Stack of an Open-Access Quantum Computer},
+  author = {Frey, Virginia and Rademacher, Richard and {Durso-Sabina}, Elijah and Greenberg, Noah and Videnov, Nikolay and Day, Matthew L. and Islam, Rajibul and Senko, Crystal},
+  year = {2021},
+  month = jun,
+  abstract = {We present a new quantum programming language called "Quala" that enables true full-stack programming of quantum hardware. Quala allows seamless integration of abstraction layers such as the digital circuit layer and the analog control pulse waveform layer. Additionally, the language supports user-issued low-level hardware instructions like FPGA actions. Mid-circuit measurements and branching decision logic support real-time, adaptive programs. This flexibility allows users to write code for everything from quantum error correction to analog quantum simulation. The combination of a user-facing calibration database and a powerful symbolic algebra framework provides users with an unprecedented level of expressiveness and transparency. We display the salient characteristics of the language structure and describe how the accompanying compiler can translate programs written in any abstraction layer into precisely timed hardware commands. We intend for this language to bridge the gap between circuit-level programming and physical operations on real hardware while maintaining full transparency in each level of the stack. This eliminates the need for "behind-the-scenes" compilation and provides users with insights into the day-to-day calibration routines.},
+  archiveprefix = {arXiv},
+  eprint = {2106.06549},
+  eprinttype = {arxiv},
+  file = {/Users/thomas/Zotero/storage/89S4XZWC/Frey et al. - 2021 - Programming the full stack of an open-access quant.pdf;/Users/thomas/Zotero/storage/H5IEVPTB/2106.html},
+  journal = {arXiv:2106.06549 [quant-ph]},
+  keywords = {Quantum Physics},
+  primaryclass = {quant-ph}
+}
+
+@article{nguyenEnablingPulselevelProgramming2020,
+  title = {Enabling {{Pulse}}-Level {{Programming}}, {{Compilation}}, and {{Execution}} in {{XACC}}},
+  author = {Nguyen, Thien and McCaskey, Alexander},
+  year = {2020},
+  month = mar,
+  abstract = {Noisy gate-model quantum processing units (QPUs) are currently available from vendors over the cloud, and digital quantum programming approaches exist to run low-depth circuits on physical hardware. These digital representations are ultimately lowered to pulse-level instructions by vendor quantum control systems to affect unitary evolution representative of the submitted digital circuit. Vendors are beginning to open this pulse-level control system to the public via specified interfaces. Robust programming methodologies, software frameworks, and backend simulation technologies for this analog model of quantum computation will prove critical to advancing pulse-level control research and development. Prototypical use cases for this include error mitigation, optimal pulse control, and physics-inspired pulse construction. Here we present an extension to the XACC quantum-classical software framework that enables pulse-level programming for superconducting, gate-model quantum computers, and a novel, general, and extensible pulse-level simulation backend for XACC that scales on classical compute clusters via MPI. Our work enables custom backend Hamiltonian definitions and gate-level compilation to available pulses with a focus on performance and scalability. We end with a demonstration of this capability, and show how to use XACC for pertinent pulse-level programming tasks.},
+  archiveprefix = {arXiv},
+  eprint = {2003.11971},
+  eprinttype = {arxiv},
+  file = {/Users/thomas/Zotero/storage/YU7N5IH8/Nguyen and McCaskey - 2020 - Enabling Pulse-level Programming, Compilation, and.pdf;/Users/thomas/Zotero/storage/PDA3SVRK/2003.html},
+  journal = {arXiv:2003.11971 [physics, physics:quant-ph]},
+  keywords = {Physics - Computational Physics,Quantum Physics},
+  primaryclass = {physics, physics:quant-ph}
+}
+
+@misc{QuillangQuil2021,
+  title = {Quil-Lang/Quil},
+  year = {2021},
+  month = jun,
+  abstract = {Specification of Quil: A Practical Quantum Instruction Set Architecture},
+  copyright = {Apache-2.0},
+  howpublished = {quil-lang},
+  keywords = {forest,quantum-computing,quantum-programming,quil}
+}
