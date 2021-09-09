@@ -1,4 +1,4 @@
-from open_node.ast import (
+from openqasm.ast import (
     AliasStatement,
     AssignmentOperator,
     BinaryExpression,
@@ -58,8 +58,8 @@ from open_node.ast import (
     UnaryExpression,
     UnaryOperator,
 )
-from open_node.parser.antlr.qasm_parser import parse, Span
-from open_node.ast_visitor.ast_visitor import NodeVisitor
+from openqasm.parser.antlr.qasm_parser import parse, Span
+from openqasm.ast_visitor.ast_visitor import NodeVisitor
 
 
 class SpanGuard(NodeVisitor):

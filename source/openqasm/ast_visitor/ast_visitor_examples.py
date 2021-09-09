@@ -1,11 +1,11 @@
-from open_node.ast import (
+from openqasm.ast import (
     Identifier,
     QuantumGateModifier,
     QubitDeclaration,
     QuantumGate,
     QuantumGateDefinition,
 )
-from open_node.ast_visitor.ast_visitor import NodeVisitor, NodeTransformer
+from openqasm.ast_visitor.ast_visitor import NodeVisitor, NodeTransformer
 
 
 class OpenNodePrinter(NodeVisitor):

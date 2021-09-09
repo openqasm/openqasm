@@ -1,6 +1,6 @@
-from open_node.ast import OpenNode
-from open_node.parser.antlr.qasm_parser import parse
-from open_node.ast_visitor.ast_visitor_examples import OpenNodePrinter, GateResolver
+from openqasm.ast import OpenNode
+from openqasm.parser.antlr.qasm_parser import parse
+from openqasm.ast_visitor.ast_visitor_examples import OpenNodePrinter, GateResolver
 
 
 def unparse(program: OpenNode):

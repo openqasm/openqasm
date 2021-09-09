@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from open_node.parser.antlr.qasm_parser import parse
+from openqasm.parser.antlr.qasm_parser import parse
 
 
 class TestOpenQasmTests:

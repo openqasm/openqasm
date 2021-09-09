@@ -37,20 +37,20 @@ jobs:
         run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
 
       - name: Generate grammar
-        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../open_node/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
 
       - name: Install Python packages for AST
         run: python -mpip install -r requirements.txt -r requirements-dev.txt
-        working-directory: source/open_node
+        working-directory: source/openqasm
 
       - name: Check format
         run: black --check --diff .
-        working-directory: source/open_node
+        working-directory: source/openqasm
 
       - name: Check style
         run: pylint .
-        working-directory: source/open_node
+        working-directory: source/openqasm
 
       - name: Run tests
         run: pytest -vv --color=yes tests
-        working-directory: source/open_node
+        working-directory: source/openqasm

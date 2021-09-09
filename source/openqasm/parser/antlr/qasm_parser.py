@@ -7,7 +7,7 @@ from antlr4.tree.Tree import TerminalNode
 from .qasm3Lexer import qasm3Lexer
 from .qasm3Parser import qasm3Parser
 from .qasm3Visitor import qasm3Visitor
-from open_node.ast import (
+from openqasm.ast import (
     AliasStatement,
     AssignmentOperator,
     BinaryExpression,
