@@ -28,15 +28,10 @@ class NodeVisitor(Generic[T]):
 
     def generic_visit(self, node: OpenNode, context: Optional[T] = None):
         """Called if no explicit visitor function exists for a node."""
-        for _, value in node.__dict__.items():
-            if isinstance(value, list):
-                for item in value:
-                    if isinstance(item, OpenNode):
-                        if context:
-                            self.visit(item, context)
-                        else:
-                            self.visit(item)
-            elif isinstance(value, OpenNode):
+        for value in node.__dict__.values():
+            if not isinstance(value, list):
+                value = [value]
+            for item in value:
                 if context:
                     self.visit(value, context)
                 else:
