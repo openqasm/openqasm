@@ -32,10 +32,11 @@ class NodeVisitor(Generic[T]):
             if not isinstance(value, list):
                 value = [value]
             for item in value:
-                if context:
-                    self.visit(value, context)
-                else:
-                    self.visit(value)
+                if isinstance(item, OpenNode):
+                    if context:
+                        self.visit(item, context)
+                    else:
+                        self.visit(item)
 
 
 class NodeTransformer(NodeVisitor[T]):
