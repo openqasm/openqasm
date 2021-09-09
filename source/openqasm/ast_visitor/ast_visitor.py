@@ -11,7 +11,9 @@ class NodeVisitor(Generic[T]):
     visitor function for every node found.  This function may return a value
     which is forwarded by the `visit` method.
 
-    Modified from the implementation in ast.py in the Python standard library
+    Modified from the implementation in ast.py in the Python standard library.
+    We added the context argument to the visit method. It allows the visitor
+    to hold temporary state while visiting the nodes.
 
     The visit/generic_visit methods in subclasses do not have to have context argument.
     """
@@ -47,7 +49,7 @@ class NodeTransformer(NodeVisitor[T]):
     Modified from the implementation in ast.py in the Python standard library
     """
 
-    def generic_visit(self, node: OpenNode, context: Optional[T] = None):
+    def generic_visit(self, node: OpenNode, context: Optional[T] = None) -> OpenNode:
         for field, old_value in node.__dict__.items():
             if isinstance(old_value, list):
                 new_values = []

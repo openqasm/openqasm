@@ -499,7 +499,7 @@ class ClassicalArgument(OpenNode):
     Classical argument for a gate or subroutine declaration
     """
 
-    type_: ClassicalType
+    type: ClassicalType
     name: str
 
 

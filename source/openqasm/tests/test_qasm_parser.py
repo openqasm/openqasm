@@ -629,7 +629,7 @@ def test_calibration_definition():
                 name="rz",
                 arguments=[
                     ClassicalArgument(
-                        type_=SingleDesignatorType(
+                        type=SingleDesignatorType(
                             type=SingleDesignatorTypeName["angle"], designator=IntegerLiteral(20)
                         ),
                         name="theta",
