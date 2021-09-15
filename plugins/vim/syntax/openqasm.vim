@@ -118,7 +118,7 @@ syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transpar
 " statements to be matched correctly, when the test includes a function call.
 syntax region qasmParams start="(" end=")" transparent contained
 syntax region qasmDesignator start=#\v\[# end=#\v\]# transparent contained
-    \ contains=qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
+    \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
 
 " General keywords.
 syntax keyword qasmInclude include
@@ -132,13 +132,9 @@ syntax keyword qasmDefine gate nextgroup=qasmFunction skipwhite skipempty
 
 " For historical reasons, the designator from a register defined by "qreg" (as
 " opposed to "qubit") comes _after_ the identifier, unlike every other type.
-syntax keyword qasmType qreg
+syntax keyword qasmType qreg creg
     \ nextgroup=qasmRegIdentifier skipwhite skipempty
-if s:openqasm_version < 3
-    syntax keyword qasmType creg
-        \ nextgroup=qasmRegIdentifier skipwhite skipempty
-endif
-syntax match qasmRegIdentifier #\v<\K\k># contained nextgroup=qasmDesignator skipwhite skipempty
+syntax match qasmRegIdentifier #\v<\K\k*># contained nextgroup=qasmDesignator skipwhite skipempty
 
 highlight link qasmRegIdentifier qasmIdentifier
 
@@ -149,7 +145,7 @@ else
     " The current OpenQASM 3 grammar has 'creg' behave like other classical
     " types (i.e. with the designator immediately after the type name), even
     " though this clashes with OpenQASM 2.
-    syntax keyword qasmType bit qubit int uint float bool angle duration stretch creg
+    syntax keyword qasmType bit qubit int uint float bool angle duration stretch creg complex
         \ nextgroup=qasmDesignator skipwhite skipempty
     syntax keyword qasmIO input output
     syntax keyword qasmBuiltinQuantum durationof box
@@ -251,6 +247,7 @@ endif
 
 "" Language literals.
 syntax region qasmString start=#"# end=#"#
+syntax region qasmString start=#'# end=#'#
 syntax match qasmInteger #\v<\d+# nextgroup=qasmTimeUnit
 syntax match qasmReal #\v<\d+\.\d*([eE][+-]?\d+)?# nextgroup=qasmTimeUnit skipwhite skipempty
 if s:openqasm_version >= 3
