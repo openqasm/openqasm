@@ -300,7 +300,7 @@ duration of a calibrated gate.
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
-   duration c = durationof({x $3});
+   duration c = durationof({x $3;});
 
 ``duration`` is further discussed in :any:`duration-and-stretch`
 

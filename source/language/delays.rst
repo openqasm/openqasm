@@ -51,7 +51,7 @@ Below are some examples of values of type ``duration``.
        // fixed duration, backend dependent
        duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = durationof({x $3});
+       duration c = durationof({x $3;});
 
 We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
 have variable non-negative duration that are permitted to grow as necessary
@@ -135,7 +135,7 @@ durations, including stretches, will be resolved to constants.
 .. code-block:: c
 
        duration a = 300ns;
-       duration b = durationof({x $0});
+       duration b = durationof({x $0;});
        stretch c;
        // stretchy duration with min=300ns
        stretch d = a + 2 * c;
@@ -244,9 +244,9 @@ to properly take into account the finite duration of each gate.
 
    stretch s;
    stretch t;
-   duration start_stretch = s - .5 * durationof({x $0;})
-   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;}
-   duration end_stretch = s - .5 * durationof({y $0;})
+   duration start_stretch = s - .5 * durationof({x $0;});
+   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;});
+   duration end_stretch = s - .5 * durationof({y $0;});
 
    delay[start_stretch] $0;
    x $0;
