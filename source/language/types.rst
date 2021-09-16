@@ -148,20 +148,6 @@ one another.
    int[16] my_int;
    my_int = int[16](my_uint);
 
-Signed fixed-point numbers
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are ``1:m:f`` fixed-point numbers with ``m`` integer bits, ``f`` fractional bits, and 1
-sign bit. The statement ``fixed[m, f] name;`` declares a ``1:m:f`` fixed-point number.
-
-.. code-block:: c
-
-   // Declare a 32-bit fixed point number.
-   // The number is signed, has 7 integer bits
-   // and 24 fractional bits. The decimal number
-   // assignment is implicitly cast.
-   fixed[7, 24] my_fixed = -7.0625;
-
 Floating point numbers
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -201,7 +187,7 @@ Complex numbers
 ~~~~~~~~~~~~~~~
 
 Complex numbers may be declared as ``complex[type[size]] name``, for a numeric OpenQASM classical type
-``type`` (``int``, ``fixed``, ``float``, ``angle``) and a number of bits ``size``. The real
+``type`` (``int``, ``float``, ``angle``) and a number of bits ``size``. The real
 and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
 would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
 ``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
