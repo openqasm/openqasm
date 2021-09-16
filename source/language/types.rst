@@ -291,9 +291,9 @@ Duration
 ~~~~~~~~
 
 We introduce a ``duration`` type to express timing.
-Durations are numbers with a unit of time. ``ns, μs, ms, s`` are used for SI time
-units. ``dt`` is a backend-dependent unit equivalent to one waveform sample on
-the backend. ``durationof()`` is an intrinsic function used to reference the 
+Durations are numbers with a unit of time. ``ns, μs, us, ms, and s`` are used for SI time
+units. ``dt`` is a backend-dependent unit equivalent to one waveform sample.
+``durationof()`` is an intrinsic function used to reference the
 duration of a calibrated gate.
 
 .. code-block:: c
