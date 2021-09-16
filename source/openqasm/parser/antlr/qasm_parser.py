@@ -170,7 +170,9 @@ class OpenNodeVisitor(qasm3Visitor):
             statements.append(self.visit(globalStatement))
         for statement in ctx.statement():
             statements.append(self.visit(statement))
-        program = Program(statements=sorted(statements, key=lambda x: (x.span.start_line, x.span.start_column)))
+        program = Program(
+            statements=sorted(statements, key=lambda x: (x.span.start_line, x.span.start_column))
+        )
         program.version = version
         program.io_variables = io_variables
 

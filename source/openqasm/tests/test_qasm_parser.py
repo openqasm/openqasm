@@ -105,6 +105,7 @@ def test_bit_declaration():
     classical_declaration = program.statements[0]
     assert classical_declaration.span == Span(1, 0, 1, 5)
 
+
 def test_qubit_and_bit_declaration():
     p = """
     bit c;
