@@ -105,6 +105,20 @@ def test_bit_declaration():
     classical_declaration = program.statements[0]
     assert classical_declaration.span == Span(1, 0, 1, 5)
 
+def test_qubit_and_bit_declaration():
+    p = """
+    bit c;
+    qubit a; 
+    """.strip()
+    program = parse(p)
+    assert program == Program(
+        statements=[
+            ClassicalDeclaration(BitType(BitTypeName["bit"], None), Identifier("c"), None),
+            QubitDeclaration(QubitDeclTypeName["qubit"], qubit=Qubit(name="a"), designator=None),
+        ]
+    )
+    SpanGuard().visit(program)
+
 
 def test_complex_declaration():
     p = """
