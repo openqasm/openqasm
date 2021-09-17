@@ -28,7 +28,7 @@ Note: this working group will begin working in September 2021.
  * Can we improve the style?
 
 Chair: Li Chen  
-Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steven Heidel
+Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steven Heidel, Jake Lishman
 
 ### Types and casting
 
