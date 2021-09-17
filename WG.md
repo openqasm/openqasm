@@ -23,7 +23,7 @@ Note: this working group will begin working in September 2021.
 **Questions**:
 
  * Are their pain points in the grammar?
- * Are their places we can improve?
+ * Are there places we can improve?
  * Can we improve the performance?
  * Can we improve the style?
 
