@@ -188,7 +188,7 @@ class OpenNodeVisitor(qasm3Visitor):
         arguments = []
         qubits = [
             add_span(Identifier(i.getText()), get_span(i))
-            for i in ctx.quantumGateSignature().identifierList()
+            for i in ctx.quantumGateSignature().identifierList()[0].Identifier()
         ]
         child_count = ctx.quantumBlock().getChildCount()
         body = [self.visit(ctx.quantumBlock().getChild(i)) for i in range(1, child_count - 1)]
@@ -395,7 +395,7 @@ class OpenNodeVisitor(qasm3Visitor):
         equals_expression = ctx.equalsExpression()
         init_expression = self.visit(equals_expression.expression()) if equals_expression else None
 
-        return ConstantDeclaration(ctx.Identifier().getText(), init_expression)
+        return ConstantDeclaration(add_span(ctx.Identifier().getText(), get_span(ctx.Identifier())), init_expression)
 
     @span
     def visitNoDesignatorDeclaration(self, ctx: qasm3Parser.NoDesignatorDeclarationContext):

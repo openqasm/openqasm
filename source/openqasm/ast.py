@@ -398,6 +398,7 @@ class GateModifierName(Enum):
     inv = auto()
     pow = auto()
     ctrl = auto()
+    negctrl = auto()
 
 
 @dataclass
