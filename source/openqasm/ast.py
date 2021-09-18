@@ -611,29 +611,6 @@ class BitTypeName(Enum):
 
 
 @dataclass
-class DoubleDesignatorType(ClassicalType):
-    """
-    Type with two designators. Currently, fixed is the only type
-
-    Example::
-
-        fixed[8, 12]
-    """
-
-    type: DoubleDesignatorTypeName
-    designator1: Expression
-    designator2: Expression
-
-
-class DoubleDesignatorTypeName(Enum):
-    """
-    Double designator types
-    """
-
-    fixed = auto()
-
-
-@dataclass
 class NoDesignatorType(ClassicalType):
     """
     Type with no designators.

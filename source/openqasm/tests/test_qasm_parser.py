@@ -19,8 +19,6 @@ from openqasm.ast import (
     ConstantName,
     ContinueStatement,
     DelayInstruction,
-    DoubleDesignatorType,
-    DoubleDesignatorTypeName,
     DurationOf,
     ExpressionStatement,
     ForInLoop,
@@ -124,7 +122,6 @@ def test_qubit_and_bit_declaration():
 def test_complex_declaration():
     p = """
     complex[int[24]] iq;
-    complex[fixed[5, 7]] iq2;
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -137,17 +134,6 @@ def test_complex_declaration():
                     )
                 ),
                 Identifier("iq"),
-                None,
-            ),
-            ClassicalDeclaration(
-                ComplexType(
-                    base_type=DoubleDesignatorType(
-                        DoubleDesignatorTypeName["fixed"],
-                        IntegerLiteral(5),
-                        IntegerLiteral(7),
-                    )
-                ),
-                Identifier("iq2"),
                 None,
             ),
         ]

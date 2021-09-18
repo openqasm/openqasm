@@ -32,8 +32,6 @@ from openqasm.ast import (
     ConstantName,
     ContinueStatement,
     DelayInstruction,
-    DoubleDesignatorType,
-    DoubleDesignatorTypeName,
     DurationOf,
     EndStatement,
     ExpressionStatement,
@@ -379,8 +377,6 @@ class OpenNodeVisitor(qasm3Visitor):
     def visitClassicalDeclaration(self, ctx: qasm3Parser.ClassicalDeclarationContext):
         if ctx.singleDesignatorDeclaration():
             return self.visit(ctx.singleDesignatorDeclaration())
-        elif ctx.doubleDesignatorDeclaration():
-            return self.visit(ctx.doubleDesignatorDeclaration())
         elif ctx.noDesignatorDeclaration():
             return self.visit(ctx.noDesignatorDeclaration())
         elif ctx.bitDeclaration():
@@ -432,19 +428,6 @@ class OpenNodeVisitor(qasm3Visitor):
             ),
             add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
             init_expression,
-        )
-
-    @span
-    def visitDoubleDesignatorDeclaration(self, ctx: qasm3Parser.DoubleDesignatorDeclarationContext):
-        equals_expression = ctx.equalsExpression()
-        init_expression = self.visit(equals_expression.expression()) if equals_expression else None
-        dtype = DoubleDesignatorTypeName["fixed"]
-        designator1 = self.visit(ctx.doubleDesignator().expression()[0])
-        designator2 = self.visit(ctx.doubleDesignator().expression()[1])
-        return ClassicalDeclaration(
-            type=DoubleDesignatorType(type=dtype, designator1=designator1, designator2=designator2),
-            identifier=add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
-            init_expression=init_expression,
         )
 
     @span
@@ -700,15 +683,6 @@ class OpenNodeVisitor(qasm3Visitor):
                 ),
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
-        elif ctx.doubleDesignator():
-            classcal_type = add_span(
-                DoubleDesignatorType(
-                    type=DoubleDesignatorTypeName[ctx.doubleDesignatorType().getText()],
-                    designator1=self.visit(ctx.doubleDesignator().expression()[0]),
-                    designator2=self.visit(ctx.doubleDesignator().expression()[1]),
-                ),
-                combine_span(get_span(ctx.doubleDesignator()), get_span(ctx.designator())),
-            )
         elif ctx.noDesignatorType():
             classcal_type = add_span(
                 NoDesignatorType(ctx.noDesignatorType().getText()), get_span(ctx.noDesignatorType())
@@ -736,12 +710,6 @@ class OpenNodeVisitor(qasm3Visitor):
                 SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
                 self.visit(ctx.designator()),
             )
-        elif ctx.doubleDesignatorType():
-            return DoubleDesignatorType(
-                type=DoubleDesignatorTypeName[ctx.doubleDesignatorType().getText()],
-                designator1=self.visit(ctx.doubleDesignator().expression()[0]),
-                designator2=self.visit(ctx.doubleDesignator().expression()[1]),
-            )
         elif ctx.noDesignatorType():
             return NoDesignatorType(ctx.noDesignatorType().getText())
         elif ctx.bitType():
@@ -760,12 +728,6 @@ class OpenNodeVisitor(qasm3Visitor):
             return SingleDesignatorType(
                 SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
                 self.visit(ctx.designator()),
-            )
-        elif ctx.doubleDesignatorType():
-            return DoubleDesignatorType(
-                type=DoubleDesignatorTypeName[ctx.doubleDesignatorType().getText()],
-                designator1=self.visit(ctx.doubleDesignator().expression()[0]),
-                designator2=self.visit(ctx.doubleDesignator().expression()[1]),
             )
 
     @span
