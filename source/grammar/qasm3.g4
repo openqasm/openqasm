@@ -70,10 +70,6 @@ designator
     : LBRACKET expression RBRACKET
     ;
 
-doubleDesignator
-    : LBRACKET expression COMMA expression RBRACKET
-    ;
-
 identifierList
     : ( Identifier COMMA )* Identifier
     ;
@@ -104,10 +100,6 @@ singleDesignatorType
     | 'angle'
     ;
 
-doubleDesignatorType
-    : 'fixed'
-    ;
-
 noDesignatorType
     : 'bool'
     | timingType
@@ -115,7 +107,6 @@ noDesignatorType
 
 classicalType
     : singleDesignatorType designator
-    | doubleDesignatorType doubleDesignator
     | noDesignatorType
     | bitType designator?
     | 'complex' LBRACKET numericType RBRACKET
@@ -124,7 +115,6 @@ classicalType
 // numeric OpenQASM types
 numericType
     : singleDesignatorType designator
-    | doubleDesignatorType doubleDesignator
     ;
 
 constantDeclaration
@@ -135,10 +125,6 @@ constantDeclaration
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
     : singleDesignatorType designator Identifier equalsExpression?
-    ;
-
-doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator Identifier equalsExpression?
     ;
 
 noDesignatorDeclaration
@@ -155,7 +141,6 @@ complexDeclaration
 
 classicalDeclaration
     : singleDesignatorDeclaration
-    | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
     | complexDeclaration
@@ -169,7 +154,6 @@ classicalArgument
     :
     (
         singleDesignatorType designator |
-        doubleDesignatorType doubleDesignator |
         noDesignatorType
     ) Identifier
     | 'creg' Identifier designator?

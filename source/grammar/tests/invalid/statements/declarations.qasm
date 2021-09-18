@@ -1,7 +1,6 @@
 // Not specifying the variable.
 float;
 uint[8];
-fixed[7, 1];
 qreg[4];
 creg[4];
 complex[float[32]];
@@ -13,8 +12,6 @@ uint myvar;
 uint[8, 8] myvar;
 float myvar;
 float[8, 8] myvar;
-fixed myvar;
-fixed[8] myvar;
 angle myvar;
 angle[8, 8] myvar;
 bool[4] myvar;
@@ -51,7 +48,6 @@ myvar int[8];
 int myvar[8];
 uint myvar[8];
 float myvar[32];
-fixed myvar[7, 1];
 
 // Compound assignments.
 int[8] myvar1, myvar2;
