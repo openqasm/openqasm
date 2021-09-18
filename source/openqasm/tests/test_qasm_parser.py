@@ -173,7 +173,7 @@ def test_single_gatecall():
     assert quantum_gate.qubits[0].span == Span(1, 2, 1, 2)
 
 
-def test_gate_definition():
+def test_gate_definition1():
     p = """
 gate xy q {
     x q;
@@ -202,6 +202,49 @@ gate xy q {
     gate_declaration = program.statements[0]
     assert gate_declaration.span == Span(1, 0, 4, 0)
     assert gate_declaration.qubits[0].span == Span(1, 8, 1, 8)
+
+
+def test_gate_definition2():
+    p = """
+gate majority a, b, c {
+     cx c, b;
+     cx c, a;
+     ccx a, b, c;
+}""".strip()
+    program = parse(p)
+    assert program == Program(
+        statements=[
+            QuantumGateDefinition(
+                name="majority",
+                arguments=[],
+                qubits=[Identifier(name="a"), Identifier(name="b"), Identifier(name="c")],
+                body=[
+                    QuantumGate(
+                        modifiers=[],
+                        name="cx",
+                        arguments=[],
+                        qubits=[Identifier(name="c"), Identifier(name="b")],
+                    ),
+                    QuantumGate(
+                        modifiers=[],
+                        name="cx",
+                        arguments=[],
+                        qubits=[Identifier(name="c"), Identifier(name="a")],
+                    ),
+                    QuantumGate(
+                        modifiers=[],
+                        name="ccx",
+                        arguments=[],
+                        qubits=[Identifier(name="a"), Identifier(name="b"), Identifier(name="c")],
+                    ),
+                ],
+            )
+        ],
+    )
+    SpanGuard().visit(program)
+    gate_declaration = program.statements[0]
+    assert gate_declaration.span == Span(1, 0, 5, 0)
+    assert gate_declaration.qubits[0].span == Span(1, 14, 1, 14)
 
 
 def test_gate_calls():
