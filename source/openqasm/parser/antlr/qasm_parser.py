@@ -264,7 +264,7 @@ class OpenNodeVisitor(qasm3Visitor):
         if quantum_gate_call:
             return self.visit(quantum_gate_call)
         elif quantum_phase:
-            return self.visit(quantum_measurement)
+            return self.visit(quantum_phase)
         elif quantum_measurement:
             return self.visit(quantum_measurement)
         elif quantum_reset:
