@@ -295,7 +295,8 @@ class OpenNodeVisitor(qasm3Visitor):
     def visitQuantumPhase(self, ctx: qasm3Parser.QuantumPhaseContext):
         modifiers = [self.visit(modifier) for modifier in ctx.quantumGateModifier()]
         argument = self.visit(ctx.expression())
-        qubits = [self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()]
+        if ctx.indexIdentifierList():
+            qubits = [self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()]
 
         return QuantumPhase(modifiers, argument, qubits)
 
