@@ -52,12 +52,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  2
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    2
+                ]
             y
             equalsExpression
               =

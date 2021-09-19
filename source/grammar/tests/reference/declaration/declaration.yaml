@@ -2,6 +2,7 @@
 source: |
   int[10] x;
   int[10] y;
+  uint x;
   qubit[6] q1;
   qubit q2;
   bit[4] b1="0100";
@@ -23,12 +24,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
             x
         ;
     statement
@@ -37,13 +38,21 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
             y
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          singleDesignatorDeclaration
+            singleDesignatorType
+              uint
+            x
         ;
     globalStatement
       quantumDeclarationStatement
@@ -151,12 +160,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    64
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      64
+                  ]
           c
           equalsExpression
             =
@@ -172,12 +181,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    64
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      64
+                  ]
           d
           equalsExpression
             =

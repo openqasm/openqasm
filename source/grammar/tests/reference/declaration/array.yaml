@@ -28,12 +28,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      16
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        16
+                    ]
               ,
               expressionList
                 expression
@@ -52,12 +52,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   int
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      8
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        8
+                    ]
               ,
               expressionList
                 expression
@@ -76,12 +76,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   float
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      64
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        64
+                    ]
               ,
               expressionList
                 expression
@@ -104,12 +104,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   angle
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
               ,
               expressionList
                 expression
@@ -136,12 +136,12 @@ reference: |
               nonArrayType
                 bitType
                   bit
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      8
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        8
+                    ]
               ,
               expressionList
                 expression
@@ -160,12 +160,12 @@ reference: |
               nonArrayType
                 bitType
                   creg
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      16
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        16
+                    ]
               ,
               expressionList
                 expression
@@ -191,12 +191,12 @@ reference: |
                 numericType
                   singleDesignatorType
                     float
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        32
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          32
+                      ]
                 ]
               ,
               expressionList
@@ -234,12 +234,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   int
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      8
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        8
+                    ]
               ,
               expressionList
                 expression
@@ -277,12 +277,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   int
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      8
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        8
+                    ]
               ,
               expressionList
                 expression
@@ -305,12 +305,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   int
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      8
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        8
+                    ]
               ,
               expressionList
                 expression
@@ -360,12 +360,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
               ,
               expressionList
                 expression
@@ -452,12 +452,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
               ,
               expressionList
                 expression
@@ -537,12 +537,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
               ,
               expressionList
                 expression
@@ -602,12 +602,12 @@ reference: |
               nonArrayType
                 singleDesignatorType
                   uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      32
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        32
+                    ]
               ,
               expressionList
                 expression
