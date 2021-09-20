@@ -549,7 +549,7 @@ class ConstantDeclaration(Statement):
     """
 
     identifier: Identifier
-    init_expression: Optional[Expression]
+    init_expression: Expression
 
 
 class ClassicalType(OpenNode):
