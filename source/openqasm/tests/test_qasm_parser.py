@@ -36,6 +36,7 @@ from openqasm.ast import (
     QuantumArgument,
     QuantumGateModifier,
     QuantumMeasurement,
+    QuantumPhase,
     QubitDeclaration,
     QubitDeclTypeName,
     Qubit,
@@ -232,6 +233,41 @@ gate majority a, b, c {
     assert gate_declaration.span == Span(1, 0, 5, 0)
     assert gate_declaration.qubits[0].span == Span(1, 14, 1, 14)
 
+
+def test_gate_definition3():
+    p = """
+gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
+    """.strip()
+    program = parse(p)
+    assert program == Program(
+                statements=[
+                        QuantumGateDefinition(
+                            name='rz',
+                            arguments=[Identifier(name='λ')],         
+                            qubits=[Identifier(name='a')],               
+                            body=[QuantumPhase(
+                                    quantum_gate_modifiers=[], 
+                                    argument=BinaryExpression(
+                                                op=BinaryOperator["/"],
+                                                lhs=UnaryExpression(
+                                                        op=UnaryOperator["-"],
+                                                        expression=Identifier(name='λ')),
+                                                rhs=IntegerLiteral(value=2)),
+                                    qubits=[]),
+                                  QuantumGate(
+                                      modifiers=[],
+                                      name='U',
+                                      arguments=[
+                                          IntegerLiteral(value=0),
+                                          IntegerLiteral(value=0),
+                                          Identifier(name='λ')],
+                                      qubits=[Identifier(name='a')])])
+                              ])
+    SpanGuard().visit(program)
+    gate_declaration = program.statements[0]
+    assert gate_declaration.span == Span(1, 0, 1, 43)
+    assert gate_declaration.arguments[0].span == Span(1, 8, 1, 8)
+    assert gate_declaration.qubits[0].span == Span(1, 11, 1, 11)
 
 def test_gate_calls():
     p = """

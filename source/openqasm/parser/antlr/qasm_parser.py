@@ -183,10 +183,14 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitQuantumGateDefinition(self, ctx: qasm3Parser.QuantumGateDefinitionContext):
         gate_name = ctx.quantumGateSignature().quantumGateName().getText()
-        arguments = []
+        gate_arg_lists = ctx.quantumGateSignature().identifierList() # argument and qubit lists
+        arguments = ([add_span(Identifier(arg.getText()), get_span(arg)) 
+                       for arg in gate_arg_lists[0].Identifier()]
+                      if len(gate_arg_lists)==2
+                      else [])
         qubits = [
             add_span(Identifier(i.getText()), get_span(i))
-            for i in ctx.quantumGateSignature().identifierList()[-1].Identifier()
+            for i in gate_arg_lists[-1].Identifier()
         ]
         child_count = ctx.quantumBlock().getChildCount()
         body = [self.visit(ctx.quantumBlock().getChild(i)) for i in range(1, child_count - 1)]
@@ -295,6 +299,7 @@ class OpenNodeVisitor(qasm3Visitor):
     def visitQuantumPhase(self, ctx: qasm3Parser.QuantumPhaseContext):
         modifiers = [self.visit(modifier) for modifier in ctx.quantumGateModifier()]
         argument = self.visit(ctx.expression())
+        qubits = []
         if ctx.indexIdentifierList():
             qubits = [self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()]
 
