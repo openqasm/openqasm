@@ -183,14 +183,17 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitQuantumGateDefinition(self, ctx: qasm3Parser.QuantumGateDefinitionContext):
         gate_name = ctx.quantumGateSignature().quantumGateName().getText()
-        gate_arg_lists = ctx.quantumGateSignature().identifierList() # argument and qubit lists
-        arguments = ([add_span(Identifier(arg.getText()), get_span(arg)) 
-                       for arg in gate_arg_lists[0].Identifier()]
-                      if len(gate_arg_lists)==2
-                      else [])
+        gate_arg_lists = ctx.quantumGateSignature().identifierList()  # argument and qubit lists
+        arguments = (
+            [
+                add_span(Identifier(arg.getText()), get_span(arg))
+                for arg in gate_arg_lists[0].Identifier()
+            ]
+            if len(gate_arg_lists) == 2
+            else []
+        )
         qubits = [
-            add_span(Identifier(i.getText()), get_span(i))
-            for i in gate_arg_lists[-1].Identifier()
+            add_span(Identifier(i.getText()), get_span(i)) for i in gate_arg_lists[-1].Identifier()
         ]
         child_count = ctx.quantumBlock().getChildCount()
         body = [self.visit(ctx.quantumBlock().getChild(i)) for i in range(1, child_count - 1)]
@@ -394,12 +397,11 @@ class OpenNodeVisitor(qasm3Visitor):
 
     @span
     def visitConstantDeclaration(self, ctx: qasm3Parser.ConstantDeclarationContext):
-        equals_expression = ctx.equalsExpression()
-        init_expression = self.visit(equals_expression.expression()) if equals_expression else None
-
         return ConstantDeclaration(
-            add_span(Identifier(name=ctx.Identifier().getText()), get_span(ctx.Identifier())),
-            init_expression,
+            identifier=add_span(
+                Identifier(name=ctx.Identifier().getText()), get_span(ctx.Identifier())
+            ),
+            init_expression=self.visit(ctx.equalsExpression().expression()),
         )
 
     @span
@@ -548,14 +550,16 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitUnaryExpression(self, ctx: qasm3Parser.UnaryExpressionContext):
         return UnaryExpression(
-            UnaryOperator[ctx.unaryOperator().getText()], self.visit(ctx.powerExpression())
+            UnaryOperator[ctx.unaryOperator().getText()],
+            self.visit(ctx.powerExpression()),
         )
 
     @span
     def visitBuiltInCall(self, ctx: qasm3Parser.BuiltInCallContext):
         name = ctx.builtInMath().getText() if ctx.builtInMath() else ctx.castOperator().getText()
         return FunctionCall(
-            name, [self.visit(expression) for expression in ctx.expressionList().expression()]
+            name,
+            [self.visit(expression) for expression in ctx.expressionList().expression()],
         )
 
     @span
@@ -691,7 +695,8 @@ class OpenNodeVisitor(qasm3Visitor):
             )
         elif ctx.noDesignatorType():
             classcal_type = add_span(
-                NoDesignatorType(ctx.noDesignatorType().getText()), get_span(ctx.noDesignatorType())
+                NoDesignatorType(ctx.noDesignatorType().getText()),
+                get_span(ctx.noDesignatorType()),
             )
         else:
             classcal_type = add_span(
@@ -883,7 +888,10 @@ class OpenNodeVisitor(qasm3Visitor):
         if ctx.designator():
             return ClassicalAssignment(
                 lvalue=add_span(
-                    Subscript(name=ctx.Identifier().getText(), index=self.visit(ctx.designator())),
+                    Subscript(
+                        name=ctx.Identifier().getText(),
+                        index=self.visit(ctx.designator()),
+                    ),
                     combine_span(get_span(ctx.Identifier()), get_span(ctx.designator())),
                 ),
                 op=AssignmentOperator[ctx.assignmentOperator().getText()],
@@ -892,7 +900,8 @@ class OpenNodeVisitor(qasm3Visitor):
         else:
             return ClassicalAssignment(
                 lvalue=add_span(
-                    Identifier(name=ctx.Identifier().getText()), get_span(ctx.Identifier())
+                    Identifier(name=ctx.Identifier().getText()),
+                    get_span(ctx.Identifier()),
                 ),
                 op=AssignmentOperator[ctx.assignmentOperator().getText()],
                 rvalue=self.visit(ctx.expression()),
