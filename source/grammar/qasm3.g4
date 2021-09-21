@@ -192,7 +192,7 @@ indexIdentifierList
     ;
 
 rangeDefinition
-    : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
+    : LBRACKET expression COLON expression ( COLON expression )? RBRACKET
     ;
 
 /*** Gates and Built-in Quantum Instructions ***/
