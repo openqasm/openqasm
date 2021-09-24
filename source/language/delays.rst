@@ -89,7 +89,9 @@ whatever their actual durations may be, we can do the following:
        cx q[0], q[1];
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
-       stretch s, t, u;
+       stretch s;
+       stretch t;
+       stretch u;
        delay[s] q[0], q[1];
        delay[t] q[2];
        delay[u] q[3], q[4];
