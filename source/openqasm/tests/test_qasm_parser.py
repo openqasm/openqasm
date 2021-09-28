@@ -10,6 +10,7 @@ from openqasm.ast import (
     BranchingStatement,
     CalibrationDefinition,
     CalibrationGrammarDeclaration,
+    Cast,
     ClassicalArgument,
     ClassicalAssignment,
     ClassicalDeclaration,
@@ -20,6 +21,7 @@ from openqasm.ast import (
     ContinueStatement,
     DelayInstruction,
     DurationOf,
+    EndStatement,
     ExpressionStatement,
     ForInLoop,
     FunctionCall,
@@ -397,6 +399,7 @@ def test_primary_expression():
     1.1ns;
     (x);
     q[1];
+    int[1](x)
     """.strip()
 
     program = parse(p)
@@ -414,6 +417,15 @@ def test_primary_expression():
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
             ExpressionStatement(expression=Identifier("x")),
             ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
+            ExpressionStatement(
+                expression=Cast(
+                    SingleDesignatorType(
+                        type=SingleDesignatorTypeName["int"],
+                        designator=IntegerLiteral(1),
+                    ),
+                    [Identifier("x")],
+                )
+            ),
         ]
     )
 
@@ -669,6 +681,7 @@ def test_selection():
 def test_slice():
     p = """
     let a = b[1:1:10];
+    let c = d[1:10];
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -683,7 +696,18 @@ def test_slice():
                         step=IntegerLiteral(value=1),
                     ),
                 ),
-            )
+            ),
+            AliasStatement(
+                target=Identifier(name="c"),
+                value=Slice(
+                    name="d",
+                    range=RangeDefinition(
+                        start=IntegerLiteral(value=1),
+                        end=IntegerLiteral(value=10),
+                        step=None,
+                    ),
+                ),
+            ),
         ]
     )
     SpanGuard().visit(program)
@@ -1060,3 +1084,12 @@ def test_header():
             init_expression=None,
         ),
     ]
+
+
+def test_end_statement():
+    p = """
+    end;
+    """.strip()
+    program = parse(p)
+    assert program == Program(statements=[EndStatement()])
+    SpanGuard().visit(program)
