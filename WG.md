@@ -15,15 +15,6 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 Chair: Niel de Beaudrap  
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
-### Grammar
-
-Note: this working group will begin working in September 2021.
-
-**Objective**: 
-
-Chair: Li Chen  
-Members: Hiroshi Horii, Michael Healy, Luciano Bello, Jeff Heckey, Yunong Shi, Steven Heidel
-
 ### Types and casting
 
 **Objective**: Define type hierarchy and implicit casting rules.  
@@ -39,6 +30,7 @@ Chair: Michael Healy (IBM Quantum)
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
 
+## Past Working Groups
 
 ### OpenPulse
 
@@ -47,6 +39,3 @@ OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
-
-
-## Past Working Groups
