@@ -55,7 +55,7 @@ classicalDeclarationStatement
     ;
 
 classicalAssignment
-    : Identifier designator? ( assignmentOperator expression )?
+    : Identifier designator? assignmentOperator expression
     ;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
@@ -68,10 +68,6 @@ returnSignature
 
 designator
     : LBRACKET expression RBRACKET
-    ;
-
-doubleDesignator
-    : LBRACKET expression COMMA expression RBRACKET
     ;
 
 identifierList
@@ -104,10 +100,6 @@ singleDesignatorType
     | 'angle'
     ;
 
-doubleDesignatorType
-    : 'fixed'
-    ;
-
 noDesignatorType
     : 'bool'
     | timingType
@@ -115,23 +107,24 @@ noDesignatorType
 
 classicalType
     : singleDesignatorType designator
-    | doubleDesignatorType doubleDesignator
     | noDesignatorType
     | bitType designator?
+    | 'complex' LBRACKET numericType RBRACKET
+    ;
+
+// numeric OpenQASM types
+numericType
+    : singleDesignatorType designator
     ;
 
 constantDeclaration
-    : 'const' Identifier equalsExpression?
+    : 'const' Identifier equalsExpression
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
 singleDesignatorDeclaration
     : singleDesignatorType designator Identifier equalsExpression?
-    ;
-
-doubleDesignatorDeclaration
-    : doubleDesignatorType doubleDesignator Identifier equalsExpression?
     ;
 
 noDesignatorDeclaration
@@ -142,11 +135,15 @@ bitDeclaration
     : ( 'creg' Identifier designator? | 'bit' designator? Identifier ) equalsExpression?
     ;
 
+complexDeclaration
+    : 'complex' LBRACKET numericType RBRACKET Identifier equalsExpression?
+    ;
+
 classicalDeclaration
     : singleDesignatorDeclaration
-    | doubleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
+    | complexDeclaration
     ;
 
 classicalTypeList
@@ -157,11 +154,11 @@ classicalArgument
     :
     (
         singleDesignatorType designator |
-        doubleDesignatorType doubleDesignator |
         noDesignatorType
     ) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
+    | 'complex' LBRACKET numericType RBRACKET Identifier
     ;
 
 classicalArgumentList
@@ -391,6 +388,7 @@ expressionTerminator
     : Constant
     | Integer
     | RealNumber
+    | ImagNumber
     | booleanLiteral
     | Identifier
     | StringLiteral
@@ -399,17 +397,11 @@ expressionTerminator
     | timingIdentifier
     | LPAREN expression RPAREN
     | expressionTerminator LBRACKET expression RBRACKET
-    | expressionTerminator incrementor
     ;
 /** End expression hierarchy **/
 
 booleanLiteral
     : 'true' | 'false'
-    ;
-
-incrementor
-    : '++'
-    | '--'
     ;
 
 builtInCall
@@ -580,6 +572,8 @@ MUL : '*';
 DIV : '/';
 MOD : '%';
 
+IMAG: 'im';
+ImagNumber : ( Integer | RealNumber ) IMAG ;
 
 Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 
@@ -599,7 +593,7 @@ Identifier : FirstIdCharacter GeneralIdCharacter* ;
 fragment SciNotation : [eE] ;
 fragment PlusMinus : PLUS | MINUS ;
 fragment Float : Digit+ DOT Digit* ;
-RealNumber : Float (SciNotation PlusMinus? Integer )? ;
+RealNumber : (Integer | Float ) (SciNotation PlusMinus? Integer )? ;
 
 fragment TimeUnit : 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's' ;
 // represents explicit time value in SI or backend units

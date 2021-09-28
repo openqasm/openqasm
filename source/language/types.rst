@@ -82,7 +82,7 @@ While program qubits can be named, hardware qubits are referenced only
 by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
 references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
-circuits.
+circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
 
 .. code-block:: c
    :force:
@@ -148,20 +148,6 @@ one another.
    int[16] my_int;
    my_int = int[16](my_uint);
 
-Signed fixed-point numbers
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are ``1:m:f`` fixed-point numbers with ``m`` integer bits, ``f`` fractional bits, and 1
-sign bit. The statement ``fixed[m, f] name;`` declares a ``1:m:f`` fixed-point number.
-
-.. code-block:: c
-
-   // Declare a 32-bit fixed point number.
-   // The number is signed, has 7 integer bits
-   // and 24 fractional bits. The decimal number
-   // assignment is implicitly cast.
-   fixed[7, 24] my_fixed = -7.0625;
-
 Floating point numbers
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -196,6 +182,24 @@ compatible with run-time values on some platforms.
    float[32] float_pi = π;
    // equivalent to pi_by_2 up to rounding errors
    angle[20](float_pi / 2);
+
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers may be declared as ``complex[type[size]] name``, for a numeric OpenQASM classical type
+``type`` (``int``, ``float``, ``angle``) and a number of bits ``size``. The real
+and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
+would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
+``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
+``a + b im``, where ``a`` and ``b`` must be of the same type as ``type[size]``. ``b`` must occur to the
+left of ``im`` and the two can only be seperated by spaces/tabs (or nothing at all).
+
+.. code-block:: c
+
+   complex[float[64]] c;
+   c = 2.5 + 3.5im; // 2.5, 3.5 are resolved to be ``float[64]`` types
+   complex[float[64]] d = 2.0+sin(π) + 3.1*5.5 im;
+   complex[int[32]] f = 2 + 5 im; // 2, 5 are resolved to be ``int[32]`` types
 
 Boolean types
 ~~~~~~~~~~~~~
@@ -263,7 +267,8 @@ namespace are listed in table `1 <#tab:real-constants>`__.
       | Euler’s number                | euler        | ℇ            | 2.7182818284...     |
       +-------------------------------+--------------+--------------+---------------------+
 
-Note that `e` is a valid identifier. `e/E` are also used in scientifier notation where appropriate.
+Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
+
 Types related to timing
 -----------------------
 
@@ -323,7 +328,7 @@ interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
 
-An index set can be specified by a single unsigned integer, a
+An index set can be specified by a single integer (signed or unsigned), a
 comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
 range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`

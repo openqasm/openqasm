@@ -15,7 +15,7 @@ For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM
 
 ## About this project
 
-On this repository, you'll find all the documentation related to OpenQASM and some useful OpenQASM examples.
+On this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
 
 ### Language specs
 
@@ -70,12 +70,22 @@ h input;
 output = measure input;  // should get zero
 ```
 
+## Plugins
+
+This repository also contains a plugin for working with OpenQASM 2.0 and 3.0 files in vim.
+You can find its full documentation in the [plugins/vim](plugins/vim) directory.
+
 ## Citation format
 
 For research papers, we encourage authors to reference.
 
 - [Version 3.0] Andrew W. Cross, Ali Javadi-Abhari, Thomas Alexander, Niel de Beaudrap, Lev S. Bishop, Steven Heidel, Colm A. Ryan, John Smolin, Jay M. Gambetta, Blake R. Johnson "OpenQASM 3: A broader and deeper quantum assembly language" [[arxiv:2104.14722]](https://arxiv.org/abs/2104.14722).
 - [Previous Version: 2.0] Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
+
+## Governance
+
+The OpenQASM project has a process for accepting changes to the language and making decisions codified in its [governance model](governance.md).
+
 
 ## License
 

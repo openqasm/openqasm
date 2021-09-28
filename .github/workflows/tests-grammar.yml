@@ -1,0 +1,46 @@
+name: Tests (Grammar)
+
+on:
+  [push, pull_request]
+
+jobs:
+  tests:
+    name: ANTLR grammar tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        antlr-version: ['4.9.2']
+    defaults:
+      run:
+        working-directory: source/grammar
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '15'
+          distribution: 'adopt'
+
+      - name: Update pip
+        run: python -mpip install --upgrade pip
+
+      - name: Install ANTLR4
+        run: curl -O https://www.antlr.org/download/antlr-${{ matrix.antlr-version }}-complete.jar
+
+      - name: Install ANTLR4 Python runtime
+        run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
+
+      - name: Generate grammar
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o openqasm_reference_parser -Dlanguage=Python3 qasm3.g4
+
+      - name: Install Python package
+        run: python -mpip install -e .[all]
+
+      - name: Run tests
+        run: pytest -vv --color=yes tests

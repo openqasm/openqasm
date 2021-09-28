@@ -59,7 +59,7 @@ right circular shift, ``rotl`` and ``rotr``, respectively.
 Comparison (Boolean) Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Integers, fixed-point numbers, angles, bits, and classical registers can
+Integers, angles, bits, and classical registers can
 be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 :math:`!=`) and yield Boolean values. Boolean values support logical
 operators: and ``&&``, or ``||``, not ``!``. The keyword ``in`` tests if an integer belongs to
@@ -69,7 +69,6 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 
    bool a = false;
    int[32] b = 1;
-   fixed[8, 12] c = 1.05;
    angle[32] d = pi;
    float[32] e = pi;
 
@@ -83,9 +82,7 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 Integers
 ~~~~~~~~
 
-Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``,
-modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=`` and 
-``**=``; as well as increment ``++`` and decrement ``--``.
+Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``, modulo ``%``, and power ``**``, as well as the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=``, and ``**=``.
 
 .. code-block:: c
 
@@ -97,13 +94,12 @@ modulo ``%``, and power ``**``; the corresponding assignments ``+=``, ``-=``, ``
    b % a; // 1
    a ** b; // 8
    a += 4; // a == 6
-   a++; // a == 7
 
-Fixed-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Floating-point numbers and angles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixed-point and angle types support addition, subtraction,
-multiplication, division and power and the corresponding assignment operators.
+Floating-point and angle types support addition, subtraction,
+multiplication, division, and power and the corresponding assignment operators.
 
 .. code-block:: c
 
@@ -114,6 +110,20 @@ multiplication, division and power and the corresponding assignment operators.
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
 
+Complex numbers
+~~~~~~~~~~~~~~~
+
+Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+assignment operators.
+
+.. code-block:: c
+
+   complex[float[64]] a = 10.0 + 5.0im;
+   complex[float[64]] b = -2.0 - 7.0im;
+   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b; // d = 12.0+12.0im;
+   complex[float[64]] e = a*b; // e = 15.0-80.0im;
+   complex[float[64]] f = a/b; // f = (-55.0+60.0im)/53.0
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
@@ -125,7 +135,7 @@ OpenQASM evaluates expressions from left to right.
       +----------------------------------------+------------------------------------+
       | Operator                               | Operator Types                     |
       +----------------------------------------+------------------------------------+
-      | ``()``, ``[]``, ``++``, ``(type)(x)``  | Call, index, incrementors, cast    |
+      | ``()``, ``[]``, ``(type)(x)``          | Call, index, cast                  |
       +----------------------------------------+------------------------------------+
       | ``**``                                 | Power                              |
       +----------------------------------------+------------------------------------+
@@ -206,7 +216,7 @@ within the while loop body.
        h q;
        result = measure q;
        if (result) {
-           i++;
+           i += 1;
        }
    }
 
@@ -220,7 +230,7 @@ preceding, ``{ program }`` can also be replaced by a statement without the brace
    int[32] i = 0;
 
    while (i < 10) {
-       i++;
+       i += 1;
        // continue to next loop iteration
        if (i == 2) {
            continue;
@@ -270,4 +280,4 @@ computation, but does not wait for that computation to terminate.
 .. [3]
    This clearly allows users to write code that does not terminate. We
    do not discuss implementation details here, but one possibility is to
-   compile into target code that imposes iteration limits
+   compile into target code that imposes iteration limits.
