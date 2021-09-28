@@ -357,20 +357,14 @@ class OpenNodeVisitor(qasm3Visitor):
 
     @span
     def visitQuantumMeasurement(self, ctx: qasm3Parser.QuantumMeasurementContext):
-        index_identifier_list = [
-            self.visit(id) for id in ctx.indexIdentifierList().indexIdentifier()
-        ]
-        return QuantumMeasurement(index_identifier_list)
+        return QuantumMeasurement(self.visit(ctx.indexIdentifier()))
 
     @span
     def visitQuantumMeasurementAssignment(
         self, ctx: qasm3Parser.QuantumMeasurementAssignmentContext
     ):
-        index_identifier_list = [
-            self.visit(id) for id in ctx.indexIdentifierList().indexIdentifier()
-        ]
         return QuantumMeasurementAssignment(
-            index_identifier_list, self.visit(ctx.quantumMeasurement())
+            self.visit(ctx.indexIdentifier()), self.visit(ctx.quantumMeasurement())
         )
 
     @span

@@ -787,7 +787,7 @@ def test_subroutine_definition():
                         arguments=[],
                         qubits=[Identifier(name="q")],
                     ),
-                    ReturnStatement(expression=QuantumMeasurement(qubits=[Identifier(name="q")])),
+                    ReturnStatement(expression=QuantumMeasurement(qubit=Identifier(name="q"))),
                 ],
             )
         ]

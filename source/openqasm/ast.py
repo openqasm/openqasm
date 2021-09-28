@@ -466,7 +466,7 @@ class QuantumMeasurement(QuantumInstruction):
         measure q;
     """
 
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubit: Union[IndexIdentifier, Identifier]
 
 
 @dataclass
@@ -505,7 +505,7 @@ class QuantumMeasurementAssignment(Statement):
         c = measure q;
     """
 
-    lhs: List[Union[IndexIdentifier, Identifier]]
+    lhs: Union[IndexIdentifier, Identifier]
     measure_instruction: QuantumMeasurement
 
 
