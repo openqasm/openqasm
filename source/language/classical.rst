@@ -59,7 +59,7 @@ right circular shift, ``rotl`` and ``rotr``, respectively.
 Comparison (Boolean) Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Integers, fixed-point numbers, angles, bits, and classical registers can
+Integers, angles, bits, and classical registers can
 be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 :math:`!=`) and yield Boolean values. Boolean values support logical
 operators: and ``&&``, or ``||``, not ``!``. The keyword ``in`` tests if an integer belongs to
@@ -69,7 +69,6 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
 
    bool a = false;
    int[32] b = 1;
-   fixed[8, 12] c = 1.05;
    angle[32] d = pi;
    float[32] e = pi;
 
@@ -96,10 +95,10 @@ Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, i
    a ** b; // 8
    a += 4; // a == 6
 
-Fixed-point numbers, floating-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Floating-point numbers and angles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixed-point, floating-point, and angle types support addition, subtraction,
+Floating-point and angle types support addition, subtraction,
 multiplication, division, and power and the corresponding assignment operators.
 
 .. code-block:: c
@@ -281,4 +280,4 @@ computation, but does not wait for that computation to terminate.
 .. [3]
    This clearly allows users to write code that does not terminate. We
    do not discuss implementation details here, but one possibility is to
-   compile into target code that imposes iteration limits
+   compile into target code that imposes iteration limits.

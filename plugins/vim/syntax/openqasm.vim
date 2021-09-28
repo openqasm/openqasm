@@ -142,7 +142,10 @@ if s:openqasm_version < 3
     syntax keyword qasmDefine opaque nextgroup=qasmFunction skipwhite skipempty
 else
     syntax keyword qasmInclude defcalgrammar
-    syntax keyword qasmType bit qubit int uint float fixed bool angle duration stretch complex
+    " The current OpenQASM 3 grammar has 'creg' behave like other classical
+    " types (i.e. with the designator immediately after the type name), even
+    " though this clashes with OpenQASM 2.
+    syntax keyword qasmType bit qubit int uint float bool angle duration stretch creg complex
         \ nextgroup=qasmDesignator skipwhite skipempty
     syntax keyword qasmIO input output
     syntax keyword qasmBuiltinQuantum durationof box
