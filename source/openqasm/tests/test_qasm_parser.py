@@ -668,7 +668,7 @@ def test_selection():
 
 def test_slice():
     p = """
-    let a = b[1:10:1];
+    let a = b[1:1:10];
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -695,7 +695,7 @@ def test_slice():
 
 def test_concatenation():
     p = """
-    let a = b[1:10:1] || c;
+    let a = b[1:1:10] || c;
     """.strip()
     program = parse(p)
     assert program == Program(

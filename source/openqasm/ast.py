@@ -342,6 +342,21 @@ class FunctionCall(Expression):
 
 
 @dataclass
+class Cast(Expression):
+    """
+    A cast call expression
+
+    Example::
+
+        counts += int[1](b);
+
+    """
+
+    type: ClassicalType
+    arguments: List[Expression]
+
+
+@dataclass
 class IndexExpression(Expression):
     """
     An index expression.
@@ -723,7 +738,7 @@ class RangeDefinition(OpenNode):
     Example::
 
         [1:2]
-        [1:10:1]
+        [1:1:10]
         [:]
     """
 

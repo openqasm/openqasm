@@ -20,6 +20,7 @@ from openqasm.ast import (
     BreakStatement,
     CalibrationDefinition,
     CalibrationGrammarDeclaration,
+    Cast,
     ClassicalArgument,
     ClassicalAssignment,
     ClassicalDeclaration,
@@ -256,6 +257,10 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitExpressionStatement(self, ctx: qasm3Parser.ExpressionStatementContext):
         return ExpressionStatement(self.visit(ctx.expression()))
+
+    @span
+    def visitEndStatement(self, ctx: qasm3Parser.EndStatementContext):
+        return EndStatement()
 
     @span
     def visitQuantumStatement(self, ctx: qasm3Parser.QuantumStatementContext):
@@ -556,11 +561,16 @@ class OpenNodeVisitor(qasm3Visitor):
 
     @span
     def visitBuiltInCall(self, ctx: qasm3Parser.BuiltInCallContext):
-        name = ctx.builtInMath().getText() if ctx.builtInMath() else ctx.castOperator().getText()
-        return FunctionCall(
-            name,
-            [self.visit(expression) for expression in ctx.expressionList().expression()],
-        )
+        if ctx.builtInMath():
+            return FunctionCall(
+                ctx.builtInMath().getText(),
+                [self.visit(expression) for expression in ctx.expressionList().expression()],
+            )
+        else:
+            return Cast(
+                self.visit(ctx.castOperator().classicalType()),
+                [self.visit(expression) for expression in ctx.expressionList().expression()],
+            )
 
     @span
     def visitExternDeclaration(self, ctx: qasm3Parser.ExternDeclarationContext):
@@ -841,6 +851,7 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitRangeDefinition(self, ctx: qasm3Parser.RangeDefinitionContext):
         # start, end, are all optional as in [:]
+        # It could be [start:end] or [start:step:end]
         start = None
         end = None
         step = None
@@ -854,7 +865,8 @@ class OpenNodeVisitor(qasm3Visitor):
                 elif colons_seen == 1:
                     end = expression
                 else:
-                    step = expression
+                    step = end
+                    end = expression
             elif child.getText() == ":":
                 colons_seen += 1
 

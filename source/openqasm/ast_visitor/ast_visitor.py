@@ -15,7 +15,8 @@ class NodeVisitor(Generic[T]):
     We added the context argument to the visit method. It allows the visitor
     to hold temporary state while visiting the nodes.
 
-    The visit/generic_visit methods in subclasses do not have to have context argument.
+    The optional context argument in visit/generic_visit methods can be used to hold temporary
+    information that we do not want to hold in either the AST or the visitor themselves.
     """
 
     def visit(self, node: OpenNode, context: Optional[T] = None):
