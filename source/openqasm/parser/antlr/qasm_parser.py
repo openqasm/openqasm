@@ -41,6 +41,7 @@ from openqasm.ast import (
     FunctionCall,
     GateModifierName,
     Identifier,
+    Include,
     IndexExpression,
     IntegerLiteral,
     IODeclaration,
@@ -147,6 +148,12 @@ class OpenNodeVisitor(qasm3Visitor):
                     )
                 )
 
+        includes = (
+            [self.visitInclude(include) for include in ctx.header().include()]
+            if ctx.header() and ctx.header().include()
+            else []
+        )
+
         io_variables = []
         if ctx.header() and ctx.header().io():
             io_list = ctx.header().io()
@@ -174,8 +181,13 @@ class OpenNodeVisitor(qasm3Visitor):
         )
         program.version = version
         program.io_variables = io_variables
+        program.includes = includes
 
         return program
+
+    @span
+    def visitInclude(self, ctx: qasm3Parser.IncludeContext):
+        return Include(filename=ctx.getChild(1).getText()[1:-1])
 
     @span
     def visitGlobalStatement(self, ctx: qasm3Parser.GlobalStatementContext):

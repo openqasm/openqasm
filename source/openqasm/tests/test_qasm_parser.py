@@ -27,6 +27,7 @@ from openqasm.ast import (
     FunctionCall,
     GateModifierName,
     Identifier,
+    Include,
     IndexExpression,
     IntegerLiteral,
     IODeclaration,
@@ -1065,12 +1066,14 @@ def test_classical_assignment():
 def test_header():
     p = """
     OPENQASM 3.1;
+    include "qelib1.inc";
     input angle[16] variable1;
     output angle[16] variable2;
     """.strip()
     program = parse(p)
     expected = {"major": 3, "minor": 1}
     assert program.version == expected
+    assert program.includes == [Include("qelib1.inc")]
     assert program.io_variables == [
         IODeclaration(
             io_identifier=IOIdentifierName["input"],

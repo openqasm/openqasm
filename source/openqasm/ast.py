@@ -38,7 +38,17 @@ class Program(OpenNode):
 
     statements: List[Statement]
     version: dict[str, int] = field(init=False, default_factory=dict, compare=False)
+    includes: List[Include] = field(init=False, default_factory=list)
     io_variables: List[IODeclaration] = field(init=False, default_factory=list)
+
+
+@dataclass
+class Include(OpenNode):
+    """
+    An include statement
+    """
+
+    filename: str
 
 
 class Statement(OpenNode):
