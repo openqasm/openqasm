@@ -12,7 +12,7 @@ using the visitor.
 
 ## Developer setup
 
-1. Setup the Antlr tools following the [README under grammar](../README.md). Then from 
+1. Setup the Antlr tools following the [README under grammar](../grammar/README.md). Then from 
 source/grammar directory, run:
 ```
 antlr4 -o ../openqasm/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
