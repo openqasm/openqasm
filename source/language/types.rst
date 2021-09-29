@@ -269,6 +269,32 @@ namespace are listed in table `1 <#tab:real-constants>`__.
 
 Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
 
+Arrays
+------
+
+Static arrays of values can be created and initialized, and individual elements
+can be accessed, using the following general syntax:
+
+.. code-block:: c
+
+   array[int[32], 5] myArray = {0, 1, 2, 3, 4};
+   array[array[float[32], 2], 3] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
+
+   int[32] firstElem = myArray[0]; // 0
+   int[32] lastElem = myArray[4]; // 4
+   float[32] firstLastElem = multiDim[0][1]; // 1.2
+   float[32] lastLastElem = multiDim[2][1]; // 3.2
+
+   myArray[4] = 10; // myArray == {0, 1, 2, 3, 10}
+   multiDim[0][0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
+
+Indexing of arrays is zero-based. For backwards compatability, the standard
+ways of declaring quantum registers and bit registers are equivalent to the
+array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
+``array[qubit, 5] q1;``). With the exception of arrays of qubits and bits
+(which are aliases), passing arrays as arguments to subroutines or externs
+produces copies inside the subroutine body, not references or pointers.
+
 Types related to timing
 -----------------------
 
@@ -310,7 +336,6 @@ another name as long as the alias is in scope.
   qubit[5] q;
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
-
 
 Register concatenation and slicing
 ----------------------------------
@@ -359,3 +384,40 @@ variables whose values may only be known at run time.
    let last_three = two[-4:-1];
    // Concatenate two alias in another one
    let both = sliced || last_three;
+
+Classical value bit slicing
+---------------------------
+
+A subset of classical values (int, uint, and angle) may be accessed at the bit
+level using index sets similar to register slicing. The bit width of the
+returned value is equal to the size of the index set.
+
+.. code-block:: c
+
+   int[32] myInt = 15; // 0xF or 0b1111
+   int[1] lastIntBit = myInt[0]; // 1
+   int[1] signIntBit = myInt[31]; // 0
+   bit myBit = bit(myInt[0]); // cast int[1] to bit
+   int[16] evenBits = myInt[0:2:31]; // 3
+
+For the purpose of accessing bit-level portions of array element values, a
+special ``#`` signifier may optionally be inserted between the array accessor
+and the bit accessor. This can help with readability and the compiler's ability
+to provide good error messages.
+
+.. code-block:: c
+
+   array[int[32], 5] intArr = {0, 1, 2, 3, 4};
+   // Access bit 0 of element 0 of intArr and set it to 1
+   intArr[0]#[0] = 1;
+   intArr[1][0] = 0; // The '#' is optional
+   // cast lowest 5 bits of intArr[4] to bit[5] and copy to b
+   bit[5] b = bit[5](intArr[4]#[0:4]);
+
+Array concatenation and slicing
+-------------------------------
+
+Two or more classical arrays (but not qubit or bit arrays/registers) can be
+concatenated to form an array of the same type whose size is the
+sum of the sizes of the individual arrays. Unlike with registers, this operation
+copies the contents of the input arrays to form the new (larger) array.
