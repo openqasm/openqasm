@@ -699,7 +699,7 @@ class OpenNodeVisitor(qasm3Visitor):
             )
         elif ctx.noDesignatorType():
             classcal_type = add_span(
-                NoDesignatorType(ctx.noDesignatorType().getText()),
+                NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()]),
                 get_span(ctx.noDesignatorType()),
             )
         else:
@@ -726,7 +726,7 @@ class OpenNodeVisitor(qasm3Visitor):
                 self.visit(ctx.designator()),
             )
         elif ctx.noDesignatorType():
-            return NoDesignatorType(ctx.noDesignatorType().getText())
+            return NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()])
         elif ctx.bitType():
             return BitType(
                 BitTypeName[ctx.getChild(0).getText()],

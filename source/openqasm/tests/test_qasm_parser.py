@@ -399,7 +399,8 @@ def test_primary_expression():
     1.1ns;
     (x);
     q[1];
-    int[1](x)
+    int[1](x);
+    bool(x);
     """.strip()
 
     program = parse(p)
@@ -423,6 +424,12 @@ def test_primary_expression():
                         type=SingleDesignatorTypeName["int"],
                         designator=IntegerLiteral(1),
                     ),
+                    [Identifier("x")],
+                )
+            ),
+            ExpressionStatement(
+                expression=Cast(
+                    NoDesignatorType(type=NoDesignatorTypeName["bool"]),
                     [Identifier("x")],
                 )
             ),
