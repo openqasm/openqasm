@@ -20,5 +20,5 @@ antlr4 -o ../openqasm/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
 2. Change to the current directory and install additional requirements with 
 `pip install -r requirements.txt -r requirements-dev.txt`.
 3. Format python code: `black .`.
-4. Check style: `bylint .`.
+4. Check style: `pylint .`.
 5. Run tests: `pytest`.
