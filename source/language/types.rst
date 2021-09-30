@@ -341,21 +341,16 @@ another name as long as the alias is in scope.
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
 
-Register concatenation and slicing
-----------------------------------
+Index sets and slicing
+----------------------
 
-Two or more registers of the same type (i.e. classical or quantum) can
-be concatenated to form a register of the same type whose size is the
-sum of the sizes of the individual registers. The concatenated register
-is a reference to the bits or qubits of the original registers. The
-statement ``a || b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
-be concatenated with any part of itself.
-
-Classical and quantum registers can be indexed in a way that selects a
+Quantum registers can be indexed in a way that selects a
 subset of (qu)bits, i.e. by an index set. A register so indexed is
 interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
+
+Similarly, classical arrays can be indexed using index sets. See :any:`array-slicing`.
 
 An index set can be specified by a single integer (signed or unsigned), a
 comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
@@ -367,6 +362,15 @@ the range corresponds to :math:`\{a\}`. Otherwise, the range is the
 empty set. If :math:`c` is not given, it is assumed to be one, and
 :math:`c` cannot be zero. Note the index sets can be defined by
 variables whose values may only be known at run time.
+
+Register concatenation
+----------------------
+
+Two or more quantum registers can be concatenated to form a register whose size is the
+sum of the sizes of the individual registers. The concatenated register
+is a reference to the qubits of the original registers. The
+statement ``a || b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
+be concatenated with any part of itself.
 
 .. code-block:: c
 
@@ -423,10 +427,30 @@ to provide good error messages.
    // lowest 5 bits of intArr[4] copied to b
    bit[5] b = intArr[4]#[0:4];
 
+.. _array-slicing:
+
 Array concatenation and slicing
 -------------------------------
 
-Two or more classical arrays (but not qubit or bit arrays/registers) can be
+Two or more classical arrays can be
 concatenated to form an array of the same type whose size is the
-sum of the sizes of the individual arrays. Unlike with registers, this operation
-copies the contents of the input arrays to form the new (larger) array.
+sum of the sizes of the individual arrays. Unlike with qubit registers, this operation
+copies the contents of the input arrays to form the new (larger) array. This means that
+arrays *can* be concatenated with themselves.
+
+.. code-block:: c
+
+   array[int[8], 2] first = {0, 1};
+   array[int[8], 3] second = {2, 3, 4};
+
+   array[int[8], 5] concat = first || second;
+   array[int[8], 4] selfConcat = first || first;
+
+   array[int[8], 2] secondSlice = second[1:2]; // {3, 4}
+
+   // slicing with assignment
+   second[1:2] = first[0:1]; // second == {2, 0, 1}
+
+   // combined slicing and concatenation
+   selfConcat[0:3] = first[0:1] || second[1:2];
+   // selfConcat == {0, 1, 3, 4}
