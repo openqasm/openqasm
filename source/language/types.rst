@@ -393,18 +393,21 @@ Classical value bit slicing
 ---------------------------
 
 A subset of classical values (int, uint, and angle) may be accessed at the bit
-level using index sets similar to register slicing. The bit width of the
-returned value is equal to the size of the index set.
+level using index sets similar to register slicing. The bit slicing operation
+always returns a bit array of size equal to the size of the index set.
 
 .. code-block:: c
 
    int[32] myInt = 15; // 0xF or 0b1111
-   int[1] lastIntBit = myInt[0]; // 1
-   int[1] signIntBit = myInt[31]; // 0
-   bit myBit = bit(myInt[0]); // cast int[1] to bit
-   int[16] evenBits = myInt[0:2:31]; // 3
-   int[16] upperBits = myInt[-16:-1];
-   int[16] upperReversed = myInt[-1:-16];
+   bit[1] lastBit = myInt[0]; // 1
+   bit[1] signBit = myInt[31]; // 0
+   bit[1] alsoSignBit = myInt[-1]; // 0
+
+   bit[16] evenBits = myInt[0:2:31]; // 3
+   bit[16] upperBits = myInt[-16:-1];
+   bit[16] upperReversed = myInt[-1:-16];
+
+   myInt[4:7] = "1010"; // myInt == 0xAF
 
 For the purpose of accessing bit-level portions of array element values, a
 special ``#`` signifier may optionally be inserted between the array accessor
@@ -417,8 +420,8 @@ to provide good error messages.
    // Access bit 0 of element 0 of intArr and set it to 1
    intArr[0]#[0] = 1;
    intArr[1][0] = 0; // The '#' is optional
-   // cast lowest 5 bits of intArr[4] to bit[5] and copy to b
-   bit[5] b = bit[5](intArr[4]#[0:4]);
+   // lowest 5 bits of intArr[4] copied to b
+   bit[5] b = intArr[4]#[0:4];
 
 Array concatenation and slicing
 -------------------------------
