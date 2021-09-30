@@ -127,7 +127,11 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
 
-        version = ctx.header().version().getChild(1).getText() if ctx.header() and ctx.header().version() else ""
+        version = (
+            ctx.header().version().getChild(1).getText()
+            if ctx.header() and ctx.header().version()
+            else ""
+        )
 
         includes = (
             [self.visitInclude(include) for include in ctx.header().include()]
