@@ -891,7 +891,7 @@ class BranchingStatement(Statement):
 
     condition: Expression
     if_block: List[Statement]
-    else_block: Optional[List[Statement]]
+    else_block: List[Statement]
 
 
 @dataclass

@@ -804,7 +804,7 @@ class OpenNodeVisitor(qasm3Visitor):
         return BranchingStatement(
             condition=self.visit(ctx.expression()),
             if_block=self.visit(ctx.programBlock()[0]),
-            else_block=self.visit(ctx.programBlock()[1]) if ctx.getChildCount() > 5 else None,
+            else_block=self.visit(ctx.programBlock()[1]) if ctx.getChildCount() > 5 else [],
         )
 
     def visitProgramBlock(self, ctx: qasm3Parser.ProgramBlockContext):
