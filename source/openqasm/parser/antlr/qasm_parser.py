@@ -501,7 +501,16 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitExpressionTerminator(self, ctx: qasm3Parser.ExpressionTerminatorContext):
         if ctx.Constant():
-            return Constant(ConstantName[ctx.Constant().getText()])
+            const_text = ctx.Constant().getText()
+            if const_text == "π":
+                const_name = ConstantName.pi
+            elif const_text == "𝜏":
+                const_name = ConstantName.tau
+            elif const_text == "ℇ":
+                const_name = ConstantName.euler
+            else:
+                const_name = ConstantName[const_text]
+            return Constant(const_name)
         elif ctx.Integer():
             return IntegerLiteral(int(ctx.Integer().getText()))
         elif ctx.RealNumber():

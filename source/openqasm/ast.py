@@ -227,7 +227,14 @@ class BinaryExpression(Expression):
     rhs: Expression
 
 
-ConstantName = Enum("ConstantName", "pi π tau 𝜏 euler ℇ")
+class ConstantName(Enum):
+    """
+    Known constant names
+    """
+
+    pi = auto()
+    tau = auto()
+    euler = auto()
 
 
 @dataclass

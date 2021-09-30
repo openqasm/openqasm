@@ -390,6 +390,7 @@ def test_alias_statement():
 def test_primary_expression():
     p = """
     π;
+    pi;
     5;
     2.0;
     true;
@@ -408,7 +409,8 @@ def test_primary_expression():
     program = parse(p)
     assert program == Program(
         statements=[
-            ExpressionStatement(expression=Constant(name=ConstantName["π"])),
+            ExpressionStatement(expression=Constant(name=ConstantName.pi)),
+            ExpressionStatement(expression=Constant(name=ConstantName.pi)),
             ExpressionStatement(expression=IntegerLiteral(5)),
             ExpressionStatement(expression=RealLiteral(2.0)),
             ExpressionStatement(expression=BooleanLiteral(True)),
@@ -848,7 +850,7 @@ def test_branch_statement():
                         arguments=[
                             BinaryExpression(
                                 op=BinaryOperator["/"],
-                                lhs=Constant(ConstantName["pi"]),
+                                lhs=Constant(ConstantName.pi),
                                 rhs=IntegerLiteral(2),
                             )
                         ],
