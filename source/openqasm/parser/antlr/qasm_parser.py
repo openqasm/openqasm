@@ -678,12 +678,16 @@ class OpenNodeVisitor(qasm3Visitor):
             else:
                 break
 
+        name = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
         return CalibrationDefinition(
-            name=ctx.Identifier().getText(),
+            name=name,
             arguments=self.visit(ctx.calibrationArgumentList().getChild(0))
             if ctx.calibrationArgumentList()
             else [],
-            qubits=[id.getText() for id in ctx.identifierList().Identifier()],
+            qubits=[
+                add_span(Qubit(id.getText()), get_span(id))
+                for id in ctx.identifierList().Identifier()
+            ],
             return_type=self.visit(ctx.returnSignature().classicalType())
             if ctx.returnSignature()
             else None,
@@ -752,8 +756,9 @@ class OpenNodeVisitor(qasm3Visitor):
 
     @span
     def visitSubroutineDefinition(self, ctx: qasm3Parser.SubroutineDefinitionContext):
+        name = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
         return SubroutineDefinition(
-            name=ctx.Identifier().getText(),
+            name=name,
             arguments=[
                 self.visit(argument) for argument in ctx.anyTypeArgumentList().anyTypeArgument()
             ]

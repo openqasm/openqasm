@@ -779,9 +779,9 @@ class CalibrationDefinition(Statement):
         }
     """
 
-    name: str
+    name: Identifier
     arguments: List[ClassicalArgument]
-    qubits: List[str]
+    qubits: List[Qubit]
     return_type: Optional[ClassicalType]
     body: str
 
@@ -800,7 +800,7 @@ class SubroutineDefinition(Statement):
     }
     """
 
-    name: str
+    name: Identifier
     arguments: List[Union[ClassicalArgument, QuantumArgument]]
     return_type: Optional[ClassicalType]
     body: List[Statement]

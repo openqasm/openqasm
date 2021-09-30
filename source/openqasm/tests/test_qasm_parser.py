@@ -773,7 +773,7 @@ def test_calibration_definition():
     assert program == Program(
         statements=[
             CalibrationDefinition(
-                name="rz",
+                name=Identifier("rz"),
                 arguments=[
                     ClassicalArgument(
                         type=SingleDesignatorType(
@@ -783,7 +783,7 @@ def test_calibration_definition():
                         name=Identifier("theta"),
                     )
                 ],
-                qubits=["$q"],
+                qubits=[Qubit("$q")],
                 return_type=BitType(None),
                 body="return shift_phase drive ( $q ) , - theta ;",
             )
@@ -804,7 +804,7 @@ def test_subroutine_definition():
     assert program == Program(
         statements=[
             SubroutineDefinition(
-                name="ymeasure",
+                name=Identifier("ymeasure"),
                 arguments=[QuantumArgument(qubit=Qubit("q"), designator=None)],
                 return_type=BitType(None),
                 body=[
