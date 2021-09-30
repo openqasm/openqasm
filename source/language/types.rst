@@ -282,13 +282,17 @@ can be accessed, using the following general syntax:
 
    int[32] firstElem = myArray[0]; // 0
    int[32] lastElem = myArray[4]; // 4
+   int[32] alsoLastElem = myArray[-1]; // 4
    float[32] firstLastElem = multiDim[0][1]; // 1.2
    float[32] lastLastElem = multiDim[2][1]; // 3.2
+   float[32] alsoLastLastElem = multiDim[-1][-1]; // 3.2
 
    myArray[4] = 10; // myArray == {0, 1, 2, 3, 10}
    multiDim[0][0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
+   multiDim[-1][1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
-Indexing of arrays is zero-based. For backwards compatability, the standard
+Indexing of arrays is zero-based, and negative indices are allowed.
+For backwards compatability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
 array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
 ``array[qubit, 5] q1;``). With the exception of arrays of qubits and bits
@@ -399,6 +403,8 @@ returned value is equal to the size of the index set.
    int[1] signIntBit = myInt[31]; // 0
    bit myBit = bit(myInt[0]); // cast int[1] to bit
    int[16] evenBits = myInt[0:2:31]; // 3
+   int[16] upperBits = myInt[-16:-1];
+   int[16] upperReversed = myInt[-1:-16];
 
 For the purpose of accessing bit-level portions of array element values, a
 special ``#`` signifier may optionally be inserted between the array accessor
