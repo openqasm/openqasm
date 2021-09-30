@@ -13,7 +13,6 @@ from openqasm.ast import (
     BinaryExpression,
     BinaryOperator,
     BitType,
-    BitTypeName,
     BooleanLiteral,
     Box,
     BranchingStatement,
@@ -57,7 +56,6 @@ from openqasm.ast import (
     QuantumPhase,
     Qubit,
     QubitDeclaration,
-    QubitDeclTypeName,
     QuantumGateDefinition,
     QuantumBarrier,
     QuantumMeasurement,
@@ -195,7 +193,7 @@ class OpenNodeVisitor(qasm3Visitor):
 
     @span
     def visitQuantumGateDefinition(self, ctx: qasm3Parser.QuantumGateDefinitionContext):
-        gate_name = ctx.quantumGateSignature().quantumGateName().getText()
+        gate_name = self.visit(ctx.quantumGateSignature().quantumGateName())
         gate_arg_lists = ctx.quantumGateSignature().identifierList()  # argument and qubit lists
         arguments = (
             [
@@ -211,6 +209,10 @@ class OpenNodeVisitor(qasm3Visitor):
         child_count = ctx.quantumBlock().getChildCount()
         body = [self.visit(ctx.quantumBlock().getChild(i)) for i in range(1, child_count - 1)]
         return QuantumGateDefinition(gate_name, arguments, qubits, body)
+
+    @span
+    def visitQuantumGateName(self, ctx: qasm3Parser.QuantumGateNameContext):
+        return Identifier(ctx.getText())
 
     @span
     def visitQuantumLoop(self, ctx: qasm3Parser.QuantumLoopContext):
@@ -242,7 +244,6 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitQuantumDeclaration(self, ctx: qasm3Parser.QuantumDeclarationContext):
         return QubitDeclaration(
-            add_span(QubitDeclTypeName[ctx.getChild(0).getText()], get_span(ctx.getChild(0))),
             add_span(
                 Qubit(
                     ctx.Identifier().getText(),
@@ -303,7 +304,7 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitQuantumGateCall(self, ctx: qasm3Parser.QuantumGateCallContext):
         modifiers = [self.visit(modifier) for modifier in ctx.quantumGateModifier()]
-        gate_name = ctx.quantumGateName().getText()
+        gate_name = self.visit(ctx.quantumGateName())
         expression_list = ctx.expressionList()
         if expression_list:
             arguments = [self.visit(expression) for expression in expression_list.expression()]
@@ -458,7 +459,7 @@ class OpenNodeVisitor(qasm3Visitor):
 
         return ClassicalDeclaration(
             add_span(
-                BitType(BitTypeName["bit"], desinator_expression),
+                BitType(desinator_expression),
                 get_span(ctx),
             ),
             add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
@@ -569,7 +570,7 @@ class OpenNodeVisitor(qasm3Visitor):
     def visitBuiltInCall(self, ctx: qasm3Parser.BuiltInCallContext):
         if ctx.builtInMath():
             return FunctionCall(
-                ctx.builtInMath().getText(),
+                self.visit(ctx.builtInMath()),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
         else:
@@ -577,6 +578,10 @@ class OpenNodeVisitor(qasm3Visitor):
                 self.visit(ctx.castOperator().classicalType()),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
+
+    @span
+    def visitBuiltInMath(self, ctx: qasm3Parser.BuiltInMathContext):
+        return Identifier(ctx.getText())
 
     @span
     def visitExternDeclaration(self, ctx: qasm3Parser.ExternDeclarationContext):
@@ -591,8 +596,9 @@ class OpenNodeVisitor(qasm3Visitor):
         return_type = (
             self.visit(ctx.returnSignature().classicalType()) if ctx.returnSignature() else None
         )
+        name = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
         return ExternDeclaration(
-            name=ctx.Identifier().getText(),
+            name=name,
             classical_types=classical_types,
             return_type=return_type,
         )
@@ -604,7 +610,8 @@ class OpenNodeVisitor(qasm3Visitor):
             if ctx.expressionList()
             else []
         )
-        return FunctionCall(ctx.Identifier().getText(), expressions)
+        name = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
+        return FunctionCall(name, expressions)
 
     @span
     def visitExpression(self, ctx: qasm3Parser.ExpressionContext):
@@ -717,13 +724,13 @@ class OpenNodeVisitor(qasm3Visitor):
         else:
             classcal_type = add_span(
                 BitType(
-                    BitTypeName[ctx.getChild(0).getText()],
                     self.visit(ctx.designator()) if ctx.designator() else None,
                 ),
                 get_span(ctx.getChild(0)),
             )
 
-        return ClassicalArgument(classcal_type, ctx.Identifier().getText())
+        identifier = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
+        return ClassicalArgument(classcal_type, identifier)
 
     def visitExpressionList(self, ctx: qasm3Parser.ExpressionListContext):
         return [self.visit(expression) for expression in ctx.expression()]
@@ -741,7 +748,6 @@ class OpenNodeVisitor(qasm3Visitor):
             return NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()])
         elif ctx.bitType():
             return BitType(
-                BitTypeName[ctx.getChild(0).getText()],
                 self.visit(ctx.designator()) if ctx.designator() else None,
             )
         elif ctx.numericType():

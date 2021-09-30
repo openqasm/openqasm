@@ -77,11 +77,6 @@ class ExpressionStatement(Statement):
     expression: Expression
 
 
-class QubitDeclTypeName(Enum):
-    qubit = auto()  # OpenQASM 3 style.
-    qreg = auto()  # OpenQASM 2 style.
-
-
 @dataclass
 class QubitDeclaration(Statement):
     """
@@ -97,7 +92,6 @@ class QubitDeclaration(Statement):
 
     """
 
-    decl_type_name: QubitDeclTypeName
     qubit: Qubit
     designator: Optional[Expression]
 
@@ -115,7 +109,7 @@ class QuantumGateDefinition(Statement):
 
     """
 
-    name: str
+    name: Identifier
     arguments: List[ClassicalArgument]
     qubits: List[Identifier]
     body: List[QuantumStatement]
@@ -157,13 +151,31 @@ class ExternDeclaration(Statement):
 
     """
 
-    name: str
+    name: Identifier
     classical_types: List[ClassicalType]
     return_type: Optional[ClassicalType]
 
 
+class Expression(OpenNode):
+    """An expression: anything that returns a value"""
+
+
 @dataclass
-class Qubit(OpenNode):
+class Identifier(Expression):
+    """
+    An identifier
+
+    Example::
+
+        q1
+
+    """
+
+    name: str
+
+
+@dataclass
+class Qubit(Identifier):
     """
     A qubit
 
@@ -174,12 +186,6 @@ class Qubit(OpenNode):
         q  // <- Qubit
 
     """
-
-    name: str
-
-
-class Expression(OpenNode):
-    """An expression: anything that returns a value"""
 
 
 UnaryOperator = Enum("UnaryOperator", "~ ! -")
@@ -237,20 +243,6 @@ class Constant(Expression):
     """
 
     name: ConstantName
-
-
-@dataclass
-class Identifier(Expression):
-    """
-    An identifier
-
-    Example::
-
-        q1
-
-    """
-
-    name: str
 
 
 @dataclass
@@ -347,7 +339,7 @@ class FunctionCall(Expression):
 
     """
 
-    name: str
+    name: Identifier
     arguments: List[Expression]
 
 
@@ -414,7 +406,7 @@ class QuantumGate(QuantumInstruction):
     """
 
     modifiers: List[QuantumGateModifier]
-    name: str
+    name: Identifier
     arguments: List[Expression]
     qubits: List[Union[IndexIdentifier, Identifier]]
 
@@ -526,7 +518,7 @@ class ClassicalArgument(OpenNode):
     """
 
     type: ClassicalType
-    name: str
+    name: Identifier
 
 
 @dataclass
@@ -622,17 +614,7 @@ class BitType(ClassicalType):
         creg[8]
     """
 
-    type: BitTypeName
     designator: Optional[Expression]
-
-
-class BitTypeName(Enum):
-    """
-    Bit types
-    """
-
-    bit = auto()
-    creg = auto()
 
 
 @dataclass
@@ -671,7 +653,7 @@ class ComplexType(ClassicalType):
         complex[float[32]]
     """
 
-    base_type: Union[SingleDesignatorType, DoubleDesignatorType]
+    base_type: SingleDesignatorType
 
 
 class IndexIdentifier(OpenNode):
