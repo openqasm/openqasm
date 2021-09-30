@@ -127,24 +127,7 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
 
-        version = {"major": 3, "minor": 0}  # Default is version 3.0
-
-        if ctx.header() and ctx.header().version():
-            if ctx.header().version().Integer():
-                version_int = ctx.header().version().Integer()
-                version["major"] = int(version_int.getText())
-            elif ctx.header().version().RealNumber():
-                version_real = ctx.header().version().RealNumber()
-                for i, key in enumerate(version):
-                    version[key] = int(version_real.getText().split(".")[i])
-
-            if version["major"] not in (2, 3):
-                warnings.warn(
-                    "\n OpenNode supports OpenQASM 2/3 only.\
-                               Input file is of version {}.{}.".format(
-                        *version.values()
-                    )
-                )
+        version = ctx.header().version().getChild(1).getText() if ctx.header() and ctx.header().version() else ""
 
         includes = (
             [self.visitInclude(include) for include in ctx.header().include()]

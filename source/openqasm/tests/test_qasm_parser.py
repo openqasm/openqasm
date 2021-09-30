@@ -1076,7 +1076,7 @@ def test_header():
     output angle[16] variable2;
     """.strip()
     program = parse(p)
-    expected = {"major": 3, "minor": 1}
+    expected = "3.1"
     assert program.version == expected
     assert program.includes == [Include("qelib1.inc")]
     assert program.io_variables == [

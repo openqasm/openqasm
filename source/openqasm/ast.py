@@ -37,7 +37,7 @@ class Program(OpenNode):
     """
 
     statements: List[Statement]
-    version: dict[str, int] = field(init=False, default_factory=dict, compare=False)
+    version: str = field(init=False, default="")
     includes: List[Include] = field(init=False, default_factory=list)
     io_variables: List[IODeclaration] = field(init=False, default_factory=list)
 
