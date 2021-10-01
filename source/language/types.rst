@@ -295,9 +295,9 @@ Indexing of arrays is n-based *i.e.*, negative indices are allowed.
 For backwards compatability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
 array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
-``array[qubit, 5] q1;``). With the exception of arrays of qubits and bits
-(which are aliases), passing arrays as arguments to subroutines or externs
-produces copies inside the subroutine body, not references or pointers.
+``array[qubit, 5] q1;``). Passing arrays as arguments to subroutines or externs
+produces copies inside the subroutine body, not references or pointers,
+with the exception of arrays of qubits, which are passed as aliases/references.
 
 Types related to timing
 -----------------------
