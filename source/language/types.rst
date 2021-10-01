@@ -451,6 +451,7 @@ arrays *can* be concatenated with themselves.
    // slicing with assignment
    second[1:2] = first[0:1]; // second == {2, 0, 1}
 
+   array[int[8], 4] third = {5, 6, 7, 8};
    // combined slicing and concatenation
-   selfConcat[0:3] = first[0:1] || second[1:2];
-   // selfConcat == {0, 1, 3, 4}
+   selfConcat[0:3] = first[0:1] || third[1:2];
+   // selfConcat == {0, 1, 6, 7}
