@@ -1,5 +1,6 @@
 from openqasm.ast import (
     AliasStatement,
+    AngleType,
     AssignmentOperator,
     BinaryExpression,
     BinaryOperator,
@@ -22,6 +23,7 @@ from openqasm.ast import (
     DurationOf,
     EndStatement,
     ExpressionStatement,
+    FloatType,
     ForInLoop,
     FunctionCall,
     GateModifierName,
@@ -29,6 +31,7 @@ from openqasm.ast import (
     Include,
     IndexExpression,
     IntegerLiteral,
+    IntType,
     IODeclaration,
     IOIdentifierName,
     NoDesignatorType,
@@ -47,14 +50,13 @@ from openqasm.ast import (
     RealLiteral,
     ReturnStatement,
     Selection,
-    SingleDesignatorType,
-    SingleDesignatorTypeName,
     Slice,
     StringLiteral,
     SubroutineDefinition,
     Subscript,
     TimeUnit,
     DurationLiteral,
+    UintType,
     UnaryExpression,
     UnaryOperator,
 )
@@ -131,10 +133,7 @@ def test_complex_declaration():
         statements=[
             ClassicalDeclaration(
                 ComplexType(
-                    base_type=SingleDesignatorType(
-                        SingleDesignatorTypeName["int"],
-                        IntegerLiteral(24),
-                    )
+                    base_type=IntType(IntegerLiteral(24))
                 ),
                 Identifier("iq"),
                 None,
@@ -424,10 +423,7 @@ def test_primary_expression():
             ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
             ExpressionStatement(
                 expression=Cast(
-                    SingleDesignatorType(
-                        type=SingleDesignatorTypeName["int"],
-                        designator=IntegerLiteral(1),
-                    ),
+                    IntType(designator=IntegerLiteral(1)),
                     [Identifier("x")],
                 )
             ),
@@ -778,10 +774,7 @@ def test_calibration_definition():
                 name=Identifier("rz"),
                 arguments=[
                     ClassicalArgument(
-                        type=SingleDesignatorType(
-                            type=SingleDesignatorTypeName["angle"],
-                            designator=IntegerLiteral(20),
-                        ),
+                        type=AngleType(designator=IntegerLiteral(20)),
                         name=Identifier("theta"),
                     )
                 ],
@@ -1084,19 +1077,13 @@ def test_header():
     assert program.io_variables == [
         IODeclaration(
             io_identifier=IOIdentifierName["input"],
-            type=SingleDesignatorType(
-                type=SingleDesignatorTypeName["angle"],
-                designator=IntegerLiteral(value=16),
-            ),
+            type=AngleType(designator=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable1"),
             init_expression=None,
         ),
         IODeclaration(
             io_identifier=IOIdentifierName["output"],
-            type=SingleDesignatorType(
-                type=SingleDesignatorTypeName["angle"],
-                designator=IntegerLiteral(value=16),
-            ),
+            type=AngleType(designator=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable2"),
             init_expression=None,
         ),

@@ -1,0 +1,345 @@
+// Lark grammar for OpenQASM3.0
+
+// Parser grammar
+
+program: header (global_statement | statement)*
+
+header: [version] include* io*
+
+version: "OPENQASM" (INTEGER | REAL) ";"
+
+include: "include" STRINGLITERAL ";"
+
+io_identifier: (INPUT | OUTPUT)
+
+io: io_identifier classical_type IDENTIFIER ";"
+
+global_statement: subroutine_definition
+                | extern_declaration
+                | quantum_gate_definition
+                | calibration
+                | quantum_declaration_statement
+                | pragma
+
+statement: expression_statement
+         | assignment_statement
+         | classical_declaration_statement
+         | branching_statement
+         | loop_statement
+         | end_statement
+         | alias_statement
+         | quantum_statement
+
+quantum_declaration_statement: quantumdeclaration ";"
+
+classical_declaration_statement:
+        (classical_declaration | constant_declaration) ";"
+
+classical_assignment:
+        IDENTIFIER designator? assignment_operator expression
+
+assignment_statement:
+        (classical_assignment | quantum_measurement_assignment) ";"
+
+return_signature: ARROW classical_type
+
+// Types and casting
+
+designator: "[" expression "]"
+
+identifier_list: IDENTIFIER ("," IDENTIFIER)*
+
+// Quantum types
+quantum_declaration: "qreg" IDENTIFIER designator?
+                   | "qubit" designator? IDENTIFIER
+
+quantum_argument: "qreg" IDENTIFIER designator?
+                   | "qubit" designator? IDENTIFIER
+
+quantum_argument_list: quantum_argument ("," quantum_argument)*
+
+// Classical types
+
+bit_type: "bit" | "creg"
+
+single_designator_type: "int"
+                      | "uint"
+                      | "float"
+                      | "angle"
+
+no_designator_type: "bool"
+                  | timing_type
+
+classical_type: single_designator_type designator
+              | no_designator_type
+              | bit_type designator?
+              | "complex" "[" numeric_type "]"
+
+// Numeric types
+numeric_type: single_designator_type designator
+
+constant_declaration: "const" IDENTIFIER equals_expression
+
+// if multiple variables declared at once, either none are assigned or all are assigned
+// prevents ambiguity with qubit arguments in subroutine calls
+
+single_designator_declaration: single_designator_type designator IDENTIFIER equals_expression?
+
+no_designator_declaration: no_designator_type IDENTIFIER equals_expression?
+
+bitdeclaration: ("creg" indexidentifier | "bit" indexidentifier) equals_expression?
+
+complex_declaration: "complex" "[" numeric_type "]" IDENTIFIER equals_expression?
+
+classical_declaration: single_designator_declaration
+                     | no_designator_declaration
+                     | bit_declaration
+                     | complex_declaration
+
+classical_type_list: classical_type ("," classical_type)*
+
+classical_argument: (single_designator_type designator | no_designator_type) IDENTIFIER
+                  | "creg" IDENTIFIER designator?
+                  | "bit" designator? IDENTIFIER
+                  | "complex" "[" numeric_type "]" IDENTIFIER
+
+classical_argument_list: classical_argument ("," classical_argument)*
+
+any_type_argument: classical_argument | quantum_argument
+
+any_type_argument_list: any_type_argument ("," any_type_argument)
+
+// Aliasing
+
+alias_statement: "let" IDENTIFIER "->" index_identifier ";"
+
+// Register concatenation and slicing
+
+index_identifier: IDENTIFIER range_definition
+                | IDENTIFIER ("[" expression_list "]")?
+                | index_identifier "||" index_identifier
+
+index_identifier_list: index_identifier ("," index_identifier)*
+
+range_definition: "[" expression? ":" expression? (":" expression)? "]"
+
+// Gates and built-in quantum instructions
+
+quantum_gate_definition: "gate" quantum_gate_signature quantum_block
+
+quantum_gate_signature: quantum_gate_name ("[" identifier_list? "]")? identifier_list
+
+quantum_gate_name: "U"
+                 | "CX"
+                 | IDENTIFIER
+
+quantum_block: "{" (quantum_statement | quantum_loop)* "}"
+
+// Loops containing only quantum statements allowed in gates.
+quantum_loop: loop_signature quantum_loop_block
+
+quantum_loop_block: quantum_statement | "{" quantum_statement* "}"
+
+quantum_statement: quantum_instruction ";"
+                 | timing_statement
+
+quantum_instruction: quantum_gate_call
+                   | quantum_phase
+                   | quantum_measurement
+                   | quantum_reset
+                   | quantum_barrier
+
+quantum_phase: quantum_gate_modifier* "gphase" "(" expression ")" index_identifier_list?
+
+quantum_reset: "reset" index_identifier_list
+
+quantum_measurement: "measure" index_identifier_list
+
+quantum_measurement_assignment: quantum_measurement (ARROW index_identifier_list)?
+                              | index_identifier_list "->" quantum_measurement
+
+quantum_barrier: "barrier" index_identifier_list?
+
+quantum_gate_modifier: ("inv" | pow_modifier | ctrl_modifier) "@"
+
+pow_modifier: "pow" "(" expression ")"
+
+ctrl_modifier: ("ctrl" | "negctrl") ("(" expression ")")?
+
+quantum_gate_call: quantum_gate_modifier* quantum_gate_name ("(" expression_list ")")? index_identifier_list
+
+// Classical instructions
+
+unary_operator: "~" | "!" | "-"
+
+comparison_operator: ">" | "<" | ">=" | "<="
+
+equality_operator: "==" | "!="
+
+logical_operator: "&&" | "||"
+
+expression_statement: expression ";"
+
+expression: expression_terminator
+          | unary_expression
+          | logical_and_expression
+          | expression "||" logical_and_expression
+
+// Expression hierarchy for non-terminators. Adapted from ANTLR4 C
+// grammar: https://github.com/antlr/grammars-v4/blob/master/c/C.g4
+// Order (first to last evaluation):
+// Terminator (including Parens),
+// Unary Op,
+// Multiplicative
+// Additive
+// Bit Shift
+// Comparison
+// Equality
+// Bit And
+// Exlusive Or (xOr)
+// Bit Or
+// Logical And
+// Logical Or
+
+logical_and_expression: bit_or_expression
+                      | logical_and_expression "&&" bit_or_expression
+
+bit_or_expression: xor_expression
+                 | bit_or_expression "|" xor_expression
+
+xor_expression: bit_and_expression
+              | xor_expression "^" bit_and_expression
+
+bit_and_expression: equality_expression
+                  | bit_and_expression "&" equality_expression
+
+equality_expression: comparison_expression
+                   | equality_expression equality_operator comparison_expression
+
+comparison_expression: bit_shift_expression
+                     | comparison_expression comparison_operator bit_shift_expression
+
+bit_shift_expression: additive_expression
+                    | bit_shift_expression ("<<" | ">>") additive_expression
+
+additive_expression: multiplicative_expression
+                   | additive_expression (PLUS | MINUS) multiplicative_expression
+
+multiplicative_expression: power_expression
+                         | unary_expression
+                         | multiplicative_expression (MUL | DIV | MOD) (power_expression | unary_expression)?
+
+unary_expression: unary_operator power_expression
+
+power_expression: expression_terminator | expression_terminator "**" power_expression
+
+expression_terminator: CONSTANT
+                     | INTEGER
+                     | REALNUMBER
+                     | IMAGNUMBER
+                     | boolean_literal
+                     | IDENTIFIER
+                     | STRINGLITERAL
+                     | builtin_call
+                     | extern_or_subroutine_call
+                     | timing_identifier
+                     | "(" expression ")"
+                     | expression_terminator "[" expression "]"
+
+boolean_literal: "true" | "false"
+
+builtin_call: (builtin_math | cast_operator) "(" expression_list ")"
+
+builtin_math: "sin" | "cos" | "tan" | "exp" | "ln" | "sqrt" | "rotr" | "popcount"
+
+cast_operator: classical_type
+
+expression_list: expression ("," expression)*
+
+equals_expression: "->" expression
+
+assignment_operator: "->" | "+=" | "-=" | "*=" | "/=" | "&=" | "|=" | "~=" | "^=" | "<<=" | ">>=" | "%=" | "**=="
+
+set_declaration: "{" expression_list "}"
+               | range_definition
+               | IDENTIFIER
+
+program_block: statement | control_directive
+             | "{" (statement | control_directive) * "}"
+
+branching_statement: "if" "(" expression ")" program_block ("else" program_block )?
+
+loop_signature: "for" IDENTIFIER "in" set_declaration
+              | "while" "(" expression ")"
+
+loop_statement: loop_signature program_block
+
+end_statement: "end" ";"
+
+return_statement: "return" (expression | quantum_measurement)? ";"
+
+control_directive: ("break" | "continue") ";"
+                 | end_statement
+                 | return_statement
+
+extern_declaration: "extern" IDENTIFIER "(" classical_type_list? ")" return_signature? ";"
+
+// if have function call w out args, is ambiguous; may get matched as identifier
+extern_or_subroutine_call: IDENTIFIER "(" expression_list? ")"
+
+// Subroutines
+subroutine_definition: "def" IDENTIFIER "(" any_type_argument_list? ")" return_signature? subroutine_block
+
+subroutine_block: "(" statement* return_statement? ")"
+
+// Directives
+
+pragma: "#pragma" "(" statement* ")" // match any valid openqasm statement
+
+// Circuit timing
+timing_type: "duration" | "stretch"
+
+timing_box: "box" designator? quantum_block
+
+timing_identifier: TIMINGLITERAL
+                 | "durationof" "(" (IDENTIFIER | quantum_block ) ")"
+
+timing_instruction_name: "delay" | "rotary"
+
+timing_instruction: timing_instruction_name ("(" expression_list? ")")? designator index_identifier_list
+
+timing_statement: timing_instruction ";"
+                | timing_box
+
+// Pulse-level descriptions of gates and measurement
+// TODO: Update when pulse grammar is formalized
+
+calibration: calibration_grammar_declaraion
+           | calibration_definition
+
+calibration_grammar_declaration: "defcalgrammar" calibration_grammar ";"
+
+calibration_definition: "defcal" IDENTIFIER ("(" calibration_argument_list? ")")? identifier_list
+                        return_signature? "(" /^(?!.*\))?/ ")"
+
+calibration_grammar: "\"openpulse\"" | STRINGLITERAL // currently: pulse grammar string can be anything
+
+calibration_argument_list: classical_argument_list | expression_list
+
+// Lexer grammars
+
+%import common.SIGNED_INT -> INTEGER
+%import common.SIGNED_NUMBER -> REALNUMBER
+%import common.CNAME -> IDENTIFIER
+%import common.ESCAPED_STRING -> STRINGLITERAL
+%import common.WS
+
+CONSTANT: ("pi" | "π" | "tau" | "𝜏" | "euler" | "ℇ" )
+INPUT: "input"
+OUTPUT: "output"
+IMAG: "im"
+IMAGNUMBER: (INTEGER | REALNUMBER) IMAG
+NEWLINE: [\r\n]+
+
+%ignore NEWLINE
+%ignore WS

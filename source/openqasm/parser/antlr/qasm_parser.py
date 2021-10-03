@@ -9,6 +9,7 @@ from .qasm3Parser import qasm3Parser
 from .qasm3Visitor import qasm3Visitor
 from openqasm.ast import (
     AliasStatement,
+    AngleType,
     AssignmentOperator,
     BinaryExpression,
     BinaryOperator,
@@ -36,6 +37,7 @@ from openqasm.ast import (
     EndStatement,
     ExpressionStatement,
     ExternDeclaration,
+    FloatType,
     ForInLoop,
     FunctionCall,
     GateModifierName,
@@ -43,6 +45,7 @@ from openqasm.ast import (
     Include,
     IndexExpression,
     IntegerLiteral,
+    IntType,
     IODeclaration,
     IOIdentifierName,
     NoDesignatorType,
@@ -64,8 +67,6 @@ from openqasm.ast import (
     RealLiteral,
     ReturnStatement,
     Selection,
-    SingleDesignatorType,
-    SingleDesignatorTypeName,
     Slice,
     Span,
     SubroutineDefinition,
@@ -73,6 +74,7 @@ from openqasm.ast import (
     StringLiteral,
     TimeUnit,
     DurationLiteral,
+    UintType,
     UnaryExpression,
     UnaryOperator,
     WhileLoop,
@@ -425,12 +427,23 @@ class OpenNodeVisitor(qasm3Visitor):
         equals_expression = ctx.equalsExpression()
         init_expression = self.visit(equals_expression.expression()) if equals_expression else None
 
+        type_name = ctx.singleDesignatorType().getText()
+        _TYPE_NODE_INIT = {
+                            "int": IntType,
+                            "uint": UintType,
+                            "float": FloatType,
+                            "angle": AngleType
+                        }
+                
+        if type_name in _TYPE_NODE_INIT:
+            type_designator = self.visit(ctx.designator())
+            type_node = _TYPE_NODE_INIT[type_name](type_designator)
+        else:
+            # This is for capturing potential parser errors.
+            raise ValueError(f"Type name {type_name} not found.")
+                    
         return ClassicalDeclaration(
-            add_span(
-                SingleDesignatorType(
-                    SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
-                    self.visit(ctx.designator()),
-                ),
+            add_span(type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             ),
             add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
@@ -709,11 +722,19 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitClassicalArgument(self, ctx: qasm3Parser.ClassicalArgumentContext):
         if ctx.singleDesignatorType():
-            classcal_type = add_span(
-                SingleDesignatorType(
-                    SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
-                    self.visit(ctx.designator()),
-                ),
+            type_name = ctx.singleDesignatorType().getText()
+            _TYPE_NODE_INIT = {
+                                "int": IntType,
+                                "uint": UintType,
+                                "float": FloatType,
+                                "angle": AngleType
+                            }
+                    
+            if type_name in _TYPE_NODE_INIT:
+                type_designator = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+
+            classcal_type = add_span(type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
         elif ctx.noDesignatorType():
@@ -740,10 +761,23 @@ class OpenNodeVisitor(qasm3Visitor):
         # TODO: due to the way classical argument is declared, there some duplication
         # Consider refactor classical argument grammar
         if ctx.singleDesignatorType():
-            return SingleDesignatorType(
-                SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
-                self.visit(ctx.designator()),
+            type_name = ctx.singleDesignatorType().getText()
+            _TYPE_NODE_INIT = {
+                                "int": IntType,
+                                "uint": UintType,
+                                "float": FloatType,
+                                "angle": AngleType
+                            }
+                    
+            if type_name in _TYPE_NODE_INIT:
+                type_designator = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+
+            return add_span(type_node,
+                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
+
+
         elif ctx.noDesignatorType():
             return NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()])
         elif ctx.bitType():
@@ -758,9 +792,20 @@ class OpenNodeVisitor(qasm3Visitor):
         # TODO: This method has significant duplication with visitClassicalType
         # Need to refactor the syntax.
         if ctx.singleDesignatorType():
-            return SingleDesignatorType(
-                SingleDesignatorTypeName[ctx.singleDesignatorType().getText()],
-                self.visit(ctx.designator()),
+            type_name = ctx.singleDesignatorType().getText()
+            _TYPE_NODE_INIT = {
+                                "int": IntType,
+                                "uint": UintType,
+                                "float": FloatType,
+                                "angle": AngleType
+                            }
+                    
+            if type_name in _TYPE_NODE_INIT:
+                type_designator = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+
+            return add_span(type_node,
+                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
 
     @span

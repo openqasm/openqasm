@@ -581,33 +581,40 @@ class ClassicalType(OpenNode):
     Base class for classical type
     """
 
-
 @dataclass
-class SingleDesignatorType(ClassicalType):
+class IntType(ClassicalType):
     """
-    Type with one designator, e.g, int, uint, float, angle, bit array
-
-    Example::
-
-        int[32]
-        uint[32]
-        float[32]
-        angle[32]
+    Class for signed int type.
     """
-
-    type: SingleDesignatorTypeName
+    
     designator: Optional[Expression]
 
 
-class SingleDesignatorTypeName(Enum):
+@dataclass
+class UintType(ClassicalType):
     """
-    Single designator types
+    Class for unsigned int type.
     """
 
-    int = auto()
-    uint = auto()
-    float = auto()
-    angle = auto()
+    designator: Optional[Expression]
+
+
+@dataclass
+class FloatType(ClassicalType):
+    """
+    Class for float type.
+    """
+
+    designator: Optional[Expression]
+
+
+@dataclass
+class AngleType(ClassicalType):
+    """
+    Class for angle type.
+    """
+
+    designator: Optional[Expression]
 
 
 @dataclass
@@ -660,7 +667,7 @@ class ComplexType(ClassicalType):
         complex[float[32]]
     """
 
-    base_type: SingleDesignatorType
+    base_type: Union[IntType, UintType, FloatType, AngleType]
 
 
 class IndexIdentifier(OpenNode):
