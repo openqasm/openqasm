@@ -328,7 +328,7 @@ interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
 
-An index set can be specified by a single unsigned integer, a
+An index set can be specified by a single integer (signed or unsigned), a
 comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
 range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
