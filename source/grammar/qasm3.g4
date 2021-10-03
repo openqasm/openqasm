@@ -409,12 +409,12 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin'
-    | 'asin'
+    : 'arcsin'
+    | 'sin'
+    | 'arccos'
     | 'cos'
-    | 'acos'
+    | 'arctan'
     | 'tan'
-    | 'atan'
     | 'exp'
     | 'ln'
     | 'sqrt'
