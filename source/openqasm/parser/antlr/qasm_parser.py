@@ -15,6 +15,7 @@ from openqasm.ast import (
     BinaryOperator,
     BitType,
     BooleanLiteral,
+    BoolType,
     Box,
     BranchingStatement,
     BreakStatement,
@@ -34,6 +35,7 @@ from openqasm.ast import (
     ContinueStatement,
     DelayInstruction,
     DurationOf,
+    DurationType,
     EndStatement,
     ExpressionStatement,
     ExternDeclaration,
@@ -48,8 +50,6 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOIdentifierName,
-    NoDesignatorType,
-    NoDesignatorTypeName,
     OpenNode,
     Program,
     QuantumArgument,
@@ -71,6 +71,7 @@ from openqasm.ast import (
     Span,
     SubroutineDefinition,
     Subscript,
+    StretchType,
     StringLiteral,
     TimeUnit,
     DurationLiteral,
@@ -418,9 +419,12 @@ class OpenNodeVisitor(qasm3Visitor):
     @span
     def visitNoDesignatorType(self, ctx: qasm3Parser.NoDesignatorTypeContext):
         if ctx.getText() == "bool":
-            return NoDesignatorType(NoDesignatorTypeName["bool"])
+            return add_span(BoolType(), get_span(ctx))
+        elif ctx.timingType().getText() == "duration":
+            return add_span(DurationType(), get_span(ctx))
         else:
-            return NoDesignatorType(NoDesignatorTypeName[ctx.timingType().getText()])
+            # stretch type
+            return add_span(StretchType(), get_span(ctx))
 
     @span
     def visitSingleDesignatorDeclaration(self, ctx: qasm3Parser.SingleDesignatorDeclarationContext):
@@ -439,7 +443,7 @@ class OpenNodeVisitor(qasm3Visitor):
             type_designator = self.visit(ctx.designator())
             type_node = _TYPE_NODE_INIT[type_name](type_designator)
         else:
-            # This is for capturing potential parser errors.
+            # To capture potential parser errors.
             raise ValueError(f"Type name {type_name} not found.")
                     
         return ClassicalDeclaration(
@@ -729,19 +733,20 @@ class OpenNodeVisitor(qasm3Visitor):
                                 "float": FloatType,
                                 "angle": AngleType
                             }
-                    
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
+            else:
+                # To capture potential parser error.
+                raise ValueError("Type name {type_name} not found.")
 
             classcal_type = add_span(type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
+
         elif ctx.noDesignatorType():
-            classcal_type = add_span(
-                NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()]),
-                get_span(ctx.noDesignatorType()),
-            )
+            classcal_type = self.visit(ctx.noDesignatorType())
+
         else:
             classcal_type = add_span(
                 BitType(
@@ -768,10 +773,12 @@ class OpenNodeVisitor(qasm3Visitor):
                                 "float": FloatType,
                                 "angle": AngleType
                             }
-                    
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
+            else:
+                # To capture potential parser errors.
+                raise ValueError(f"Type name {type_name} not found.")
 
             return add_span(type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
@@ -779,7 +786,7 @@ class OpenNodeVisitor(qasm3Visitor):
 
 
         elif ctx.noDesignatorType():
-            return NoDesignatorType(NoDesignatorTypeName[ctx.noDesignatorType().getText()])
+            return self.visit(ctx.noDesignatorType())
         elif ctx.bitType():
             return BitType(
                 self.visit(ctx.designator()) if ctx.designator() else None,
@@ -803,6 +810,9 @@ class OpenNodeVisitor(qasm3Visitor):
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
+            else:
+                # To capture potential parser errors.
+                raise ValueError(f"Type name {type_name} not found.")
 
             return add_span(type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),

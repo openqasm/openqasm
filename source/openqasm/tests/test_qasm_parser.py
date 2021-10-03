@@ -6,6 +6,7 @@ from openqasm.ast import (
     BinaryOperator,
     BitType,
     BooleanLiteral,
+    BoolType,
     Box,
     BranchingStatement,
     CalibrationDefinition,
@@ -21,6 +22,7 @@ from openqasm.ast import (
     ContinueStatement,
     DelayInstruction,
     DurationOf,
+    DurationType,
     EndStatement,
     ExpressionStatement,
     FloatType,
@@ -34,8 +36,6 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOIdentifierName,
-    NoDesignatorType,
-    NoDesignatorTypeName,
     OpenNode,
     Program,
     QuantumArgument,
@@ -51,6 +51,7 @@ from openqasm.ast import (
     ReturnStatement,
     Selection,
     Slice,
+    StretchType,
     StringLiteral,
     SubroutineDefinition,
     Subscript,
@@ -429,7 +430,7 @@ def test_primary_expression():
             ),
             ExpressionStatement(
                 expression=Cast(
-                    NoDesignatorType(type=NoDesignatorTypeName["bool"]),
+                    BoolType(),
                     [Identifier("x")],
                 )
             ),
@@ -927,12 +928,12 @@ def test_no_designator_type():
     assert program == Program(
         statements=[
             ClassicalDeclaration(
-                NoDesignatorType(NoDesignatorTypeName["duration"]),
+                DurationType(),
                 Identifier("a"),
                 None,
             ),
             ClassicalDeclaration(
-                NoDesignatorType(NoDesignatorTypeName["stretch"]), Identifier("b"), None
+                StretchType(), Identifier("b"), None
             ),
         ]
     )

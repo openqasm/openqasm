@@ -631,29 +631,21 @@ class BitType(ClassicalType):
     designator: Optional[Expression]
 
 
-@dataclass
-class NoDesignatorType(ClassicalType):
+class BoolType(ClassicalType):
     """
-    Type with no designators.
-
-    Example::
-
-        bool
-        duration
-        stretch
+    Class for Boolean type.
     """
 
-    type: NoDesignatorTypeName
 
-
-class NoDesignatorTypeName(Enum):
+class DurationType(ClassicalType):
     """
-    No designator type names
+    Class for duration type.
     """
 
-    bool = auto()
-    duration = auto()
-    stretch = auto()
+class StretchType(ClassicalType):
+    """
+    Class for stretch type.
+    """
 
 
 @dataclass
