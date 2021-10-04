@@ -49,7 +49,7 @@ from openqasm.ast import (
     IntegerLiteral,
     IntType,
     IODeclaration,
-    IOIdentifierName,
+    IOKeyword,
     OpenNode,
     Program,
     QuantumArgument,
@@ -158,7 +158,7 @@ class OpenNodeVisitor(qasm3Visitor):
                 ctype = self.visit(io.classicalType())
                 io_variables.append(
                     IODeclaration(
-                        io_identifier=IOIdentifierName[io.getChild(0).getText()],
+                        io_identifier=IOKeyword[io.getChild(0).getText()],
                         type=ctype,
                         identifier=identifier,
                         init_expression=None,
@@ -555,10 +555,14 @@ class OpenNodeVisitor(qasm3Visitor):
         if ctx.TimingLiteral():
             # parse timing literal
             s = ctx.TimingLiteral().getText()
-            for i, c in enumerate(s):
-                if not c.isdigit() and c != ".":
-                    break
-            return DurationLiteral(float(s[:i]), TimeUnit[s[i:]])
+            if s[-2:] in ["dt", "ns", "us", "ms"]:
+                duration_literal = DurationLiteral(float(s[:-2]), TimeUnit[s[-2:]])
+            elif s[-2:] == "µs":
+                duration_literal = DurationLiteral(float(s[:-2]), TimeUnit["us"])
+            else:
+                # Must be "s"
+                duration_literal = DurationLiteral(float(s[:-1]), TimeUnit["s"])
+            return duration_literal
         elif ctx.Identifier():
             return DurationOf(
                 target=add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))

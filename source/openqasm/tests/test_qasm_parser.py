@@ -35,7 +35,7 @@ from openqasm.ast import (
     IntegerLiteral,
     IntType,
     IODeclaration,
-    IOIdentifierName,
+    IOKeyword,
     OpenNode,
     Program,
     QuantumArgument,
@@ -400,6 +400,8 @@ def test_primary_expression():
     sin(0.0);
     foo(x);
     1.1ns;
+    0.3µs;
+    1E-4us;
     (x);
     q[1];
     int[1](x);
@@ -420,6 +422,8 @@ def test_primary_expression():
             ExpressionStatement(expression=FunctionCall(Identifier("sin"), [RealLiteral(0.0)])),
             ExpressionStatement(expression=FunctionCall(Identifier("foo"), [Identifier("x")])),
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
+            ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),
+            ExpressionStatement(expression=DurationLiteral(1e-4, TimeUnit.us)),
             ExpressionStatement(expression=Identifier("x")),
             ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
             ExpressionStatement(
@@ -1077,14 +1081,20 @@ def test_header():
     assert program.includes == [Include("qelib1.inc")]
     assert program.io_variables == [
         IODeclaration(
-            io_identifier=IOIdentifierName["input"],
-            type=AngleType(designator=IntegerLiteral(value=16)),
+            io_identifier=IOKeyword["input"],
+            type=SingleDesignatorType(
+                type=SingleDesignatorTypeName["angle"],
+                designator=IntegerLiteral(value=16),
+            ),
             identifier=Identifier(name="variable1"),
             init_expression=None,
         ),
         IODeclaration(
-            io_identifier=IOIdentifierName["output"],
-            type=AngleType(designator=IntegerLiteral(value=16)),
+            io_identifier=IOKeyword["output"],
+            type=SingleDesignatorType(
+                type=SingleDesignatorTypeName["angle"],
+                designator=IntegerLiteral(value=16),
+            ),
             identifier=Identifier(name="variable2"),
             init_expression=None,
         ),
