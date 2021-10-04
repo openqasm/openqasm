@@ -543,7 +543,7 @@ class ClassicalDeclaration(Statement):
     init_expression: Optional[Expression]
 
 
-class IOIdentifierName(Enum):
+class IOKeyword(Enum):
     output = auto()
     input = auto()
 
@@ -559,7 +559,7 @@ class IODeclaration(ClassicalDeclaration):
         output bit select;
     """
 
-    io_identifier: IOIdentifierName
+    io_identifier: IOKeyword
 
 
 @dataclass
