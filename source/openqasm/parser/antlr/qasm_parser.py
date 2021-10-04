@@ -44,7 +44,7 @@ from openqasm.ast import (
     IndexExpression,
     IntegerLiteral,
     IODeclaration,
-    IOIdentifierName,
+    IOKeyword,
     NoDesignatorType,
     NoDesignatorTypeName,
     OpenNode,
@@ -149,7 +149,7 @@ class OpenNodeVisitor(qasm3Visitor):
                 ctype = self.visit(io.classicalType())
                 io_variables.append(
                     IODeclaration(
-                        io_identifier=IOIdentifierName[io.getChild(0).getText()],
+                        io_identifier=IOKeyword[io.getChild(0).getText()],
                         type=ctype,
                         identifier=identifier,
                         init_expression=None,

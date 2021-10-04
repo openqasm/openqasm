@@ -30,7 +30,7 @@ from openqasm.ast import (
     IndexExpression,
     IntegerLiteral,
     IODeclaration,
-    IOIdentifierName,
+    IOKeyword,
     NoDesignatorType,
     NoDesignatorTypeName,
     OpenNode,
@@ -1083,7 +1083,7 @@ def test_header():
     assert program.includes == [Include("qelib1.inc")]
     assert program.io_variables == [
         IODeclaration(
-            io_identifier=IOIdentifierName["input"],
+            io_identifier=IOKeyword["input"],
             type=SingleDesignatorType(
                 type=SingleDesignatorTypeName["angle"],
                 designator=IntegerLiteral(value=16),
@@ -1092,7 +1092,7 @@ def test_header():
             init_expression=None,
         ),
         IODeclaration(
-            io_identifier=IOIdentifierName["output"],
+            io_identifier=IOKeyword["output"],
             type=SingleDesignatorType(
                 type=SingleDesignatorTypeName["angle"],
                 designator=IntegerLiteral(value=16),
