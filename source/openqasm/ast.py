@@ -584,7 +584,12 @@ class ClassicalType(OpenNode):
 @dataclass
 class IntType(ClassicalType):
     """
-    Class for signed int type.
+    Class for signed int type with a designator.
+
+    Example:
+
+        int[8]
+        int[16]
     """
     
     designator: Optional[Expression]
@@ -593,7 +598,12 @@ class IntType(ClassicalType):
 @dataclass
 class UintType(ClassicalType):
     """
-    Class for unsigned int type.
+    Class for unsigned int type with a designator.
+
+    Example:
+
+        uint[8]
+        uint[16]
     """
 
     designator: Optional[Expression]
@@ -602,7 +612,12 @@ class UintType(ClassicalType):
 @dataclass
 class FloatType(ClassicalType):
     """
-    Class for float type.
+    Class for float type with a designator.
+
+    Example:
+
+        float[8]
+        float[16]
     """
 
     designator: Optional[Expression]
@@ -611,7 +626,12 @@ class FloatType(ClassicalType):
 @dataclass
 class AngleType(ClassicalType):
     """
-    Class for angle type.
+    Class for angle type with a designator.
+
+    Example:
+
+        angle[8]
+        angle[16]
     """
 
     designator: Optional[Expression]

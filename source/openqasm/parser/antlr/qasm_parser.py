@@ -81,6 +81,12 @@ from openqasm.ast import (
     WhileLoop,
 )
 
+_TYPE_NODE_INIT = {
+                    "int": IntType,
+                    "uint": UintType,
+                    "float": FloatType,
+                    "angle": AngleType
+                }
 
 def parse(openqasm3_program: str) -> OpenNode:
     lexer = qasm3Lexer(InputStream(openqasm3_program))
@@ -432,13 +438,6 @@ class OpenNodeVisitor(qasm3Visitor):
         init_expression = self.visit(equals_expression.expression()) if equals_expression else None
 
         type_name = ctx.singleDesignatorType().getText()
-        _TYPE_NODE_INIT = {
-                            "int": IntType,
-                            "uint": UintType,
-                            "float": FloatType,
-                            "angle": AngleType
-                        }
-                
         if type_name in _TYPE_NODE_INIT:
             type_designator = self.visit(ctx.designator())
             type_node = _TYPE_NODE_INIT[type_name](type_designator)
@@ -727,12 +726,6 @@ class OpenNodeVisitor(qasm3Visitor):
     def visitClassicalArgument(self, ctx: qasm3Parser.ClassicalArgumentContext):
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
-            _TYPE_NODE_INIT = {
-                                "int": IntType,
-                                "uint": UintType,
-                                "float": FloatType,
-                                "angle": AngleType
-                            }
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
@@ -767,12 +760,6 @@ class OpenNodeVisitor(qasm3Visitor):
         # Consider refactor classical argument grammar
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
-            _TYPE_NODE_INIT = {
-                                "int": IntType,
-                                "uint": UintType,
-                                "float": FloatType,
-                                "angle": AngleType
-                            }
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
@@ -800,13 +787,6 @@ class OpenNodeVisitor(qasm3Visitor):
         # Need to refactor the syntax.
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
-            _TYPE_NODE_INIT = {
-                                "int": IntType,
-                                "uint": UintType,
-                                "float": FloatType,
-                                "angle": AngleType
-                            }
-                    
             if type_name in _TYPE_NODE_INIT:
                 type_designator = self.visit(ctx.designator())
                 type_node = _TYPE_NODE_INIT[type_name](type_designator)
