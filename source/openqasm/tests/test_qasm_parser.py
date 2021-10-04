@@ -133,9 +133,7 @@ def test_complex_declaration():
     assert program == Program(
         statements=[
             ClassicalDeclaration(
-                ComplexType(
-                    base_type=IntType(IntegerLiteral(24))
-                ),
+                ComplexType(base_type=IntType(IntegerLiteral(24))),
                 Identifier("iq"),
                 None,
             ),
@@ -936,9 +934,7 @@ def test_no_designator_type():
                 Identifier("a"),
                 None,
             ),
-            ClassicalDeclaration(
-                StretchType(), Identifier("b"), None
-            ),
+            ClassicalDeclaration(StretchType(), Identifier("b"), None),
         ]
     )
     SpanGuard().visit(program)
