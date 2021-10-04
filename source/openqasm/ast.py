@@ -580,6 +580,7 @@ class ClassicalType(OpenNode):
     Base class for classical type
     """
 
+
 @dataclass
 class IntType(ClassicalType):
     """
@@ -590,7 +591,7 @@ class IntType(ClassicalType):
         int[8]
         int[16]
     """
-    
+
     designator: Optional[Expression]
 
 
@@ -660,6 +661,7 @@ class DurationType(ClassicalType):
     """
     Class for duration type.
     """
+
 
 class StretchType(ClassicalType):
     """

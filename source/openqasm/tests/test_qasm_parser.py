@@ -1082,19 +1082,13 @@ def test_header():
     assert program.io_variables == [
         IODeclaration(
             io_identifier=IOKeyword["input"],
-            type=SingleDesignatorType(
-                type=SingleDesignatorTypeName["angle"],
-                designator=IntegerLiteral(value=16),
-            ),
+            type=AngleType(designator=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable1"),
             init_expression=None,
         ),
         IODeclaration(
             io_identifier=IOKeyword["output"],
-            type=SingleDesignatorType(
-                type=SingleDesignatorTypeName["angle"],
-                designator=IntegerLiteral(value=16),
-            ),
+            type=AngleType(designator=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable2"),
             init_expression=None,
         ),

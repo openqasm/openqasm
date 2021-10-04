@@ -81,12 +81,8 @@ from openqasm.ast import (
     WhileLoop,
 )
 
-_TYPE_NODE_INIT = {
-                    "int": IntType,
-                    "uint": UintType,
-                    "float": FloatType,
-                    "angle": AngleType
-                }
+_TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
+
 
 def parse(openqasm3_program: str) -> OpenNode:
     lexer = qasm3Lexer(InputStream(openqasm3_program))
@@ -444,9 +440,10 @@ class OpenNodeVisitor(qasm3Visitor):
         else:
             # To capture potential parser errors.
             raise ValueError(f"Type name {type_name} not found.")
-                    
+
         return ClassicalDeclaration(
-            add_span(type_node,
+            add_span(
+                type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             ),
             add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
@@ -737,7 +734,8 @@ class OpenNodeVisitor(qasm3Visitor):
                 # To capture potential parser error.
                 raise ValueError("Type name {type_name} not found.")
 
-            classcal_type = add_span(type_node,
+            classcal_type = add_span(
+                type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
 
@@ -771,10 +769,10 @@ class OpenNodeVisitor(qasm3Visitor):
                 # To capture potential parser errors.
                 raise ValueError(f"Type name {type_name} not found.")
 
-            return add_span(type_node,
+            return add_span(
+                type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
-
 
         elif ctx.noDesignatorType():
             return self.visit(ctx.noDesignatorType())
@@ -798,7 +796,8 @@ class OpenNodeVisitor(qasm3Visitor):
                 # To capture potential parser errors.
                 raise ValueError(f"Type name {type_name} not found.")
 
-            return add_span(type_node,
+            return add_span(
+                type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
 
