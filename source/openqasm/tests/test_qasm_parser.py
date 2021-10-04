@@ -423,7 +423,7 @@ def test_primary_expression():
             ExpressionStatement(expression=FunctionCall(Identifier("foo"), [Identifier("x")])),
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
             ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),
-            ExpressionStatement(expression=DurationLiteral(1E-4, TimeUnit.us)),
+            ExpressionStatement(expression=DurationLiteral(1e-4, TimeUnit.us)),
             ExpressionStatement(expression=Identifier("x")),
             ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
             ExpressionStatement(
