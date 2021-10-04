@@ -313,7 +313,6 @@ class TimeUnit(Enum):
     dt = auto()
     ns = auto()
     us = auto()
-    µs = auto()
     ms = auto()
     s = auto()
 
