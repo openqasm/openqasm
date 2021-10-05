@@ -79,15 +79,15 @@ class SpanGuard(NodeVisitor):
 def test_qubit_declaration():
     p = """
     qubit q;
-    qubit[4] a; 
+    qubit[4] a;
     """.strip()
     program = parse(p)
     assert program == Program(
         statements=[
-            QubitDeclaration(qubit=Qubit(name="q"), designator=None),
+            QubitDeclaration(qubit=Qubit(name="q"), size=None),
             QubitDeclaration(
                 qubit=Qubit(name="a"),
-                designator=IntegerLiteral(4),
+                size=IntegerLiteral(4),
             ),
         ]
     )
@@ -113,13 +113,13 @@ def test_bit_declaration():
 def test_qubit_and_bit_declaration():
     p = """
     bit c;
-    qubit a; 
+    qubit a;
     """.strip()
     program = parse(p)
     assert program == Program(
         statements=[
             ClassicalDeclaration(BitType(None), Identifier("c"), None),
-            QubitDeclaration(qubit=Qubit(name="a"), designator=None),
+            QubitDeclaration(qubit=Qubit(name="a"), size=None),
         ]
     )
     SpanGuard().visit(program)
@@ -306,8 +306,8 @@ def test_gate_calls():
     program = parse(p)
     assert program == Program(
         statements=[
-            QubitDeclaration(qubit=Qubit(name="q"), designator=None),
-            QubitDeclaration(qubit=Qubit(name="r"), designator=None),
+            QubitDeclaration(qubit=Qubit(name="q"), size=None),
+            QubitDeclaration(qubit=Qubit(name="r"), size=None),
             QuantumGate(
                 modifiers=[], name=Identifier("h"), arguments=[], qubits=[Identifier(name="q")]
             ),
@@ -426,7 +426,7 @@ def test_primary_expression():
             ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
             ExpressionStatement(
                 expression=Cast(
-                    IntType(designator=IntegerLiteral(1)),
+                    IntType(size=IntegerLiteral(1)),
                     [Identifier("x")],
                 )
             ),
@@ -777,7 +777,7 @@ def test_calibration_definition():
                 name=Identifier("rz"),
                 arguments=[
                     ClassicalArgument(
-                        type=AngleType(designator=IntegerLiteral(20)),
+                        type=AngleType(size=IntegerLiteral(20)),
                         name=Identifier("theta"),
                     )
                 ],
@@ -803,7 +803,7 @@ def test_subroutine_definition():
         statements=[
             SubroutineDefinition(
                 name=Identifier("ymeasure"),
-                arguments=[QuantumArgument(qubit=Qubit("q"), designator=None)],
+                arguments=[QuantumArgument(qubit=Qubit("q"), size=None)],
                 return_type=BitType(None),
                 body=[
                     QuantumGate(
@@ -1078,13 +1078,13 @@ def test_header():
     assert program.io_variables == [
         IODeclaration(
             io_identifier=IOKeyword["input"],
-            type=AngleType(designator=IntegerLiteral(value=16)),
+            type=AngleType(size=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable1"),
             init_expression=None,
         ),
         IODeclaration(
             io_identifier=IOKeyword["output"],
-            type=AngleType(designator=IntegerLiteral(value=16)),
+            type=AngleType(size=IntegerLiteral(value=16)),
             identifier=Identifier(name="variable2"),
             init_expression=None,
         ),
