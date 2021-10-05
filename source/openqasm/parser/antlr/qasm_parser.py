@@ -435,8 +435,8 @@ class OpenNodeVisitor(qasm3Visitor):
 
         type_name = ctx.singleDesignatorType().getText()
         if type_name in _TYPE_NODE_INIT:
-            type_designator = self.visit(ctx.designator())
-            type_node = _TYPE_NODE_INIT[type_name](type_designator)
+            type_size = self.visit(ctx.designator())
+            type_node = _TYPE_NODE_INIT[type_name](type_size)
         else:
             # To capture potential parser errors.
             raise ValueError(f"Type name {type_name} not found.")
@@ -728,8 +728,8 @@ class OpenNodeVisitor(qasm3Visitor):
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
             if type_name in _TYPE_NODE_INIT:
-                type_designator = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+                type_size = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_size)
             else:
                 # To capture potential parser error.
                 raise ValueError("Type name {type_name} not found.")
@@ -763,8 +763,8 @@ class OpenNodeVisitor(qasm3Visitor):
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
             if type_name in _TYPE_NODE_INIT:
-                type_designator = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+                type_size = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_size)
             else:
                 # To capture potential parser errors.
                 raise ValueError(f"Type name {type_name} not found.")
@@ -790,8 +790,8 @@ class OpenNodeVisitor(qasm3Visitor):
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
             if type_name in _TYPE_NODE_INIT:
-                type_designator = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_designator)
+                type_size = self.visit(ctx.designator())
+                type_node = _TYPE_NODE_INIT[type_name](type_size)
             else:
                 # To capture potential parser errors.
                 raise ValueError(f"Type name {type_name} not found.")

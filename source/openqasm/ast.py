@@ -93,7 +93,7 @@ class QubitDeclaration(Statement):
     """
 
     qubit: Qubit
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
@@ -592,7 +592,7 @@ class IntType(ClassicalType):
         int[16]
     """
 
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
@@ -606,7 +606,7 @@ class UintType(ClassicalType):
         uint[16]
     """
 
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
@@ -620,7 +620,7 @@ class FloatType(ClassicalType):
         float[16]
     """
 
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
@@ -634,7 +634,7 @@ class AngleType(ClassicalType):
         angle[16]
     """
 
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
@@ -648,7 +648,7 @@ class BitType(ClassicalType):
         creg[8]
     """
 
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 class BoolType(ClassicalType):
@@ -847,7 +847,7 @@ class QuantumArgument(OpenNode):
     """
 
     qubit: Qubit
-    designator: Optional[Expression]
+    size: Optional[Expression]
 
 
 @dataclass
