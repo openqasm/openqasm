@@ -1,32 +1,30 @@
 Subroutines
 ===========
 
-Subroutines are declared using the statement ``def name(parameters) qargs -> output { body }``.
+Subroutines are declared using the statement ``def name(parameters) -> output_type { body }``.
 Zero or more quantum bits
-and registers are passed to the subroutine by reference or name in ``qargs``.
-Classical types are passed by value in ``parameters``. The parentheses may be omitted if no
-``parameters`` are passed. The subroutines return up to one value of classical type, signified by the
+and classical values are passed to the subroutine by reference or name in ``qargs``.
+Classical types are passed by value in ``parameters``.
+The subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return type, the empty ``return``
 keyword may be used to immediately exit from the subroutine. All arguments are declared together
 with their type, for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
 Qubit declarations are not allowed within subroutines as they are global. A subroutine
-is invoked with the syntax ``name(parameters) qargs`` and may be assigned to an ``output`` as
-needed via an assignment operator (``=``, ``+=``, etc). ``parameters`` and ``qargs`` are literals
-and ``output`` is a variable.
+is invoked with the syntax ``name(parameters)`` and may be assigned to an ``output`` as
+needed via an assignment operator (``=``, ``+=``, etc).
 
 Using subroutines, we can define an X-basis measurement with the program
-``def xmeasure qubit q -> bit { h q; return measure q; }``.
+``def xmeasure(qubit q) -> bit { h q; return measure q; }``.
 We can also define more general classes of single-qubit measurements
 as
-``def pmeasure(angle[32] theta) qubit q -> bit { rz(theta) q; h q; return
-measure q; }``.
+``def pmeasure(angle[32] theta, qubit q) -> bit { rz(theta) q; h q; return measure q; }``.
 The type declarations are necessary if we want to mix qubit and
 register arguments. For example, we might define a parity check
 subroutine that takes qubits and registers
 
 .. code-block:: c
 
-   def xcheck qubit[4] d, qubit a -> bit {
+   def xcheck(qubit[4] d, qubit a) -> bit {
      reset a;
      for i in [0: 3] cx d[i], a;
      return measure a;
