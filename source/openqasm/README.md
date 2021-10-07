@@ -1,14 +1,17 @@
-# OpenNode: a reference OpenQASM 3.0 AST in Python
+# A reference OpenQASM 3.0 AST in Python
 
-This directory contains a reference AST implementation for OpenQASM 3.0 in Python. It consists of:
+This Abstract Syntax Tree (AST) is intended to help with writing compiler passes for OpenQASM 3.0 in
+Python. It aims to have no dependencies for users who consume the Python tree structure, and minimal
+dependencies for parsing a string to this tree structure. The AST is simpler than a Concrete Syntax
+Tree (CST) which preserves comments, spacing, etc for use by editor plugins.
+
+This directory consists of:
 
 * ast.py: The AST nodes.
 * parser/antlr: A parser based on Antlr grammar and reference parser also found in this repo.
-It walks the ANTLR parse tree to generate the AST tree.
-* ast_visitor: A base AST visitor and an example showing how to implement compiler passes
-using the visitor.
+  It walks the ANTLR parse tree to generate the AST.
+* visitor.py: A base AST visitor and transformer.
 * tests: A set of unit tests.
-
 
 ## Developer setup
 

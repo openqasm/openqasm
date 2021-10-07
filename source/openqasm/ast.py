@@ -19,7 +19,7 @@ class Span:
 
 
 @dataclass
-class OpenNode:
+class QasmNode:
     """Base class for all OpenQASM 3 nodes"""
 
     span: Optional[Span] = field(init=False, default=None, compare=False)
@@ -31,7 +31,7 @@ class OpenNode:
 
 
 @dataclass
-class Program(OpenNode):
+class Program(QasmNode):
     """
     An entire OpenQASM 3 program represented by a list of top level statements
     """
@@ -43,7 +43,7 @@ class Program(OpenNode):
 
 
 @dataclass
-class Include(OpenNode):
+class Include(QasmNode):
     """
     An include statement
     """
@@ -51,7 +51,7 @@ class Include(OpenNode):
     filename: str
 
 
-class Statement(OpenNode):
+class Statement(QasmNode):
     """A statement: anything that can appear on its own line"""
 
 
@@ -156,7 +156,7 @@ class ExternDeclaration(Statement):
     return_type: Optional[ClassicalType]
 
 
-class Expression(OpenNode):
+class Expression(QasmNode):
     """An expression: anything that returns a value"""
 
 
@@ -425,7 +425,7 @@ class GateModifierName(Enum):
 
 
 @dataclass
-class QuantumGateModifier(OpenNode):
+class QuantumGateModifier(QasmNode):
     """
     A quantum gate modifier
 
@@ -518,7 +518,7 @@ class QuantumMeasurementAssignment(Statement):
 
 
 @dataclass
-class ClassicalArgument(OpenNode):
+class ClassicalArgument(QasmNode):
     """
     Classical argument for a gate or subroutine declaration
     """
@@ -575,7 +575,7 @@ class ConstantDeclaration(Statement):
     init_expression: Expression
 
 
-class ClassicalType(OpenNode):
+class ClassicalType(QasmNode):
     """
     Base class for classical type
     """
@@ -683,7 +683,7 @@ class ComplexType(ClassicalType):
     base_type: Union[IntType, UintType, FloatType, AngleType]
 
 
-class IndexIdentifier(OpenNode):
+class IndexIdentifier(QasmNode):
     """
     Quantum or classical identifier,
     indexed or not indexed.
@@ -750,7 +750,7 @@ class Slice(IndexIdentifier):
 
 
 @dataclass
-class RangeDefinition(OpenNode):
+class RangeDefinition(QasmNode):
     """
     Range definition.
 
@@ -834,7 +834,7 @@ class SubroutineDefinition(Statement):
 
 
 @dataclass
-class QuantumArgument(OpenNode):
+class QuantumArgument(QasmNode):
     """
     Quantum argument in subroutine definition
 
@@ -997,7 +997,7 @@ class Box(TimingStatement):
 
 
 @dataclass
-class DurationOf(OpenNode):
+class DurationOf(QasmNode):
     """
     Duration Of
 
