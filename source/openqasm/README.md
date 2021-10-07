@@ -9,7 +9,7 @@ This directory consists of:
 
 * ast.py: The AST nodes.
 * parser/antlr: A parser based on Antlr grammar and reference parser also found in this repo.
-  It walks the ANTLR parse tree to generate the AST tree.
+  It walks the ANTLR parse tree to generate the AST.
 * visitor.py: A base AST visitor and transformer.
 * tests: A set of unit tests.
 
