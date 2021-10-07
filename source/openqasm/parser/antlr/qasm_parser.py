@@ -51,7 +51,7 @@ from openqasm.ast import (
     IODeclaration,
     IOKeyword,
     Program,
-    QasmNode,
+    QASMNode,
     QuantumArgument,
     QuantumGate,
     QuantumGateModifier,
@@ -84,14 +84,14 @@ from openqasm.ast import (
 _TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
 
 
-def parse(openqasm3_program: str) -> QasmNode:
+def parse(openqasm3_program: str) -> QASMNode:
     lexer = qasm3Lexer(InputStream(openqasm3_program))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
 
     tree = parser.program()
 
-    return QasmNodeVisitor().visitProgram(tree)
+    return QASMNodeVisitor().visitProgram(tree)
 
 
 def get_span(node: Union[ParserRuleContext, TerminalNode]) -> Span:
@@ -102,7 +102,7 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> Span:
         return Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)
 
 
-def add_span(node: QasmNode, span: Span) -> QasmNode:
+def add_span(node: QASMNode, span: Span) -> QASMNode:
     """Set the span of a node and return the node"""
     node.span = span
     return node
@@ -128,7 +128,7 @@ def span(func):
     return wrapped
 
 
-class QasmNodeVisitor(qasm3Visitor):
+class QASMNodeVisitor(qasm3Visitor):
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
 
