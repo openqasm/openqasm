@@ -36,8 +36,8 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOKeyword,
-    OpenNode,
     Program,
+    QasmNode,
     QuantumArgument,
     QuantumGateModifier,
     QuantumMeasurement,
@@ -62,13 +62,13 @@ from openqasm.ast import (
     UnaryOperator,
 )
 from openqasm.parser.antlr.qasm_parser import parse, Span
-from openqasm.ast_visitor.ast_visitor import NodeVisitor
+from openqasm.visitor import QasmVisitor
 
 
-class SpanGuard(NodeVisitor):
+class SpanGuard(QasmVisitor):
     """Ensure that we did not forget to set spans when we add new AST nodes"""
 
-    def visit(self, node: OpenNode):
+    def visit(self, node: QasmNode):
         try:
             assert node.span is not None
             return super().visit(node)
