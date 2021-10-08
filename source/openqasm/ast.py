@@ -92,7 +92,7 @@ class QubitDeclaration(Statement):
 
     """
 
-    qubit: Qubit
+    qubit: Identifier
     size: Optional[Expression]
 
 
@@ -172,20 +172,6 @@ class Identifier(Expression):
     """
 
     name: str
-
-
-@dataclass
-class Qubit(Identifier):
-    """
-    A qubit
-
-    Example::
-
-        qubit q;
-
-        q  // <- Qubit
-
-    """
 
 
 UnaryOperator = Enum("UnaryOperator", "~ ! -")
@@ -808,7 +794,7 @@ class CalibrationDefinition(Statement):
 
     name: Identifier
     arguments: List[ClassicalArgument]
-    qubits: List[Qubit]
+    qubits: List[Identifier]
     return_type: Optional[ClassicalType]
     body: str
 
@@ -846,7 +832,7 @@ class QuantumArgument(QASMNode):
 
     """
 
-    qubit: Qubit
+    qubit: Identifier
     size: Optional[Expression]
 
 

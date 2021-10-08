@@ -43,7 +43,6 @@ from openqasm.ast import (
     QuantumMeasurement,
     QuantumPhase,
     QubitDeclaration,
-    Qubit,
     QuantumGate,
     QuantumGateDefinition,
     RangeDefinition,
@@ -84,9 +83,9 @@ def test_qubit_declaration():
     program = parse(p)
     assert program == Program(
         statements=[
-            QubitDeclaration(qubit=Qubit(name="q"), size=None),
+            QubitDeclaration(qubit=Identifier(name="q"), size=None),
             QubitDeclaration(
-                qubit=Qubit(name="a"),
+                qubit=Identifier(name="a"),
                 size=IntegerLiteral(4),
             ),
         ]
@@ -119,7 +118,7 @@ def test_qubit_and_bit_declaration():
     assert program == Program(
         statements=[
             ClassicalDeclaration(BitType(None), Identifier("c"), None),
-            QubitDeclaration(qubit=Qubit(name="a"), size=None),
+            QubitDeclaration(qubit=Identifier(name="a"), size=None),
         ]
     )
     SpanGuard().visit(program)
@@ -306,8 +305,8 @@ def test_gate_calls():
     program = parse(p)
     assert program == Program(
         statements=[
-            QubitDeclaration(qubit=Qubit(name="q"), size=None),
-            QubitDeclaration(qubit=Qubit(name="r"), size=None),
+            QubitDeclaration(qubit=Identifier(name="q"), size=None),
+            QubitDeclaration(qubit=Identifier(name="r"), size=None),
             QuantumGate(
                 modifiers=[], name=Identifier("h"), arguments=[], qubits=[Identifier(name="q")]
             ),
@@ -781,7 +780,7 @@ def test_calibration_definition():
                         name=Identifier("theta"),
                     )
                 ],
-                qubits=[Qubit("$q")],
+                qubits=[Identifier("$q")],
                 return_type=BitType(None),
                 body="return shift_phase drive ( $q ) , - theta ;",
             )
@@ -803,7 +802,7 @@ def test_subroutine_definition():
         statements=[
             SubroutineDefinition(
                 name=Identifier("ymeasure"),
-                arguments=[QuantumArgument(qubit=Qubit("q"), size=None)],
+                arguments=[QuantumArgument(qubit=Identifier("q"), size=None)],
                 return_type=BitType(None),
                 body=[
                     QuantumGate(

@@ -57,7 +57,6 @@ from openqasm.ast import (
     QuantumGateModifier,
     QuantumMeasurementAssignment,
     QuantumPhase,
-    Qubit,
     QubitDeclaration,
     QuantumGateDefinition,
     QuantumBarrier,
@@ -237,7 +236,7 @@ class QASMNodeVisitor(qasm3Visitor):
     def visitQuantumDeclaration(self, ctx: qasm3Parser.QuantumDeclarationContext):
         return QubitDeclaration(
             add_span(
-                Qubit(
+                Identifier(
                     ctx.Identifier().getText(),
                 ),
                 get_span(ctx.Identifier()),
@@ -711,7 +710,7 @@ class QASMNodeVisitor(qasm3Visitor):
             if ctx.calibrationArgumentList()
             else [],
             qubits=[
-                add_span(Qubit(id.getText()), get_span(id))
+                add_span(Identifier(id.getText()), get_span(id))
                 for id in ctx.identifierList().Identifier()
             ],
             return_type=self.visit(ctx.returnSignature().classicalType())
@@ -838,7 +837,7 @@ class QASMNodeVisitor(qasm3Visitor):
     def visitQuantumArgument(self, ctx: qasm3Parser.QuantumArgumentContext):
         return QuantumArgument(
             add_span(
-                Qubit(
+                Identifier(
                     ctx.Identifier().getText(),
                 ),
                 get_span(ctx.Identifier()),
