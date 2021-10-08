@@ -4,4 +4,5 @@ qasm3Lexer.py
 qasm3Listener.py
 qasm3Parser.py
 qasm3Visitor.py
+build/
 dist/

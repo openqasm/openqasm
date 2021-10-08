@@ -1,13 +1,33 @@
+"""
+Tools for parsing OpenQASM 3 programmes into the reference AST.
+"""
+
 # pylint: disable=wrong-import-order
+
+__all__ = [
+    "parse",
+    "get_span",
+    "add_span",
+    "combine_span",
+    "span",
+    "QASMNodeVisitor",
+]
+
 from typing import Union
 
-from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
-from antlr4.tree.Tree import TerminalNode
+try:
+    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
+    from antlr4.tree.Tree import TerminalNode
+except ImportError as exc:
+    raise ImportError(
+        "Parsing is not available unless the [parser] extra is installed,"
+        " such as by 'pip install openqasm3[parser]'."
+    ) from exc
 
-from .qasm3Lexer import qasm3Lexer
-from .qasm3Parser import qasm3Parser
-from .qasm3Visitor import qasm3Visitor
-from openqasm.ast import (
+from .antlr.qasm3Lexer import qasm3Lexer
+from .antlr.qasm3Parser import qasm3Parser
+from .antlr.qasm3Visitor import qasm3Visitor
+from .ast import (
     AccessControl,
     AliasStatement,
     AngleType,
@@ -85,8 +105,15 @@ from openqasm.ast import (
 _TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
 
 
-def parse(openqasm3_program: str) -> QASMNode:
-    lexer = qasm3Lexer(InputStream(openqasm3_program))
+def parse(input: str, /) -> Program:
+    """
+    Parse a complete OpenQASM 3 program from a string.
+
+    :param input: A string containing a complete OpenQASM 3 program.
+    :return: A complete :obj:`~ast.Program` node.
+    :rtype: ast.Program
+    """
+    lexer = qasm3Lexer(InputStream(input))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
 

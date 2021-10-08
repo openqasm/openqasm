@@ -1,4 +1,4 @@
-name: Tests (AST)
+name: Reference Python Package
 
 on:
   [push, pull_request]
@@ -10,17 +10,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
         antlr-version: ['4.9.2']
     defaults:
       run:
-        working-directory: source/grammar
+        working-directory: source/openqasm
 
     steps:
       - uses: actions/checkout@v2
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
 
       - uses: actions/setup-java@v2
         with:
@@ -31,25 +32,27 @@ jobs:
         run: python -mpip install --upgrade pip
 
       - name: Install ANTLR4
+        working-directory: source/grammar
         run: curl -O https://www.antlr.org/download/antlr-${{ matrix.antlr-version }}-complete.jar
 
       - name: Install ANTLR4 Python runtime
         run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
 
       - name: Generate grammar
+        working-directory: source/grammar
         run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/parser/antlr -Dlanguage=Python3 -visitor qasm3.g4
 
       - name: Install Python packages for AST
         run: python -mpip install -r requirements.txt -r requirements-dev.txt
-        working-directory: source/openqasm
+
+      - name: Build package
+        run: python -mpip install -e .[all]
 
       - name: Check format
-        run: black --check --diff .
-        working-directory: source/openqasm
+        run: black --check --diff openqasm3 tests
 
       - name: Check style
-        run: pylint .
-        working-directory: source/openqasm
+        run: pylint openqasm3 tests
 
       - name: Run tests
         run: pytest -vv --color=yes tests

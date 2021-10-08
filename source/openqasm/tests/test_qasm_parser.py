@@ -1,4 +1,4 @@
-from openqasm.ast import (
+from openqasm3.ast import (
     AccessControl,
     AliasStatement,
     AngleType,
@@ -65,8 +65,8 @@ from openqasm.ast import (
     UnaryExpression,
     UnaryOperator,
 )
-from openqasm.parser.antlr.qasm_parser import parse, Span
-from openqasm.visitor import QASMVisitor
+from openqasm3.parser import parse, Span
+from openqasm3.visitor import QASMVisitor
 
 
 class SpanGuard(QASMVisitor):
