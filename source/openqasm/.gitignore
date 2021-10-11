@@ -6,3 +6,5 @@ qasm3Parser.py
 qasm3Visitor.py
 build/
 dist/
+
+docs/_build

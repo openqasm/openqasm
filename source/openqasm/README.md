@@ -48,7 +48,7 @@ Otherwise, you can follow [these instructions](https://github.com/antlr/antlr4/b
 Make a note of the exact version of ANTLR you have installed, because you will need to ensure your version of `antlr4-python3-runtime` matches exactly.
 The package in its current form expects ANTLR 4.9.2.
 
-Once you have ANTLR installed, change to the directory where the `qasm3.g4` is located (for example, `openqasm/source/grammar`), and run
+Once you have ANTLR installed, change to the directory where the `qasm3.g4` file is located (for example, `openqasm/source/grammar`), and run
 ```bash
 <antlr command> -o /path/to/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
 ```

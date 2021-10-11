@@ -1,5 +1,23 @@
 """
-Tools for parsing OpenQASM 3 programmes into the reference AST.
+=============================
+Parser (``openqasm3.parser``)
+=============================
+
+Tools for parsing OpenQASM 3 programs into the :obj:`reference AST <openqasm3.ast>`.
+
+The quick-start interface is simply to call ``openqasm3.parse``:
+
+.. currentmodule:: openqasm3
+.. autofunction:: openqasm3.parse
+
+The rest of this module provides some lower-level internals of the parser.
+
+.. currentmodule:: openqasm3.parser
+.. autofunction:: span
+.. autofunction:: add_span
+.. autofunction:: combine_span
+.. autofunction:: get_span
+.. autoclass:: QASMNodeVisitor
 """
 
 # pylint: disable=wrong-import-order
@@ -105,15 +123,14 @@ from .ast import (
 _TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
 
 
-def parse(input: str, /) -> Program:
+def parse(input_: str) -> Program:
     """
     Parse a complete OpenQASM 3 program from a string.
 
-    :param input: A string containing a complete OpenQASM 3 program.
+    :param input_: A string containing a complete OpenQASM 3 program.
     :return: A complete :obj:`~ast.Program` node.
-    :rtype: ast.Program
     """
-    lexer = qasm3Lexer(InputStream(input))
+    lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
 
