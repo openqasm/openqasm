@@ -292,6 +292,9 @@ can be accessed, using the following general syntax:
    multiDim[-1][1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
 Indexing of arrays is n-based *i.e.*, negative indices are allowed.
+Multi-dimensional arrays (as in the example above) are allowed, with a maximum
+of 7 total dimensions.
+
 For backwards compatability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
 array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
