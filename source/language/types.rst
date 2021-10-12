@@ -470,6 +470,11 @@ arrays *can* be concatenated with themselves.
    selfConcat[0:3] = first[0:1] || third[1:2];
    // selfConcat == {0, 1, 6, 7}
 
+Arrays can be sliced just like quantum registers using index sets. Slicing uses
+the subscript operator ``[]``, but produces an array (or reference in the case
+of assignment) with the same number of dimensions as the given identifier.
+Array slicing is syntactic sugar for concisely expressing for loops over
+multi-dimensional arrays.
 For sliced assignments, as with non-sliced assignments, the shapes and types of
 the slices must match.
 
