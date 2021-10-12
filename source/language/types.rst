@@ -298,6 +298,20 @@ array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
 ``array[qubit, 5] q1;``). Passing arrays as arguments to subroutines or externs
 produces copies inside the subroutine body, not references or pointers,
 with the exception of arrays of qubits, which are passed as aliases/references.
+Assignment to elements of arrays, as in the examples above, acts as expected,
+with the left-hand side of the assignment operating as a reference, thereby
+updating the values inside the original array. For multi-dimensional arrays,
+the shape and type of the assigned value must match that of the reference.
+
+.. code-block:: c
+
+   array[int[8], 3] aa;
+   array[array[int[8], 3], 4] bb;
+
+   bb[0] = aa; // all of aa is copied to first element of bb
+   bb[0][1] = aa[2] // last element of aa is copied to one element of bb
+
+   bb[0] = 1 // error - shape mismatch
 
 Types related to timing
 -----------------------
@@ -455,3 +469,26 @@ arrays *can* be concatenated with themselves.
    // combined slicing and concatenation
    selfConcat[0:3] = first[0:1] || third[1:2];
    // selfConcat == {0, 1, 6, 7}
+
+For sliced assignments, as with non-sliced assignments, the shapes and types of
+the slices must match.
+
+.. code-block:: c
+
+   int[8] scalar;
+   array[int[8], 2] oneD;
+   array[array[int[8], 2], 3] twoD; // 3x2
+   array[array[int[8], 2], 3] anotherTwoD; // 3x2
+   array[array[array[int[8], 2], 3], 4] threeD; // 4x3x2
+   array[array[array[int[8], 4], 3], 2] anotherThreeD; // 2x3x4
+
+   threeD[0][0][0] = scalar; // allowed
+   threeD[0][0] = oneD; // allowed
+   threeD[0] = twoD; // allowed
+
+   threeD[0] = oneD; // error - shape mismatch
+   threeD[0][0] = scalar // error - shape mismatch
+   threeD = anotherThreeD // error - shape mismatch
+
+   twoD[1:2] = anotherTwoD[0:1]; // allowed
+   twoD[1:2][0] = anotherTwoD[0:1][1]; // allowed
