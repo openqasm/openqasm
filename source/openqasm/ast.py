@@ -1013,3 +1013,17 @@ class ClassicalAssignment(Statement):
     lvalue: Union[Identifier, Subscript]
     op: AssignmentOperator
     rvalue: Expression
+
+
+@dataclass
+class Pragma(Statement):
+    """
+    Pragma
+
+    Example::
+        
+        #pragma verbatim
+
+    """
+
+    string_literals: List[str]

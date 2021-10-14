@@ -36,6 +36,7 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOKeyword,
+    Pragma,
     Program,
     QASMNode,
     QuantumArgument,
@@ -1096,4 +1097,19 @@ def test_end_statement():
     """.strip()
     program = parse(p)
     assert program == Program(statements=[EndStatement()])
+    SpanGuard().visit(program)
+
+
+def test_pragma():
+    p = """
+    #pragma verbatim
+    #pragma my_statement1 my_statement2
+    """.strip()
+    program = parse(p)
+    assert program == Program(
+        statements=[
+            Pragma(string_literals=["verbatim"]),
+            Pragma(string_literals=["my_statement1", "my_statement2"]),
+        ]
+    )
     SpanGuard().visit(program)
