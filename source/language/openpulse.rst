@@ -350,7 +350,7 @@ extern definition at the top-level, such as:
    extern capture(frame output);
 
    // A capture command that returns an iq value
-   extern capture(waveform filter, frame output) -> complex[32];
+   extern capture(waveform filter, frame output) -> complex[float[32]];
 
    // A capture command that returns a discrimnated bit
    extern capture(waveform filter, frame output) -> bit;
