@@ -41,6 +41,7 @@ from openqasm.ast import (
     QuantumArgument,
     QuantumGateModifier,
     QuantumMeasurement,
+    QuantumMeasurementAssignment,
     QuantumPhase,
     QubitDeclaration,
     QuantumGate,
@@ -755,6 +756,26 @@ def test_concatenation():
     assert slice_.target.span == Span(1, 4, 1, 4)
     assert slice_.value.span == Span(1, 8, 1, 21)
 
+
+def test_measurement():
+    p = """
+    measure q;
+    measure q -> c[0];
+    c[0] = measure q[0];
+    """.strip()
+    program = parse(p)
+    assert program == Program(
+            statements=[QuantumMeasurementAssignment(
+                            target=None,
+                            measure_instruction=QuantumMeasurement(qubit=Identifier("q"))),
+                        QuantumMeasurementAssignment(
+                            target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                            measure_instruction=QuantumMeasurement(qubit=Identifier("q"))),
+                        QuantumMeasurementAssignment(
+                            target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                            measure_instruction=QuantumMeasurement(qubit=Subscript(name="q", index=IntegerLiteral(value=0))))])
+    SpanGuard().visit(program)
+                                                      
 
 def test_calibration_grammar_declaration():
     p = """
