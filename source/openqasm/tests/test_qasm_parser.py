@@ -765,17 +765,24 @@ def test_measurement():
     """.strip()
     program = parse(p)
     assert program == Program(
-            statements=[QuantumMeasurementAssignment(
-                            target=None,
-                            measure_instruction=QuantumMeasurement(qubit=Identifier("q"))),
-                        QuantumMeasurementAssignment(
-                            target=Subscript(name="c", index=IntegerLiteral(value=0)),
-                            measure_instruction=QuantumMeasurement(qubit=Identifier("q"))),
-                        QuantumMeasurementAssignment(
-                            target=Subscript(name="c", index=IntegerLiteral(value=0)),
-                            measure_instruction=QuantumMeasurement(qubit=Subscript(name="q", index=IntegerLiteral(value=0))))])
+        statements=[
+            QuantumMeasurementAssignment(
+                target=None, measure_instruction=QuantumMeasurement(qubit=Identifier("q"))
+            ),
+            QuantumMeasurementAssignment(
+                target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                measure_instruction=QuantumMeasurement(qubit=Identifier("q")),
+            ),
+            QuantumMeasurementAssignment(
+                target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                measure_instruction=QuantumMeasurement(
+                    qubit=Subscript(name="q", index=IntegerLiteral(value=0))
+                ),
+            ),
+        ]
+    )
     SpanGuard().visit(program)
-                                                      
+
 
 def test_calibration_grammar_declaration():
     p = """

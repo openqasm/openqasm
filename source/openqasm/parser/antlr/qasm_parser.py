@@ -368,7 +368,8 @@ class QASMNodeVisitor(qasm3Visitor):
         self, ctx: qasm3Parser.QuantumMeasurementAssignmentContext
     ):
         return QuantumMeasurementAssignment(
-            self.visit(ctx.indexIdentifier()) if ctx.indexIdentifier() else None, self.visit(ctx.quantumMeasurement())
+            self.visit(ctx.indexIdentifier()) if ctx.indexIdentifier() else None,
+            self.visit(ctx.quantumMeasurement()),
         )
 
     @span
