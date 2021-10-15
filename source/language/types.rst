@@ -215,11 +215,11 @@ be true and 0 will be false.
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
 
-Real constants and const values
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Const values
+~~~~~~~~~~~~
 
-To support mathematical expressions, immutable real constants
-may be declared as floating point numbers. Other types can also be declared ``const``. On
+To support mathematical expressions, immutable constants of any classical type
+may be declared using the type modifier ``const``. On
 declaration, they take their assigned value and cannot be redefined
 within the same scope. These are constructed using an in-fix notation
 and scientific calculator features such as scientific notation, real
@@ -232,10 +232,7 @@ declarations. ``const``` values are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
 calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
-constants can be cast to other types. Casting attempts to preserve the
-semantics, but information can be lost, since variables have fixed
-precision. Unlike casting from other types, implicit casts from real
-constants are permitted.
+constants can be cast to other types, just like other values.
 
 A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__. These constants
