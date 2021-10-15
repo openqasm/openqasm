@@ -50,6 +50,7 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOKeyword,
+    Pragma,
     Program,
     QASMNode,
     QuantumArgument,
