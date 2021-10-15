@@ -113,7 +113,7 @@ multiplication, division, and power and the corresponding assignment operators.
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+Complex numbers support addition, subtraction, multiplication, division, power and the corresponding
 assignment operators.
 
 .. code-block:: c
