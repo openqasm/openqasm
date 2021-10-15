@@ -409,7 +409,18 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
+    : 'arcsin'
+    | 'sin'
+    | 'arccos'
+    | 'cos'
+    | 'arctan'
+    | 'tan'
+    | 'exp'
+    | 'ln'
+    | 'sqrt'
+    | 'rotl'
+    | 'rotr'
+    | 'popcount'
     ;
 
 castOperator
