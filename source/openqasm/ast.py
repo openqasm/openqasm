@@ -1019,11 +1019,9 @@ class ClassicalAssignment(Statement):
 class Pragma(Statement):
     """
     Pragma
-
     Example::
-        
-        #pragma verbatim
 
+        #pragma {verbatim;}
     """
 
-    string_literals: List[str]
+    statements: List[Statement]

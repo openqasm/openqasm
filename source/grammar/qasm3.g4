@@ -487,7 +487,7 @@ subroutineBlock
 /*** Directives ***/
 
 pragma
-    : '#pragma' .*? // match any valid openqasm statement
+    : '#pragma' LBRACE statement* RBRACE  // match any valid openqasm statement
     ;
 
 /*** Circuit Timing ***/

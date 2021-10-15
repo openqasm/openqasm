@@ -50,7 +50,6 @@ from openqasm.ast import (
     IntType,
     IODeclaration,
     IOKeyword,
-    Pragma,
     Program,
     QASMNode,
     QuantumArgument,
@@ -827,10 +826,10 @@ class QASMNodeVisitor(qasm3Visitor):
             statements.append(self.visit(ctx.returnStatement()))
 
         return statements
-    
+
     @span
-    def visitPragma(self, ctx:qasm3Parser.PragmaContext):
-        return Pragma(string_literals=[ctx.getChild(i).getText() for i in range(1, ctx.getChildCount())])
+    def visitPragma(self, ctx: qasm3Parser.PragmaContext):
+        return Pragma(statements=[self.visit(st) for st in ctx.statement()])
 
     @span
     def visitReturnStatement(self, ctx: qasm3Parser.ReturnStatementContext):
