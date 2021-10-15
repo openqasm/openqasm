@@ -278,7 +278,7 @@ can be accessed, using the following general syntax:
 .. code-block:: c
 
    array[int[32], 5] myArray = {0, 1, 2, 3, 4};
-   array[array[float[32], 2], 3] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
+   array[float[32], 2, 3] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
 
    int[32] firstElem = myArray[0]; // 0
    int[32] lastElem = myArray[4]; // 4
@@ -309,7 +309,7 @@ the shape and type of the assigned value must match that of the reference.
 .. code-block:: c
 
    array[int[8], 3] aa;
-   array[array[int[8], 3], 4] bb;
+   array[int[8], 3, 4] bb;
 
    bb[0] = aa; // all of aa is copied to first element of bb
    bb[0][1] = aa[2] // last element of aa is copied to one element of bb
@@ -485,10 +485,10 @@ the slices must match.
 
    int[8] scalar;
    array[int[8], 2] oneD;
-   array[array[int[8], 2], 3] twoD; // 3x2
-   array[array[int[8], 2], 3] anotherTwoD; // 3x2
-   array[array[array[int[8], 2], 3], 4] threeD; // 4x3x2
-   array[array[array[int[8], 4], 3], 2] anotherThreeD; // 2x3x4
+   array[int[8], 2, 3] twoD; // 3x2
+   array[int[8], 2, 3] anotherTwoD; // 3x2
+   array[int[8], 2, 3, 4] threeD; // 4x3x2
+   array[int[8], 4, 3, 2] anotherThreeD; // 2x3x4
 
    threeD[0][0][0] = scalar; // allowed
    threeD[0][0] = oneD; // allowed
