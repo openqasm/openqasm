@@ -24,7 +24,7 @@ The textual format described here has several advantages over the original JSON 
 - Richer ability to compose complex pulses through natural DSP-like operations.
 
 Openpulse provides a flexible programming model that should extend to many quantum control schemes
-and hardware. At the core of the OpenPulse grammar are the concepts of ``port``s, ``waveform``s and, ``frame``s.
+and hardware. At the core of the OpenPulse grammar are the concepts of ``port``\s, ``waveform``\s and, ``frame``\s.
 A ``port`` is a software abstraction representing any input or output component controlling qubits. It allows
 a hardware vendor to provide relevant actuation knobs they wish to expose to the user in order to manipulate and observe
 qubits, while hiding the complexities of the device's underlying hardware. A ``waveform`` is a time-dependent envelope
@@ -134,7 +134,7 @@ would initialize a frame on the ``drive0`` port with a frequency of 5 GHz, and p
 a frame can be initializated in either a ``cal`` or ``defcal`` block which means that the time with which it is
 initialized is the start time of the containing block (see :ref:`Timing` section for more details).
 
-If a compiler toolchain is unable to support the initialization of ``frame``s within ``defcal``s, it is expected
+If a compiler toolchain is unable to support the initialization of ``frame``\s within ``defcal``\s, it is expected
 to raise a compile-time error when such an initialization is encountered.
 
 Note that multiple frames may address the same port e.g.
@@ -148,8 +148,8 @@ Note that multiple frames may address the same port e.g.
   frame measure_frame_3 = newframe(measure_port, 5e9, 0.0);
 
 The limitation on the number of frames that may address the same port depends entirely on hardware vendor
-and how they choose to map ``frame``s to physical resources during the backend machine code generation phase.
-For example, a hardware vendor may choose to collapse all ``frame``s attached to the same port into to a single
+and how they choose to map ``frame``\s to physical resources during the backend machine code generation phase.
+For example, a hardware vendor may choose to collapse all ``frame``\s attached to the same port into to a single
 NCO in analogy to virtual to physical register allocation.
 
 
@@ -423,7 +423,7 @@ Initial Time
 As briefly discussed in the :ref:`Frame Initialization` section, a ``frame`` initialized via a
 ``newframe`` command has its ``.time`` set to the time at the beginning of the containing
 ``cal`` or ``defcal`` block. Since a ``cal`` block is globally scoped in OpenPulse, this time
-would be absolute 0. Meanwhile, a ``defcal``s start time is determined by when it is scheduled
+would be absolute 0. Meanwhile, a ``defcal``\s start time is determined by when it is scheduled
 (see :ref:`Timing` section for more details) e.g.
 
 .. code-block:: javascript
