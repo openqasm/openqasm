@@ -118,7 +118,7 @@ numericType
     ;
 
 constantDeclaration
-    : 'const' Identifier equalsExpression
+    : 'const' classicalType Identifier equalsExpression
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
