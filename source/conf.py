@@ -62,5 +62,5 @@ html_baseurl = os.getenv('HTML_BASEURL', '')
 # If True, figures, tables and code-blocks are automatically numbered
 # if they have a caption.
 numfig = True
-# add necessary bibtex >=2.0.0 setting
+# Necessary setting for sphinxcontrib-bibtex >= 2.0.0
 bibtex_bibfiles = ['bibliography.bib']
