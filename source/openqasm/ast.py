@@ -499,7 +499,7 @@ class QuantumMeasurementAssignment(Statement):
         c = measure q;
     """
 
-    lhs: Union[IndexIdentifier, Identifier]
+    target: Union[IndexIdentifier, Identifier]
     measure_instruction: QuantumMeasurement
 
 
