@@ -278,7 +278,7 @@ can be accessed, using the following general syntax:
 .. code-block:: c
 
    array[int[32], 5] myArray = {0, 1, 2, 3, 4};
-   array[float[32], 2, 3] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
+   array[float[32], 3, 2] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
 
    int[32] firstElem = myArray[0]; // 0
    int[32] lastElem = myArray[4]; // 4
@@ -485,10 +485,10 @@ the slices must match.
 
    int[8] scalar;
    array[int[8], 2] oneD;
-   array[int[8], 2, 3] twoD; // 3x2
-   array[int[8], 2, 3] anotherTwoD; // 3x2
-   array[int[8], 2, 3, 4] threeD; // 4x3x2
-   array[int[8], 4, 3, 2] anotherThreeD; // 2x3x4
+   array[int[8], 3, 2] twoD; // 3x2
+   array[int[8], 3, 2] anotherTwoD; // 3x2
+   array[int[8], 4, 3, 2] threeD; // 4x3x2
+   array[int[8], 2, 3, 4] anotherThreeD; // 2x3x4
 
    threeD[0][0][0] = scalar; // allowed
    threeD[0][0] = oneD; // allowed
