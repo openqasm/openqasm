@@ -119,7 +119,7 @@ reference: |
                     32
                 ]
             ]
-            b
+            c
             equalsExpression
               =
               expression
@@ -131,11 +131,10 @@ reference: |
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        a
+                                multiplicativeExpression
+                                  powerExpression
+                                    expressionTerminator
+                                      a
                                     **
                                     powerExpression
                                       expressionTerminator
