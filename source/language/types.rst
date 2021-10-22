@@ -215,47 +215,45 @@ be true and 0 will be false.
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
 
-Real constants
-~~~~~~~~~~~~~~
+Const values
+~~~~~~~~~~~~
 
-To support mathematical expressions, there are immutable real constants
-that are represented as double precision floating point numbers. On
+To support mathematical expressions, immutable constants of any classical type
+may be declared using the type modifier ``const``. On
 declaration, they take their assigned value and cannot be redefined
 within the same scope. These are constructed using an in-fix notation
 and scientific calculator features such as scientific notation, real
 arithmetic, logarithmic, trigonometric, and exponential functions
 including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant π. The
-statement ``const name = expression;`` defines a new constant. The expression on the right hand side
+statement ``const type name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
-declarations. Real constants are compile-time constants, allowing the
+declarations. ``const``` values are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
 calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
-constants can be cast to other types. Casting attempts to preserve the
-semantics, but information can be lost, since variables have fixed
-precision. Unlike casting from other types, implicit casts from real
-constants are permitted.
+constants can be cast to other types, just like other values.
 
 A standard set of built-in constants which are included in the default
-namespace are listed in table `1 <#tab:real-constants>`__.
+namespace are listed in table `1 <#tab:real-constants>`__. These constants
+are all of type ``float[64]``.
 
 .. code-block:: c
    :force:
 
    // Declare a constant
-   const my_const = 1234;
+   const int my_const = 1234;
    // Scientific notation is supported
-   const another_const = 1e2;
+   const int[64] another_const = 1e12;
    // Constant expressions are supported
-   const pi_by_2 = π / 2;
+   const float[64] pi_by_2 = π / 2;
    // Constants may be cast to real-time values
-   float[32] pi_by_2_val = float(pi_by_2)
+   float[32] pi_by_2_val = float[32](pi_by_2)
 
 .. container::
    :name: tab:real-constants
 
-   .. table:: [tab:real-constants] Built-in real constants in OpenQASM3.
+   .. table:: [tab:real-constants] Built-in real constants in OpenQASM3 of type ``float[64]``.
 
       +-------------------------------+--------------+--------------+---------------------+
       | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |

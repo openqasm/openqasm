@@ -8,10 +8,10 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const n = 10;         // number of qubits
-const layers = 3;     // number of entangler layers
-const prec = 16;      // precision of all types
-const shots = 1000;   // number of shots per Pauli observable
+const int[32] n = 10;         // number of qubits
+const int[32] layers = 3;     // number of entangler layers
+const int[32] prec = 16;      // precision of all types
+const int[32] shots = 1000;   // number of shots per Pauli observable
 
 // Parameters could be written to local variables for this
 // iteration, but we will request them using extern functions
