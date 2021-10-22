@@ -3,6 +3,7 @@ source: |
   complex[int[32]] a;
   complex[float[40]] b = 4-5.5im;
   complex[angle[20]] d = a + b;
+  complex[float[32]] c = a ** b;
 reference: |
   program
     header
@@ -101,4 +102,42 @@ reference: |
                                   powerExpression
                                     expressionTerminator
                                       b
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          complexDeclaration
+            complex
+            [
+            numericType
+              singleDesignatorType
+                float
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
+            ]
+            b
+            equalsExpression
+              =
+              expression
+                logicalAndExpression
+                  bitOrExpression
+                    xOrExpression
+                      bitAndExpression
+                        equalityExpression
+                          comparisonExpression
+                            bitShiftExpression
+                              additiveExpression
+                                additiveExpression
+                                  multiplicativeExpression
+                                    powerExpression
+                                      expressionTerminator
+                                        a
+                                    **
+                                    powerExpression
+                                      expressionTerminator
+                                        b
         ;
