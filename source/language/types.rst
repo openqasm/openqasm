@@ -315,7 +315,7 @@ access) may not be known until runtime.
 .. code-block:: c
 
    array[int[8], 3] aa;
-   array[int[8], 3, 4] bb;
+   array[int[8], 4, 3] bb;
 
    bb[0] = aa; // all of aa is copied to first element of bb
    bb[0][1] = aa[2] // last element of aa is copied to one element of bb
