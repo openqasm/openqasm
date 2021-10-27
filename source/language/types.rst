@@ -306,12 +306,6 @@ with the left-hand side of the assignment operating as a reference, thereby
 updating the values inside the original array. For multi-dimensional arrays,
 the shape and type of the assigned value must match that of the reference.
 
-Arrays can be passed as arguments to subroutines and externs. The default
-behavior is that all array arguments are passed as const references. The
-number of dimensions for all array arguments *must* be resolvable at compile
-time. However, the lengths of array arguments (in the case of strided
-access) may not be known until runtime.
-
 .. code-block:: c
 
    array[int[8], 3] aa;
@@ -321,6 +315,12 @@ access) may not be known until runtime.
    bb[0][1] = aa[2] // last element of aa is copied to one element of bb
 
    bb[0] = 1 // error - shape mismatch
+
+Arrays can be passed as arguments to subroutines and externs. The default
+behavior is that all array arguments are passed as const references. The
+number of dimensions for all array arguments *must* be resolvable at compile
+time. However, the lengths of array arguments (in the case of strided
+access) may not be known until runtime.
 
 Types related to timing
 -----------------------
