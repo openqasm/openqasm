@@ -298,9 +298,7 @@ of 7 total dimensions.
 For backwards compatability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
 array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
-``array[qubit, 5] q1;``). Passing arrays as arguments to subroutines or externs
-produces copies inside the subroutine body, not references or pointers,
-with the exception of arrays of qubits, which are passed as aliases/references.
+``array[qubit, 5] q1;``).
 Assignment to elements of arrays, as in the examples above, acts as expected,
 with the left-hand side of the assignment operating as a reference, thereby
 updating the values inside the original array. For multi-dimensional arrays,
