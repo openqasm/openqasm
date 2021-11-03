@@ -194,7 +194,9 @@ class UnaryExpression(Expression):
     expression: Expression
 
 
-BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
+BinaryOperator = Enum(
+    "BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **"
+)
 
 
 @dataclass
@@ -255,11 +257,25 @@ class IntegerLiteral(Expression):
 @dataclass
 class RealLiteral(Expression):
     """
-    An real number literal
+    A real number literal
 
     Example::
 
         1.1
+
+    """
+
+    value: float
+
+
+@dataclass
+class ImagLiteral(Expression):
+    """
+    A pure imaginary number literal
+
+    Example::
+
+        1.1im
 
     """
 
@@ -500,7 +516,7 @@ class QuantumMeasurementAssignment(Statement):
     """
 
     target: Union[IndexIdentifier, Identifier]
-    measure_instruction: QuantumMeasurement
+    measure_instruction: Optional[QuantumMeasurement]
 
 
 @dataclass
@@ -996,7 +1012,9 @@ class DurationOf(QASMNode):
     target: Union[Identifier, List[QuantumStatement]]
 
 
-AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
+AssignmentOperator = Enum(
+    "AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **="
+)
 
 
 @dataclass
