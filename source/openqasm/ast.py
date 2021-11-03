@@ -513,8 +513,8 @@ class QuantumMeasurementAssignment(Statement):
         c = measure q;
     """
 
-    target: Union[IndexIdentifier, Identifier]
-    measure_instruction: Optional[QuantumMeasurement]
+    target: Optional[Union[IndexIdentifier, Identifier]]
+    measure_instruction: QuantumMeasurement
 
 
 @dataclass
