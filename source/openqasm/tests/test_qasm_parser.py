@@ -326,9 +326,7 @@ def test_gate_calls():
                 qubits=[Identifier(name="q"), Identifier(name="r")],
             ),
             QuantumGate(
-                modifiers=[
-                    QuantumGateModifier(modifier=GateModifierName["inv"], argument=None)
-                ],
+                modifiers=[QuantumGateModifier(modifier=GateModifierName["inv"], argument=None)],
                 name=Identifier("h"),
                 arguments=[],
                 qubits=[Identifier(name="q")],
@@ -386,9 +384,7 @@ def test_alias_statement():
     """.strip()
     program = parse(p)
     assert program == Program(
-        statements=[
-            AliasStatement(target=Identifier(name="a"), value=Identifier(name="b"))
-        ]
+        statements=[AliasStatement(target=Identifier(name="a"), value=Identifier(name="b"))]
     )
     SpanGuard().visit(program)
     alias_statement = program.statements[0]
@@ -430,19 +426,13 @@ def test_primary_expression():
             ExpressionStatement(expression=BooleanLiteral(False)),
             ExpressionStatement(expression=Identifier("a")),
             ExpressionStatement(expression=StringLiteral("openqasm")),
-            ExpressionStatement(
-                expression=FunctionCall(Identifier("sin"), [RealLiteral(0.0)])
-            ),
-            ExpressionStatement(
-                expression=FunctionCall(Identifier("foo"), [Identifier("x")])
-            ),
+            ExpressionStatement(expression=FunctionCall(Identifier("sin"), [RealLiteral(0.0)])),
+            ExpressionStatement(expression=FunctionCall(Identifier("foo"), [Identifier("x")])),
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
             ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),
             ExpressionStatement(expression=DurationLiteral(1e-4, TimeUnit.us)),
             ExpressionStatement(expression=Identifier("x")),
-            ExpressionStatement(
-                expression=IndexExpression(Identifier("q"), IntegerLiteral(1))
-            ),
+            ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
             ExpressionStatement(
                 expression=Cast(
                     IntType(size=IntegerLiteral(1)),
@@ -866,9 +856,7 @@ def test_subroutine_definition():
                         arguments=[],
                         qubits=[Identifier(name="q")],
                     ),
-                    ReturnStatement(
-                        expression=QuantumMeasurement(qubit=Identifier(name="q"))
-                    ),
+                    ReturnStatement(expression=QuantumMeasurement(qubit=Identifier(name="q"))),
                 ],
             )
         ]

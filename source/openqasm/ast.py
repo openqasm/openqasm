@@ -194,9 +194,7 @@ class UnaryExpression(Expression):
     expression: Expression
 
 
-BinaryOperator = Enum(
-    "BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **"
-)
+BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
 
 
 @dataclass
@@ -1012,9 +1010,7 @@ class DurationOf(QASMNode):
     target: Union[Identifier, List[QuantumStatement]]
 
 
-AssignmentOperator = Enum(
-    "AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **="
-)
+AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
 
 
 @dataclass
