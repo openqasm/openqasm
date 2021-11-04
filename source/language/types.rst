@@ -314,30 +314,8 @@ the shape and type of the assigned value must match that of the reference.
 
    bb[0] = 1 // error - shape mismatch
 
-Arrays can be passed as arguments to subroutines and externs. All array
-arguments are passed as references and must include a type modifier specifying
-if the argument is ``const`` or ``mutable``. The number of dimensions for all
-array arguments must be specified using the ``dim(literal/const identifier)``
-syntax below. The lengths of
-the dimensions of array arguments (in the case of strided access) may not be
-known until runtime. Passing multiple overlapping mutable references to the same
-array to a subroutine is forbidden. However, the compiler will not always be
-able to resolve when this happens, and if it does, then no guarantees are made
-about the order that updates are made in.
-
-.. code-block:: c
-
-   def arr_subroutine(const array[int[8], dim(1)] arr_arg) {...}
-   def mut_subroutine(mutable array[int[8], dim(1)] arr_arg) {
-     arr_arg[2] = 10; // allowed
-     ...
-   }
-   array[int[8], 5] aa;
-   array[int[8], 3, 5] bb;
-
-   arr_subroutine(aa);
-   arr_subroutine(bb[1][0:3]);
-   mut_subroutine(aa[1:3]); // aa[3] = 10 
+Arrays may be passed to subroutines and externs. For more details, see 
+:any:`arrays-in-subroutines`.
 
 Types related to timing
 -----------------------
