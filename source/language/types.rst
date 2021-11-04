@@ -328,11 +328,16 @@ about the order that updates are made in.
 .. code-block:: c
 
    def arr_subroutine(const array[int[8], dim(1)] arr_arg) {...}
-   array[int[8], 3] aa;
+   def mut_subroutine(mutable array[int[8], dim(1)] arr_arg) {
+     arr_arg[2] = 10; // allowed
+     ...
+   }
+   array[int[8], 5] aa;
    array[int[8], 3, 5] bb;
 
    arr_subroutine(aa);
    arr_subroutine(bb[1][0:3]);
+   mut_subroutine(aa[1:3]); // aa[3] = 10 
 
 Types related to timing
 -----------------------
