@@ -184,7 +184,7 @@ aliasStatement
 indexIdentifier
     : Identifier rangeDefinition
     | Identifier ( LBRACKET expressionList RBRACKET )?
-    | indexIdentifier '||' indexIdentifier
+    | indexIdentifier '++' indexIdentifier
     ;
 
 indexIdentifierList
