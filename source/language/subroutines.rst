@@ -82,7 +82,7 @@ Arrays in subroutines
 Arrays may be passed as arguments to subroutines and externs. All array
 arguments are passed as references and must include a type modifier specifying
 if the argument is ``const`` or ``mutable``. The number of dimensions for all
-array arguments must be specified using the ``dim(literal/const identifier)``
+array arguments must be specified using the ``#dim = literal/const identifier``
 syntax below. The lengths of
 the dimensions of array arguments (in the case of strided access) may not be
 known until runtime. Passing multiple overlapping mutable references to the same
@@ -92,8 +92,8 @@ about the order that updates are made in.
 
 .. code-block:: c
 
-   def arr_subroutine(const array[int[8], dim(1)] arr_arg) {...}
-   def mut_subroutine(mutable array[int[8], dim(1)] arr_arg) {
+   def arr_subroutine(const array[int[8] #dim = 1] arr_arg) {...}
+   def mut_subroutine(mutable array[int[8] #dim = 1] arr_arg) {
      arr_arg[2] = 10; // allowed
      ...
    }
@@ -110,3 +110,25 @@ dynamically allocated the memory associated with the array stays intact after
 subroutine exit. Additionally, the OpenQASM3 language is not anticipated to
 support explicit user-controlled creation of pointers and references outside
 of the specific context of passing arrays to subroutines.
+
+The dimensions of arrays may be queried inside of subroutines using the built-in
+``sizeof()`` function, which takes two parameters: the array being queried, and
+the zero-based dimension number requested. If the second parameter is omitted,
+then it defaults to ``0``, *i.e.* ``sizeof(arr) == sizeof(arr, 0)``.
+``sizeof()`` returns a ``const int[32]`` representing the length of the
+requested dimension of the array argument. The array argument can be
+subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
+
+.. code-block:: c
+
+   def arr_subroutine(const array[int[8] #dim = 2] twoD_arg) {
+     int[32] firstDim  = sizeof(twoD_arg, 0);
+     int[32] secondDim = sizeof(twoD_arg, 1);
+     int[32] sum = 0;
+     for ii in [0:firstDim-1] {
+       for jj in [0:secondDim-1] {
+         sum += twoD_arg[ii][jj];
+       }
+     }
+     ...
+   }
