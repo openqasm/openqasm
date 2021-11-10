@@ -59,6 +59,9 @@ html_static_path = ['_static']
 # indicate the location of document like canonical_url.
 html_baseurl = os.getenv('HTML_BASEURL', '')
 
+# Add css styles for colored text
+html_css_files = ['colors.css']
+
 # If True, figures, tables and code-blocks are automatically numbered
 # if they have a caption.
 numfig = True

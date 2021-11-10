@@ -393,47 +393,9 @@ the vendor.
 Allowed casts
 ~~~~~~~~~~~~~
 
-.. role:: gbg
-
-.. raw:: html
-
-   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-   <script>
-     $(document).ready(function() {
-       $('.gbg').parent().addClass('gbg-parent');
-     });
-   </script>
-   <style>
-      .gbg-parent {text-align:center;background-color:#c6efce;color:#006100;}
-   </style>
-
 .. role:: rbg
-
-.. raw:: html
-
-   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-   <script>
-     $(document).ready(function() {
-       $('.rbg').parent().addClass('rbg-parent');
-     });
-   </script>
-   <style>
-      .rbg-parent {text-align:center;background-color:#ffc7ce;color:#9c0006;}
-   </style>
-
+.. role:: gbg
 .. role:: center
-   
-.. raw:: html
-
-   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-   <script>
-     $(document).ready(function() {
-       $('.center').parent().addClass('center-parent');
-     });
-   </script>
-   <style>
-      .center-parent {text-align: center}
-   </style>
 
 +--------------+--------------------------------------------------------------------------------------------------------+
 |              |                                       :center:`Casting To`                                             |
