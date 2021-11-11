@@ -454,7 +454,10 @@ Two or more classical arrays can be
 concatenated to form an array of the same type whose size is the
 sum of the sizes of the individual arrays. Unlike with qubit registers, this operation
 copies the contents of the input arrays to form the new (larger) array. This means that
-arrays *can* be concatenated with themselves.
+arrays *can* be concatenated with themselves. However, the array concatenation
+operator is forbidden to be used directly in the argument list of a subroutine
+or extern call. If a concatenated array is to be passed to a subroutine then it
+should be explicitly declared and assigned the concatenation.
 
 .. code-block:: c
 
@@ -473,6 +476,9 @@ arrays *can* be concatenated with themselves.
    // combined slicing and concatenation
    selfConcat[0:3] = first[0:1] || third[1:2];
    // selfConcat == {0, 1, 6, 7}
+
+   subroutine_call(first || third) // forbidden
+   subroutine_call(selfConcat) // allowed
 
 Arrays can be sliced just like quantum registers using index sets. Slicing uses
 the subscript operator ``[]``, but produces an array (or reference in the case
