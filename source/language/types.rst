@@ -291,6 +291,8 @@ can be accessed, using the following general syntax:
    multiDim[0][0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1][1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
+Arrays *cannot* be declared inside the body of a function or gate. All arrays
+*must* be declared within the global scope of the program.
 Indexing of arrays is n-based *i.e.*, negative indices are allowed.
 Multi-dimensional arrays (as in the example above) are allowed, with a maximum
 of 7 total dimensions.
