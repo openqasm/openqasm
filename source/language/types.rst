@@ -435,8 +435,10 @@ Casting from int/uint
 ``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C99
 behavior. Casting to ``bool`` values follows the convention ``val != 0``.
 As noted above, if the value is too large to be represented in the
-target type the result is implementation-specific. Casting to ``bit[m]`` 
-is only allowed when ``m==n``. If the target 
+target type the result is implementation-specific. However, 
+casting between ``int[n]`` and ``uint[n]`` is expected to preserve the bit
+ordering, specifically it should be the case that ``x == int[n](uint[n](x))``
+and vice versa. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target
 ``bit`` has more or less precision, then explicit slicing syntax must be given.
 As noted, the conversion is done assuming a little-endian 2's complement 
 representation.
