@@ -55,7 +55,7 @@ follows
    c = measure q;
    c2 = measure r;
    bit result;
-   result = parity(c || c2);
+   result = parity(c ++ c2);
 
 We require that we know the signature at compile time, as we do in this
 example. We could also just as easily have used an extern function for
@@ -70,4 +70,4 @@ this
    c = measure q;
    c2 = measure r;
    bit result;
-   result = parity(c || c2);
+   result = parity(c ++ c2);

@@ -683,7 +683,7 @@ class IndexIdentifier(QASMNode):
         b
         b[1]
         b[3:5]
-        b || c
+        b ++ c
     """
 
 
@@ -759,8 +759,8 @@ class Concatenation(IndexIdentifier):
 
     Example::
 
-        segment1 || segment2
-        qubits[0:10] || qubits[15:20]
+        segment1 ++ segment2
+        qubits[0:10] ++ qubits[15:20]
     """
 
     lhs: Union[IndexIdentifier, Identifier]
