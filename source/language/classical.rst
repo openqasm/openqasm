@@ -113,7 +113,7 @@ multiplication, division, and power and the corresponding assignment operators.
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers support addition, subtraction, multiplication, and division and the corresponding
+Complex numbers support addition, subtraction, multiplication, division, power and the corresponding
 assignment operators.
 
 .. code-block:: c
@@ -122,8 +122,9 @@ assignment operators.
    complex[float[64]] b = -2.0 - 7.0im;
    complex[float[64]] c = a + b; // c = 8.0 - 2.0im
    complex[float[64]] d = a - b; // d = 12.0+12.0im;
-   complex[float[64]] e = a*b; // e = 15.0-80.0im;
-   complex[float[64]] f = a/b; // f = (-55.0+60.0im)/53.0
+   complex[float[64]] e = a * b; // e = 15.0-80.0im;
+   complex[float[64]] f = a / b; // f = (-55.0+60.0im)/53.0
+   complex[float[64]] g = a ** b; // g = (0.10694695640729072+0.17536481119721312im)
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
