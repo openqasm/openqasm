@@ -228,7 +228,7 @@ including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` a
 statement ``const type name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
-declarations. ``const``` values are compile-time constants, allowing the
+declarations. ``const`` values are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
 calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
@@ -257,7 +257,7 @@ are all of type ``float[64]``.
 
       +-------------------------------+--------------+--------------+---------------------+
       | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |
-      +-------------------------------+--------------+--------------+---------------------+
+      +===============================+==============+==============+=====================+
       | Pi                            | pi           | π            | 3.1415926535...     |
       +-------------------------------+--------------+--------------+---------------------+
       | Tau                           | tau          | τ            | 6.283185...         |
@@ -279,25 +279,53 @@ their argument expression in parentheses:
 
    .. table:: Built-in mathematical functions in OpenQASM3.
 
-      +--------+
-      | arccos |
-      +--------+
-      | arcsin |
-      +--------+
-      | arctan |
-      +--------+
-      | cos    |
-      +--------+
-      | exp    |
-      +--------+
-      | ln     |
-      +--------+
-      | sin    |
-      +--------+
-      | sqrt   |
-      +--------+
-      | tan    |
-      +--------+
+      +----------+--------------------------------+---------------------+
+      | Function | [Input Range/Type] , [...]     | [Output Range/Type] |
+      +==========+================================+=====================+
+      | arccos   | [-1, 1]                        | [0, pi rad]         |
+      +----------+--------------------------------+---------------------+
+      | arcsin   | [-1, 1]                        | [-pi/2, pi/2 rad]   |
+      +----------+--------------------------------+---------------------+
+      | arctan   | [-∞, Real, ∞]                  | [-pi/2, pi/2 rad]   |
+      +----------+--------------------------------+---------------------+
+      | ceiling  | [float], [float]               | [float]             |
+      +----------+--------------------------------+---------------------+
+      | cos      | [float]                        | [float]             |
+      +----------+--------------------------------+---------------------+
+      | div      | ??                             | ??                  |
+      +----------+--------------------------------+---------------------+
+      | exp      | [float]                        | [float]             |
+      |          |                                |                     |
+      |          | [complex]                      | [complex]           |
+      +----------+--------------------------------+---------------------+
+      | floor    | [float], [float]               | [float]             |
+      +----------+--------------------------------+---------------------+
+      | log *(e)*| [float]                        | [float]             |
+      +----------+--------------------------------+---------------------+
+      |  mod     | [int], [int]                   | [int]               |
+      |          |                                |                     |
+      |          | [float], [int,float]           | [float]             |
+      +----------+--------------------------------+---------------------+
+      | popcount | [bits, unsigned]               | [positive int]      |
+      +----------+--------------------------------+---------------------+
+      | pow      | [int], [unsigned int]          | [int]               |
+      |          |                                |                     |
+      |          | [float], [int,float]           | [float]             |
+      |          |                                |                     |
+      |          | [complex], [int,float,complex] | [complex]           |
+      +----------+--------------------------------+---------------------+
+      | rotl     | ??                             | ??                  |
+      +----------+--------------------------------+---------------------+
+      | rotr     | ??                             | ??                  |
+      +----------+--------------------------------+---------------------+
+      | sin      | [angle]                        | [float]             |
+      +----------+--------------------------------+---------------------+
+      | sqrt     | [float] *principal root*       | [float]             |
+      |          |                                |                     |
+      |          | [complex] *principal root*     | [complex]           |
+      +----------+--------------------------------+---------------------+
+      | tan      | [angle]                        | [float]             |
+      +----------+--------------------------------+---------------------+
 
 Types related to timing
 -----------------------
