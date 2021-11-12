@@ -459,7 +459,7 @@ Casting from angle
 
 ``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``. 
 Casting to ``bit[m]`` values is only allowed when 
-``n==m``, otherwise explicit slicing synatx must be provided.
+``n==m``, otherwise explicit slicing syntax must be provided.
 
 When casting between angles of differing precisions (``n!=m``): if the target 
 has more significant bits, then the value is padded with ``m-n`` least 
