@@ -129,7 +129,7 @@ We can add/subtract two durations, or multiply or divide them by a constant, to 
 duration. Division of two durations results in a machine-precision float 
 (see :ref:`divideDuration`). Negative durations are allowed, however
 passing a negative duration to a ``gate[duration]`` or ``box[duration]`` expression will result in an error.
-All operations on durations happen at compile time operations since ultimately all
+All operations on durations happen at compile time since ultimately all
 durations, including stretches, will be resolved to constants.
 
 .. code-block:: c
