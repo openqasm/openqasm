@@ -391,15 +391,6 @@ empty set. If :math:`c` is not given, it is assumed to be one, and
 :math:`c` cannot be zero. Note the index sets can be defined by
 variables whose values may only be known at run time.
 
-Register concatenation
-----------------------
-
-Two or more quantum registers can be concatenated to form a register whose size is the
-sum of the sizes of the individual registers. The concatenated register
-is a reference to the qubits of the original registers. The
-statement ``a || b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
-be concatenated with any part of itself.
-
 .. code-block:: c
 
    qubit[2] one;
@@ -419,7 +410,7 @@ be concatenated with any part of itself.
    // Using negative ranges to take the last 3 elements
    let last_three = two[-4:-1];
    // Concatenate two alias in another one
-   let both = sliced || last_three;
+   let both = sliced ++ last_three;
 
 Classical value bit slicing
 ---------------------------
@@ -460,7 +451,7 @@ to provide good error messages.
 Array concatenation and slicing
 -------------------------------
 
-Two or more classical arrays can be
+Two or more classical arrays of the same fundamental type can be
 concatenated to form an array of the same type whose size is the
 sum of the sizes of the individual arrays. Unlike with qubit registers, this operation
 copies the contents of the input arrays to form the new (larger) array. This means that
@@ -474,8 +465,8 @@ should be explicitly declared and assigned the concatenation.
    array[int[8], 2] first = {0, 1};
    array[int[8], 3] second = {2, 3, 4};
 
-   array[int[8], 5] concat = first || second;
-   array[int[8], 4] selfConcat = first || first;
+   array[int[8], 5] concat = first ++ second;
+   array[int[8], 4] selfConcat = first ++ first;
 
    array[int[8], 2] secondSlice = second[1:2]; // {3, 4}
 
@@ -484,10 +475,10 @@ should be explicitly declared and assigned the concatenation.
 
    array[int[8], 4] third = {5, 6, 7, 8};
    // combined slicing and concatenation
-   selfConcat[0:3] = first[0:1] || third[1:2];
+   selfConcat[0:3] = first[0:1] ++ third[1:2];
    // selfConcat == {0, 1, 6, 7}
 
-   subroutine_call(first || third) // forbidden
+   subroutine_call(first ++ third) // forbidden
    subroutine_call(selfConcat) // allowed
 
 Arrays can be sliced just like quantum registers using index sets. Slicing uses
