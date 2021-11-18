@@ -4,7 +4,7 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const buffer_size = 6;  // size of magic state buffer
+const int[32] buffer_size = 6;  // size of magic state buffer
 
 // Y-basis measurement
 def ymeasure(qubit q) -> bit {

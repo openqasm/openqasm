@@ -185,6 +185,9 @@ TSWLatexianTemp*
 # VSCode
 .vscode
 
+# Pycharm
+.idea
+
 # Python
 .venv
 __pycache__

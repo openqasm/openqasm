@@ -5,7 +5,7 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const n_pairs = 10;  // number of teleportations to do
+const int[32] n_pairs = 10;  // number of teleportations to do
 
 def bellprep(qubit[2] q) {
   reset q;

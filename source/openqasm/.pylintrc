@@ -1,0 +1,37 @@
+[MASTER]
+max-line-length=100
+output-format=colorized
+score=no
+reports=no
+# something inspired by VSCode's defaults but with a few more thrown in
+disable=all
+enable=
+    E,  # all errors
+    F,  # all fatal
+    anomalous-backslash-in-string,
+    assert-on-tuple,
+    bad-format-string,
+    bad-indentation,
+    bad-open-mode,
+    binary-op-exception,
+    consider-merging-isinstance,
+    dangerous-default-value,
+    duplicate-key,
+    expression-not-assigned,
+    global-variable-not-assigned,
+    lost-exception,
+    mixed-line-endings,
+    pointless-statement,
+    redefined-builtin,
+    simplifiable-if-statement,
+    trailing-whitespace,
+    unnecessary-pass,
+    unreachable,
+    unused-import,
+    unnecessary-semicolon,
+    unused-variable,
+    wrong-import-order,
+    wrong-import-position,
+
+# Ignore long lines containing urls or pylint directives.
+ignore-long-lines=^(.*#\w*pylint: disable.*|\s*(# )?<?https?://\S+>?)$

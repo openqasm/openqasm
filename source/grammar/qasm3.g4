@@ -118,7 +118,7 @@ numericType
     ;
 
 constantDeclaration
-    : 'const' Identifier equalsExpression
+    : 'const' classicalType Identifier equalsExpression
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
@@ -184,7 +184,7 @@ aliasStatement
 indexIdentifier
     : Identifier rangeDefinition
     | Identifier ( LBRACKET expressionList RBRACKET )?
-    | indexIdentifier '||' indexIdentifier
+    | indexIdentifier '++' indexIdentifier
     ;
 
 indexIdentifierList
@@ -409,7 +409,18 @@ builtInCall
     ;
 
 builtInMath
-    : 'sin' | 'cos' | 'tan' | 'exp' | 'ln' | 'sqrt' | 'rotl' | 'rotr' | 'popcount'
+    : 'arcsin'
+    | 'sin'
+    | 'arccos'
+    | 'cos'
+    | 'arctan'
+    | 'tan'
+    | 'exp'
+    | 'ln'
+    | 'sqrt'
+    | 'rotl'
+    | 'rotr'
+    | 'popcount'
     ;
 
 castOperator

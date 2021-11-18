@@ -92,10 +92,10 @@ Users specify the grammar used inside ``defcal`` blocks with a
 
    defcalgrammar "openpulse";
 
-Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``'s
+Note that ``defcal`` and ``gate`` communicate orthogonal information to the compiler. ``gate``\s
 define unitary transformation rules to the compiler. The compiler may
 freely invoke such rules on operations while preserving the structure of
-a circuit as a collection of ``gate``'s and ``subroutine``'s. The ``defcal`` declarations instead define
+a circuit as a collection of ``gate``\s and ``subroutine``\s. The ``defcal`` declarations instead define
 elements of a symbol lookup table. As soon as the compiler replaces a ``gate``
 with a ``defcal`` definition, we have changed the fundamental structure of the
 circuit. Most of the time symbols in the ``defcal`` table will also have
@@ -176,10 +176,10 @@ The majority of OpenQASM users will use the default calibrations, however,
 for those that want more control, but do not want to bootstrap calibrations for an entire
 system it is expected that the target system provider will provide an include
 file to the user. This will contain the declaration of the ``defcalgrammar``, constants,
-``defcal``s and other grammar and system specific components such as ``port``s,
-``waveform``s and ``frame``s in the `OpenPulse defcalgrammar <openpulse.html>`. The user
+``defcal``\s and other grammar and system specific components such as ``port``\s,
+``waveform``\s and ``frame``\s in the `OpenPulse defcalgrammar <openpulse.html>`. The user
 may then plugin to the existing calibrations by defining new calibrations, or overwriting
-existing ones by using the same ``port``s and ``frame``s.
+existing ones by using the same ``port``\s and ``frame``\s.
 The example below demonstrates this in practice for a two-qubit,
 cross-resonance device using a ``backend.inc`` include file.
 The name ``backend.inc`` is arbitrary - it's just a file to be included using the

@@ -3,7 +3,7 @@ OPENQASM 3;
 include "stdgates.inc";
 
 // declarations
-const n = 3;
+const int[32] n = 3;
 extern vote(bit[n]) -> bit;
 
 def logical_meas(qubit[3] d) -> bit {

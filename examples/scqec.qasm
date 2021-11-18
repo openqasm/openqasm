@@ -7,10 +7,10 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const d = 3;         // code distance
-const m = 10;        // number of syndrome measurement cycles
-const shots = 1000;  // number of samples
-const n = d^2;       // number of code qubits
+const int[32] d = 3;         // code distance
+const int[32] m = 10;        // number of syndrome measurement cycles
+const int[32] shots = 1000;  // number of samples
+const int[32] n = d^2;       // number of code qubits
 
 uint[32] failures;  // number of observed failures
 
