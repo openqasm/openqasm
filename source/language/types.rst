@@ -362,9 +362,6 @@ another name as long as the alias is in scope.
 Index sets and slicing
 ----------------------
 
-<<<<<<< HEAD
-Quantum registers can be indexed in a way that selects a
-=======
 Register concatenation and slicing
 ----------------------------------
 
@@ -376,7 +373,6 @@ statement ``a ++ b`` denotes the concatenation of registers ``a`` and ``b``. A r
 be concatenated with any part of itself.
 
 Classical and quantum registers can be indexed in a way that selects a
->>>>>>> master
 subset of (qu)bits, i.e. by an index set. A register so indexed is
 interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
