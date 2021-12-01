@@ -4,8 +4,8 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const n = 10;          // number of iterations
-const theta = 3 * pi / 8;  // phase angle on target qubit
+const int[32] n = 10;          // number of iterations
+const float[32] theta = 3 * pi / 8;  // phase angle on target qubit
 
 qubit q;    // phase estimation qubit
 qubit r;    // target qubit for the controlled-unitary gate

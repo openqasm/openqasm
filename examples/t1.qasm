@@ -5,8 +5,8 @@ OPENQASM 3.0;
 include "stdgates.inc";
 
 duration stride = 1us;            // time resolution of points taken
-const points = 50;              // number of points taken
-const shots = 1000;             // how many shots per point
+const int[32] points = 50;              // number of points taken
+const int[32] shots = 1000;             // how many shots per point
 
 int[32] counts0;
 int[32] counts1 = 0;   // surviving |1> populations of qubits

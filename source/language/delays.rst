@@ -90,9 +90,11 @@ whatever their actual durations may be, we can do the following:
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
        stretch s;
+       stretch t;
+       stretch u;
        delay[s] q[0], q[1];
-       delay[s] q[2];
-       delay[s] q[3], q[4];
+       delay[t] q[2];
+       delay[u] q[3], q[4];
        barrier q;
 
 We can further control the exact alignment by giving relative weights to

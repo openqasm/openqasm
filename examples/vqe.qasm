@@ -8,10 +8,10 @@
 OPENQASM 3;
 include "stdgates.inc";
 
-const n = 10;         // number of qubits
-const layers = 3;     // number of entangler layers
-const prec = 16;      // precision of all types
-const shots = 1000;   // number of shots per Pauli observable
+const int[32] n = 10;         // number of qubits
+const int[32] layers = 3;     // number of entangler layers
+const int[32] prec = 16;      // precision of all types
+const int[32] shots = 1000;   // number of shots per Pauli observable
 
 // Parameters could be written to local variables for this
 // iteration, but we will request them using extern functions
@@ -19,9 +19,9 @@ extern get_parameter(uint[prec], uint[prec]) -> angle[prec];
 extern get_npaulis() -> uint[prec];
 extern get_pauli(int[prec]) -> bit[2 * n];
 
-// The energy calculation uses fixed point division,
+// The energy calculation uses floating point division,
 // so we do that calculation in an extern function
-extern update_energy(int[prec], uint[prec], fixed[prec,prec]) -> fixed[prec,prec];
+extern update_energy(int[prec], uint[prec], float[prec]) -> float[prec];
 
 gate entangler q { for i in [0:n-2] { cx q[i], q[i+1]; } }
 def xmeasure(qubit q) -> bit { h q; return measure q; }
@@ -71,8 +71,8 @@ def counts_for_term(bit[2*n] spec, qubit[n] q) -> uint[prec] {
 }
 
 // Estimate the expected energy
-def estimate_energy(qubit[n] q) -> fixed[prec,prec] {
-  fixed[prec, prec] energy;
+def estimate_energy(qubit[n] q) -> float[prec] {
+  float[prec] energy;
   uint[prec] npaulis = get_npaulis();
   for t in [0:npaulis-1] {
     bit[2*n] spec = get_pauli(t);
@@ -84,6 +84,6 @@ def estimate_energy(qubit[n] q) -> fixed[prec,prec] {
 }
 
 qubit[n] q;
-fixed[prec, prec] energy;
+float[prec] energy;
 
 energy = estimate_energy(q);

@@ -149,20 +149,6 @@ one another.
    int[16] my_int;
    my_int = int[16](my_uint);
 
-Signed fixed-point numbers
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are ``1:m:f`` fixed-point numbers with ``m`` integer bits, ``f`` fractional bits, and 1
-sign bit. The statement ``fixed[m, f] name;`` declares a ``1:m:f`` fixed-point number.
-
-.. code-block:: c
-
-   // Declare a 32-bit fixed point number.
-   // The number is signed, has 7 integer bits
-   // and 24 fractional bits. The decimal number
-   // assignment is implicitly cast.
-   fixed[7, 24] my_fixed = -7.0625;
-
 Floating point numbers
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -202,7 +188,7 @@ Complex numbers
 ~~~~~~~~~~~~~~~
 
 Complex numbers may be declared as ``complex[type[size]] name``, for a numeric OpenQASM classical type
-``type`` (``int``, ``fixed``, ``float``, ``angle``) and a number of bits ``size``. The real
+``type`` (``int``, ``float``, ``angle``) and a number of bits ``size``. The real
 and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
 would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
 ``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
@@ -230,47 +216,45 @@ be true and 0 will be false.
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
 
-Real constants
-~~~~~~~~~~~~~~
+Const values
+~~~~~~~~~~~~
 
-To support mathematical expressions, there are immutable real constants
-that are represented as double precision floating point numbers. On
+To support mathematical expressions, immutable constants of any classical type
+may be declared using the type modifier ``const``. On
 declaration, they take their assigned value and cannot be redefined
 within the same scope. These are constructed using an in-fix notation
 and scientific calculator features such as scientific notation, real
 arithmetic, logarithmic, trigonometric, and exponential functions
 including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant π. The
-statement ``const name = expression;`` defines a new constant. The expression on the right hand side
+statement ``const type name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
-declarations. Real constants are compile-time constants, allowing the
+declarations. ``const``` values are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
 calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
-constants can be cast to other types. Casting attempts to preserve the
-semantics, but information can be lost, since variables have fixed
-precision. Unlike casting from other types, implicit casts from real
-constants are permitted.
+constants can be cast to other types, just like other values.
 
 A standard set of built-in constants which are included in the default
-namespace are listed in table `1 <#tab:real-constants>`__.
+namespace are listed in table `1 <#tab:real-constants>`__. These constants
+are all of type ``float[64]``.
 
 .. code-block:: c
    :force:
 
    // Declare a constant
-   const my_const = 1234;
+   const int my_const = 1234;
    // Scientific notation is supported
-   const another_const = 1e2;
+   const int[64] another_const = 1e12;
    // Constant expressions are supported
-   const pi_by_2 = π / 2;
+   const float[64] pi_by_2 = π / 2;
    // Constants may be cast to real-time values
-   float[32] pi_by_2_val = float(pi_by_2)
+   float[32] pi_by_2_val = float[32](pi_by_2)
 
 .. container::
    :name: tab:real-constants
 
-   .. table:: [tab:real-constants] Built-in real constants in OpenQASM3.
+   .. table:: [tab:real-constants] Built-in real constants in OpenQASM3 of type ``float[64]``.
 
       +-------------------------------+--------------+--------------+---------------------+
       | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |
@@ -335,7 +319,7 @@ Two or more registers of the same type (i.e. classical or quantum) can
 be concatenated to form a register of the same type whose size is the
 sum of the sizes of the individual registers. The concatenated register
 is a reference to the bits or qubits of the original registers. The
-statement ``a || b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
+statement ``a ++ b`` denotes the concatenation of registers ``a`` and ``b``. A register cannot
 be concatenated with any part of itself.
 
 Classical and quantum registers can be indexed in a way that selects a
@@ -344,7 +328,7 @@ interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
 
-An index set can be specified by a single unsigned integer, a
+An index set can be specified by a single integer (signed or unsigned), a
 comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
 range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
@@ -360,7 +344,7 @@ variables whose values may only be known at run time.
    qubit[2] one;
    qubit[10] two;
    // Aliased register of twelve qubits
-   let concatenated = one || two;
+   let concatenated = one ++ two;
    // First qubit in aliased qubit array
    let first = concatenated[0];
    // Last qubit in aliased qubit array
@@ -374,7 +358,7 @@ variables whose values may only be known at run time.
    // Using negative ranges to take the last 3 elements
    let last_three = two[-4:-1];
    // Concatenate two alias in another one
-   let both = sliced || last_three;
+   let both = sliced ++ last_three;
 
 .. _castingSpecifics:
 
@@ -500,3 +484,4 @@ dividing a duration by a duration produces a machine-precision ``float``.
 
    duration one_s = 1s;
    float a_in_s = a / one_s; // 5e-7
+

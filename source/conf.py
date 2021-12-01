@@ -65,3 +65,5 @@ html_css_files = ['colors.css']
 # If True, figures, tables and code-blocks are automatically numbered
 # if they have a caption.
 numfig = True
+# Necessary setting for sphinxcontrib-bibtex >= 2.0.0
+bibtex_bibfiles = ['bibliography.bib']
