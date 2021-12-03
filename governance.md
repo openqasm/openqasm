@@ -30,7 +30,15 @@ TSC meetings shall be open to all **Contributors**. The TSC may invite additiona
 
 The TSC responsibility is to balance a desire to allow a voice to the broad OpenQASM community with lightweight processes to enable moving fast and maintaining a consistent philosophy for the language. Thus, for example, this governance document does give the freedom to the TSC to make decisions without calling a meeting and explicitly involving contributors, but the idea is that the TSC should make use of this power judiciously. The TSC aims to build consensus among **Contributors** prior to voting in most cases. Voting to resolve disagreements is ideally expected to happen less often than voting to accept the consensus. The TSC has authority to make all decisions regarding OpenQASM (including amendments to this governance document), but should apply more process and seek more community input on constitutional changes than for simple fixes to the language specification.
 
-The TSC may have a **Secretary**  who organizes the meeting (e.g. prepares and distributes the agenda and collects a set of issues to be considered). The TSC **Secretary** will be a **Contributor** appointed by vote of the TSC.
+The TSC may have a **Secretary**  who organizes the meeting. The TSC **Secretary** will be a **Contributor** appointed by vote of the TSC. The appointment term is for 6 months and renewable.
+The responsibility of the TSC **Secretary** include:
+
+* Schedule and host the TSC meetings
+* Keep minutes for the TSC meetings
+* Keep track on stalled issues and PRs and raise them to the TSC for attention (either in the Slack channel or as part of the TSC meeting)
+* Independently recognize controversy and conflicting ideas and make agenda items for them
+* Maintain and manage the contributors access privileges in the repository, Slack channels, meeting invites, etc.
+* Maintain general documents such as `WG.md`
 
 The TSC will, from time to time, elect to create **Working Groups** to study issues. The TSC will appoint a **Contributor** as chair for each WG. These WGs should come back to the TSC with a proposal in the form of a language RFC or pull request to the OpenQASM specification. A WG will be automatically disbanded upon acceptance or (final) rejection of an RFC.
 
