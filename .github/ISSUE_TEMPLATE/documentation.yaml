@@ -1,39 +1,35 @@
-name: 🐛 Bug report
-description: Create a report to help us improve 🤔
+name: Documentation
+description: Create an issue for documentation
 title: '[]: '
 labels:
-  - bug
+  - documentation
 body:
+  - type: markdown
+    attributes:
+      value: '# **Did you find a doc bug or broken link that needs to be fixed?**'
   - type: input
     attributes:
-      label: 'OpenQASM version:'
-    validations:
-      required: true
+      label: What is the file name(s) where you found the bug?
   - type: input
     attributes:
-      label: 'Python version:'
-    validations:
-      required: true
+      label: >-
+        What is the current text that needs to be fixed or removed? (You can
+        copy and paste)
   - type: input
     attributes:
-      label: 'Operating system:'
-    validations:
-      required: true
-  - type: textarea
+      label: What should the documentation say instead?
+  - type: input
     attributes:
-      label: What is the current behavior?
-    validations:
-      required: true
-  - type: textarea
+      label: Are there other related issues or pull requests about this bug?
+  - type: markdown
     attributes:
-      label: Steps to reproduce the problem
-    validations:
-      required: true
-  - type: textarea
+      value: '# **Does existing documentation need to be updated with new content?**'
+  - type: input
     attributes:
-      label: What is the expected behavior?
-    validations:
-      required: true
-  - type: textarea
+      label: Which files need to be updated?
+  - type: input
     attributes:
-      label: Suggested solutions (Optional)
+      label: What content needs to be updated or replaced? (You can copy and paste)
+  - type: input
+    attributes:
+      label: What new content needs to be added?
