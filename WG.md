@@ -29,7 +29,7 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 Chair: Michael Healy (IBM Quantum)  
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
-### Pragma
+### Pragmas
 
 **Objective**: Define a pragma syntax and standard directives   
 **Questions**:
