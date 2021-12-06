@@ -29,6 +29,18 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 Chair: Michael Healy (IBM Quantum)  
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
+### Pragma
+
+**Objective**: Define a pragma syntax and standard directives   
+**Questions**:
+
+ * What is the pragma syntax to define custom directives
+ * what is not supported by pragmas and should be supported by the language itself
+ * Which use cases from https://github.com/Qiskit/openqasm/issues/294 are covered?
+
+Chair: Jeff Heckey (Amazon)  
+Members: 
+
 
 ## Past Working Groups
 
