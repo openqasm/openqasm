@@ -554,9 +554,10 @@ class ConstantDeclaration(Statement):
 
     Example::
 
-        const n = 10;
+        const int[16] n = 10;
     """
 
+    type: ClassicalType
     identifier: Identifier
     init_expression: Expression
 

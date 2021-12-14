@@ -403,6 +403,7 @@ class QASMNodeVisitor(qasm3Visitor):
     @span
     def visitConstantDeclaration(self, ctx: qasm3Parser.ConstantDeclarationContext):
         return ConstantDeclaration(
+            type=self.visit(ctx.classicalType()),
             identifier=add_span(
                 Identifier(name=ctx.Identifier().getText()), get_span(ctx.Identifier())
             ),
