@@ -28,14 +28,18 @@ reference: |
                           "01"
                       ,
                       expression
-                        expressionTerminator
-                          expressionTerminator
-                            q1
-                          [
-                          expression
-                            expressionTerminator
-                              0
-                          ]
+                        unaryExpression
+                          powerExpression
+                            indexExpression
+                              indexExpression
+                                expressionTerminator
+                                  q1
+                              indexOperator
+                                [
+                                expression
+                                  expressionTerminator
+                                    0
+                                ]
                       ,
                       expression
                         expressionTerminator

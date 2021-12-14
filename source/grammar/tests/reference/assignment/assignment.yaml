@@ -72,29 +72,35 @@ reference: |
     statement
       assignmentStatement
         classicalAssignment
-          a
-          designator
-            [
-            expression
-              expressionTerminator
-                0
-            ]
-          assignmentOperator
-            =
-          expression
-            expressionTerminator
-              expressionTerminator
-                b
+          indexedIdentifier
+            a
+            indexOperator
               [
               expression
                 expressionTerminator
-                  1
+                  0
               ]
+          assignmentOperator
+            =
+          expression
+            unaryExpression
+              powerExpression
+                indexExpression
+                  indexExpression
+                    expressionTerminator
+                      b
+                  indexOperator
+                    [
+                    expression
+                      expressionTerminator
+                        1
+                    ]
         ;
     statement
       assignmentStatement
         classicalAssignment
-          x
+          indexedIdentifier
+            x
           assignmentOperator
             +=
           expression
@@ -102,25 +108,30 @@ reference: |
               builtInCall
                 castOperator
                   classicalType
-                    singleDesignatorType
-                      int
-                    designator
-                      [
-                      expression
-                        expressionTerminator
-                          10
-                      ]
+                    nonArrayType
+                      singleDesignatorType
+                        int
+                      designator
+                        [
+                        expression
+                          expressionTerminator
+                            10
+                        ]
                 (
                 expressionList
                   expression
-                    expressionTerminator
-                      expressionTerminator
-                        a
-                      [
-                      expression
-                        expressionTerminator
-                          1
-                      ]
+                    unaryExpression
+                      powerExpression
+                        indexExpression
+                          indexExpression
+                            expressionTerminator
+                              a
+                          indexOperator
+                            [
+                            expression
+                              expressionTerminator
+                                1
+                            ]
                 )
         ;
     statement
@@ -128,49 +139,51 @@ reference: |
         quantumMeasurementAssignment
           quantumMeasurement
             measure
-            indexIdentifier
+            indexedIdentifier
               q
-              [
-              expressionList
-                expression
-                  expressionTerminator
-                    1
-              ]
-          ->
-          indexIdentifier
-            a
-            [
-            expressionList
-              expression
-                expressionTerminator
-                  0
-            ]
-        ;
-    statement
-      assignmentStatement
-        quantumMeasurementAssignment
-          indexIdentifier
-            a
-          =
-          quantumMeasurement
-            measure
-            indexIdentifier
-              q
-              rangeDefinition
+              indexOperator
                 [
                 expression
                   expressionTerminator
                     1
-                :
-                expression
-                  expressionTerminator
-                    2
+                ]
+          ->
+          indexedIdentifier
+            a
+            indexOperator
+              [
+              expression
+                expressionTerminator
+                  0
+              ]
+        ;
+    statement
+      assignmentStatement
+        quantumMeasurementAssignment
+          indexedIdentifier
+            a
+          =
+          quantumMeasurement
+            measure
+            indexedIdentifier
+              q
+              indexOperator
+                [
+                rangeDefinition
+                  expression
+                    expressionTerminator
+                      1
+                  :
+                  expression
+                    expressionTerminator
+                      2
                 ]
         ;
     statement
       assignmentStatement
         classicalAssignment
-          b
+          indexedIdentifier
+            b
           assignmentOperator
             =
           expression
@@ -184,16 +197,20 @@ reference: |
                           bitShiftExpression
                             additiveExpression
                               multiplicativeExpression
-                                powerExpression
-                                  expressionTerminator
-                                    a
+                                unaryExpression
+                                  powerExpression
+                                    indexExpression
+                                      expressionTerminator
+                                        a
                       equalityOperator
                         ==
                       comparisonExpression
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              powerExpression
-                                expressionTerminator
-                                  0
+                              unaryExpression
+                                powerExpression
+                                  indexExpression
+                                    expressionTerminator
+                                      0
         ;

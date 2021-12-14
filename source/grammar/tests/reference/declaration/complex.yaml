@@ -55,14 +55,18 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        4
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            4
                                 -
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      5.5im
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          5.5im
         ;
     statement
       classicalDeclarationStatement
@@ -94,14 +98,18 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        a
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            a
                                 +
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      b
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          b
         ;
     statement
       classicalDeclarationStatement
@@ -123,20 +131,14 @@ reference: |
             equalsExpression
               =
               expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      a
-                                    **
-                                    powerExpression
-                                      expressionTerminator
-                                        b
+                unaryExpression
+                  powerExpression
+                    powerExpression
+                      indexExpression
+                        expressionTerminator
+                          a
+                    **
+                    indexExpression
+                      expressionTerminator
+                        b
         ;
