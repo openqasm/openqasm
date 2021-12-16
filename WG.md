@@ -38,8 +38,12 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
  * what is not supported by pragmas and should be supported by the language itself
  * Which use cases from https://github.com/Qiskit/openqasm/issues/294 are covered?
 
-Chair: Jeff Heckey (Amazon)  
+Chair: Jeff Heckey (AWS)  
 Members: 
+```suggestion
+Members: Jeff Heckey (AWS), Ali Javadi (IBM Quantum)
+BẢO Bach Gia (Ho Chi Minh University of Technology), Blake Johnson (IBM Quantum), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
+
 
 
 ## Past Working Groups
