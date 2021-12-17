@@ -101,7 +101,7 @@ about the order that updates are made in.
    array[int[8], 3, 5] bb;
 
    arr_subroutine(aa);
-   arr_subroutine(bb[1][0:3]);
+   arr_subroutine(bb[1, 0:3]);
    mut_subroutine(aa[1:3]); // aa[3] = 10 
 
 The lifetime of the array reference is limited to within the scope of the

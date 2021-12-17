@@ -282,13 +282,13 @@ can be accessed, using the following general syntax:
    int[32] firstElem = myArray[0]; // 0
    int[32] lastElem = myArray[4]; // 4
    int[32] alsoLastElem = myArray[-1]; // 4
-   float[32] firstLastElem = multiDim[0][1]; // 1.2
-   float[32] lastLastElem = multiDim[2][1]; // 3.2
-   float[32] alsoLastLastElem = multiDim[-1][-1]; // 3.2
+   float[32] firstLastElem = multiDim[0, 1]; // 1.2
+   float[32] lastLastElem = multiDim[2, 1]; // 3.2
+   float[32] alsoLastLastElem = multiDim[-1, -1]; // 3.2
 
    myArray[4] = 10; // myArray == {0, 1, 2, 3, 10}
-   multiDim[0][0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
-   multiDim[-1][1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
+   multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
+   multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
@@ -296,7 +296,10 @@ Indexing of arrays is n-based *i.e.*, negative indices are allowed.
 The index ``-1`` means the last element of the array, ``-2`` is the second to
 last, and so on, with ``-n`` being the first element of an n-element array.
 Multi-dimensional arrays (as in the example above) are allowed, with a maximum
-of 7 total dimensions.
+of 7 total dimensions. The subscript operator ``[]`` is used for element access,
+and for multi-dimensional arrays subarray accesses can be specified using a
+comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
+dimesion specified first.
 
 For backwards compatability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
@@ -313,7 +316,7 @@ the shape and type of the assigned value must match that of the reference.
    array[int[8], 4, 3] bb;
 
    bb[0] = aa; // all of aa is copied to first element of bb
-   bb[0][1] = aa[2] // last element of aa is copied to one element of bb
+   bb[0, 1] = aa[2] // last element of aa is copied to one element of bb
 
    bb[0] = 1 // error - shape mismatch
 
@@ -385,8 +388,10 @@ cannot be indexed by an empty index set.
 Similarly, classical arrays can be indexed using index sets. See :any:`array-slicing`.
 
 An index set can be specified by a single integer (signed or unsigned), a
-comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
-range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
+comma-separated list of integers ``a,b,c,…``, or a range. If the index
+set is described by a comma-separated list, then the list
+*must* be enclosed by curly braces ``{}``. Ranges are written as ``a:b`` or
+``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
 where :math:`m` is the largest integer such that :math:`a+mc\leq b` if
 :math:`c>0` and :math:`a+mc\geq b` if :math:`c<0`. If :math:`a=b` then
@@ -406,7 +411,7 @@ variables whose values may only be known at run time.
    // Last qubit in aliased qubit array
    let last = concatenated[-1];
    // Qubits zero, three and five
-   let qubit_selection = two[0, 3, 5];
+   let qubit_selection = two[{0, 3, 5}];
    // First six qubits in aliased qubit array
    let sliced = concatenated[0:6];
    // Every second qubit
@@ -436,19 +441,19 @@ always returns a bit array of size equal to the size of the index set.
 
    myInt[4:7] = "1010"; // myInt == 0xAF
 
-For the purpose of accessing bit-level portions of array element values, a
-special ``#`` signifier may optionally be inserted between the array accessor
-and the bit accessor. This can help with readability and the compiler's ability
-to provide good error messages.
+Bit-level access is still possible with elements of arrays. It is suggested that
+multi-dimensional access be done using the comma-delimited version of the
+subscript operator to reduce confusion. With this convention nearly all
+instances of multiple subscripts ``[][]`` will be bit-level accesses of array
+elements.
 
 .. code-block:: c
 
    array[int[32], 5] intArr = {0, 1, 2, 3, 4};
    // Access bit 0 of element 0 of intArr and set it to 1
-   intArr[0]#[0] = 1;
-   intArr[1][0] = 0; // The '#' is optional
+   intArr[0][0] = 1;
    // lowest 5 bits of intArr[4] copied to b
-   bit[5] b = intArr[4]#[0:4];
+   bit[5] b = intArr[4][0:4];
 
 .. _array-slicing:
 
@@ -502,16 +507,16 @@ the slices must match.
    array[int[8], 4, 3, 2] threeD; // 4x3x2
    array[int[8], 2, 3, 4] anotherThreeD; // 2x3x4
 
-   threeD[0][0][0] = scalar; // allowed
-   threeD[0][0] = oneD; // allowed
+   threeD[0, 0, 0] = scalar; // allowed
+   threeD[0, 0] = oneD; // allowed
    threeD[0] = twoD; // allowed
 
    threeD[0] = oneD; // error - shape mismatch
-   threeD[0][0] = scalar // error - shape mismatch
+   threeD[0, 0] = scalar // error - shape mismatch
    threeD = anotherThreeD // error - shape mismatch
 
    twoD[1:2] = anotherTwoD[0:1]; // allowed
-   twoD[1:2][0] = anotherTwoD[0:1][1]; // allowed
+   twoD[1:2, 0] = anotherTwoD[0:1, 1]; // allowed
 
 .. _castingSpecifics:
 
