@@ -301,7 +301,7 @@ and for multi-dimensional arrays subarray accesses can be specified using a
 comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
 dimesion specified first.
 
-For backwards compatability, the standard
+For interoperability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
 array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
 ``array[qubit, 5] q1;``).
