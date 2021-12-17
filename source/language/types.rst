@@ -293,6 +293,8 @@ can be accessed, using the following general syntax:
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
 Indexing of arrays is n-based *i.e.*, negative indices are allowed.
+The index ``-1`` means the last element of the array, ``-2`` is the second to
+last, and so on, with ``-n`` being the first element of an n-element array.
 Multi-dimensional arrays (as in the example above) are allowed, with a maximum
 of 7 total dimensions.
 
