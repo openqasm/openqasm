@@ -33,7 +33,7 @@ gate ry(θ) a { U(θ, 0, 0) a; }
 gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
 
 // controlled-NOT
-gate cx c, t { ctrl @ x c, t; }
+gate cx a, b { ctrl @ x a, b; }
 // controlled-Y
 gate cy a, b { ctrl @ y a, b; }
 // controlled-Z
@@ -58,11 +58,11 @@ gate ccx a, b, c { ctrl @ ctrl @ x a, b, c; }
 gate cswap a, b, c { ctrl @ swap a, b, c; }
 
 // four parameter controlled-U gate with relative phase γ
-gate cu(θ, φ, λ, γ) c, t { p(γ) c; ctrl @ U(θ, φ, λ) c, t; }
+gate cu(θ, φ, λ, γ) a, b { p(γ) a; ctrl @ U(θ, φ, λ) a, b; }
 
 // Gates for OpenQASM 2 backwards compatibility
 // CNOT
-gate CX c, t { ctrl @ U(π, 0, π) c, t; }
+gate CX a, b { ctrl @ U(π, 0, π) a, b; }
 // phase gate
 gate phase(λ) q { U(0, 0, λ) q; }
 // controlled-phase

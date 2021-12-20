@@ -33,8 +33,8 @@ and to declare a set of classical variables
 
 .. code-block:: c
 
-   int[32] x;
-   float[32] y = 5.5;
+   int[32] a;
+   float[32] b = 5.5;
    bit[3] c;
    bool my_bool = false;
 
