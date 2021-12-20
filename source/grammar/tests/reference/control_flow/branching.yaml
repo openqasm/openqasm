@@ -88,18 +88,16 @@ reference: |
                     indexIdentifier
                       x
                       [
-                      expressionList
-                        expression
-                          expressionTerminator
-                            0
+                      expression
+                        expressionTerminator
+                          0
                       ]
                     ,
                     indexIdentifier
                       x
                       [
-                      expressionList
-                        expression
-                          expressionTerminator
-                            1
+                      expression
+                        expressionTerminator
+                          1
                       ]
               ;

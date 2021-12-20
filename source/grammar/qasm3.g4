@@ -183,7 +183,7 @@ aliasStatement
 
 indexIdentifier
     : Identifier rangeDefinition
-    | Identifier ( LBRACKET expressionList RBRACKET )?
+    | Identifier (LBRACKET (discreteSet | expression) RBRACKET)?
     | indexIdentifier '++' indexIdentifier
     ;
 
@@ -440,8 +440,10 @@ assignmentOperator
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
+discreteSet: LBRACE expressionList RBRACE;
+
 setDeclaration
-    : LBRACE expressionList RBRACE
+    : discreteSet
     | rangeDefinition
     | Identifier
     ;

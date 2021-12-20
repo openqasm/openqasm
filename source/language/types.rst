@@ -329,7 +329,7 @@ The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
 
 An index set can be specified by a single integer (signed or unsigned), a
-comma-separated list of unsigned integers ``a,b,c,…``, or a range. A
+comma-separated list of unsigned integers contained in braces ``{a,b,c,…}``, or a range. A
 range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
 where :math:`m` is the largest integer such that :math:`a+mc\leq b` if
@@ -350,7 +350,7 @@ variables whose values may only be known at run time.
    // Last qubit in aliased qubit array
    let last = concatenated[-1];
    // Qubits zero, three and five
-   let qubit_selection = two[0, 3, 5];
+   let qubit_selection = two[{0, 3, 5}];
    // First six qubits in aliased qubit array
    let sliced = concatenated[0:6];
    // Every second qubit

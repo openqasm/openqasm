@@ -46,20 +46,21 @@ reference: |
                 j
                 in
                 setDeclaration
-                  {
-                  expressionList
-                    expression
-                      expressionTerminator
-                        1
-                    ,
-                    expression
-                      expressionTerminator
-                        4
-                    ,
-                    expression
-                      expressionTerminator
-                        6
-                  }
+                  discreteSet
+                    {
+                    expressionList
+                      expression
+                        expressionTerminator
+                          1
+                      ,
+                      expression
+                        expressionTerminator
+                          4
+                      ,
+                      expression
+                        expressionTerminator
+                          6
+                    }
               programBlock
                 statement
                   quantumStatement
@@ -70,10 +71,9 @@ reference: |
                           indexIdentifier
                             q
                             [
-                            expressionList
-                              expression
-                                expressionTerminator
-                                  j
+                            expression
+                              expressionTerminator
+                                j
                             ]
                     ;
           statement

@@ -131,19 +131,17 @@ reference: |
             indexIdentifier
               q
               [
-              expressionList
-                expression
-                  expressionTerminator
-                    1
+              expression
+                expressionTerminator
+                  1
               ]
           ->
           indexIdentifier
             a
             [
-            expressionList
-              expression
-                expressionTerminator
-                  0
+            expression
+              expressionTerminator
+                0
             ]
         ;
     statement
