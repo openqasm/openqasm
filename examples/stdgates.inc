@@ -62,7 +62,7 @@ gate cu(θ, φ, λ, γ) a, b { p(γ) a; ctrl @ U(θ, φ, λ) a, b; }
 
 // Gates for OpenQASM 2 backwards compatibility
 // CNOT
-gate CX a, b { ctrl @ U(π, 0, π) a, v; }
+gate CX a, b { ctrl @ U(π, 0, π) a, b; }
 // phase gate
 gate phase(λ) q { U(0, 0, λ) q; }
 // controlled-phase
