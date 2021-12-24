@@ -51,7 +51,7 @@ Below are some examples of values of type ``duration``.
        // fixed duration, backend dependent
        duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = durationof({x $3);
+       duration c = durationof({x $3;});
 
 We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
 have variable non-negative duration that are permitted to grow as necessary
@@ -89,12 +89,12 @@ whatever their actual durations may be, we can do the following:
        cx q[0], q[1];
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
-       stretch s;
-       stretch t;
-       stretch u;
-       delay[s] q[0], q[1];
-       delay[t] q[2];
-       delay[u] q[3], q[4];
+       stretch a;
+       stretch b;
+       stretch c;
+       delay[a] q[0], q[1];
+       delay[b] q[2];
+       delay[c] q[3], q[4];
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
@@ -127,14 +127,17 @@ these side effects. Also contrary to TeX, we prohibit overlapping gates.
 Operations on durations
 -----------------------
 
-We can add/subtract two durations, or multiply them by a constant, to get new
-duration. The result must be positive. These are compile time operations since ultimately all
+We can add/subtract two durations, or multiply or divide them by a constant, to get a new
+duration. Division of two durations results in a machine-precision float 
+(see :ref:`divideDuration`). Negative durations are allowed, however
+passing a negative duration to a ``gate[duration]`` or ``box[duration]`` expression will result in an error.
+All operations on durations happen at compile time since ultimately all
 durations, including stretches, will be resolved to constants.
 
 .. code-block:: c
 
        duration a = 300ns;
-       duration b = durationof({x $0});
+       duration b = durationof({x $0;});
        stretch c;
        // stretchy duration with min=300ns
        stretch d = a + 2 * c;
@@ -241,11 +244,11 @@ to properly take into account the finite duration of each gate.
 
 .. code-block:: c
 
-   stretch s;
-   stretch t;
-   duration start_stretch = s - .5 * durationof({x $0;})
-   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;}
-   duration end_stretch = s - .5 * durationof({y $0;})
+   stretch a;
+   stretch b;
+   duration start_stretch = a - .5 * durationof({x $0;});
+   duration middle_stretch = a - .5 * duration0({x $0;}) - .5 * durationof({y $0;});
+   duration end_stretch = a - .5 * durationof({y $0;});
 
    delay[start_stretch] $0;
    x $0;
@@ -258,7 +261,7 @@ to properly take into account the finite duration of each gate.
    delay[end_stretch] $0;
 
    cx $2, $3;
-   delay[t] $1;
+   delay[b] $1;
    cx $1, $2;
    u $3;
 
@@ -337,14 +340,14 @@ in the following example
 
    cx r[0], r[1];
    h q[0];
-   h s[0];
+   h a[0];
    barrier r, q[0];
-   h s[0];
+   h a[0];
    cx r[1], r[0];
    cx r[0], r[1];
 
 This will prevent an attempt to combine the CNOT gates but will not
-constrain the pair of ``h s[0];`` gates, which might be executed before or after the
+constrain the pair of ``h a[0];`` gates, which might be executed before or after the
 barrier, or cancelled by a compiler.
 
 A ``barrier`` is similar to ``delay[0]``. The main difference is that ``delay`` indicates a fully

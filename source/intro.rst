@@ -48,6 +48,29 @@ For the previous versions of OpenQASM please read arXiv:1707.03429_.
 
 .. _arXiv:1707.03429: https://arxiv.org/abs/1707.03429
 
+Implementation Details
+----------------------
+
+OpenQASM 3 is a large expansion over the previous OpenQASM 2 specification.
+Many new features for classical control flow and computation are added to make writing quantum algorithms easier, and to describe classical data processing that forms part of these algorithms.
+The language, however, is not designed to be used for general-purpose classical computation, and in the near term, any hardware that executes an OpenQASM 3 program is unlikely to support the full set of data manipulations the language can describe.
+
+Hardware implementations of OpenQASM 3 are permitted to restrict their runtime processing to only the set of operations that they can perform efficiently and in real time.
+This set of operations will differ between implementations; you should consult your hardware vendor for which language features you can expect to be possible at runtime.
+Implementations are likely to become more powerful over time, as the requirements for quantum control become less onerous to achieve.
+
+It is expected that *compilers* for OpenQASM 3 will support all of the classical operations specified in this document for values that can be reasonably inferred to be compile-time constants, and will perform these operations at compile time.
+At a minimum, "reasonably inferred" means values declared ``const``, and literals.
+For example, this means that the "scientific-calculator functions" such as ``sin``, ``exp``, and so on will always work on expressions involving only literals and values declared ``const`` of compatible types, and the compiler will completely fold such expressions into a single constant.
+Whether such operations can occur on run-time values is implementation-specific.
+This extends further, even to which types may be declared and used.
+An implementation of OpenQASM 3 is permitted to reject programs that use, for example, ``int[5]`` or ``float[16]`` declarations, if the hardware has no facilities to support them.
+Similarly, even if a hardware implementation accepts values declared ``complex[float[64]]``, it is not required to accept programs that use the infix ``**`` power operator on them at runtime, but a compiler is required to evaluate such operator expressions if the operands are compile-time known.
+
+Hardware implementations that support a particular feature *must* follow the rules for it given in this specification, unless such a feature is specifically stated to be "implementation-defined".
+If they cannot, then they *must not* accept programs that use that feature.
+The user can therefore expect that if an OpenQASM 3 program accepted by two implementations, both will perform the same behaviour except in cases this document explicitly allows it to differ.
+
 
 Contributors
 ------------

@@ -1,0 +1,35 @@
+.purple {
+  color: purple;
+}
+
+.red {
+  color: red;
+}
+
+.blue {
+  color: blue;
+}
+
+.green {
+  color: green;
+}
+
+.orange {
+  color: orange;
+}
+
+.rbg {
+  text-align: center;
+  background-color: #ffc7ce;
+  color: #9c0006;
+}
+
+.gbg {
+  text-align: center;
+  background-color: #c6efce;
+  color: #006100;
+}
+
+.center {
+  text-align: center;
+}
