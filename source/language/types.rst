@@ -292,6 +292,8 @@ their argument expression in parentheses:
       | ceiling  | [float], [float]               | [float]             |
       +----------+--------------------------------+---------------------+
       | cos      | [float]                        | [float]             |
+      |          |                                |                     |
+      |          | [angle]                        | [float]             |
       +----------+--------------------------------+---------------------+
       | div      | ??                             | ??                  |
       +----------+--------------------------------+---------------------+
@@ -307,7 +309,7 @@ their argument expression in parentheses:
       |          |                                |                     |
       |          | [float], [int,float]           | [float]             |
       +----------+--------------------------------+---------------------+
-      | popcount | [bits, unsigned]               | [positive int]      |
+      | popcount | [bits, unsigned]               | [unsigned int]      |
       +----------+--------------------------------+---------------------+
       | pow      | [int], [unsigned int]          | [int]               |
       |          |                                |                     |
@@ -315,17 +317,21 @@ their argument expression in parentheses:
       |          |                                |                     |
       |          | [complex], [int,float,complex] | [complex]           |
       +----------+--------------------------------+---------------------+
-      | rotl     | ??                             | ??                  |
+      | rotl     | [bit], [int,uint]              | [int,uint]          |
       +----------+--------------------------------+---------------------+
-      | rotr     | ??                             | ??                  |
+      | rotr     | [bit], [int,uint]              | [int,uint]          |
       +----------+--------------------------------+---------------------+
-      | sin      | [angle]                        | [float]             |
+      | sin      | [float]                        | [float]             |
+      |          |                                |                     |
+      |          | [angle]                        | [float]             |
       +----------+--------------------------------+---------------------+
       | sqrt     | [float] *principal root*       | [float]             |
       |          |                                |                     |
       |          | [complex] *principal root*     | [complex]           |
       +----------+--------------------------------+---------------------+
-      | tan      | [angle]                        | [float]             |
+      | tan      | [float]                        | [float]             |
+      |          |                                |                     |
+      |          | [angle]                        | [float]             |
       +----------+--------------------------------+---------------------+
 
 Types related to timing
