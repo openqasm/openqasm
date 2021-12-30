@@ -31,17 +31,20 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 
 ### Pragmas
 
-**Objective**: Define a pragma syntax and standard directives   
+
+**Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
 **Questions**:
 
- * What is the pragma syntax to define custom directives
- * what is not supported by pragmas and should be supported by the language itself
- * Which use cases from https://github.com/Qiskit/openqasm/issues/294 are covered?
+ * What should be the pragma syntax? Should there be more directives (e.g., #if, #define), or should the functionality avoid anything like a pre-processor?
+ * What should be supported in the language instead of as a pragma?
+ * What is not supported by pragmas
+ * Conventions:
+    * How should multiple OpenQASM tools interact with pragmas?
+    * How do pragmas that may operate at different levels of the MLIR different stages of processing determine when and where to be processed?
+    * Syntactical conventions for independent developers
 
 Chair: Jeff Heckey (AWS)  
-Members: 
-```suggestion
-Members: Jeff Heckey (AWS), Ali Javadi (IBM Quantum)
+Members: Ali Javadi (IBM Quantum)
 BẢO Bach Gia (Ho Chi Minh University of Technology), Blake Johnson (IBM Quantum), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
 
 
