@@ -35,7 +35,7 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 **Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
 **Questions**:
 
- * What should be the pragma syntax? Should there be more directives (e.g., #if, #define), or should the functionality avoid anything like a pre-processor?
+ * What should be the pragma syntax? Should there be more directives (e.g., `#if`, `#define`), or should the functionality avoid anything like a pre-processor?
  * What should be supported in the language instead of as a pragma?
  * What is not supported by pragmas
  * Conventions:
