@@ -111,7 +111,6 @@ to calibration-level instructions, OpenQASM supports the ability to declare a ``
 semantics of the selected ``defcalgrammar`` are valid. The ``cal`` block is of the same scope level as the enclosing block. The
 calibration grammar may choose to allow capturing values (with chosen syntax) from within the ``cal``
 block that were declared within the containing parent scope.
-The calibration grammar may therefore choose to allow capturing values declared within the parent scope.
 Values declared within the ``cal`` block are only referenceable from other ``cal`` blocks or ``defcal`` declarations
 that may observe that scope as defined by the calibration grammar. Values may not leak back to the block's enclosing scope.
 In practice, calibration grammars such as OpenPulse may apply
