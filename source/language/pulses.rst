@@ -108,10 +108,11 @@ Inline calibration blocks
 
 As calibration grammars may require the ability to insert top-level configuration information, perform program setup, or make inline calls
 to calibration-level instructions, OpenQASM supports the ability to declare a ``cal`` block. Within the ``cal`` block the
-semantics of the selected calibration grammar are valid. The ``cal`` block is of the same scope level as the enclosing block. The calibration
-grammar implementer may therefore choose to allow referencing or modifying values outside of the ``cal`` block but within the containing scope.
-Values declared within the ``cal`` block are only referenceable from other ``cal`` blocks or ``defcal`` declarations that may observe that scope as defined
-by the calibration grammar implementer. Values may not leak back to the enclosing blocks scope.
+semantics of the selected ``defcalgrammar`` are valid. The ``cal`` block is of the same scope level as the enclosing block. The
+calibration grammar may choose to allow capturing values (with chosen syntax) from within the ``cal``
+block that were declared within the containing parent scope.
+Values declared within the ``cal`` block are only referenceable from other ``cal`` blocks or ``defcal`` declarations
+that may observe that scope as defined by the calibration grammar. Values may not leak back to the block's enclosing scope.
 In practice, calibration grammars such as OpenPulse may apply
 a global scope to all identifiers in order to declare values shared across all ``defcal`` calls thereby linking them together.
 
@@ -215,18 +216,18 @@ existing ``include`` mechanism.
    }
 
    defcal sx $0 {
-      waveform sx_wf = drag(0.2+0.1*Im, 160dt, 40dt, 0.05);
+      waveform sx_wf = drag(0.2+0.1im, 160dt, 40dt, 0.05);
       play(sx_wf, q0_frame);
    }
 
    defcal sx $1 {
-      waveform sx_wf = drag(0.1+0.05*Im, 160dt, 40dt, 0.1);
+      waveform sx_wf = drag(0.1+0.05im, 160dt, 40dt, 0.1);
       play(sx_wf, q1_frame);
    }
 
    defcal cx $1, $0 {
-      waveform CR90p = gaussian_square(0.2+0.05*Im, 560dt, 240dt, 40dt);
-      waveform CR90m = gaussian_square(-0.2-0.05*Im, 560dt, 240dt, 40dt);
+      waveform CR90p = gaussian_square(0.2+0.05im, 560dt, 240dt, 40dt);
+      waveform CR90m = gaussian_square(-0.2-0.05im, 560dt, 240dt, 40dt);
 
       rz(pi/2) $0; rz(-pi/2) $1;
       sx $0; sx $1;
@@ -252,7 +253,7 @@ The user would then include the ``backend.inc`` in their own program and use the
    // Defcal using frames from backend.inc enabling the calibration
    // to "plugin" to the existing calibrations.
    defcal Y90p $0 {
-      waveform y90p = drag(0.1-0.2*Im, 160dt, 40dt, 0.05);
+      waveform y90p = drag(0.1-0.2im, 160dt, 40dt, 0.05);
       play(y90p, q0_frame);
    }
 
