@@ -87,7 +87,7 @@ const uint[32] first_dimension = sizeof(my_doubles);  // still 8.
 // references, not ``const``.
 def copy_3_bytes(const array[uint[8], 3] in_array, mutable array[uint[8], 3] out_array) {
     // Within this block, ``in_array`` can be read from, but not written to,
-    // whereas ``out_array`` can be both read from an written to.
+    // whereas ``out_array`` can be both read from and written to.
 }
 
 // When specifying array subroutine parameters, there is a second format where

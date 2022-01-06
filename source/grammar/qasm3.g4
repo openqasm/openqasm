@@ -397,9 +397,8 @@ powerExpression
     ;
 
 // The general form is a comma-separated list of indexing entities.
-// `discreteSet`
-// is only valid when being used as a single index: registers can support it for
-// creating aliases, but registers cannot.
+// `discreteSet` is only valid when being used as a single index: registers can
+// support it for creating aliases, but arrays cannot.
 indexOperator:
     LBRACKET
     (
