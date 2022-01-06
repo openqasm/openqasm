@@ -25,17 +25,21 @@ reference: |
                           bitShiftExpression
                             additiveExpression
                               multiplicativeExpression
-                                powerExpression
-                                  expressionTerminator
-                                    i
+                                unaryExpression
+                                  powerExpression
+                                    indexExpression
+                                      expressionTerminator
+                                        i
                         comparisonOperator
                           <
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              powerExpression
-                                expressionTerminator
-                                  10
+                              unaryExpression
+                                powerExpression
+                                  indexExpression
+                                    expressionTerminator
+                                      10
           )
         programBlock
           {
@@ -46,8 +50,8 @@ reference: |
                 j
                 in
                 setDeclaration
-                  {
-                  expressionList
+                  discreteSet
+                    {
                     expression
                       expressionTerminator
                         1
@@ -59,21 +63,20 @@ reference: |
                     expression
                       expressionTerminator
                         6
-                  }
+                    }
               programBlock
                 statement
                   quantumStatement
                     quantumInstruction
                       quantumReset
                         reset
-                        indexIdentifierList
-                          indexIdentifier
-                            q
+                        indexedIdentifier
+                          q
+                          indexOperator
                             [
-                            expressionList
-                              expression
-                                expressionTerminator
-                                  j
+                            expression
+                              expressionTerminator
+                                j
                             ]
                     ;
           statement
@@ -91,18 +94,22 @@ reference: |
                               bitShiftExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        i
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            i
                           equalityOperator
                             ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      8
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          8
               )
               programBlock
                 controlDirective

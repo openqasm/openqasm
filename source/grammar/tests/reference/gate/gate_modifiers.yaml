@@ -1,3 +1,4 @@
+# indent w/ 2 spaces
 source: |
   qubit q;
   gate g q {}
@@ -40,9 +41,8 @@ reference: |
               @
             quantumGateName
               g
-            indexIdentifierList
-              indexIdentifier
-                q
+            indexedIdentifier
+              q
         ;
     statement
       quantumStatement
@@ -59,9 +59,8 @@ reference: |
               @
             quantumGateName
               g
-            indexIdentifierList
-              indexIdentifier
-                q
+            indexedIdentifier
+              q
         ;
     statement
       quantumStatement
@@ -86,19 +85,21 @@ reference: |
                                         unaryOperator
                                           -
                                         powerExpression
-                                          expressionTerminator
-                                            1
+                                          indexExpression
+                                            expressionTerminator
+                                              1
                                     /
-                                    powerExpression
-                                      expressionTerminator
-                                        2
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            2
                 )
               @
             quantumGateName
               g
-            indexIdentifierList
-              indexIdentifier
-                q
+            indexedIdentifier
+              q
         ;
     statement
       quantumStatement
@@ -109,7 +110,6 @@ reference: |
               @
             quantumGateName
               g
-            indexIdentifierList
-              indexIdentifier
-                q
+            indexedIdentifier
+              q
         ;

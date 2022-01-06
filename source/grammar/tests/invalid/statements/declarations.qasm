@@ -31,6 +31,12 @@ complex[creg] myvar;
 complex[qreg[8]] myvar;
 complex[creg[8]] myvar;
 
+// Bad array specifiers.
+array myvar;
+array[8] myvar;
+array[int, 8] myvar;  // (no width for the integer)
+array[int, int, 2] myvar;
+
 // Invalid identifiers.
 int[8] int;
 int[8] def;
@@ -41,6 +47,14 @@ int[8] input;
 int[8] myvar = end;
 int[8] myvar =;
 float[32] myvar_f = int[32] myvar_i = 2;
+// array initialiser uses {}
+array[uint[8], 4] myvar = [4, 5, 6, 7];
+// can't use arithmetic on the entire initialiser
+array[uint[8], 4] myvar = 2 * {1, 2, 3, 4};
+// backed arrays can't use #dim
+array[uint[8], #dim=2] myvar;
+// can't have more than one type specification
+array[int[8], int[8]] myvar;
 
 // Incorrect orders.
 myvar: int[8];

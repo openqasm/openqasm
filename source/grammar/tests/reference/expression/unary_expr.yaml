@@ -11,6 +11,7 @@ reference: |
             unaryOperator
               !
             powerExpression
-              expressionTerminator
-                my_var
+              indexExpression
+                expressionTerminator
+                  my_var
         ;

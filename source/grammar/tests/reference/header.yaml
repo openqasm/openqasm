@@ -20,35 +20,38 @@ reference: |
         ioIdentifier
           input
         classicalType
-          singleDesignatorType
-            angle
-          designator
-            [
-            expression
-              expressionTerminator
-                32
-            ]
+          nonArrayType
+            singleDesignatorType
+              angle
+            designator
+              [
+              expression
+                expressionTerminator
+                  32
+              ]
         param1
         ;
       io
         ioIdentifier
           input
         classicalType
-          singleDesignatorType
-            angle
-          designator
-            [
-            expression
-              expressionTerminator
-                32
-            ]
+          nonArrayType
+            singleDesignatorType
+              angle
+            designator
+              [
+              expression
+                expressionTerminator
+                  32
+              ]
         param2
         ;
       io
         ioIdentifier
           output
         classicalType
-          bitType
-            bit
+          nonArrayType
+            bitType
+              bit
         result
         ;
