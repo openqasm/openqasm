@@ -45,7 +45,7 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 
 Chair: Jeff Heckey (AWS)  
 Members: Ali Javadi (IBM Quantum)
-BẢO Bach Gia (Ho Chi Minh University of Technology), Blake Johnson (IBM Quantum), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
+BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
 
 
 
