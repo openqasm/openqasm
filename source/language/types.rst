@@ -33,8 +33,8 @@ and to declare a set of classical variables
 
 .. code-block:: c
 
-   int[32] x;
-   float[32] y = 5.5;
+   int[32] a;
+   float[32] b = 5.5;
    bit[3] c;
    bool my_bool = false;
 
@@ -388,9 +388,8 @@ cannot be indexed by an empty index set.
 Similarly, classical arrays can be indexed using index sets. See :any:`array-slicing`.
 
 An index set can be specified by a single integer (signed or unsigned), a
-comma-separated list of integers ``a,b,c,…``, or a range. If the index
-set is described by a comma-separated list, then the list
-*must* be enclosed by curly braces ``{}``. Ranges are written as ``a:b`` or
+comma-separated list of integers contained in braces ``{a,b,c,…}``, or a range.
+Ranges are written as ``a:b`` or
 ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
 where :math:`m` is the largest integer such that :math:`a+mc\leq b` if

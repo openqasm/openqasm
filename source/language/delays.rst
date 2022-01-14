@@ -89,12 +89,12 @@ whatever their actual durations may be, we can do the following:
        cx q[0], q[1];
        U(pi/4, 0, pi/2) q[2];
        cx q[3], q[4];
-       stretch s;
-       stretch t;
-       stretch u;
-       delay[s] q[0], q[1];
-       delay[t] q[2];
-       delay[u] q[3], q[4];
+       stretch a;
+       stretch b;
+       stretch c;
+       delay[a] q[0], q[1];
+       delay[b] q[2];
+       delay[c] q[3], q[4];
        barrier q;
 
 We can further control the exact alignment by giving relative weights to
@@ -244,11 +244,11 @@ to properly take into account the finite duration of each gate.
 
 .. code-block:: c
 
-   stretch s;
-   stretch t;
-   duration start_stretch = s - .5 * durationof({x $0;});
-   duration middle_stretch = s - .5 * duration0({x $0;}) - .5 * durationof({y $0;});
-   duration end_stretch = s - .5 * durationof({y $0;});
+   stretch a;
+   stretch b;
+   duration start_stretch = a - .5 * durationof({x $0;});
+   duration middle_stretch = a - .5 * duration0({x $0;}) - .5 * durationof({y $0;});
+   duration end_stretch = a - .5 * durationof({y $0;});
 
    delay[start_stretch] $0;
    x $0;
@@ -261,7 +261,7 @@ to properly take into account the finite duration of each gate.
    delay[end_stretch] $0;
 
    cx $2, $3;
-   delay[t] $1;
+   delay[b] $1;
    cx $1, $2;
    u $3;
 
@@ -340,14 +340,14 @@ in the following example
 
    cx r[0], r[1];
    h q[0];
-   h s[0];
+   h a[0];
    barrier r, q[0];
-   h s[0];
+   h a[0];
    cx r[1], r[0];
    cx r[0], r[1];
 
 This will prevent an attempt to combine the CNOT gates but will not
-constrain the pair of ``h s[0];`` gates, which might be executed before or after the
+constrain the pair of ``h a[0];`` gates, which might be executed before or after the
 barrier, or cancelled by a compiler.
 
 A ``barrier`` is similar to ``delay[0]``. The main difference is that ``delay`` indicates a fully

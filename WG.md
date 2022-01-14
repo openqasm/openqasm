@@ -29,6 +29,25 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 Chair: Michael Healy (IBM Quantum)  
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
+### Pragmas
+
+
+**Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
+**Questions**:
+
+ * What should be the pragma syntax? Should there be more directives (e.g., `#if`, `#define`), or should the functionality avoid anything like a pre-processor?
+ * What should be supported in the language instead of as a pragma?
+ * What is not supported by pragmas
+ * Conventions:
+    * How should multiple OpenQASM tools interact with pragmas?
+    * How do pragmas that may operate at different levels of the MLIR different stages of processing determine when and where to be processed?
+    * Syntactical conventions for independent developers
+
+Chair: Jeff Heckey (AWS)  
+Members: Ali Javadi (IBM Quantum)
+BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
+
+
 
 ## Past Working Groups
 
