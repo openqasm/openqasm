@@ -53,3 +53,9 @@ float myvar[32];
 int[8] myvar1, myvar2;
 int[8] myvari, float[32] myvarf;
 int[8] myvari float[32] myvarf;
+
+// Aliasing.
+// Index sets should have explicit `{}` inside the `[]`.  However, this line may
+// be _grammatically_ valid when multidimensional arrays are added, in which
+// case this test needs removing.
+let qq = my_var[1, 2, 3];

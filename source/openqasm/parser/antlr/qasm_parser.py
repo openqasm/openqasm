@@ -323,20 +323,17 @@ class QASMNodeVisitor(qasm3Visitor):
         if ctx.Identifier():
             name = ctx.Identifier().getText()
 
-            if ctx.expressionList():
-                expr_list = []
-                for expr in ctx.expressionList().expression():
-                    expr_list.append(self.visit(expr))
-                if len(expr_list) > 1:
-                    subscript = Selection(name=name, indices=expr_list)
-                else:
-                    subscript = Subscript(name=name, index=expr_list[0])
-
+            if ctx.discreteSet():
+                indices = [
+                    self.visit(expr) for expr in ctx.discreteSet().expressionList().expression()
+                ]
+                subscript = Selection(name=name, indices=indices)
+            elif ctx.expression():
+                subscript = Subscript(name=name, index=self.visit(ctx.expression()))
             elif ctx.rangeDefinition():
                 subscript = Slice(name=name, range=self.visit(ctx.rangeDefinition()))
-
             else:
-                return add_span(Identifier(name=ctx.Identifier().getText()), get_span(ctx))
+                return add_span(Identifier(name=name), get_span(ctx))
 
         else:
             id0 = self.visit(ctx.indexIdentifier()[0])

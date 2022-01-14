@@ -669,7 +669,7 @@ def test_subscript():
 
 def test_selection():
     p = """
-    let a = b[1, 2];
+    let a = b[{1, 2}];
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -684,9 +684,9 @@ def test_selection():
     )
     SpanGuard().visit(program)
     selection = program.statements[0]
-    assert selection.span == Span(1, 0, 1, 15)
+    assert selection.span == Span(1, 0, 1, 17)
     assert selection.target.span == Span(1, 4, 1, 4)
-    assert selection.value.span == Span(1, 8, 1, 14)
+    assert selection.value.span == Span(1, 8, 1, 16)
 
 
 def test_slice():
