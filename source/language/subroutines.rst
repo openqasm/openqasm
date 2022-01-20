@@ -115,19 +115,19 @@ The dimensions of arrays may be queried inside of subroutines using the built-in
 ``sizeof()`` function, which takes two parameters: the array being queried, and
 the zero-based dimension number requested. If the second parameter is omitted,
 then it defaults to ``0``, *i.e.* ``sizeof(arr) == sizeof(arr, 0)``.
-``sizeof()`` returns a ``const int[32]`` representing the length of the
+``sizeof()`` returns a ``const uint`` representing the length of the
 requested dimension of the array argument. The array argument can be
 subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
 
 .. code-block:: c
 
    def arr_subroutine(const array[int[8], #dim = 2] twoD_arg) {
-     int[32] firstDim  = sizeof(twoD_arg, 0);
-     int[32] secondDim = sizeof(twoD_arg, 1);
+     uint[32] firstDim  = sizeof(twoD_arg, 0);
+     uint[32] secondDim = sizeof(twoD_arg, 1);
      int[32] sum = 0;
      for ii in [0:firstDim-1] {
        for jj in [0:secondDim-1] {
-         sum += twoD_arg[ii][jj];
+         sum += int[32](twoD_arg[ii][jj]);
        }
      }
      ...
