@@ -1,0 +1,39 @@
+name: 🐛 Bug report
+description: Create a report to help us improve 🤔
+title: '[]: '
+labels:
+  - bug
+body:
+  - type: input
+    attributes:
+      label: 'OpenQASM version:'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 'Python version:'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 'Operating system:'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What is the current behavior?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce the problem
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What is the expected behavior?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Suggested solutions (Optional)

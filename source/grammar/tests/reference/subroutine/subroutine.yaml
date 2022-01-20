@@ -56,14 +56,15 @@ reference: |
         returnSignature
           ->
           classicalType
-            singleDesignatorType
-              int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+            nonArrayType
+              singleDesignatorType
+                int
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
         subroutineBlock
           {
           statement
@@ -95,18 +96,22 @@ reference: |
                               bitShiftExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        result
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            result
                           equalityOperator
                             ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      2
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          2
               )
               programBlock
                 controlDirective
@@ -123,14 +128,18 @@ reference: |
                                     additiveExpression
                                       additiveExpression
                                         multiplicativeExpression
-                                          powerExpression
-                                            expressionTerminator
-                                              1
+                                          unaryExpression
+                                            powerExpression
+                                              indexExpression
+                                                expressionTerminator
+                                                  1
                                       +
                                       multiplicativeExpression
-                                        powerExpression
-                                          expressionTerminator
-                                            result
+                                        unaryExpression
+                                          powerExpression
+                                            indexExpression
+                                              expressionTerminator
+                                                result
                     ;
           returnStatement
             return
@@ -188,8 +197,8 @@ reference: |
                 j
                 in
                 setDeclaration
-                  {
-                  expressionList
+                  discreteSet
+                    {
                     expression
                       expressionTerminator
                         2
@@ -197,12 +206,13 @@ reference: |
                     expression
                       expressionTerminator
                         3
-                  }
+                    }
               programBlock
                 statement
                   assignmentStatement
                     classicalAssignment
-                      i
+                      indexedIdentifier
+                        i
                       assignmentOperator
                         +=
                       expression
@@ -222,13 +232,17 @@ reference: |
                             additiveExpression
                               additiveExpression
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      i
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          i
                               +
                               multiplicativeExpression
-                                powerExpression
-                                  expressionTerminator
-                                    1
+                                unaryExpression
+                                  powerExpression
+                                    indexExpression
+                                      expressionTerminator
+                                        1
             ;
           }

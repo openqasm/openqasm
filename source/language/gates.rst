@@ -60,8 +60,8 @@ the NOT gate is given by ``X = U(π, 0, π)`` and the block
 .. code-block:: c
    :force:
 
-   gate CX c, t {
-      ctrl @ U(π, 0, π) c, t;
+   gate CX a, b {
+      ctrl @ U(π, 0, π) a, b;
    }
 
    CX q[1], q[0];

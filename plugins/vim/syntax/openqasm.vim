@@ -112,13 +112,16 @@ syntax match qasmFunction #\v\K\k*\ze\s*(\(|\s\K)# contained nextgroup=qasmParam
 
 syntax match qasmIdentifier #\v<\K\k*>#
 
-syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transparent
+syntax region qasmIndexSet matchgroup=qasmOperator start=#\v\{# end=#\v\}# transparent contained
+syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transparent contains=qasmIndexSet
 
 " This parameters syntax item is necessary to allow "if" and "while" single-line
 " statements to be matched correctly, when the test includes a function call.
 syntax region qasmParams start="(" end=")" transparent contained
 syntax region qasmDesignator start=#\v\[# end=#\v\]# transparent contained
     \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
+syntax region qasmArraySpecifier start="\[" end="\]" transparent contained
+    \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier,qasmArrayDimensions
 
 " General keywords.
 syntax keyword qasmInclude include
@@ -147,15 +150,18 @@ else
     " though this clashes with OpenQASM 2.
     syntax keyword qasmType bit qubit int uint float bool angle duration stretch creg complex
         \ nextgroup=qasmDesignator skipwhite skipempty
+    syntax keyword qasmType array nextgroup=qasmArraySpecifier skipwhite skipempty
     syntax keyword qasmIO input output
     syntax keyword qasmBuiltinQuantum durationof box
-    syntax keyword qasmBuiltinClassical rotl rotr popcount
+    syntax keyword qasmBuiltinClassical rotl rotr popcount sizeof
     syntax keyword qasmBuiltinConstant tau euler π 𝜏 ℇ
     syntax keyword qasmBuiltinPulse delay nextgroup=qasmDesignator skipwhite skipempty
-    syntax keyword qasmDefine let const
+    syntax keyword qasmAccessControl const mutable
+    syntax keyword qasmDefine let
     syntax keyword qasmDefine def gate defcal nextgroup=qasmFunction skipwhite skipempty
     syntax keyword qasmExtern extern nextgroup=qasmFunction skipwhite skipempty
     syntax keyword qasmJump break continue return
+    syntax match qasmArrayDimensions /#dim/ contained
 endif
 
 
@@ -197,7 +203,7 @@ endif
 " little tricky to match, so the aim is to match every other possibility first,
 " and anything successful left over gets displayed as a function.
 syntax cluster qasmStatementStart
-    \ contains=qasmConditional,qasmJump,qasmIO,qasmType,qasmBuiltinQuantum,qasmBuiltinClassical,qasmBuiltinConstant,qasmBuiltinPulse,qasmDefine,qasmExtern,qasmModifier,qasmBlock,qasmRepeat,qasmFunction
+    \ contains=qasmConditional,qasmJump,qasmIO,qasmType,qasmBuiltinQuantum,qasmBuiltinClassical,qasmBuiltinConstant,qasmBuiltinPulse,qasmDefine,qasmExtern,qasmModifier,qasmBlock,qasmRepeat,qasmFunction,qasmAccessControl
 syntax match qasmStatementEnd #;#
     \ nextgroup=@qasmStatementStart skipwhite skipempty
 
@@ -289,6 +295,9 @@ highlight default link qasmComment              Comment
 
 highlight default link qasmType                 Type
 highlight default link qasmIO                   StorageClass
+highlight default link qasmAccessControl        StorageClass
+
+highlight default link qasmArrayDimensions      Special
 
 highlight default link qasmStatementEnd         Operator
 highlight default link qasmBuiltinQuantum       Operator
