@@ -30,7 +30,7 @@ array[float[32], 2] my_defined_float_row = my_defined_floats[0];
 
 // Arrays can be defined in terms of compile-time constant dimension sizes, and
 // can use expressions in the slots of their initialisers.
-const int[8] DIM_SIZE = 2;
+const uint[8] DIM_SIZE = 2;
 array[int[8], DIM_SIZE, DIM_SIZE] all_ones = {{2+3, 4-1}, {3+8, 12-4}};
 
 

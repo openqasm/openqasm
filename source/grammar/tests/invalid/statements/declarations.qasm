@@ -34,8 +34,8 @@ complex[creg[8]] myvar;
 // Bad array specifiers.
 array myvar;
 array[8] myvar;
-array[int, 8] myvar;  // (no width for the integer)
-array[int, int, 2] myvar;
+array[not_a_type, 4] myvar;
+array[int[8], int[8], 2] myvar;
 
 // Invalid identifiers.
 int[8] int;
