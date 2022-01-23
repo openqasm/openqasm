@@ -112,7 +112,8 @@ syntax match qasmFunction #\v\K\k*\ze\s*(\(|\s\K)# contained nextgroup=qasmParam
 
 syntax match qasmIdentifier #\v<\K\k*>#
 
-syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transparent
+syntax region qasmIndexSet matchgroup=qasmOperator start=#\v\{# end=#\v\}# transparent contained
+syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transparent contains=qasmIndexSet
 
 " This parameters syntax item is necessary to allow "if" and "while" single-line
 " statements to be matched correctly, when the test includes a function call.

@@ -97,10 +97,9 @@ reference: |
                     indexIdentifier
                       q
                       [
-                      expressionList
-                        expression
-                          expressionTerminator
-                            i
+                      expression
+                        expressionTerminator
+                          i
                       ]
               ;
           }

@@ -1,0 +1,11 @@
+name: 💅 Enhancement request
+description: Suggest an improvement for this project 🆒!
+title: '[]:'
+labels:
+  - enhancement
+body:
+  - type: textarea
+    attributes:
+      label: What is the expected enhancement?
+    validations:
+      required: true

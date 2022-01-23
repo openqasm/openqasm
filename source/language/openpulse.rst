@@ -49,7 +49,7 @@ Ports
 A port is a software abstraction representing any input or output component meant to manipulate and observe qubits. Ports
 are ultimately mapped to some combination of hardware resources, and there are varying versions of
 this mapping with differing granularity. For instance, a port may directly map to a digital-to-analog converter.
-Alternatively, a port may map to a combination of a digital NCO, analog-to-digital coverter, local oscillator, and amplifier.
+Alternatively, a port may map to a combination of a digital NCO, analog-to-digital converter, local oscillator, or amplifier.
 A single port may even map to multiple transmit (or receive) hardware that must work in synchronicity.
 Ultimately, it is simply a means by which a hardware vendor can provide relevant actuation knobs they wish to expose to the user
 in order to manipulate and observe qubits. As such, the level of granularity of the mapping is up to the hardware vendor.
@@ -67,8 +67,8 @@ static settings, such as local-oscillator frequencies, which do not vary
 throughout program execution. Again it is expected that vendors of quantum
 hardware provide a method for manipulating those static settings if appropriate.
 
-There are two kinds of ports: transmit ports (sending input to a quantum
-device) and receive ports (reading output from a quantum device).
+Currently all ports are bidirectional, eg., transmit and receive or in and out. It is the responsibility
+of the hardware target to limit the operations that may be applied to a given port.
 
 A port is only used to specify the physical resource on which to play a pulse or from which
 to capture data. The hardware can be accessed as OpenPulse ``port``'s via ``extern``
@@ -96,7 +96,7 @@ frame of a Hamiltonian, throughout the execution of a program. Openpulse provide
   relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
   :math:`\theta` is the accrued phase). In this way,  a ``frame`` type behaves analogously to
   a `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_).
-  One motivation for keeping track of accured phase is to allow pulses to be defined in the rotating frame with the
+  One motivation for keeping track of accrued phase is to allow pulses to be defined in the rotating frame with the
   effect being an equivalent application in the lab frame (i.e. with the carrier supplied by the ``frame``).
   Another motivation is to more naturally implement a "virtual Z-gate", which does not require a physical pulse but
   rather shifts the phase of all future pulses on that frame.
@@ -209,10 +209,10 @@ Waveforms
 
 Waveforms are of type ``waveform`` and can either be:
 
-- An array of complex samples which define the points for the waveform envelope
+- An array of complex samples (note this syntax is still under [active development](https://github.com/Qiskit/openqasm/pull/301) and is subject to change.) which define the points for the waveform envelope
 - An abstract mathematical function representing a waveform. This will later be
-  materialized into a list of complex samples, either by the compiler or the hardware
-  using the parameters provided to the ``extern`` defined pulse template.
+  materialized into a list of complex samples, either by the compiler or the
+  hardware using the parameters provided to the ``extern`` declared waveform template.
 
 A value of type ``waveform`` may be defined either by explicitly constructing the complex samples
 or by calling one of the waveform template functions provided by the target device.
@@ -235,7 +235,7 @@ samples provides optimization opportunities that wouldn't be available otherwise
 .. code-block:: javascript
 
    // arbitrary complex samples
-   waveform arb_waveform = [1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j];
+   waveform arb_waveform = [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im];
 
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
@@ -311,7 +311,7 @@ For example,
 
   defcal play_my_pulses $0 {
     // Play a 3 sample pulse on the tx0 port
-    play([1+0*j, 0+1*j, 1/sqrt(2)+1/sqrt(2)*j], driveframe);
+    play([1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im], driveframe);
 
     // Play a gaussian pulse on the tx1 port
     frame f1 = newframe(tx1, q1_freq, 0.0);
@@ -347,19 +347,19 @@ extern definition at the top-level, such as:
 .. code-block:: javascript
 
    // Minimum requirement
-   extern capture(frame output);
+   extern capture_v0(frame output);
 
    // A capture command that returns an iq value
-   extern capture(waveform filter, frame output) -> complex[float[32]];
+   extern capture_v1(waveform filter, frame output) -> complex[float[32]];
 
    // A capture command that returns a discrimnated bit
-   extern capture(waveform filter, frame output) -> bit;
+   extern capture_v2(waveform filter, frame output) -> bit;
 
    // A capture command that returns a raw waveform data
-   extern capture(duration len, frame output) -> waveform;
+   extern capture_v3(duration len, frame output) -> waveform;
 
    // A capture that returns a count e.g. number of photons detected
-   extern capture(duration len, frame output) -> int
+   extern capture_v4(duration len, frame output) -> int
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -399,7 +399,7 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
 
         // Capture transmitted data after interaction with measurement resonator
         // extern capture(duration duration, frame capture_frame) -> waveform;
-        waveform raw_output = capture(16000dt, capture_frame);
+        waveform raw_output = capture_v1(16000dt, capture_frame);
 
         // Kernel and discriminate
         complex[float[32]] iq = boxcar(raw_output);
@@ -564,7 +564,7 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
     extern port tx0;
     waveform p = ...; // some 100ns waveform
 
-    // Frame initialized with accured phase of 0
+    // Frame initialized with accrued phase of 0
     frame driveframe0 = newframe(tx0, 5.0e9, 0);
   }
 
