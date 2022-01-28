@@ -22,18 +22,22 @@ reference: |
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
-                              powerExpression
-                                expressionTerminator
-                                  x
+                              unaryExpression
+                                powerExpression
+                                  indexExpression
+                                    expressionTerminator
+                                      x
                     equalityOperator
                       ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression
                           multiplicativeExpression
-                            powerExpression
-                              expressionTerminator
-                                a
+                            unaryExpression
+                              powerExpression
+                                indexExpression
+                                  expressionTerminator
+                                    a
         )
         programBlock
           {
@@ -44,8 +48,8 @@ reference: |
                 i
                 in
                 setDeclaration
+                  [
                   rangeDefinition
-                    [
                     expression
                       expressionTerminator
                         0
@@ -57,18 +61,19 @@ reference: |
                     expression
                       expressionTerminator
                         4
-                    ]
+                  ]
               programBlock
                 statement
                   assignmentStatement
                     classicalAssignment
-                      x
-                      designator
-                        [
-                        expression
-                          expressionTerminator
-                            i
-                        ]
+                      indexedIdentifier
+                        x
+                        indexOperator
+                          [
+                          expression
+                            expressionTerminator
+                              i
+                          ]
                       assignmentOperator
                         +=
                       expression
@@ -84,17 +89,18 @@ reference: |
                 quantumGateCall
                   quantumGateName
                     CX
-                  indexIdentifierList
-                    indexIdentifier
-                      x
+                  indexedIdentifier
+                    x
+                    indexOperator
                       [
                       expression
                         expressionTerminator
                           0
                       ]
-                    ,
-                    indexIdentifier
-                      x
+                  ,
+                  indexedIdentifier
+                    x
+                    indexOperator
                       [
                       expression
                         expressionTerminator

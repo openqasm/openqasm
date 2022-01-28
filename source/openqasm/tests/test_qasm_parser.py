@@ -1,12 +1,16 @@
 from openqasm.ast import (
+    AccessControl,
     AliasStatement,
     AngleType,
+    ArrayLiteral,
+    ArrayReferenceType,
+    ArrayType,
     AssignmentOperator,
     BinaryExpression,
     BinaryOperator,
     BitType,
-    BooleanLiteral,
     BoolType,
+    BooleanLiteral,
     Box,
     BranchingStatement,
     CalibrationDefinition,
@@ -21,6 +25,8 @@ from openqasm.ast import (
     ConstantName,
     ContinueStatement,
     DelayInstruction,
+    DiscreteSet,
+    DurationLiteral,
     DurationOf,
     DurationType,
     EndStatement,
@@ -29,35 +35,32 @@ from openqasm.ast import (
     ForInLoop,
     FunctionCall,
     GateModifierName,
+    IODeclaration,
+    IOKeyword,
     Identifier,
     Include,
     IndexExpression,
-    IntegerLiteral,
+    IndexedIdentifier,
     IntType,
-    IODeclaration,
-    IOKeyword,
+    IntegerLiteral,
     Pragma,
     Program,
     QASMNode,
     QuantumArgument,
+    QuantumGate,
+    QuantumGateDefinition,
     QuantumGateModifier,
     QuantumMeasurement,
     QuantumMeasurementAssignment,
     QuantumPhase,
     QubitDeclaration,
-    QuantumGate,
-    QuantumGateDefinition,
     RangeDefinition,
     RealLiteral,
     ReturnStatement,
-    Selection,
-    Slice,
     StretchType,
     StringLiteral,
     SubroutineDefinition,
-    Subscript,
     TimeUnit,
-    DurationLiteral,
     UintType,
     UnaryExpression,
     UnaryOperator,
@@ -143,6 +146,63 @@ def test_complex_declaration():
     SpanGuard().visit(program)
     context_declaration = program.statements[0]
     assert context_declaration.span == Span(1, 0, 1, 19)
+
+
+def test_array_declaration():
+    p = """
+    array[uint[8], 2] a;
+    array[int[8], 2] a = {1, 1};
+    array[bit, 2] a = b;
+    array[float[32], 2, 2] a;
+    array[complex[float[64]], 2, 2] a = {{1, 1}, {2, 2}};
+    array[uint[8], 2, 2] a = {b, b};
+    """.strip()
+    program = parse(p)
+    a, b = Identifier("a"), Identifier("b")
+    one, two, eight = IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(8)
+    SpanGuard().visit(program)
+    assert program == Program(
+        statements=[
+            ClassicalDeclaration(
+                type=ArrayType(base_type=UintType(eight), dimensions=[two]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(eight), dimensions=[two]),
+                identifier=a,
+                init_expression=ArrayLiteral([one, one]),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=BitType(size=None), dimensions=[two]),
+                identifier=a,
+                init_expression=b,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(
+                    base_type=FloatType(IntegerLiteral(32)),
+                    dimensions=[two, two],
+                ),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(
+                    base_type=ComplexType(FloatType(IntegerLiteral(64))),
+                    dimensions=[two, two],
+                ),
+                identifier=a,
+                init_expression=ArrayLiteral(
+                    [ArrayLiteral([one, one]), ArrayLiteral([two, two])],
+                ),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=UintType(eight), dimensions=[two, two]),
+                identifier=a,
+                init_expression=ArrayLiteral([b, b]),
+            ),
+        ],
+    )
 
 
 def test_single_gatecall():
@@ -405,6 +465,8 @@ def test_primary_expression():
     q[1];
     int[1](x);
     bool(x);
+    sizeof(a);
+    sizeof(a, 1);
     """.strip()
 
     program = parse(p)
@@ -424,7 +486,7 @@ def test_primary_expression():
             ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),
             ExpressionStatement(expression=DurationLiteral(1e-4, TimeUnit.us)),
             ExpressionStatement(expression=Identifier("x")),
-            ExpressionStatement(expression=IndexExpression(Identifier("q"), IntegerLiteral(1))),
+            ExpressionStatement(expression=IndexExpression(Identifier("q"), [IntegerLiteral(1)])),
             ExpressionStatement(
                 expression=Cast(
                     IntType(size=IntegerLiteral(1)),
@@ -436,6 +498,10 @@ def test_primary_expression():
                     BoolType(),
                     [Identifier("x")],
                 )
+            ),
+            ExpressionStatement(expression=FunctionCall(Identifier("sizeof"), [Identifier("a")])),
+            ExpressionStatement(
+                expression=FunctionCall(Identifier("sizeof"), [Identifier("a"), IntegerLiteral(1)]),
             ),
         ]
     )
@@ -572,6 +638,8 @@ def test_binary_expression_precedence():
     i1 >= i2 + i3;
     i1 - i2 << i3;
     i1 - i2 / i3;
+    i1[i2] + -i1[i2];
+    -i1 ** i2;
     """.strip()
 
     program = parse(p)
@@ -643,119 +711,100 @@ def test_binary_expression_precedence():
                     ),
                 )
             ),
-        ]
-    )
-
-
-def test_subscript():
-    p = """
-    let a = b[10];
-    """.strip()
-    program = parse(p)
-    assert program == Program(
-        statements=[
-            AliasStatement(
-                target=Identifier(name="a"),
-                value=Subscript(name="b", index=IntegerLiteral(value=10)),
-            )
-        ]
-    )
-    SpanGuard().visit(program)
-    subscript = program.statements[0]
-    assert subscript.span == Span(1, 0, 1, 13)
-    assert subscript.target.span == Span(1, 4, 1, 4)
-    assert subscript.value.span == Span(1, 8, 1, 12)
-
-
-def test_selection():
-    p = """
-    let a = b[{1, 2}];
-    """.strip()
-    program = parse(p)
-    assert program == Program(
-        statements=[
-            AliasStatement(
-                target=Identifier(name="a"),
-                value=Selection(
-                    name="b", indices=[IntegerLiteral(value=1), IntegerLiteral(value=2)]
-                ),
-            )
-        ]
-    )
-    SpanGuard().visit(program)
-    selection = program.statements[0]
-    assert selection.span == Span(1, 0, 1, 17)
-    assert selection.target.span == Span(1, 4, 1, 4)
-    assert selection.value.span == Span(1, 8, 1, 16)
-
-
-def test_slice():
-    p = """
-    let a = b[1:1:10];
-    let c = d[1:10];
-    """.strip()
-    program = parse(p)
-    assert program == Program(
-        statements=[
-            AliasStatement(
-                target=Identifier(name="a"),
-                value=Slice(
-                    name="b",
-                    range=RangeDefinition(
-                        start=IntegerLiteral(value=1),
-                        end=IntegerLiteral(value=10),
-                        step=IntegerLiteral(value=1),
-                    ),
-                ),
-            ),
-            AliasStatement(
-                target=Identifier(name="c"),
-                value=Slice(
-                    name="d",
-                    range=RangeDefinition(
-                        start=IntegerLiteral(value=1),
-                        end=IntegerLiteral(value=10),
-                        step=None,
-                    ),
-                ),
-            ),
-        ]
-    )
-    SpanGuard().visit(program)
-    slice_ = program.statements[0]
-    assert slice_.span == Span(1, 0, 1, 17)
-    assert slice_.target.span == Span(1, 4, 1, 4)
-    assert slice_.value.span == Span(1, 8, 1, 16)
-
-
-def test_concatenation():
-    p = """
-    let a = b[1:1:10] ++ c;
-    """.strip()
-    program = parse(p)
-    assert program == Program(
-        statements=[
-            AliasStatement(
-                target=Identifier(name="a"),
-                value=Concatenation(
-                    lhs=Slice(
-                        name="b",
-                        range=RangeDefinition(
-                            start=IntegerLiteral(value=1),
-                            end=IntegerLiteral(value=10),
-                            step=IntegerLiteral(value=1),
+            ExpressionStatement(
+                expression=BinaryExpression(
+                    op=BinaryOperator["+"],
+                    lhs=IndexExpression(collection=Identifier("i1"), index=[Identifier("i2")]),
+                    rhs=UnaryExpression(
+                        op=UnaryOperator["-"],
+                        expression=IndexExpression(
+                            collection=Identifier("i1"),
+                            index=[Identifier("i2")],
                         ),
                     ),
-                    rhs=Identifier(name="c"),
                 ),
-            )
+            ),
+            ExpressionStatement(
+                expression=UnaryExpression(
+                    op=UnaryOperator["-"],
+                    expression=BinaryExpression(
+                        op=BinaryOperator["**"],
+                        lhs=Identifier("i1"),
+                        rhs=Identifier("i2"),
+                    ),
+                ),
+            ),
         ]
     )
+
+
+def test_alias_assignment():
+    p = """
+    let a = b;
+    let a = b[0:1];
+    let a = b[{0, 1, 2}];
+    let a = b ++ c;
+    let a = b[{0, 1}] ++ b[2:2:4] ++ c;
+    """.strip()
+    program = parse(p)
+    a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
+    assert program == Program(
+        statements=[
+            AliasStatement(target=a, value=b),
+            AliasStatement(
+                target=a,
+                value=IndexExpression(
+                    collection=b,
+                    index=[
+                        RangeDefinition(
+                            start=IntegerLiteral(0),
+                            end=IntegerLiteral(1),
+                            step=None,
+                        ),
+                    ],
+                ),
+            ),
+            AliasStatement(
+                target=a,
+                value=IndexExpression(
+                    collection=b,
+                    index=DiscreteSet(
+                        values=[
+                            IntegerLiteral(0),
+                            IntegerLiteral(1),
+                            IntegerLiteral(2),
+                        ]
+                    ),
+                ),
+            ),
+            AliasStatement(target=a, value=Concatenation(lhs=b, rhs=c)),
+            AliasStatement(
+                target=a,
+                value=Concatenation(
+                    lhs=Concatenation(
+                        lhs=IndexExpression(
+                            collection=b,
+                            index=DiscreteSet(
+                                values=[IntegerLiteral(0), IntegerLiteral(1)],
+                            ),
+                        ),
+                        rhs=IndexExpression(
+                            collection=b,
+                            index=[
+                                RangeDefinition(
+                                    start=IntegerLiteral(2),
+                                    end=IntegerLiteral(4),
+                                    step=IntegerLiteral(2),
+                                ),
+                            ],
+                        ),
+                    ),
+                    rhs=c,
+                ),
+            ),
+        ],
+    )
     SpanGuard().visit(program)
-    slice_ = program.statements[0]
-    assert slice_.span == Span(1, 0, 1, 22)
-    assert slice_.target.span == Span(1, 4, 1, 4)
-    assert slice_.value.span == Span(1, 8, 1, 21)
 
 
 def test_measurement():
@@ -771,13 +820,22 @@ def test_measurement():
                 target=None, measure_instruction=QuantumMeasurement(qubit=Identifier("q"))
             ),
             QuantumMeasurementAssignment(
-                target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                target=IndexedIdentifier(
+                    name=Identifier(name="c"),
+                    indices=[[IntegerLiteral(value=0)]],
+                ),
                 measure_instruction=QuantumMeasurement(qubit=Identifier("q")),
             ),
             QuantumMeasurementAssignment(
-                target=Subscript(name="c", index=IntegerLiteral(value=0)),
+                target=IndexedIdentifier(
+                    name=Identifier(name="c"),
+                    indices=[[IntegerLiteral(value=0)]],
+                ),
                 measure_instruction=QuantumMeasurement(
-                    qubit=Subscript(name="q", index=IntegerLiteral(value=0))
+                    qubit=IndexedIdentifier(
+                        name=Identifier("q"),
+                        indices=[[IntegerLiteral(value=0)]],
+                    ),
                 ),
             ),
         ]
@@ -854,6 +912,97 @@ def test_subroutine_definition():
     SpanGuard().visit(program)
 
 
+def test_subroutine_signatures():
+    p = """
+    def a(int[8] b) {}
+    def a(complex[float[32]] b, qubit c) -> int[32] {}
+    def a(bit[5] b, qubit[2] c) -> complex[float[64]] {}
+    def a(qubit b, const array[uint[8], 2, 3] c) {}
+    def a(mutable array[uint[8], #dim=5] b, const array[uint[8], 5] c) {}
+    """.strip()
+    program = parse(p)
+    a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
+    SpanGuard().visit(program)
+    assert program == Program(
+        statements=[
+            SubroutineDefinition(
+                name=a,
+                arguments=[ClassicalArgument(IntType(IntegerLiteral(8)), b)],
+                return_type=None,
+                body=[],
+            ),
+            SubroutineDefinition(
+                name=a,
+                arguments=[
+                    ClassicalArgument(
+                        type=ComplexType(FloatType(IntegerLiteral(32))),
+                        name=b,
+                    ),
+                    QuantumArgument(qubit=c, size=None),
+                ],
+                return_type=IntType(IntegerLiteral(32)),
+                body=[],
+            ),
+            SubroutineDefinition(
+                name=a,
+                arguments=[
+                    ClassicalArgument(
+                        type=BitType(size=IntegerLiteral(5)),
+                        name=b,
+                    ),
+                    QuantumArgument(qubit=c, size=IntegerLiteral(2)),
+                ],
+                return_type=ComplexType(FloatType(IntegerLiteral(64))),
+                body=[],
+            ),
+            SubroutineDefinition(
+                name=a,
+                arguments=[
+                    QuantumArgument(qubit=b, size=None),
+                    ClassicalArgument(
+                        type=ArrayReferenceType(
+                            base_type=UintType(IntegerLiteral(8)),
+                            dimensions=[IntegerLiteral(2), IntegerLiteral(3)],
+                        ),
+                        name=c,
+                        access=AccessControl.CONST,
+                    ),
+                ],
+                return_type=None,
+                body=[],
+            ),
+            SubroutineDefinition(
+                name=a,
+                arguments=[
+                    # Note that the first ArrayReferenceType has dimensions of
+                    # IntegerLiteral(5) referring to the number of dimensions,
+                    # but the second has dimensions [IntegerLiteral(5)] (with a
+                    # list), because the sizes of the dimensions are given
+                    # explicitly.
+                    ClassicalArgument(
+                        type=ArrayReferenceType(
+                            base_type=UintType(IntegerLiteral(8)),
+                            dimensions=IntegerLiteral(5),
+                        ),
+                        name=b,
+                        access=AccessControl.MUTABLE,
+                    ),
+                    ClassicalArgument(
+                        type=ArrayReferenceType(
+                            base_type=UintType(IntegerLiteral(8)),
+                            dimensions=[IntegerLiteral(5)],
+                        ),
+                        name=c,
+                        access=AccessControl.CONST,
+                    ),
+                ],
+                return_type=None,
+                body=[],
+            ),
+        ]
+    )
+
+
 def test_branch_statement():
     p = """
     if(temp == 1) { ry(pi / 2) q; } else continue;
@@ -906,22 +1055,33 @@ def test_for_in_loop():
                         name=Identifier("majority"),
                         arguments=[],
                         qubits=[
-                            Subscript(name="a", index=Identifier("i")),
-                            Subscript(
-                                name="b",
-                                index=BinaryExpression(
-                                    op=BinaryOperator["+"],
-                                    lhs=Identifier("i"),
-                                    rhs=IntegerLiteral(1),
-                                ),
+                            IndexedIdentifier(
+                                name=Identifier(name="a"),
+                                indices=[[Identifier("i")]],
                             ),
-                            Subscript(
-                                name="a",
-                                index=BinaryExpression(
-                                    op=BinaryOperator["+"],
-                                    lhs=Identifier("i"),
-                                    rhs=IntegerLiteral(1),
-                                ),
+                            IndexedIdentifier(
+                                name=Identifier("b"),
+                                indices=[
+                                    [
+                                        BinaryExpression(
+                                            op=BinaryOperator["+"],
+                                            lhs=Identifier("i"),
+                                            rhs=IntegerLiteral(1),
+                                        ),
+                                    ]
+                                ],
+                            ),
+                            IndexedIdentifier(
+                                name=Identifier(name="a"),
+                                indices=[
+                                    [
+                                        BinaryExpression(
+                                            op=BinaryOperator["+"],
+                                            lhs=Identifier("i"),
+                                            rhs=IntegerLiteral(1),
+                                        ),
+                                    ],
+                                ],
                             ),
                         ],
                     ),
@@ -1083,7 +1243,10 @@ def test_classical_assignment():
     assert program == Program(
         statements=[
             ClassicalAssignment(
-                lvalue=Subscript(name="a", index=IntegerLiteral(value=0)),
+                lvalue=IndexedIdentifier(
+                    name=Identifier("a"),
+                    indices=[[IntegerLiteral(value=0)]],
+                ),
                 op=AssignmentOperator["="],
                 rvalue=IntegerLiteral(1),
             )

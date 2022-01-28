@@ -1,5 +1,5 @@
+# pylint: disable=wrong-import-order
 from typing import Union
-import warnings
 
 from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
 from antlr4.tree.Tree import TerminalNode
@@ -8,14 +8,18 @@ from .qasm3Lexer import qasm3Lexer
 from .qasm3Parser import qasm3Parser
 from .qasm3Visitor import qasm3Visitor
 from openqasm.ast import (
+    AccessControl,
     AliasStatement,
     AngleType,
+    ArrayLiteral,
+    ArrayReferenceType,
+    ArrayType,
     AssignmentOperator,
     BinaryExpression,
     BinaryOperator,
     BitType,
-    BooleanLiteral,
     BoolType,
+    BooleanLiteral,
     Box,
     BranchingStatement,
     BreakStatement,
@@ -27,13 +31,13 @@ from openqasm.ast import (
     ClassicalDeclaration,
     ComplexType,
     Concatenation,
-    ConstantDeclaration,
     Constant,
-    Concatenation,
     ConstantDeclaration,
     ConstantName,
     ContinueStatement,
     DelayInstruction,
+    DiscreteSet,
+    DurationLiteral,
     DurationOf,
     DurationType,
     EndStatement,
@@ -43,38 +47,35 @@ from openqasm.ast import (
     ForInLoop,
     FunctionCall,
     GateModifierName,
+    IODeclaration,
+    IOKeyword,
     Identifier,
     Include,
     IndexExpression,
-    IntegerLiteral,
+    IndexedIdentifier,
     IntType,
-    IODeclaration,
-    IOKeyword,
+    IntegerLiteral,
     Pragma,
     Program,
     QASMNode,
     QuantumArgument,
+    QuantumBarrier,
     QuantumGate,
+    QuantumGateDefinition,
     QuantumGateModifier,
+    QuantumMeasurement,
     QuantumMeasurementAssignment,
     QuantumPhase,
-    QubitDeclaration,
-    QuantumGateDefinition,
-    QuantumBarrier,
-    QuantumMeasurement,
     QuantumReset,
+    QubitDeclaration,
     RangeDefinition,
     RealLiteral,
     ReturnStatement,
-    Selection,
-    Slice,
     Span,
-    SubroutineDefinition,
-    Subscript,
     StretchType,
     StringLiteral,
+    SubroutineDefinition,
     TimeUnit,
-    DurationLiteral,
     UintType,
     UnaryExpression,
     UnaryOperator,
@@ -256,8 +257,8 @@ class QASMNodeVisitor(qasm3Visitor):
     @span
     def visitAliasStatement(self, ctx: qasm3Parser.AliasStatementContext):
         target = Identifier(name=ctx.Identifier().getText())
-        value = self.visit(ctx.indexIdentifier())
-        return AliasStatement(add_span(target, get_span(ctx.Identifier())), value)
+        value = self.visit(ctx.aliasInitializer())
+        return AliasStatement(target=add_span(target, get_span(ctx.Identifier())), value=value)
 
     @span
     def visitExpressionStatement(self, ctx: qasm3Parser.ExpressionStatementContext):
@@ -302,7 +303,7 @@ class QASMNodeVisitor(qasm3Visitor):
             arguments = [self.visit(expression) for expression in expression_list.expression()]
         else:
             arguments = []
-        qubits = [self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()]
+        qubits = [self.visit(qubit) for qubit in ctx.indexedIdentifier()]
 
         gate = QuantumGate(modifiers=modifiers, name=gate_name, arguments=arguments, qubits=qubits)
 
@@ -313,60 +314,30 @@ class QASMNodeVisitor(qasm3Visitor):
         modifiers = [self.visit(modifier) for modifier in ctx.quantumGateModifier()]
         argument = self.visit(ctx.expression())
         qubits = []
-        if ctx.indexIdentifierList():
-            qubits = [self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()]
+        if ctx.indexedIdentifier():
+            qubits = [self.visit(qubit) for qubit in ctx.indexedIdentifier()]
 
         return QuantumPhase(modifiers, argument, qubits)
 
     @span
-    def visitIndexIdentifier(self, ctx: qasm3Parser.IndexIdentifierContext):
-        if ctx.Identifier():
-            name = ctx.Identifier().getText()
-
-            if ctx.discreteSet():
-                indices = [
-                    self.visit(expr) for expr in ctx.discreteSet().expressionList().expression()
-                ]
-                subscript = Selection(name=name, indices=indices)
-            elif ctx.expression():
-                subscript = Subscript(name=name, index=self.visit(ctx.expression()))
-            elif ctx.rangeDefinition():
-                subscript = Slice(name=name, range=self.visit(ctx.rangeDefinition()))
-            else:
-                return add_span(Identifier(name=name), get_span(ctx))
-
-        else:
-            id0 = self.visit(ctx.indexIdentifier()[0])
-            id1 = self.visit(ctx.indexIdentifier()[1])
-
-            return Concatenation(lhs=id0, rhs=id1)
-
-        return subscript
-
-    @span
     def visitQuantumReset(self, ctx: qasm3Parser.QuantumResetContext):
-        index_identifier_list = [
-            self.visit(id) for id in ctx.indexIdentifierList().indexIdentifier()
-        ]
-        return QuantumReset(index_identifier_list)
+        return QuantumReset(self.visit(ctx.indexedIdentifier()))
 
     @span
     def visitQuantumBarrier(self, ctx: qasm3Parser.QuantumBarrierContext):
-        index_identifier_list = [
-            self.visit(id) for id in ctx.indexIdentifierList().indexIdentifier()
-        ]
-        return QuantumBarrier(index_identifier_list)
+        qubits = [self.visit(id) for id in ctx.indexedIdentifier()]
+        return QuantumBarrier(qubits)
 
     @span
     def visitQuantumMeasurement(self, ctx: qasm3Parser.QuantumMeasurementContext):
-        return QuantumMeasurement(self.visit(ctx.indexIdentifier()))
+        return QuantumMeasurement(self.visit(ctx.indexedIdentifier()))
 
     @span
     def visitQuantumMeasurementAssignment(
         self, ctx: qasm3Parser.QuantumMeasurementAssignmentContext
     ):
         return QuantumMeasurementAssignment(
-            self.visit(ctx.indexIdentifier()) if ctx.indexIdentifier() else None,
+            self.visit(ctx.indexedIdentifier()) if ctx.indexedIdentifier() else None,
             self.visit(ctx.quantumMeasurement()),
         )
 
@@ -388,18 +359,20 @@ class QASMNodeVisitor(qasm3Visitor):
     def visitClassicalDeclaration(self, ctx: qasm3Parser.ClassicalDeclarationContext):
         if ctx.singleDesignatorDeclaration():
             return self.visit(ctx.singleDesignatorDeclaration())
-        elif ctx.noDesignatorDeclaration():
+        if ctx.noDesignatorDeclaration():
             return self.visit(ctx.noDesignatorDeclaration())
-        elif ctx.bitDeclaration():
+        if ctx.bitDeclaration():
             return self.visit(ctx.bitDeclaration())
-        elif ctx.complexDeclaration():
+        if ctx.complexDeclaration():
             return self.visit(ctx.complexDeclaration())
-        else:
-            raise NotImplementedError(f"Not implemented ClassicalDeclaration at {get_span(ctx)}")
+        if ctx.arrayDeclaration():
+            return self.visit(ctx.arrayDeclaration())
+        raise NotImplementedError(f"Not implemented ClassicalDeclaration at {get_span(ctx)}")
 
     @span
     def visitConstantDeclaration(self, ctx: qasm3Parser.ConstantDeclarationContext):
         return ConstantDeclaration(
+            type=self.visit(ctx.classicalType()),
             identifier=add_span(
                 Identifier(name=ctx.Identifier().getText()), get_span(ctx.Identifier())
             ),
@@ -476,6 +449,20 @@ class QASMNodeVisitor(qasm3Visitor):
         )
 
     @span
+    def visitArrayDeclaration(self, ctx: qasm3Parser.ArrayDeclarationContext):
+        if ctx.arrayInitializer():
+            initializer = self.visit(ctx.arrayInitializer())
+        elif ctx.expression():
+            initializer = self.visit(ctx.expression())
+        else:
+            initializer = None
+        return ClassicalDeclaration(
+            self.visit(ctx.arrayType()),
+            add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
+            initializer,
+        )
+
+    @span
     def visitAssignmentStatement(self, ctx: qasm3Parser.AssignmentStatementContext):
         classical_assignment = ctx.classicalAssignment()
         quantum_measurement_assignment = ctx.quantumMeasurementAssignment()
@@ -522,28 +509,37 @@ class QASMNodeVisitor(qasm3Visitor):
             else:
                 const_name = ConstantName[const_text]
             return Constant(const_name)
-        elif ctx.Integer():
+        if ctx.Integer():
             return IntegerLiteral(int(ctx.Integer().getText()))
-        elif ctx.RealNumber():
+        if ctx.RealNumber():
             return RealLiteral(float(ctx.RealNumber().getText()))
-        elif ctx.booleanLiteral():
+        if ctx.booleanLiteral():
             return BooleanLiteral(True if ctx.booleanLiteral().getText() == "true" else False)
-        elif ctx.Identifier():
+        if ctx.Identifier():
             return Identifier(ctx.Identifier().getText())
-        elif ctx.StringLiteral():
+        if ctx.StringLiteral():
             return StringLiteral(ctx.StringLiteral().getText()[1:-1])
-        elif ctx.builtInCall():
+        if ctx.builtInCall():
             return self.visit(ctx.builtInCall())
-        elif ctx.externOrSubroutineCall():
+        if ctx.externOrSubroutineCall():
             return self.visit(ctx.externOrSubroutineCall())
-        elif ctx.timingIdentifier():
+        if ctx.timingIdentifier():
             return self.visit(ctx.timingIdentifier())
-        elif ctx.LPAREN():
-            return self.visit(ctx.expression())
-        elif ctx.expressionTerminator():
-            return IndexExpression(
-                self.visit(ctx.expressionTerminator()), self.visit(ctx.expression())
-            )
+        return self.visit(ctx.expression())
+
+    @span
+    def visitArrayInitializer(self, ctx: qasm3Parser.ArrayInitializerContext):
+        array_literal_element = (
+            qasm3Parser.ExpressionContext,
+            qasm3Parser.ArrayInitializerContext,
+        )
+
+        def predicate(child):
+            return isinstance(child, array_literal_element)
+
+        return ArrayLiteral(
+            values=[self.visit(element) for element in ctx.getChildren(predicate=predicate)],
+        )
 
     @span
     def visitTimingIdentifier(self, ctx: qasm3Parser.TimingIdentifierContext):
@@ -572,10 +568,12 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitUnaryExpression(self, ctx: qasm3Parser.UnaryExpressionContext):
-        return UnaryExpression(
-            UnaryOperator[ctx.unaryOperator().getText()],
-            self.visit(ctx.powerExpression()),
-        )
+        if ctx.unaryOperator():
+            return UnaryExpression(
+                UnaryOperator[ctx.unaryOperator().getText()],
+                self.visit(ctx.powerExpression()),
+            )
+        return self.visit(ctx.powerExpression())
 
     @span
     def visitBuiltInCall(self, ctx: qasm3Parser.BuiltInCallContext):
@@ -584,7 +582,13 @@ class QASMNodeVisitor(qasm3Visitor):
                 self.visit(ctx.builtInMath()),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
-        else:
+        if ctx.SIZEOF():
+            name = add_span(Identifier(name=ctx.SIZEOF().getText()), get_span(ctx.SIZEOF()))
+            return FunctionCall(
+                name,
+                [self.visit(expression) for expression in ctx.expressionList().expression()],
+            )
+        if ctx.castOperator():
             return Cast(
                 self.visit(ctx.castOperator().classicalType()),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
@@ -682,6 +686,46 @@ class QASMNodeVisitor(qasm3Visitor):
             )
 
     @span
+    def visitAliasInitializer(self, ctx: qasm3Parser.AliasInitializerContext):
+        if ctx.expression():
+            return self.visit(ctx.expression())
+        return Concatenation(
+            lhs=self.visit(ctx.aliasInitializer(0)),
+            rhs=self.visit(ctx.aliasInitializer(1)),
+        )
+
+    @span
+    def visitIndexExpression(self, ctx: qasm3Parser.IndexExpressionContext):
+        if ctx.getChildCount() == 1:
+            return self.visit(ctx.getChild(0))
+        return IndexExpression(
+            collection=self.visit(ctx.indexExpression()),
+            index=self.visit(ctx.indexOperator()),
+        )
+
+    @span
+    def visitIndexedIdentifier(self, ctx: qasm3Parser.IndexedIdentifierContext):
+        name = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
+        if not ctx.indexOperator():
+            return name
+        indices = [self.visit(operator) for operator in ctx.indexOperator()]
+        return IndexedIdentifier(name=name, indices=indices)
+
+    def visitIndexOperator(self, ctx: qasm3Parser.IndexOperatorContext):
+        if ctx.discreteSet():
+            return self.visit(ctx.discreteSet())
+
+        index_element = (
+            qasm3Parser.ExpressionContext,
+            qasm3Parser.RangeDefinitionContext,
+        )
+
+        def predicate(child):
+            return isinstance(child, index_element)
+
+        return [self.visit(child) for child in ctx.getChildren(predicate=predicate)]
+
+    @span
     def visitCalibrationGrammarDeclaration(
         self, ctx: qasm3Parser.CalibrationGrammarDeclarationContext
     ):
@@ -723,6 +767,13 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitClassicalArgument(self, ctx: qasm3Parser.ClassicalArgumentContext):
+        if ctx.CONST():
+            access = AccessControl.CONST
+        elif ctx.MUTABLE():
+            access = AccessControl.MUTABLE
+        else:
+            access = None
+
         if ctx.singleDesignatorType():
             type_name = ctx.singleDesignatorType().getText()
             if type_name in _TYPE_NODE_INIT:
@@ -732,16 +783,25 @@ class QASMNodeVisitor(qasm3Visitor):
                 # To capture potential parser error.
                 raise ValueError("Type name {type_name} not found.")
 
-            classcal_type = add_span(
+            classical_type = add_span(
                 type_node,
                 combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
             )
 
         elif ctx.noDesignatorType():
-            classcal_type = self.visit(ctx.noDesignatorType())
+            classical_type = self.visit(ctx.noDesignatorType())
+
+        elif ctx.COMPLEX():
+            classical_type = add_span(
+                ComplexType(base_type=self.visit(ctx.numericType())),
+                combine_span(get_span(ctx.COMPLEX()), get_span(ctx.RBRACKET())),
+            )
+
+        elif ctx.arrayReferenceType():
+            classical_type = self.visit(ctx.arrayReferenceType())
 
         else:
-            classcal_type = add_span(
+            classical_type = add_span(
                 BitType(
                     self.visit(ctx.designator()) if ctx.designator() else None,
                 ),
@@ -749,13 +809,17 @@ class QASMNodeVisitor(qasm3Visitor):
             )
 
         identifier = add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier()))
-        return ClassicalArgument(classcal_type, identifier)
+        return ClassicalArgument(
+            type=classical_type,
+            name=identifier,
+            access=access,
+        )
 
     def visitExpressionList(self, ctx: qasm3Parser.ExpressionListContext):
         return [self.visit(expression) for expression in ctx.expression()]
 
     @span
-    def visitClassicalType(self, ctx: qasm3Parser.ClassicalTypeContext):
+    def visitNonArrayType(self, ctx: qasm3Parser.NonArrayTypeContext):
         # TODO: due to the way classical argument is declared, there some duplication
         # Consider refactor classical argument grammar
         if ctx.singleDesignatorType():
@@ -780,6 +844,24 @@ class QASMNodeVisitor(qasm3Visitor):
             )
         elif ctx.numericType():
             return ComplexType(base_type=self.visit(ctx.numericType()))
+
+    @span
+    def visitArrayType(self, ctx: qasm3Parser.ArrayTypeContext):
+        return ArrayType(
+            base_type=self.visit(ctx.nonArrayType()),
+            dimensions=[self.visit(expression) for expression in ctx.expressionList().expression()],
+        )
+
+    @span
+    def visitArrayReferenceType(self, ctx: qasm3Parser.ArrayReferenceTypeContext):
+        dimension_ctx = ctx.arrayReferenceTypeDimensionSpecifier()
+        if dimension_ctx.DIM():
+            dimensions = self.visit(dimension_ctx.expression())
+        else:
+            dimensions = [
+                self.visit(expression) for expression in dimension_ctx.expressionList().expression()
+            ]
+        return ArrayReferenceType(base_type=self.visit(ctx.nonArrayType()), dimensions=dimensions)
 
     @span
     def visitNumericType(self, ctx: qasm3Parser.NumericTypeContext):
@@ -890,16 +972,13 @@ class QASMNodeVisitor(qasm3Visitor):
                 block=self.visit(ctx.programBlock()),
             )
 
+    @span
     def visitSetDeclaration(self, ctx: qasm3Parser.SetDeclarationContext):
         if ctx.Identifier():
-            return add_span(
-                Identifier(name=ctx.Identifier().getText()),
-                get_span(ctx),
-            )
-        elif ctx.rangeDefinition():
+            return Identifier(name=ctx.Identifier().getText())
+        if ctx.rangeDefinition():
             return self.visit(ctx.rangeDefinition())
-        else:
-            return [self.visit(expression) for expression in ctx.expressionList().expression()]
+        return self.visit(ctx.discreteSet())
 
     @span
     def visitRangeDefinition(self, ctx: qasm3Parser.RangeDefinitionContext):
@@ -926,6 +1005,12 @@ class QASMNodeVisitor(qasm3Visitor):
         return RangeDefinition(start=start, end=end, step=step)
 
     @span
+    def visitDiscreteSet(self, ctx: qasm3Parser.DiscreteSetContext):
+        return DiscreteSet(
+            values=[self.visit(expression) for expression in ctx.expression()],
+        )
+
+    @span
     def visitTimingStatement(self, ctx: qasm3Parser.TimingStatementContext):
         return self.visit(ctx.getChild(0))
 
@@ -936,7 +1021,7 @@ class QASMNodeVisitor(qasm3Visitor):
             if ctx.expressionList()
             else [],
             duration=self.visit(ctx.designator()),
-            qubits=[self.visit(qubit) for qubit in ctx.indexIdentifierList().indexIdentifier()],
+            qubits=[self.visit(qubit) for qubit in ctx.indexedIdentifier()],
         )
 
     @span
@@ -950,24 +1035,8 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitClassicalAssignment(self, ctx: qasm3Parser.ClassicalAssignmentContext):
-        if ctx.designator():
-            return ClassicalAssignment(
-                lvalue=add_span(
-                    Subscript(
-                        name=ctx.Identifier().getText(),
-                        index=self.visit(ctx.designator()),
-                    ),
-                    combine_span(get_span(ctx.Identifier()), get_span(ctx.designator())),
-                ),
-                op=AssignmentOperator[ctx.assignmentOperator().getText()],
-                rvalue=self.visit(ctx.expression()),
-            )
-        else:
-            return ClassicalAssignment(
-                lvalue=add_span(
-                    Identifier(name=ctx.Identifier().getText()),
-                    get_span(ctx.Identifier()),
-                ),
-                op=AssignmentOperator[ctx.assignmentOperator().getText()],
-                rvalue=self.visit(ctx.expression()),
-            )
+        return ClassicalAssignment(
+            lvalue=self.visit(ctx.indexedIdentifier()),
+            op=AssignmentOperator[ctx.assignmentOperator().getText()],
+            rvalue=self.visit(ctx.expression()),
+        )

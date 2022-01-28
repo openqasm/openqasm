@@ -11,58 +11,63 @@ reference: |
         (
         classicalTypeList
           classicalType
-            bitType
-              bit
-            designator
-              [
-              expression
-                expressionTerminator
-                  5
-              ]
+            nonArrayType
+              bitType
+                bit
+              designator
+                [
+                expression
+                  expressionTerminator
+                    5
+                ]
           ,
           classicalType
-            singleDesignatorType
-              uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+            nonArrayType
+              singleDesignatorType
+                uint
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
           ,
           classicalType
-            singleDesignatorType
-              float
-            designator
-              [
-              expression
-                expressionTerminator
-                  16
-              ]
-          ,
-          classicalType
-            complex
-            [
-            numericType
+            nonArrayType
               singleDesignatorType
                 float
               designator
                 [
                 expression
                   expressionTerminator
-                    64
+                    16
                 ]
-            ]
+          ,
+          classicalType
+            nonArrayType
+              complex
+              [
+              numericType
+                singleDesignatorType
+                  float
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      64
+                  ]
+              ]
         )
         returnSignature
           ->
           classicalType
-            singleDesignatorType
-              float
-            designator
-              [
-              expression
-                expressionTerminator
-                  6
-              ]
+            nonArrayType
+              singleDesignatorType
+                float
+              designator
+                [
+                expression
+                  expressionTerminator
+                    6
+                ]
         ;

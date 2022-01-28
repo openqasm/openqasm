@@ -121,8 +121,9 @@ reference: |
                   builtInCall
                     castOperator
                       classicalType
-                        noDesignatorType
-                          bool
+                        nonArrayType
+                          noDesignatorType
+                            bool
                     (
                     expressionList
                       expression
@@ -149,14 +150,15 @@ reference: |
         constantDeclaration
           const
           classicalType
-            singleDesignatorType
-              float
-            designator
-              [
-              expression
-                expressionTerminator
-                  64
-              ]
+            nonArrayType
+              singleDesignatorType
+                float
+              designator
+                [
+                expression
+                  expressionTerminator
+                    64
+                ]
           c
           equalsExpression
             =
@@ -169,14 +171,15 @@ reference: |
         constantDeclaration
           const
           classicalType
-            singleDesignatorType
-              float
-            designator
-              [
-              expression
-                expressionTerminator
-                  64
-              ]
+            nonArrayType
+              singleDesignatorType
+                float
+              designator
+                [
+                expression
+                  expressionTerminator
+                    64
+                ]
           d
           equalsExpression
             =
@@ -220,15 +223,19 @@ reference: |
                               additiveExpression
                                 additiveExpression
                                   multiplicativeExpression
-                                    powerExpression
-                                      expressionTerminator
-                                        dur
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            dur
                                 +
                                 multiplicativeExpression
-                                  powerExpression
-                                    expressionTerminator
-                                      timingIdentifier
-                                        200ns
+                                  unaryExpression
+                                    powerExpression
+                                      indexExpression
+                                        expressionTerminator
+                                          timingIdentifier
+                                            200ns
         ;
     statement
       classicalDeclarationStatement

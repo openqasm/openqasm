@@ -268,6 +268,61 @@ are all of type ``float[64]``.
 
 Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
 
+Arrays
+------
+
+Statically-sized arrays of values can be created and initialized, and individual elements
+can be accessed, using the following general syntax:
+
+.. code-block:: c
+
+   array[int[32], 5] myArray = {0, 1, 2, 3, 4};
+   array[float[32], 3, 2] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
+
+   int[32] firstElem = myArray[0]; // 0
+   int[32] lastElem = myArray[4]; // 4
+   int[32] alsoLastElem = myArray[-1]; // 4
+   float[32] firstLastElem = multiDim[0, 1]; // 1.2
+   float[32] lastLastElem = multiDim[2, 1]; // 3.2
+   float[32] alsoLastLastElem = multiDim[-1, -1]; // 3.2
+
+   myArray[4] = 10; // myArray == {0, 1, 2, 3, 10}
+   multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
+   multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
+
+Arrays *cannot* be declared inside the body of a function or gate. All arrays
+*must* be declared within the global scope of the program.
+Indexing of arrays is n-based *i.e.*, negative indices are allowed.
+The index ``-1`` means the last element of the array, ``-2`` is the second to
+last, and so on, with ``-n`` being the first element of an n-element array.
+Multi-dimensional arrays (as in the example above) are allowed, with a maximum
+of 7 total dimensions. The subscript operator ``[]`` is used for element access,
+and for multi-dimensional arrays subarray accesses can be specified using a
+comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
+dimension specified first.
+
+For interoperability, the standard
+ways of declaring quantum registers and bit registers are equivalent to the
+array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
+``array[qubit, 5] q1;``).
+Assignment to elements of arrays, as in the examples above, acts as expected,
+with the left-hand side of the assignment operating as a reference, thereby
+updating the values inside the original array. For multi-dimensional arrays,
+the shape and type of the assigned value must match that of the reference.
+
+.. code-block:: c
+
+   array[int[8], 3] aa;
+   array[int[8], 4, 3] bb;
+
+   bb[0] = aa; // all of aa is copied to first element of bb
+   bb[0, 1] = aa[2] // last element of aa is copied to one element of bb
+
+   bb[0] = 1 // error - shape mismatch
+
+Arrays may be passed to subroutines and externs. For more details, see 
+:any:`arrays-in-subroutines`.
+
 Types related to timing
 -----------------------
 
@@ -311,6 +366,8 @@ another name as long as the alias is in scope.
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
 
+Index sets and slicing
+----------------------
 
 Register concatenation and slicing
 ----------------------------------
@@ -328,9 +385,12 @@ interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
 
+Similarly, classical arrays can be indexed using index sets. See :any:`array-slicing`.
+
 An index set can be specified by a single integer (signed or unsigned), a
-comma-separated list of unsigned integers contained in braces ``{a,b,c,…}``, or a range. A
-range is written as ``a:b`` or ``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
+comma-separated list of integers contained in braces ``{a,b,c,…}``, or a range.
+Ranges are written as ``a:b`` or
+``a:c:b`` where ``a``, ``b``, and ``c`` are integers (signed or unsigned).
 The range corresponds to the set :math:`\{a, a+c, a+2c, \dots, a+mc\}`
 where :math:`m` is the largest integer such that :math:`a+mc\leq b` if
 :math:`c>0` and :math:`a+mc\geq b` if :math:`c<0`. If :math:`a=b` then
@@ -359,6 +419,103 @@ variables whose values may only be known at run time.
    let last_three = two[-4:-1];
    // Concatenate two alias in another one
    let both = sliced ++ last_three;
+
+Classical value bit slicing
+---------------------------
+
+A subset of classical values (int, uint, and angle) may be accessed at the bit
+level using index sets similar to register slicing. The bit slicing operation
+always returns a bit array of size equal to the size of the index set.
+
+.. code-block:: c
+
+   int[32] myInt = 15; // 0xF or 0b1111
+   bit[1] lastBit = myInt[0]; // 1
+   bit[1] signBit = myInt[31]; // 0
+   bit[1] alsoSignBit = myInt[-1]; // 0
+
+   bit[16] evenBits = myInt[0:2:31]; // 3
+   bit[16] upperBits = myInt[-16:-1];
+   bit[16] upperReversed = myInt[-1:-16];
+
+   myInt[4:7] = "1010"; // myInt == 0xAF
+
+Bit-level access is still possible with elements of arrays. It is suggested that
+multi-dimensional access be done using the comma-delimited version of the
+subscript operator to reduce confusion. With this convention nearly all
+instances of multiple subscripts ``[][]`` will be bit-level accesses of array
+elements.
+
+.. code-block:: c
+
+   array[int[32], 5] intArr = {0, 1, 2, 3, 4};
+   // Access bit 0 of element 0 of intArr and set it to 1
+   intArr[0][0] = 1;
+   // lowest 5 bits of intArr[4] copied to b
+   bit[5] b = intArr[4][0:4];
+
+.. _array-slicing:
+
+Array concatenation and slicing
+-------------------------------
+
+Two or more classical arrays of the same fundamental type can be
+concatenated to form an array of the same type whose size is the
+sum of the sizes of the individual arrays. Unlike with qubit registers, this operation
+copies the contents of the input arrays to form the new (larger) array. This means that
+arrays *can* be concatenated with themselves. However, the array concatenation
+operator is forbidden to be used directly in the argument list of a subroutine
+or extern call. If a concatenated array is to be passed to a subroutine then it
+should be explicitly declared and assigned the concatenation.
+
+.. code-block:: c
+
+   array[int[8], 2] first = {0, 1};
+   array[int[8], 3] second = {2, 3, 4};
+
+   array[int[8], 5] concat = first ++ second;
+   array[int[8], 4] selfConcat = first ++ first;
+
+   array[int[8], 2] secondSlice = second[1:2]; // {3, 4}
+
+   // slicing with assignment
+   second[1:2] = first[0:1]; // second == {2, 0, 1}
+
+   array[int[8], 4] third = {5, 6, 7, 8};
+   // combined slicing and concatenation
+   selfConcat[0:3] = first[0:1] ++ third[1:2];
+   // selfConcat == {0, 1, 6, 7}
+
+   subroutine_call(first ++ third) // forbidden
+   subroutine_call(selfConcat) // allowed
+
+Arrays can be sliced just like quantum registers using index sets. Slicing uses
+the subscript operator ``[]``, but produces an array (or reference in the case
+of assignment) with the same number of dimensions as the given identifier.
+Array slicing is syntactic sugar for concisely expressing for loops over
+multi-dimensional arrays.
+For sliced assignments, as with non-sliced assignments, the shapes and types of
+the slices must match.
+
+.. code-block:: c
+
+   int[8] scalar;
+   array[int[8], 2] oneD;
+   array[int[8], 3, 2] twoD; // 3x2
+   array[int[8], 3, 2] anotherTwoD; // 3x2
+   array[int[8], 4, 3, 2] threeD; // 4x3x2
+   array[int[8], 2, 3, 4] anotherThreeD; // 2x3x4
+
+   threeD[0, 0, 0] = scalar; // allowed
+   threeD[0, 0] = oneD; // allowed
+   threeD[0] = twoD; // allowed
+
+   threeD[0] = oneD; // error - shape mismatch
+   threeD[0, 0] = scalar // error - shape mismatch
+   threeD = anotherThreeD // error - shape mismatch
+
+   twoD[1:2] = anotherTwoD[0:1]; // allowed
+   twoD[1:2, 0] = anotherTwoD[0:1, 1]; // allowed
 
 .. _castingSpecifics:
 
