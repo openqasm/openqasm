@@ -299,7 +299,7 @@ Multi-dimensional arrays (as in the example above) are allowed, with a maximum
 of 7 total dimensions. The subscript operator ``[]`` is used for element access,
 and for multi-dimensional arrays subarray accesses can be specified using a
 comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
-dimesion specified first.
+dimension specified first.
 
 For interoperability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
