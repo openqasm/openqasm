@@ -26,7 +26,7 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
  * Can you index into integers and get bit value?
  * Is an int equivalent to an array of bits?
 
-Chair: Michael Healy (IBM Quantum)
+Chair: Michael Healy (IBM Quantum)  
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
 
 ### Pragmas
