@@ -17,7 +17,7 @@ Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
 ### Types and casting
 
-**Objective**: Define type hierarchy and implicit casting rules.
+**Objective**: Define type hierarchy and implicit casting rules.  
 **Questions**:
 
  * Any implicit casts?
