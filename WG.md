@@ -50,7 +50,7 @@ BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum
 ### Dynamic Deference & Allocation
 
 **Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/Qiskit/openqasm/issues/307)
- * Provide oncrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
+ * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
  * If in scope, provide rough solutions.
  * Keep in mind the difference between dynamic dereference and dynamic allocation.
  * Capture implicit assumptions that would make it hard to introduce this in future.
