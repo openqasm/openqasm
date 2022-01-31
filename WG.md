@@ -71,5 +71,5 @@ Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Phillip Schi
 **Objective**: Define a pulse grammar "openpulse" to be used for microcoding of gate instructions with
 OpenQASM `defcal`'s.
 
-Chair: Thomas Alexander (IBM Quantum)
+Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
