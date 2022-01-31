@@ -47,7 +47,22 @@ Chair: Jeff Heckey (AWS)
 Members: Ali Javadi (IBM Quantum)
 BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
 
+### Dynamic Deference & Allocation
 
+**Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/Qiskit/openqasm/issues/307)
+ * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
+ * If in scope, provide rough solutions.
+ * Keep in mind the difference between dynamic dereference and dynamic allocation.
+ * Capture implicit assumptions that would make it hard to introduce this in future.
+
+**Questions**:
+ * Do dynamically deferenced qubits break hidden assumptions in the current spec?
+    * Gates may have different implementations for each dynamic qubit
+    * Multiple qubit gates require connectivity or swaps
+    * Index out of bounds in runtime?
+
+Chair: Dor Israeli (Quantum Machines)
+Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Phillip Schindler (Innsbruck), Bettina Heim (Microsoft)
 
 ## Past Working Groups
 
