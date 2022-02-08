@@ -104,7 +104,7 @@ def cases_from_lines(
 def test_reference_output(filename):
     """Test that the reference files parse to the exact expected output."""
     with open(filename, "r") as file:
-        obj = yaml.load(file, Loader=yaml.FullLoader)
+        obj = yaml.safe_load(file)
     # Make sure the YAML files have only the correct keys.
     assert set(obj) == {"reference", "source"}
     parsed = openqasm_reference_parser.pretty_tree(program=obj["source"])
