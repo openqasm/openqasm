@@ -62,7 +62,7 @@ BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum
     * Index out of bounds in runtime?
 
 Chair: Dor Israeli (Quantum Machines)
-Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Phillip Schindler (Innsbruck), Bettina Heim (Microsoft)
+Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
 
 ## Past Working Groups
 
