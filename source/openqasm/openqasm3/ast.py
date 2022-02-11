@@ -1,8 +1,96 @@
+"""
+========================================
+Abstract Syntax Tree (``openqasm3.ast``)
+========================================
+
+.. currentmodule:: openqasm3.ast
+
+The reference abstract syntax tree (AST) for OpenQASM 3 programs.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
 from enum import Enum, auto
+
+
+__all__ = [
+    "AliasStatement",
+    "AngleType",
+    "AssignmentOperator",
+    "BinaryExpression",
+    "BinaryOperator",
+    "BitType",
+    "BoolType",
+    "BooleanLiteral",
+    "Box",
+    "BranchingStatement",
+    "BreakStatement",
+    "CalibrationDefinition",
+    "CalibrationGrammarDeclaration",
+    "Cast",
+    "ClassicalArgument",
+    "ClassicalAssignment",
+    "ClassicalDeclaration",
+    "ClassicalType",
+    "ComplexType",
+    "Concatenation",
+    "Constant",
+    "ConstantDeclaration",
+    "ConstantName",
+    "ContinueStatement",
+    "ControlDirectiveStatement",
+    "DelayInstruction",
+    "DurationLiteral",
+    "DurationOf",
+    "DurationType",
+    "EndStatement",
+    "Expression",
+    "ExpressionStatement",
+    "ExternDeclaration",
+    "FloatType",
+    "ForInLoop",
+    "FunctionCall",
+    "GateModifierName",
+    "IODeclaration",
+    "IOKeyword",
+    "Identifier",
+    "Include",
+    "IndexExpression",
+    "IntType",
+    "IntegerLiteral",
+    "Program",
+    "QASMNode",
+    "QuantumArgument",
+    "QuantumBarrier",
+    "QuantumForInLoop",
+    "QuantumGate",
+    "QuantumGateDefinition",
+    "QuantumGateModifier",
+    "QuantumInstruction",
+    "QuantumMeasurement",
+    "QuantumMeasurementAssignment",
+    "QuantumPhase",
+    "QuantumReset",
+    "QuantumStatement",
+    "QuantumWhileLoop",
+    "QubitDeclaration",
+    "RangeDefinition",
+    "RealLiteral",
+    "ReturnStatement",
+    "Span",
+    "Statement",
+    "StretchType",
+    "StringLiteral",
+    "SubroutineDefinition",
+    "TimeUnit",
+    "TimingStatement",
+    "UintType",
+    "UnaryExpression",
+    "UnaryOperator",
+    "WhileLoop",
+]
 
 
 @dataclass
@@ -631,7 +719,8 @@ class ClassicalType(QASMNode):
 @dataclass
 class IntType(ClassicalType):
     """
-    Class for signed int type with a designator.
+    Node representing a classical ``int`` (signed integer) type, with an
+    optional precision.
 
     Example:
 
@@ -645,7 +734,8 @@ class IntType(ClassicalType):
 @dataclass
 class UintType(ClassicalType):
     """
-    Class for unsigned int type with a designator.
+    Node representing a classical ``uint`` (unsigned integer) type, with an
+    optional precision.
 
     Example:
 
@@ -659,12 +749,13 @@ class UintType(ClassicalType):
 @dataclass
 class FloatType(ClassicalType):
     """
-    Class for float type with a designator.
+    Node representing the classical ``float`` type, with the particular IEEE-754
+    floating-point size optionally specified.
 
     Example:
 
-        float[8]
         float[16]
+        float[64]
     """
 
     size: Optional[Expression]
@@ -687,9 +778,9 @@ class ComplexType(ClassicalType):
 @dataclass
 class AngleType(ClassicalType):
     """
-    Class for angle type with a designator.
+    Node representing the classical ``angle`` type, with an optional precision.
 
-    Example:
+    Example::
 
         angle[8]
         angle[16]
@@ -701,7 +792,7 @@ class AngleType(ClassicalType):
 @dataclass
 class BitType(ClassicalType):
     """
-    Bit type
+    Node representing the classical ``bit`` type, with an optional size.
 
     Example::
 
@@ -714,7 +805,7 @@ class BitType(ClassicalType):
 
 class BoolType(ClassicalType):
     """
-    Class for Boolean type.
+    Leaf node representing the Boolean classical type.
     """
 
 
@@ -754,13 +845,13 @@ class ArrayReferenceType(ClassicalType):
 
 class DurationType(ClassicalType):
     """
-    Class for duration type.
+    Leaf node representing the ``duration`` type.
     """
 
 
 class StretchType(ClassicalType):
     """
-    Class for stretch type.
+    Leaf node representing the ``stretch`` type.
     """
 
 
@@ -803,11 +894,11 @@ class SubroutineDefinition(Statement):
 
     Example::
 
-    def measure(qubit q) -> bit {
-        s q;
-        h q;
-        return measure q;
-    }
+        def measure(qubit q) -> bit {
+            s q;
+            h q;
+            return measure q;
+        }
     """
 
     name: Identifier
@@ -824,9 +915,7 @@ class QuantumArgument(QASMNode):
     Example::
 
         qubit q
-
         qubit[4] q
-
     """
 
     qubit: Identifier
@@ -862,7 +951,6 @@ class BreakStatement(ControlDirectiveStatement):
     Example::
 
         break;
-
     """
 
 
@@ -873,7 +961,6 @@ class ContinueStatement(ControlDirectiveStatement):
     Example::
 
         continue;
-
     """
 
 
@@ -884,19 +971,19 @@ class EndStatement(ControlDirectiveStatement):
     Example::
 
         end;
-
     """
 
 
 @dataclass
 class BranchingStatement(Statement):
     """
-    Branch (if) statement
+    Branch (``if``) statement
 
     Example::
 
-        if(temp == 1) { ry(-pi / 2) scratch[0]; } else continue;
-
+        if (temp == 1) {
+            ry(-pi / 2) scratch[0];
+        } else continue;
     """
 
     condition: Expression
@@ -911,12 +998,11 @@ class WhileLoop(Statement):
 
     Example::
 
-    while(~success) {
-        reset magic;
-        ry(pi / 4) magic;
-        success = distill(magic, scratch);
-    }
-
+        while(~success) {
+            reset magic;
+            ry(pi / 4) magic;
+            success = distill(magic, scratch);
+        }
     """
 
     while_condition: Expression
@@ -930,8 +1016,9 @@ class ForInLoop(Statement):
 
     Example::
 
-        for i in [0:2] { majority a[i], b[i + 1], a[i + 1]; }
-
+        for i in [0: 2] {
+            majority a[i], b[i + 1], a[i + 1];
+        }
     """
 
     loop_variable: Identifier
@@ -953,7 +1040,6 @@ class DelayInstruction(TimingStatement):
     Example::
 
         delay[start_stretch] $0;
-
     """
 
     arguments: List[Expression]
@@ -972,7 +1058,6 @@ class Box(TimingStatement):
             delay[start_stretch] $0;
             x $0;
         }
-
     """
 
     duration: Optional[Expression]
@@ -987,7 +1072,6 @@ class DurationOf(QASMNode):
     Example::
 
         durationof({x $0;})
-
     """
 
     target: Union[Identifier, List[QuantumStatement]]
@@ -1019,7 +1103,6 @@ class ClassicalAssignment(Statement):
     Example::
 
         a[0] = 1;
-
     """
 
     lvalue: Union[Identifier, IndexedIdentifier]

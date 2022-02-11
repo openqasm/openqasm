@@ -1,13 +1,51 @@
+"""
+=============================
+Parser (``openqasm3.parser``)
+=============================
+
+Tools for parsing OpenQASM 3 programs into the :obj:`reference AST <openqasm3.ast>`.
+
+The quick-start interface is simply to call ``openqasm3.parse``:
+
+.. currentmodule:: openqasm3
+.. autofunction:: openqasm3.parse
+
+The rest of this module provides some lower-level internals of the parser.
+
+.. currentmodule:: openqasm3.parser
+.. autofunction:: span
+.. autofunction:: add_span
+.. autofunction:: combine_span
+.. autofunction:: get_span
+.. autoclass:: QASMNodeVisitor
+"""
+
 # pylint: disable=wrong-import-order
+
+__all__ = [
+    "parse",
+    "get_span",
+    "add_span",
+    "combine_span",
+    "span",
+    "QASMNodeVisitor",
+]
+
 from typing import Union
 
-from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
-from antlr4.tree.Tree import TerminalNode
+try:
+    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
+    from antlr4.tree.Tree import TerminalNode
+except ImportError as exc:
+    raise ImportError(
+        "Parsing is not available unless the [parser] extra is installed,"
+        " such as by 'pip install openqasm3[parser]'."
+    ) from exc
 
-from .qasm3Lexer import qasm3Lexer
-from .qasm3Parser import qasm3Parser
-from .qasm3Visitor import qasm3Visitor
-from openqasm.ast import (
+from .antlr.qasm3Lexer import qasm3Lexer
+from .antlr.qasm3Parser import qasm3Parser
+from .antlr.qasm3Visitor import qasm3Visitor
+from .ast import (
     AccessControl,
     AliasStatement,
     AngleType,
@@ -85,8 +123,14 @@ from openqasm.ast import (
 _TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
 
 
-def parse(openqasm3_program: str) -> QASMNode:
-    lexer = qasm3Lexer(InputStream(openqasm3_program))
+def parse(input_: str) -> Program:
+    """
+    Parse a complete OpenQASM 3 program from a string.
+
+    :param input_: A string containing a complete OpenQASM 3 program.
+    :return: A complete :obj:`~ast.Program` node.
+    """
+    lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
 

@@ -1,6 +1,22 @@
+"""
+=====================================================
+AST Visitors and Transformers (``openqasm3.visitor``)
+=====================================================
+
+Implementation of an example AST visitor :obj:`~QASMVisitor`, which can be
+inherited from to make generic visitors of the reference AST.  Deriving from
+this is :obj:`~QASMTransformer`, which is an example of how the AST can be
+manipulated.
+"""
+
 from typing import Optional, TypeVar, Generic
 
-from openqasm.ast import QASMNode
+from .ast import QASMNode
+
+__all__ = [
+    "QASMVisitor",
+    "QASMTransformer",
+]
 
 T = TypeVar("T")
 

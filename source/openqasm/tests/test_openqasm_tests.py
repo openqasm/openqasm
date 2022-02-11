@@ -1,7 +1,7 @@
 import pathlib
 import pytest
 
-from openqasm.parser.antlr.qasm_parser import parse
+import openqasm3
 
 
 TEST_DIR = pathlib.Path(__file__).parent
@@ -22,4 +22,4 @@ def test_examples(example_file):
     """
     with open(example_file) as f:
         source = f.read()
-        parse(source)
+        openqasm3.parse(source)
