@@ -289,9 +289,11 @@ The modifier ``ctrl @`` replaces its gate argument :math:`U` by a
 controlled-:math:`U` gate. If the control bit is 0, nothing happens to the target bit.
 If the control bit is 1, :math:`U` acts on the target bit. Mathematically, the controlled-:math:`U`
 gate is defined as :math:`C_U = I \otimes U^c`, where :math:`c` is the integer value of the control
-bit and :math:`C_U` is the controlled-:math:`U` gate. The new control qubit is prepended to the
-argument list for the controlled-:math:`U` gate. The modified gate does not use any additional
-scratch space and may require compilation to be executed.
+bit and :math:`C_U` is the controlled-:math:`U` gate. The control modifier argument can be a
+register, and in this case controlled gate broadcast over it (as it shown in examples above for
+CNOT gate). The new control argument is prepended to the argument list for the
+controlled-:math:`U` gate. The modified gate does not use any additional scratch space and may
+require compilation to be executed.
 
 We define a special case, the controlled *global* phase gate, as
 :math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
@@ -319,9 +321,11 @@ and :math:`N_U` is the negative controlled-:math:`U` gate.
        negctrl @ x q1, q2;
    }
 
-``ctrl`` and ``negctrl`` both accept an optional positive integer argument ``n``, specifying the
-number of control bits (omission means ``n=1``). ``n`` must be a compile-time constant. For an ``N``
-qubit operation, these operations are mathematically defined as
+``ctrl`` and ``negctrl`` both accept an optional positive integer parameter ``n``, specifying the
+number of control arguments (omission means ``n=1``). The sum of all control modifier parameters
+must be equal to the count of all control arguments, otherwise the statement is an invalid.
+``n`` must be a compile-time constant. For an ``N`` qubit operation,these operations are
+mathematically defined as
 
 .. math::
 
@@ -338,15 +342,12 @@ respectively.
 
    // A reversible boolean function
    // Demonstrates use of ``ctrl(n) @`` and ``negctrl(n) @``
-   qubit[5] a;
-   qubit f;
-   reset f;
-   negctrl(2) @ ctrl(3) @ x a, f;
-   negctrl(2) @ ctrl(2) @ x a[0], a[3], a[1], a[2], f;
-   negctrl @ ctrl(3) @ x a[0], a[1], a[3], a[4], f;
-   negctrl @ ctrl(3) @ x a[1], a[0], a[3], a[4], f;
-   ctrl(3) @ x a[0], a[1], a[2], f;
-   negctrl(3) @ ctrl @ x a[0], a[1], a[2], a[3], f;
+  qubit[3] a;
+  qubit[3] b;
+  ctrl(3) @ x a[1], a[0], a[2], b[2];
+  negctrl (3) @ ctrl @ x a[0], b[1], a[2], b[0], b[2];
+  negctrl @ ctrl(2) @ negctrl @ x a[0], b[0], a[2], a[1], b[2];
+  negctrl (2) @ ctrl @ x b[1], a, b[0], b[2];
 
 The modifier ``inv @`` replaces its gate argument :math:`U` with its inverse
 :math:`U^\dagger`. This can be computed from gate :math:`U` via the following rules
