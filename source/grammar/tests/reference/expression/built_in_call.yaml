@@ -13,6 +13,9 @@ source: |
   rotl(π);
   rotr(π);
   popcount(π);
+  sizeof(x);
+  sizeof(x, 0);
+  sizeof(x, 1);
 reference: |
   program
     header
@@ -23,14 +26,15 @@ reference: |
             builtInCall
               castOperator
                 classicalType
-                  singleDesignatorType
-                    int
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        32
-                    ]
+                  nonArrayType
+                    singleDesignatorType
+                      int
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          32
+                      ]
               (
               expressionList
                 expression
@@ -204,5 +208,52 @@ reference: |
                 expression
                   expressionTerminator
                     π
+              )
+        ;
+    statement
+      expressionStatement
+        expression
+          expressionTerminator
+            builtInCall
+              sizeof
+              (
+              expressionList
+                expression
+                  expressionTerminator
+                    x
+              )
+        ;
+    statement
+      expressionStatement
+        expression
+          expressionTerminator
+            builtInCall
+              sizeof
+              (
+              expressionList
+                expression
+                  expressionTerminator
+                    x
+                ,
+                expression
+                  expressionTerminator
+                    0
+              )
+        ;
+    statement
+      expressionStatement
+        expression
+          expressionTerminator
+            builtInCall
+              sizeof
+              (
+              expressionList
+                expression
+                  expressionTerminator
+                    x
+                ,
+                expression
+                  expressionTerminator
+                    1
               )
         ;

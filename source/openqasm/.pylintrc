@@ -35,3 +35,6 @@ enable=
 
 # Ignore long lines containing urls or pylint directives.
 ignore-long-lines=^(.*#\w*pylint: disable.*|\s*(# )?<?https?://\S+>?)$
+
+# Ignore the ANTLR-generated files
+ignore-paths=^openqasm3/antlr/.*$

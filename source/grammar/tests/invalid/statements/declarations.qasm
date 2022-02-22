@@ -31,6 +31,12 @@ complex[creg] myvar;
 complex[qreg[8]] myvar;
 complex[creg[8]] myvar;
 
+// Bad array specifiers.
+array myvar;
+array[8] myvar;
+array[not_a_type, 4] myvar;
+array[int[8], int[8], 2] myvar;
+
 // Invalid identifiers.
 int[8] int;
 int[8] def;
@@ -41,6 +47,14 @@ int[8] input;
 int[8] myvar = end;
 int[8] myvar =;
 float[32] myvar_f = int[32] myvar_i = 2;
+// array initialiser uses {}
+array[uint[8], 4] myvar = [4, 5, 6, 7];
+// can't use arithmetic on the entire initialiser
+array[uint[8], 4] myvar = 2 * {1, 2, 3, 4};
+// backed arrays can't use #dim
+array[uint[8], #dim=2] myvar;
+// can't have more than one type specification
+array[int[8], int[8]] myvar;
 
 // Incorrect orders.
 myvar: int[8];
@@ -53,9 +67,3 @@ float myvar[32];
 int[8] myvar1, myvar2;
 int[8] myvari, float[32] myvarf;
 int[8] myvari float[32] myvarf;
-
-// Aliasing.
-// Index sets should have explicit `{}` inside the `[]`.  However, this line may
-// be _grammatically_ valid when multidimensional arrays are added, in which
-// case this test needs removing.
-let qq = my_var[1, 2, 3];

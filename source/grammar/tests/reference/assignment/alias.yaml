@@ -68,117 +68,158 @@ reference: |
         let
         q
         =
-        indexIdentifier
-          indexIdentifier
-            q1
+        aliasInitializer
+          aliasInitializer
+            expression
+              expressionTerminator
+                q1
           ++
-          indexIdentifier
-            q2
+          aliasInitializer
+            expression
+              expressionTerminator
+                q2
         ;
     statement
       aliasStatement
         let
         c
         =
-        indexIdentifier
-          indexIdentifier
-            a
-            [
-            discreteSet
-              {
-              expressionList
-                expression
-                  expressionTerminator
-                    0
-                ,
-                expression
-                  expressionTerminator
-                    1
-              }
-            ]
+        aliasInitializer
+          aliasInitializer
+            expression
+              unaryExpression
+                powerExpression
+                  indexExpression
+                    indexExpression
+                      expressionTerminator
+                        a
+                    indexOperator
+                      [
+                      discreteSet
+                        {
+                        expression
+                          expressionTerminator
+                            0
+                        ,
+                        expression
+                          expressionTerminator
+                            1
+                        }
+                      ]
           ++
-          indexIdentifier
-            b
-            rangeDefinition
-              [
-              expression
-                expressionTerminator
-                  1
-              :
-              expression
-                expressionTerminator
-                  2
-              ]
+          aliasInitializer
+            expression
+              unaryExpression
+                powerExpression
+                  indexExpression
+                    indexExpression
+                      expressionTerminator
+                        b
+                    indexOperator
+                      [
+                      rangeDefinition
+                        expression
+                          expressionTerminator
+                            1
+                        :
+                        expression
+                          expressionTerminator
+                            2
+                      ]
         ;
     statement
       aliasStatement
         let
         qq
         =
-        indexIdentifier
-          q1
-          [
-          discreteSet
-            {
-            expressionList
-              expression
-                expressionTerminator
-                  1
-              ,
-              expression
-                expressionTerminator
-                  3
-              ,
-              expression
-                expressionTerminator
-                  4
-            }
-          ]
+        aliasInitializer
+          expression
+            unaryExpression
+              powerExpression
+                indexExpression
+                  indexExpression
+                    expressionTerminator
+                      q1
+                  indexOperator
+                    [
+                    discreteSet
+                      {
+                      expression
+                        expressionTerminator
+                          1
+                      ,
+                      expression
+                        expressionTerminator
+                          3
+                      ,
+                      expression
+                        expressionTerminator
+                          4
+                      }
+                    ]
         ;
     statement
       aliasStatement
         let
         qqq
         =
-        indexIdentifier
-          indexIdentifier
-            qq
+        aliasInitializer
+          aliasInitializer
+            expression
+              expressionTerminator
+                qq
           ++
-          indexIdentifier
-            q2
-            rangeDefinition
-              [
-              expression
-                expressionTerminator
-                  1
-              :
-              expression
-                expressionTerminator
-                  2
-              :
-              expression
-                expressionTerminator
-                  6
-              ]
+          aliasInitializer
+            expression
+              unaryExpression
+                powerExpression
+                  indexExpression
+                    indexExpression
+                      expressionTerminator
+                        q2
+                    indexOperator
+                      [
+                      rangeDefinition
+                        expression
+                          expressionTerminator
+                            1
+                        :
+                        expression
+                          expressionTerminator
+                            2
+                        :
+                        expression
+                          expressionTerminator
+                            6
+                      ]
         ;
     statement
       aliasStatement
         let
         d
         =
-        indexIdentifier
-          c
+        aliasInitializer
+          expression
+            expressionTerminator
+              c
         ;
     statement
       aliasStatement
         let
         e
         =
-        indexIdentifier
-          d
-          [
+        aliasInitializer
           expression
-            expressionTerminator
-              1
-          ]
+            unaryExpression
+              powerExpression
+                indexExpression
+                  indexExpression
+                    expressionTerminator
+                      d
+                  indexOperator
+                    [
+                    expression
+                      expressionTerminator
+                        1
+                    ]
         ;

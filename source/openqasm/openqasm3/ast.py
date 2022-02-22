@@ -1,8 +1,96 @@
+"""
+========================================
+Abstract Syntax Tree (``openqasm3.ast``)
+========================================
+
+.. currentmodule:: openqasm3.ast
+
+The reference abstract syntax tree (AST) for OpenQASM 3 programs.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
 from enum import Enum, auto
+
+
+__all__ = [
+    "AliasStatement",
+    "AngleType",
+    "AssignmentOperator",
+    "BinaryExpression",
+    "BinaryOperator",
+    "BitType",
+    "BoolType",
+    "BooleanLiteral",
+    "Box",
+    "BranchingStatement",
+    "BreakStatement",
+    "CalibrationDefinition",
+    "CalibrationGrammarDeclaration",
+    "Cast",
+    "ClassicalArgument",
+    "ClassicalAssignment",
+    "ClassicalDeclaration",
+    "ClassicalType",
+    "ComplexType",
+    "Concatenation",
+    "Constant",
+    "ConstantDeclaration",
+    "ConstantName",
+    "ContinueStatement",
+    "ControlDirectiveStatement",
+    "DelayInstruction",
+    "DurationLiteral",
+    "DurationOf",
+    "DurationType",
+    "EndStatement",
+    "Expression",
+    "ExpressionStatement",
+    "ExternDeclaration",
+    "FloatType",
+    "ForInLoop",
+    "FunctionCall",
+    "GateModifierName",
+    "IODeclaration",
+    "IOKeyword",
+    "Identifier",
+    "Include",
+    "IndexExpression",
+    "IntType",
+    "IntegerLiteral",
+    "Program",
+    "QASMNode",
+    "QuantumArgument",
+    "QuantumBarrier",
+    "QuantumForInLoop",
+    "QuantumGate",
+    "QuantumGateDefinition",
+    "QuantumGateModifier",
+    "QuantumInstruction",
+    "QuantumMeasurement",
+    "QuantumMeasurementAssignment",
+    "QuantumPhase",
+    "QuantumReset",
+    "QuantumStatement",
+    "QuantumWhileLoop",
+    "QubitDeclaration",
+    "RangeDefinition",
+    "RealLiteral",
+    "ReturnStatement",
+    "Span",
+    "Statement",
+    "StretchType",
+    "StringLiteral",
+    "SubroutineDefinition",
+    "TimeUnit",
+    "TimingStatement",
+    "UintType",
+    "UnaryExpression",
+    "UnaryOperator",
+    "WhileLoop",
+]
 
 
 @dataclass
@@ -53,21 +141,6 @@ class Include(QASMNode):
 
 class Statement(QASMNode):
     """A statement: anything that can appear on its own line"""
-
-
-@dataclass
-class AliasStatement(Statement):
-    """
-    Alias statement
-
-    Example::
-
-        let a = qubits[0];
-
-    """
-
-    target: Identifier
-    value: Union[IndexIdentifier, Identifier]
 
 
 @dataclass
@@ -319,6 +392,20 @@ class DurationLiteral(Expression):
 
 
 @dataclass
+class ArrayLiteral(Expression):
+    """Array literal, used to initialise declared arrays.
+
+    For example::
+
+        array[uint[8], 2] row = {1, 2};
+        array[uint[8], 2, 2] my_array = {{1, 2}, {3, 4}};
+        array[uint[8], 2, 2] my_array = {row, row};
+    """
+
+    values: List[Expression]
+
+
+@dataclass
 class FunctionCall(Expression):
     """
     A function call expression
@@ -351,26 +438,79 @@ class Cast(Expression):
 
 
 @dataclass
+class DiscreteSet(QASMNode):
+    """
+    A set of discrete values.  This can be used for the values in a ``for``
+    loop, or to index certain values out of a register::
+
+        for i in {1, 2, 3} {}
+        let alias = qubits[{2, 3, 4}];
+    """
+
+    values: List[Expression]
+
+
+@dataclass
+class RangeDefinition(QASMNode):
+    """
+    Range definition.
+
+    Example::
+
+        1:2
+        1:1:10
+        :
+    """
+
+    start: Optional[Expression]
+    end: Optional[Expression]
+    step: Optional[Expression]
+
+
+IndexElement = Union[DiscreteSet, List[Union[Expression, RangeDefinition]]]
+
+
+@dataclass
 class IndexExpression(Expression):
     """
     An index expression.
 
-    This is used to represent the following unlabeled line in the grammar:
-
-    expressionTerminator
-        : ...
-        | expressionTerminator LBRACKET expression RBRACKET
-
     Example::
 
         q[1]
-
-        q // <- expression
-        1 // <- index_expression
     """
 
-    expression: Expression
-    index_expression: Expression
+    collection: Expression
+    index: IndexElement
+
+
+@dataclass
+class IndexedIdentifier(QASMNode):
+    """An indentifier with index operators, such that it can be used as an
+    lvalue.  The list of indices is subsequent index brackets, so in::
+
+        a[{1, 2, 3}][0:1, 0:1]
+
+    the list of indices will have two elements.  The first will be a
+    :class:`.DiscreteSet`, and the second will be a list of two
+    :class:`.RangeDefinition`\\ s.
+    """
+
+    name: Identifier
+    indices: List[IndexElement]
+
+
+@dataclass
+class Concatenation(Expression):
+    """
+    Concatenation of two registers, for example::
+
+        a ++ b
+        a[2:3] ++ a[0:1]
+    """
+
+    lhs: Expression
+    rhs: Expression
 
 
 class QuantumInstruction(QuantumStatement):
@@ -400,7 +540,7 @@ class QuantumGate(QuantumInstruction):
     modifiers: List[QuantumGateModifier]
     name: Identifier
     arguments: List[Expression]
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubits: List[Expression]
 
 
 class GateModifierName(Enum):
@@ -447,7 +587,7 @@ class QuantumPhase(QuantumInstruction):
 
     quantum_gate_modifiers: List[QuantumGateModifier]
     argument: Expression
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
 @dataclass
@@ -460,7 +600,7 @@ class QuantumMeasurement(QuantumInstruction):
         measure q;
     """
 
-    qubit: Union[IndexIdentifier, Identifier]
+    qubit: Union[IndexedIdentifier, Identifier]
 
 
 @dataclass
@@ -473,7 +613,7 @@ class QuantumReset(QuantumInstruction):
         reset q;
     """
 
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubits: Union[IndexedIdentifier, Identifier]
 
 
 @dataclass
@@ -486,7 +626,7 @@ class QuantumBarrier(QuantumInstruction):
         barrier q;
     """
 
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
 @dataclass
@@ -499,8 +639,15 @@ class QuantumMeasurementAssignment(Statement):
         c = measure q;
     """
 
-    target: Union[IndexIdentifier, Identifier]
+    target: Union[IndexedIdentifier, Identifier]
     measure_instruction: QuantumMeasurement
+
+
+class AccessControl(Enum):
+    """Access modifier for classical arguments."""
+
+    CONST = auto()
+    MUTABLE = auto()
 
 
 @dataclass
@@ -511,6 +658,7 @@ class ClassicalArgument(QASMNode):
 
     type: ClassicalType
     name: Identifier
+    access: Optional[AccessControl] = None
 
 
 @dataclass
@@ -554,9 +702,10 @@ class ConstantDeclaration(Statement):
 
     Example::
 
-        const n = 10;
+        const int[16] n = 10;
     """
 
+    type: ClassicalType
     identifier: Identifier
     init_expression: Expression
 
@@ -570,7 +719,8 @@ class ClassicalType(QASMNode):
 @dataclass
 class IntType(ClassicalType):
     """
-    Class for signed int type with a designator.
+    Node representing a classical ``int`` (signed integer) type, with an
+    optional precision.
 
     Example:
 
@@ -584,7 +734,8 @@ class IntType(ClassicalType):
 @dataclass
 class UintType(ClassicalType):
     """
-    Class for unsigned int type with a designator.
+    Node representing a classical ``uint`` (unsigned integer) type, with an
+    optional precision.
 
     Example:
 
@@ -598,61 +749,16 @@ class UintType(ClassicalType):
 @dataclass
 class FloatType(ClassicalType):
     """
-    Class for float type with a designator.
+    Node representing the classical ``float`` type, with the particular IEEE-754
+    floating-point size optionally specified.
 
     Example:
 
-        float[8]
         float[16]
+        float[64]
     """
 
     size: Optional[Expression]
-
-
-@dataclass
-class AngleType(ClassicalType):
-    """
-    Class for angle type with a designator.
-
-    Example:
-
-        angle[8]
-        angle[16]
-    """
-
-    size: Optional[Expression]
-
-
-@dataclass
-class BitType(ClassicalType):
-    """
-    Bit type
-
-    Example::
-
-        bit[8]
-        creg[8]
-    """
-
-    size: Optional[Expression]
-
-
-class BoolType(ClassicalType):
-    """
-    Class for Boolean type.
-    """
-
-
-class DurationType(ClassicalType):
-    """
-    Class for duration type.
-    """
-
-
-class StretchType(ClassicalType):
-    """
-    Class for stretch type.
-    """
 
 
 @dataclass
@@ -669,102 +775,84 @@ class ComplexType(ClassicalType):
     base_type: Union[IntType, UintType, FloatType, AngleType]
 
 
-class IndexIdentifier(QASMNode):
+@dataclass
+class AngleType(ClassicalType):
     """
-    Quantum or classical identifier,
-    indexed or not indexed.
-
-    #TODO: we will have to update IndexExpression,
-    then IndexIdentifier will be subclass of Expression.
+    Node representing the classical ``angle`` type, with an optional precision.
 
     Example::
 
-        q
-        b
-        b[1]
-        b[3:5]
-        b ++ c
+        angle[8]
+        angle[16]
+    """
+
+    size: Optional[Expression]
+
+
+@dataclass
+class BitType(ClassicalType):
+    """
+    Node representing the classical ``bit`` type, with an optional size.
+
+    Example::
+
+        bit[8]
+        creg[8]
+    """
+
+    size: Optional[Expression]
+
+
+class BoolType(ClassicalType):
+    """
+    Leaf node representing the Boolean classical type.
     """
 
 
 @dataclass
-class Subscript(IndexIdentifier):
-    """
-    Indexed identifier with an integer
-    as subscript.
+class ArrayType(ClassicalType):
+    """Type of arrays that include allocation of the storage.
 
-    Example:
-
-        segments[0]
-        qubits[1]
+    This is generally any array declared as a standard statement, but not
+    arrays declared by being arguments to subroutines.
     """
 
-    name: str
-    index: Expression
+    base_type: Union[IntType, UintType, FloatType, AngleType, BitType, BoolType, ComplexType]
+    dimensions: List[Expression]
 
 
 @dataclass
-class Selection(IndexIdentifier):
-    """
-    Indexed identifier with multiple integers
-    as subscript.
+class ArrayReferenceType(ClassicalType):
+    """Type of arrays that are a reference to an array with allocated storage.
 
-    Example::
+    This is generally any array declared as a subroutine argument.  The
+    dimensions can be either a list of expressions (one for each dimension), or
+    a single expression, which is the number of dimensions.
 
-        segments[1, 2]
-        qubits[1, 2, 3]
-    """
+    For example::
 
-    name: str
-    indices: List[Expression]
-
-
-@dataclass
-class Slice(IndexIdentifier):
-    """
-    Indexed identifier with a range
-    as subscript.
-
-    Example::
-
-        segments[1:2]
-        qubits[1:10:1]
+        // `a` will have dimensions `[IntegerLiteral(2)]` (with a list), because
+        // it is a 1D array, with a length of 2.
+        def f(const array[uint[8], 2] a) {}
+        // `b` will have dimension `IntegerLiteral(3)` (no list), because it is
+        // a 3D array, but we don't know the lengths of its dimensions.
+        def f(const array[uint[8], #dim=3] b) {}
     """
 
-    name: str
-    range: RangeDefinition
+    base_type: Union[IntType, UintType, FloatType, AngleType, BitType, BoolType, ComplexType]
+    dimensions: Union[Expression, List[Expression]]
 
 
-@dataclass
-class RangeDefinition(QASMNode):
+class DurationType(ClassicalType):
     """
-    Range definition.
-
-    Example::
-
-        [1:2]
-        [1:1:10]
-        [:]
+    Leaf node representing the ``duration`` type.
     """
 
-    start: Optional[Expression]
-    end: Optional[Expression]
-    step: Optional[Expression]
 
-
-@dataclass
-class Concatenation(IndexIdentifier):
+class StretchType(ClassicalType):
     """
-    Combination of two arrays.
-
-    Example::
-
-        segment1 ++ segment2
-        qubits[0:10] ++ qubits[15:20]
+    Leaf node representing the ``stretch`` type.
     """
-
-    lhs: Union[IndexIdentifier, Identifier]
-    rhs: Union[IndexIdentifier, Identifier]
 
 
 @dataclass
@@ -806,11 +894,11 @@ class SubroutineDefinition(Statement):
 
     Example::
 
-    def measure(qubit q) -> bit {
-        s q;
-        h q;
-        return measure q;
-    }
+        def measure(qubit q) -> bit {
+            s q;
+            h q;
+            return measure q;
+        }
     """
 
     name: Identifier
@@ -827,9 +915,7 @@ class QuantumArgument(QASMNode):
     Example::
 
         qubit q
-
         qubit[4] q
-
     """
 
     qubit: Identifier
@@ -865,7 +951,6 @@ class BreakStatement(ControlDirectiveStatement):
     Example::
 
         break;
-
     """
 
 
@@ -876,7 +961,6 @@ class ContinueStatement(ControlDirectiveStatement):
     Example::
 
         continue;
-
     """
 
 
@@ -887,19 +971,19 @@ class EndStatement(ControlDirectiveStatement):
     Example::
 
         end;
-
     """
 
 
 @dataclass
 class BranchingStatement(Statement):
     """
-    Branch (if) statement
+    Branch (``if``) statement
 
     Example::
 
-        if(temp == 1) { ry(-pi / 2) scratch[0]; } else continue;
-
+        if (temp == 1) {
+            ry(-pi / 2) scratch[0];
+        } else continue;
     """
 
     condition: Expression
@@ -914,12 +998,11 @@ class WhileLoop(Statement):
 
     Example::
 
-    while(~success) {
-        reset magic;
-        ry(pi / 4) magic;
-        success = distill(magic, scratch);
-    }
-
+        while(~success) {
+            reset magic;
+            ry(pi / 4) magic;
+            success = distill(magic, scratch);
+        }
     """
 
     while_condition: Expression
@@ -933,12 +1016,13 @@ class ForInLoop(Statement):
 
     Example::
 
-    for i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; }
-
+        for i in [0: 2] {
+            majority a[i], b[i + 1], a[i + 1];
+        }
     """
 
     loop_variable: Identifier
-    set_declaration: Union[RangeDefinition, List[Expression], Identifier]
+    set_declaration: Union[RangeDefinition, DiscreteSet, Identifier]
     block: List[Statement]
 
 
@@ -956,12 +1040,11 @@ class DelayInstruction(TimingStatement):
     Example::
 
         delay[start_stretch] $0;
-
     """
 
     arguments: List[Expression]
     duration: Expression
-    qubits: List[Union[IndexIdentifier, Identifier]]
+    qubits: List[Expression]
 
 
 @dataclass
@@ -975,7 +1058,6 @@ class Box(TimingStatement):
             delay[start_stretch] $0;
             x $0;
         }
-
     """
 
     duration: Optional[Expression]
@@ -990,10 +1072,24 @@ class DurationOf(QASMNode):
     Example::
 
         durationof({x $0;})
-
     """
 
     target: Union[Identifier, List[QuantumStatement]]
+
+
+@dataclass
+class AliasStatement(Statement):
+    """
+    Alias statement
+
+    Example::
+
+        let a = qubits[0];
+
+    """
+
+    target: Identifier
+    value: Union[Identifier, Concatenation]
 
 
 AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
@@ -1007,10 +1103,9 @@ class ClassicalAssignment(Statement):
     Example::
 
         a[0] = 1;
-
     """
 
-    lvalue: Union[Identifier, Subscript]
+    lvalue: Union[Identifier, IndexedIdentifier]
     op: AssignmentOperator
     rvalue: Expression
 

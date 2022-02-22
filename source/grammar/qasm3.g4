@@ -54,9 +54,7 @@ classicalDeclarationStatement
     : ( classicalDeclaration | constantDeclaration ) SEMICOLON
     ;
 
-classicalAssignment
-    : Identifier designator? assignmentOperator expression
-    ;
+classicalAssignment: indexedIdentifier assignmentOperator expression;
 
 assignmentStatement : ( classicalAssignment | quantumMeasurementAssignment ) SEMICOLON ;
 
@@ -105,11 +103,28 @@ noDesignatorType
     | timingType
     ;
 
-classicalType
+nonArrayType
     : singleDesignatorType designator
     | noDesignatorType
     | bitType designator?
-    | 'complex' LBRACKET numericType RBRACKET
+    | COMPLEX LBRACKET numericType RBRACKET
+    ;
+
+arrayType: ARRAY LBRACKET nonArrayType COMMA expressionList RBRACKET;
+arrayReferenceTypeDimensionSpecifier: (
+    expressionList
+    | DIM EQUALS expression
+);
+arrayReferenceType:
+    ARRAY
+    LBRACKET
+    nonArrayType
+    COMMA arrayReferenceTypeDimensionSpecifier
+    RBRACKET;
+
+classicalType
+    : nonArrayType
+    | arrayType
     ;
 
 // numeric OpenQASM types
@@ -118,7 +133,7 @@ numericType
     ;
 
 constantDeclaration
-    : 'const' classicalType Identifier equalsExpression
+    : CONST classicalType Identifier equalsExpression
     ;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
@@ -136,14 +151,20 @@ bitDeclaration
     ;
 
 complexDeclaration
-    : 'complex' LBRACKET numericType RBRACKET Identifier equalsExpression?
+    : COMPLEX LBRACKET numericType RBRACKET Identifier equalsExpression?
     ;
+
+arrayInitializer: LBRACE (
+        (expression | arrayInitializer) (COMMA (expression | arrayInitializer))*
+    ) RBRACE;
+arrayDeclaration: arrayType Identifier (EQUALS (arrayInitializer | expression))?;
 
 classicalDeclaration
     : singleDesignatorDeclaration
     | noDesignatorDeclaration
     | bitDeclaration
     | complexDeclaration
+    | arrayDeclaration
     ;
 
 classicalTypeList
@@ -151,14 +172,11 @@ classicalTypeList
     ;
 
 classicalArgument
-    :
-    (
-        singleDesignatorType designator |
-        noDesignatorType
-    ) Identifier
+    : (singleDesignatorType designator | noDesignatorType) Identifier
     | 'creg' Identifier designator?
     | 'bit' designator? Identifier
-    | 'complex' LBRACKET numericType RBRACKET Identifier
+    | COMPLEX LBRACKET numericType RBRACKET Identifier
+    | (CONST | MUTABLE) arrayReferenceType Identifier
     ;
 
 classicalArgumentList
@@ -176,23 +194,18 @@ anyTypeArgumentList
 
 /** Aliasing **/
 aliasStatement
-    : 'let' Identifier EQUALS indexIdentifier SEMICOLON
+    : 'let' Identifier EQUALS aliasInitializer SEMICOLON
     ;
 
 /** Register Concatenation and Slicing **/
 
-indexIdentifier
-    : Identifier rangeDefinition
-    | Identifier (LBRACKET (discreteSet | expression) RBRACKET)?
-    | indexIdentifier '++' indexIdentifier
-    ;
-
-indexIdentifierList
-    : indexIdentifier ( COMMA indexIdentifier )*
+aliasInitializer
+    : expression
+    | aliasInitializer '++' aliasInitializer
     ;
 
 rangeDefinition
-    : LBRACKET expression? COLON expression? ( COLON expression )? RBRACKET
+    : expression? COLON expression? ( COLON expression )?
     ;
 
 /*** Gates and Built-in Quantum Instructions ***/
@@ -239,24 +252,24 @@ quantumInstruction
     ;
 
 quantumPhase
-    : quantumGateModifier* 'gphase' LPAREN expression RPAREN indexIdentifierList?
+    : quantumGateModifier* 'gphase' LPAREN expression RPAREN (indexedIdentifier (COMMA indexedIdentifier)*)?
     ;
 
 quantumReset
-    : 'reset' indexIdentifierList
+    : 'reset' indexedIdentifier
     ;
 
 quantumMeasurement
-    : 'measure' indexIdentifier
+    : 'measure' indexedIdentifier
     ;
 
 quantumMeasurementAssignment
-    : quantumMeasurement ( ARROW indexIdentifier )?
-    | indexIdentifier EQUALS quantumMeasurement
+    : quantumMeasurement ( ARROW indexedIdentifier )?
+    | indexedIdentifier EQUALS quantumMeasurement
     ;
 
 quantumBarrier
-    : 'barrier' indexIdentifierList?
+    : 'barrier' (indexedIdentifier (COMMA indexedIdentifier)*)?
     ;
 
 quantumGateModifier
@@ -272,7 +285,7 @@ ctrlModifier
     ;
 
 quantumGateCall
-    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexIdentifierList
+    : quantumGateModifier* quantumGateName ( LPAREN expressionList RPAREN )? indexedIdentifier (COMMA indexedIdentifier)*
     ;
 
 /*** Classical Instructions ***/
@@ -370,19 +383,39 @@ additiveExpression
 
 multiplicativeExpression
     // base case either terminator or unary
-    : powerExpression
-    | unaryExpression
-    | multiplicativeExpression ( MUL | DIV | MOD ) ( powerExpression | unaryExpression )
+    : unaryExpression
+    | multiplicativeExpression ( MUL | DIV | MOD ) unaryExpression
     ;
 
 unaryExpression
-    : unaryOperator powerExpression
+    : unaryOperator? powerExpression
     ;
 
 powerExpression
-    : expressionTerminator
-    | expressionTerminator '**' powerExpression
+    : indexExpression
+    | powerExpression '**' indexExpression
     ;
+
+// The general form is a comma-separated list of indexing entities.
+// `discreteSet` is only valid when being used as a single index: registers can
+// support it for creating aliases, but arrays cannot.
+indexOperator:
+    LBRACKET
+    (
+        discreteSet
+        | (expression | rangeDefinition) (COMMA (expression | rangeDefinition))*
+    )
+    RBRACKET;
+indexExpression
+    : expressionTerminator
+    | indexExpression indexOperator
+    ;
+
+// Alternative form to `indexExpression` for cases where an obvious l-value is
+// better grammatically than a generic expression.  Some current uses of this
+// rule may be better as `expression`, leaving the semantic analysis to later
+// (for example in gate calls).
+indexedIdentifier: Identifier indexOperator*;
 
 expressionTerminator
     : Constant
@@ -396,7 +429,6 @@ expressionTerminator
     | externOrSubroutineCall
     | timingIdentifier
     | LPAREN expression RPAREN
-    | expressionTerminator LBRACKET expression RBRACKET
     ;
 /** End expression hierarchy **/
 
@@ -405,7 +437,7 @@ booleanLiteral
     ;
 
 builtInCall
-    : ( builtInMath | castOperator ) LPAREN expressionList RPAREN
+    : ( builtInMath | castOperator | SIZEOF) LPAREN expressionList RPAREN
     ;
 
 builtInMath
@@ -440,11 +472,11 @@ assignmentOperator
     | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**='
     ;
 
-discreteSet: LBRACE expressionList RBRACE;
+discreteSet: LBRACE expression (COMMA expression)* RBRACE;
 
 setDeclaration
     : discreteSet
-    | rangeDefinition
+    | LBRACKET rangeDefinition RBRACKET
     | Identifier
     ;
 
@@ -525,7 +557,7 @@ timingInstructionName
     ;
 
 timingInstruction
-    : timingInstructionName ( LPAREN expressionList? RPAREN )? designator indexIdentifierList
+    : timingInstructionName (LPAREN expressionList? RPAREN)? designator indexedIdentifier (COMMA indexedIdentifier)*
     ;
 
 timingStatement
@@ -587,6 +619,15 @@ MOD : '%';
 
 IMAG: 'im';
 ImagNumber : ( Integer | RealNumber ) IMAG ;
+
+COMPLEX: 'complex';
+
+HASH: '#';
+CONST: 'const';
+MUTABLE: 'mutable';
+ARRAY: 'array';
+SIZEOF: 'sizeof';
+DIM: '#dim';
 
 Constant : ( 'pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ' );
 

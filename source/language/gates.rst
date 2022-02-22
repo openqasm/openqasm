@@ -341,7 +341,7 @@ respectively.
    qubit[5] a;
    qubit f;
    reset f;
-   negctrl(2) @ ctrl(3) @ x a, f;
+   negctrl(2) @ ctrl(3) @ x a[0], a[1], a[2], a[3], a[4], f;
    negctrl(2) @ ctrl(2) @ x a[0], a[3], a[1], a[2], f;
    negctrl @ ctrl(3) @ x a[0], a[1], a[3], a[4], f;
    negctrl @ ctrl(3) @ x a[1], a[0], a[3], a[4], f;

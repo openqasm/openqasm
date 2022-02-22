@@ -1,39 +1,25 @@
-import os
+import pathlib
 import pytest
 
-from openqasm.parser.antlr.qasm_parser import parse
+import openqasm3
 
 
-class TestOpenQasmTests:
-    """Test the example and tests from the openqasm project"""
+TEST_DIR = pathlib.Path(__file__).parent
+ROOT_DIR = TEST_DIR.parents[2]
+EXAMPLES_DIR = ROOT_DIR / "examples"
+EXAMPLES = tuple(EXAMPLES_DIR.glob("**/*.qasm"))
 
-    @pytest.fixture(scope="function", autouse=True)
-    def setup(self):
-        test_dir = os.path.dirname(os.path.abspath(__file__))  # tests/ dir
-        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(test_dir)))  # project root dir
-        self.examples_path = os.path.join(root_dir, "examples/")
 
-    def test_examples(self):
-        """Loop through all example files, verify that the ast_parser can parse the file.
+@pytest.fixture(params=EXAMPLES, ids=lambda x: str(x.relative_to(EXAMPLES_DIR)))
+def example_file(request):
+    return str(request.param)
 
-        Examples located at: ``openqasm/examples``.
-        """
-        examples = os.listdir(self.examples_path)
-        success_count = 0
-        fail_count = 0
-        for e in examples:
-            if e.endswith(".qasm"):
-                example_file = os.path.join(self.examples_path, e)
-                with open(example_file) as f:
-                    source = f.read()
-                    try:
-                        parse(source)
-                        print(f"success: {example_file}")
-                        success_count += 1
-                    except Exception as e:
-                        print(f"fail: {example_file}\n{e}")
-                        fail_count += 1
-                        # raise
 
-        if fail_count > 0:  # Should pass all 21
-            raise Exception(f"{success_count} succeed and {fail_count} failed.")
+def test_examples(example_file):
+    """Loop through all example files, verify that the ast_parser can parse the file.
+
+    Examples located at: ``openqasm/examples``.
+    """
+    with open(example_file) as f:
+        source = f.read()
+        openqasm3.parse(source)

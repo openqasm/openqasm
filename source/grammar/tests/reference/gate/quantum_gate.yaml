@@ -30,17 +30,15 @@ reference: |
             quantumInstruction
               quantumReset
                 reset
-                indexIdentifierList
-                  indexIdentifier
-                    a
+                indexedIdentifier
+                  a
             ;
           quantumStatement
             quantumInstruction
               quantumBarrier
                 barrier
-                indexIdentifierList
-                  indexIdentifier
-                    b
+                indexedIdentifier
+                  b
             ;
           quantumStatement
             quantumInstruction
@@ -62,12 +60,15 @@ reference: |
                                         unaryOperator
                                           -
                                         powerExpression
-                                          expressionTerminator
-                                            theta
+                                          indexExpression
+                                            expressionTerminator
+                                              theta
                                     /
-                                    powerExpression
-                                      expressionTerminator
-                                        2
+                                    unaryExpression
+                                      powerExpression
+                                        indexExpression
+                                          expressionTerminator
+                                            2
                 )
             ;
           quantumStatement
@@ -75,12 +76,11 @@ reference: |
               quantumGateCall
                 quantumGateName
                   CX
-                indexIdentifierList
-                  indexIdentifier
-                    a
-                  ,
-                  indexIdentifier
-                    b
+                indexedIdentifier
+                  a
+                ,
+                indexedIdentifier
+                  b
             ;
           quantumStatement
             quantumInstruction
