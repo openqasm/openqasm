@@ -333,7 +333,7 @@ their argument expression in parentheses:
       |          |                                |                     |
       |          | [angle]                        | [float]             |
       +----------+--------------------------------+---------------------+
-=======
+
 Arrays
 ------
 
