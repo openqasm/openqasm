@@ -54,18 +54,18 @@ Qubits
 
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. The statement ``qubit name;``
-declares a reference to a quantum bit. These qubits are referred 
-to as "virtual qubits" (in distinction to "physical qubits" on 
-actual hardware; see below). The statement ``qubit[size] name;`` 
+declares a reference to a quantum bit. These qubits are referred
+to as "virtual qubits" (in distinction to "physical qubits" on
+actual hardware; see below). The statement ``qubit[size] name;``
 declares a quantum register with ``size`` qubits.
-Sizes must always be constant positive integers. The label ``name[j]`` 
+Sizes must always be constant positive integers. The label ``name[j]``
 refers to a qubit of this register, where
 :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
-Quantum registers are static arrays of qubits 
-that cannot be dynamically resized. 
+Quantum registers are static arrays of qubits
+that cannot be dynamically resized.
 
 The keyword ``qreg`` is included
-for backwards compatibility and will be removed in the future. 
+for backwards compatibility and will be removed in the future.
 
 Qubits are initially in an undefined state. A quantum ``reset`` operation is one
 way to initialize qubit states.
@@ -195,7 +195,7 @@ would declare a complex number with real and imaginary parts that are 32-bit flo
 ``a + b im``, where ``a`` and ``b`` must be of the same type as ``type[size]``. ``b`` must occur to the
 left of ``im`` and the two can only be seperated by spaces/tabs (or nothing at all).
 
-.. code-block:: c
+.. code-block::
 
    complex[float[64]] c;
    c = 2.5 + 3.5im; // 2.5, 3.5 are resolved to be ``float[64]`` types
@@ -229,7 +229,7 @@ including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` a
 statement ``const type name = expression;`` defines a new constant. The expression on the right hand side
 has a similar syntax as OpenQASM 2 parameter expressions; however,
 previously defined constants can be referenced in later variable
-declarations. ``const``` values are compile-time constants, allowing the
+declarations. ``const`` values are compile-time constants, allowing the
 compiler to do constant folding and other such optimizations. Scientific
 calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
@@ -258,7 +258,7 @@ are all of type ``float[64]``.
 
       +-------------------------------+--------------+--------------+---------------------+
       | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |
-      +-------------------------------+--------------+--------------+---------------------+
+      +===============================+==============+==============+=====================+
       | Pi                            | pi           | π            | 3.1415926535...     |
       +-------------------------------+--------------+--------------+---------------------+
       | Tau                           | tau          | τ            | 6.283185...         |
@@ -267,6 +267,64 @@ are all of type ``float[64]``.
       +-------------------------------+--------------+--------------+---------------------+
 
 Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
+
+Mathematical functions available for constant initialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to simple arithmetic functions used in expressions initializing constants,
+OpenQASM 3 offers the following built-in mathematical operators followed by
+their argument expression in parentheses:
+
+.. container::
+   :name: tab:built-in-math
+
+   .. table:: Built-in mathematical functions in OpenQASM3.
+
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | Function | Input Range/Type, [...]           | Output Range/Type                    | Notes                                  |
+      +==========+===================================+======================================+========================================+
+      | arccos   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[0, \pi]`        |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | arcsin   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[-\pi/2, \pi/2]` |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | arctan   | ``float``                         | ``float`` on :math:`[-\pi/2, \pi/2]` |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | ceiling  | ``float``                         | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | cos      | (``float`` or ``angle``)          | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | exp      | ``float``                         | ``float``                            |                                        |
+      |          |                                   |                                      |                                        |
+      |          | ``complex``                       | ``complex``                          |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | floor    | ``float``                         | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | log      | ``float``                         | ``float``                            | Logarithm base :math:`e`               |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | mod      | ``int``, ``int``                  | ``int``                              |                                        |
+      |          |                                   |                                      |                                        |
+      |          | ``float``, (``int`` or ``float``) | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | popcount | ``bit[_]``, ``uint``              | ``uint``                             |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | pow      | ``int``, ``uint``                 | ``int``                              |                                        |
+      |          |                                   |                                      |                                        |
+      |          | ``float``, ``float``              | ``float``                            | For floating-point and complex values, |
+      |          |                                   |                                      | the principal value is returned.       |
+      |          | ``complex``, ``complex``          | ``complex``                          |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | rotl     | ``bit[n]``, (``int`` or ``uint``) | ``bit[n]``                           |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | rotr     | ``bit[n]``, (``int`` or ``uint``) | ``bit[n]``                           |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | sin      | (``float`` or ``angle``)          | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | sqrt     | ``float``                         | ``float``                            | Returns the principal root.            |
+      |          |                                   |                                      |                                        |
+      |          | ``complex``                       | ``complex``                          |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | tan      | (``float`` or ``angle``)          | ``float``                            |                                        |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
 
 Arrays
 ------
