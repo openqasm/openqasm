@@ -1,13 +1,85 @@
 Directives
 ==========
 
-OpenQASM supports a directive mechanism that allows other information to
-be included in the program. A directive begins with ``#pragma`` and
-terminates at the end of the line. Directives can provide annotations
-that give additional information to compiler passes and the target
-system or simulator. Ideally the meaning of the program does not change
+OpenQASM supports directive mechanisms that allows other information to
+be included in the program. Directives are either pragmas or annotations.
+Both are used to supply additional information to the compiler passes and the
+target system or simulator. Ideally the meaning of the program does not change
 if some or all of the directives are ignored, so they can be interpreted
 at the discretion of the consuming process.
+
+Pragmas
+-------
+
+Pragma directives start with ``pragma`` and continue to the end of line. The
+``#pragma`` syntax is also accepted for reverse compatibility. Pragmas should be
+processed as soon as they are encountered; if a pragma is not supported by a
+compiler pass it should be ignored and preserved intact for future passes.
+Ideally, pragmas should be considered global and immutable; avoiding stateful
+interactions is recommended to prevent unexpected behaviors between source
+files.
+
+Pragmas are useful for extending OpenQASM functionality that is not described in
+this specification, such as adding noise operations.
+
+\*Note: The following examples are simply possible implementations, this
+specification does not define any pragmas. Please consult your tool's
+documentation for supported pragmas.
+
+.. code-block:: c
+   :force:
+
+   rx(0.15) q;
+   pragma noise bit_flip(0.1)
+
+Pragmas can also be used to specify system-level information or assertions for
+the entire circuit.
+
+.. code-block:: c
+   :force:
+
+   OPENQASM 3.0;
+
+   // Attach billing information
+   pragma user alice account 12345678
+
+   // Assert that the QPU is healthy to run this circuit
+   pragma max_temp qpu 0.4
+
+   qubit[2] q;
+
+
+Annotations
+-----------
+
+Annotations can be added to supply additional information to the following
+OpenQASM statement. These annotations will apply to the subsequent declaration,
+box, or single line of code. Annotations will start with a ``@`` symbol, have an
+identifying keyword and continue to the end of the line.
+
+\*Note: The following examples are simply possible implementations, this
+specification does not define any annotations. Please consult your tool's
+documentation for supported annotations.
+
+.. code-block:: c
+   :force:
+
+   // Manage port binding on a physical device
+   @bind IOPORT[3:2]
+   input bit[2] control_flags;
+
+   // Instruct compiler to create a reversible version of the function
+   @reversible
+   gate multiply a, b, x {
+      x = a * b;
+   }
+
+   // Prevent swap insertion
+   @noswap
+   box {
+      rx(pi) q[0];
+      cnot q[0], q[1];
+   }
 
 
 Input/output
