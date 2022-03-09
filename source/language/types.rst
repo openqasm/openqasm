@@ -623,6 +623,21 @@ Allowed casts
 
 \*Note: ``duration`` values can be converted to ``float`` using the division operator. See :ref:`divideDuration`
 
+Implicit casting
+~~~~~~~~~~~~~~~~
+
+In general, implicit casting is not supported, given the bit-level specificity
+of the classical types in OpenQASM 3, outside of a few special cases described
+next. All types without a specified size (*i.e.* machine precision types) are
+different from all types with a specified size for casting purposes and must be
+mutally explicitly cast to one another during assignment.
+
+Angle variables may be initialized with floating-point const expressions (*i.e.*
+expressions containing only float literals and const float identifiers) without
+an explicit cast to the angle type. Floating-point const expressions can also be
+used in places where angle-type arguments are expected (*e.g.* in gate and
+subroutine calls).
+
 Casting from bool
 ~~~~~~~~~~~~~~~~~
 
