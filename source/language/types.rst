@@ -248,7 +248,7 @@ position and zeros elsewhere.
    // Declare a constant
    const int my_const = 1234;
    // Scientific notation is supported
-   const int[64] another_const = 1e12;
+   const float[64] another_const = 1e12;
    // Constant expressions are supported
    const float[64] pi_by_2 = π / 2.0;
    // Constants may be cast to real-time values
@@ -329,6 +329,66 @@ their argument expression in parentheses:
       | tan      | (``float`` or ``angle``)          | ``float``                            |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
 
+Literals
+--------
+
+There are four types of literals in OpenQASM 3, integer, float, bit string, and
+angle. Literals must be used in expressions and assignments with identifiers
+that have matching types. Mixed-type expressions are not allowed unless the
+operator(s) explicitly accepts different types. Literals used directly in
+assignments (without an expression) will take on the type of the target
+identifier, which may result in compiler warnings if the target type cannot hold
+the given literal value.
+
+Integer literals may be signed, and can be written in decimal, hex, octal, or
+binary, as denoted by a leading ``0x``, ``0o``, or ``0b`` prefix.
+Non-consecutive underscores ``_`` may be inserted between the first and last
+digit of the literal to improve readability for large values.
+
+.. code-block:: c
+
+   int i1 = 1; // decimal
+   int i2 = -1; // neg signed decimal
+   int i3 = +1; // pos signed decimal
+   int i4 = 0xFF; // hex
+   int i5 = 0XBEEF; // uppercase HEX
+   int i6 = 0o73; // octal
+   int i6 = 0b1101; // binary
+   int i8 = 1_000_000 // 1 million with _ for readability
+
+Float literals *must* contain a digit followed by a ``.``, a ``.`` followed by a
+digit, or use scientific notation, and may be given an explicit sign.
+
+.. code-block:: c
+
+   float f1 = 1.0;
+   float f2 = .1; // leading dot
+   float f3 = 0.; // trailing dot
+   float f4 = +2e1; // scientific with + sign
+   float f5 = 2.0E-.1; // uppercase scientific with signed exponent
+
+Bit string literals are denoted by double quotes ``"`` surrounding a number of
+zero and one digits, and may include non-consecutive underscores to improve
+readability for large strings. The sizes of bit string literals should exactly
+match the target bit size.
+
+.. code-block:: c
+
+   bit[8] b1 = "00010001";
+   bit[8] b2 = "0001_0001"; // underscore for readability
+
+Angle literals take the same form as float literals appended by and underscore
+followed by the letter a (``_a``), and should generally be given in the range
+:math:`[0,2\pi)`.
+
+.. code-block:: c
+
+   angle a1 = 1.0_a;
+   angle a2 = .1_a;
+   angle a3 = 0._a;
+   angle a4 = +2e1_a;
+   angle a5 = 2.0E-.1_a;
+
 Arrays
 ------
 
@@ -391,7 +451,7 @@ Duration
 ~~~~~~~~
 
 We introduce a ``duration`` type to express timing.
-Durations are numbers with a unit of time. ``ns, μs, us, ms, and s`` are used for SI time
+Durations are float or integer literals with a unit of time. ``ns, μs, us, ms, and s`` are used for SI time
 units. ``dt`` is a backend-dependent unit equivalent to one waveform sample.
 ``durationof()`` is an intrinsic function used to reference the
 duration of a calibrated gate.
