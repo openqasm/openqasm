@@ -126,6 +126,15 @@ assignment operators.
    complex[float[64]] f = a / b; // f = (-55.0+60.0im)/53.0
    complex[float[64]] g = a ** b; // g = (0.10694695640729072+0.17536481119721312im)
 
+Mixed-type expressions
+~~~~~~~~~~~~~~~~~~~~~~
+
+In general, mixed-type expressions are not allowed. All expression terms must
+have the same type or be explicitly cast to have the same type. Literal types
+must also match. For example, the expression ``3 * pi / 4`` is not legal,
+because it mixes a const float (``pi``) with integer literals, the correct
+expression is ``3.0 * pi / 4.0``.
+
 Evaluation order
 ~~~~~~~~~~~~~~~~
 
