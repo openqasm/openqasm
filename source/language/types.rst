@@ -235,9 +235,12 @@ calculator-like operations on run-time values require extern function
 calls as described later and are not available by default. Real
 constants can be cast to other types, just like other values.
 
-A standard set of built-in constants which are included in the default
+A standard set of built-in constants that are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__. These constants
 are all of type ``float[64]``.
+Additionally, the constant ``pi_a`` is defined as a machine precision ``angle``
+holding the value ``π``, which is represented by a 1 in the most-significant bit
+position and zeros elsewhere.
 
 .. code-block:: c
    :force:
