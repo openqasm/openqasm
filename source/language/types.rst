@@ -578,6 +578,21 @@ the slices must match.
    twoD[1:2] = anotherTwoD[0:1]; // allowed
    twoD[1:2, 0] = anotherTwoD[0:1, 1]; // allowed
 
+Array reshaping
+~~~~~~~~~~~~~~~
+
+Multi-dimensional arrays can be cast into a different shape (but with the same
+sub-type) using explicit casting syntax on assignment to another array. The
+effect is similar to C++'s reinterpret_cast. The number of elements of the
+source and target arrays *must* match. Reshaping cannot be done directly in the
+argument to a subroutine or extern, and must go through an intermediate array
+identifier if this behavior is desired.
+
+.. code-block::
+
+   array[int[8], 4, 4] arrA;
+   array[int[8], 16] arrB = array[int[8], 16](arrA);
+
 .. _castingSpecifics:
 
 Casting specifics
