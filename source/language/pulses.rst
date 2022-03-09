@@ -70,7 +70,7 @@ physical qubits with different parameter values, e.g.
 .. code-block:: c
 
    defcal rx(pi) $0 { ... }
-   defcal rx(pi / 2) $0 { ... }
+   defcal rx(pi / 2.0) $0 { ... }
 
 Given multiple definitions of the same symbol, the compiler will match
 the most specific definition found for a given operation. Thus, given,
@@ -79,10 +79,10 @@ the most specific definition found for a given operation. Thus, given,
 
 #. ``defcal rx(angle[20] theta) $0  ...``
 
-#. ``defcal rx(pi / 2) $0  ...``
+#. ``defcal rx(pi / 2.0) $0  ...``
 
-the operation ``rx(pi/2) $0`` would match to (3), ``rx(pi) $0`` would
-match (2), ``rx(pi/2) $1`` would match (1).
+the operation ``rx(pi/2.0) $0`` would match to (3), ``rx(pi) $0`` would
+match (2), ``rx(pi/2.0) $1`` would match (1).
 
 Users specify the grammar used inside ``defcal`` blocks with a
 ``defcalgrammar "name"`` declaration. One such grammar is a
@@ -259,7 +259,7 @@ The user would then include the ``backend.inc`` in their own program and use the
 
    // Teach the compiler what the unitary of a Y90p is
    gate Y90p q {
-      rz(-pi/2) q;
+      rz(-pi/2.0) q;
       sx q;
    }
 

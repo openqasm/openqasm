@@ -37,7 +37,7 @@ values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
 :math:`\lambda\in
 [0,2\pi)` in this base gate are angles whose precision is implementation
 dependent [1]_. This specifies any element of :math:`U(2)` up to a
-global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
+global phase. For example ``U(π/2.0, 0.0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
 
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
@@ -46,22 +46,22 @@ previously defined gates. For example the ``gate`` block
    :force:
 
    gate h q {
-      U(π/2, 0, π) q;
+      U(π/2.0, 0.0, π) q;
    }
 
 defines a new gate called ``h`` and associates it to the unitary matrix of the Hadamard gate. Once we have
 defined ``h``, we can use it in later ``gate`` blocks. The definition does not imply that ``h`` is
-implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
+implemented by an instruction ``U(π/2.0, 0.0, π)`` on the quantum computer. The implementation is up to
 the user and/or compiler, given information about the instructions supported by a particular target.
 
 Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
-the NOT gate is given by ``X = U(π, 0, π)`` and the block
+the NOT gate is given by ``X = U(π, 0.0, π)`` and the block
 
 .. code-block:: c
    :force:
 
    gate CX a, b {
-      ctrl @ U(π, 0, π) a, b;
+      ctrl @ U(π, 0.0, π) a, b;
    }
 
    CX q[1], q[0];
@@ -140,10 +140,10 @@ of :math:`e^{i\gamma}` to the scope containing the instruction. For example
    :force:
 
    gate rz(tau) q {
-     gphase(-tau/2);
-     U(0, 0, tau) q;
+     gphase(-tau/2.0);
+     U(0.0, 0.0, tau) q;
    }
-   ctrl @ rz(π/2) q[1], q[0];
+   ctrl @ rz(π/2.0) q[1], q[0];
 
 constructs the gate
 
@@ -180,13 +180,13 @@ corresponding OpenQASM code is
 
    gate cphase(θ) a, b
    {
-     U(0, 0, θ / 2) a;
+     U(0.0, 0.0, θ / 2.0) a;
      CX a, b;
-     U(0, 0, -θ / 2) b;
+     U(0.0, 0.0, -θ / 2.0) b;
      CX a, b;
-     U(0, 0, θ / 2) b;
+     U(0.0, 0.0, θ / 2.0) b;
    }
-   cphase(π / 2) q[0], q[1];
+   cphase(π / 2.0) q[0], q[1];
 
 .. _fig_gate:
 .. figure:: ../qpics/gate.svg
@@ -225,12 +225,12 @@ of the gate definition.
    // this is ok:
    gate g a
    {
-     U(0, 0, 0) a;
+     U(0.0, 0.0, 0.0) a;
    }
    // this is invalid:
    gate g a
    {
-     U(0, 0, 0) a[0];
+     U(0.0, 0.0, 0.0) a[0];
    }
 
 Only built-in gate statements, calls to previously defined gates, and

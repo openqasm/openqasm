@@ -179,10 +179,10 @@ compatible with run-time values on some platforms.
    :force:
 
    // Declare an angle with 20 bits of precision and assign it a value of π/2
-   angle[20] my_angle = π / 2;
+   angle[20] my_angle = π / 2.0;
    float[32] float_pi = π;
    // equivalent to pi_by_2 up to rounding errors
-   angle[20](float_pi / 2);
+   angle[20](float_pi / 2.0);
 
 Complex numbers
 ~~~~~~~~~~~~~~~
@@ -250,7 +250,7 @@ position and zeros elsewhere.
    // Scientific notation is supported
    const int[64] another_const = 1e12;
    // Constant expressions are supported
-   const float[64] pi_by_2 = π / 2;
+   const float[64] pi_by_2 = π / 2.0;
    // Constants may be cast to real-time values
    float[32] pi_by_2_val = float[32](pi_by_2)
 

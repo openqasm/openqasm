@@ -103,12 +103,12 @@ multiplication, division, and power and the corresponding assignment operators.
 
 .. code-block:: c
 
-   angle[20] a = pi / 2;
+   angle[20] a = pi / 2.0;
    angle[20] b = pi;
    a + b; // 3/2 * pi
    a ** b; // 4.1316...
    angle[10] c;
-   c = angle(a + b); // cast to angle[10]
+   c = angle[10](a + b); // cast to angle[10]
 
 Complex numbers
 ~~~~~~~~~~~~~~~
