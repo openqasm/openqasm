@@ -94,4 +94,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE] file f
 
 ## Contributing
 
-If you'd like to help please take a look to our [contribution guidelines](contributing.md).
+If you'd like to help please take a look to our [contribution guidelines](CONTRIBUTION.md).
