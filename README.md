@@ -94,4 +94,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE] file f
 
 ## Contributing
 
-If you'd like to help please take a look to our [contribution guidelines](CONTRIBUTION.md).
+If you'd like to help please take a look to our [contribution guidelines](CONTRIBUTION.md). This project adheres to the Qiskit project's [code of conduct](https://github.com/Qiskit/qiskit/blob/master/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
