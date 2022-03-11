@@ -22,7 +22,7 @@ If you let `pip` do this automatically when it installs the reference parser, it
 
 ## Building the Python Parser
 
-1. Build the grammar files into the package directory with 
+1. Build the grammar files into the package directory with
     ```bash
     <antlr command> -o openqasm_reference_parser -Dlanguage=Python3 -visitor qasm3.g4
     ```

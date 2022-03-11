@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/master/templates/issue.md) to add them.
+:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/main/templates/issue.md) to add them.
 
 ## Doubts solving
 
@@ -51,7 +51,7 @@ Please follow the next rules for the commit messages:
   - Add the content of the proposal, note that conformance tests are mandatory at this point.
   - Make a pull request.
   - The core dev can ask for changes before reaching the next stage.
-- Accepted: When the PR is merged into master.
+- Accepted: When the PR is merged into main.
 
 ## Tests
 
@@ -88,9 +88,8 @@ the target major/minor versions of the next release.
 
 ### Branches
 
-* `master`:
-TODO: Switch master to main, see [issue](https://github.com/Qiskit/openqasm/issues/327)
-The master branch is used for the development of the next OpenQASM release.
+* `main`:
+The main branch is used for the development of the next OpenQASM release.
 It is updated frequently and should not be considered stable. On the development
 branch, the language specification can and will change (possible breaking)
 as new language features are introduced and refined.
@@ -146,7 +145,7 @@ To trigger a bugfix release - `3.1.2`:
 2. Upon merger of the PR tag the HEAD of `stable/3.1` with `3.1.2` and push to Github.
 
 To trigger a minor release - `3.2.0`:
-1. Create a new stable branch `stable/3.2` using the current development branch as the base branch, eg., `git checkout -b stable/3.2 master`.
+1. Create a new stable branch `stable/3.2` using the current development branch as the base branch, eg., `git checkout -b stable/3.2 main`.
 2. Push this branch to Github.
 3. Tag the branch with `3.2.0` and push to Github.
 
