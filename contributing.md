@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/master/templates/issue.md) to add them.
+:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/main/templates/issue.md) to add them.
 
 ## Doubts solving
 
@@ -51,7 +51,7 @@ Please follow the next rules for the commit messages:
   - Add the content of the proposal, note that conformance tests are mandatory at this point.
   - Make a pull request.
   - The core dev can ask for changes before reaching the next stage.
-- Accepted: When the PR is merged into master.
+- Accepted: When the PR is merged into main.
 
 ## Tests
 
@@ -79,5 +79,5 @@ The test runner uses all the circuit files in the [examples](examples) folder. T
 - April: All the accepted proposals (already merged to `develop`) are re-confirmed by the assistants. The dev team have this month to resolve possible conflicts here.
 - May: From here, the unique accepted commits will be editorial ones.
 - June:
-  - Merge of `develop` into `master`, drop the branch and create a tag with this the new version name.
+  - Merge of `develop` into `main`, drop the branch and create a tag with this the new version name.
   - The new standard is considered approved and must be published to the communities. A new human-readable version should be placed into the [spec-human] folder. The file must include this version number, ie: `qasm2.pdf`.
