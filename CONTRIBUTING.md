@@ -6,7 +6,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues). Please, use [this template](https://github.com/Qiskit/openqasm/contributing/blob/main/templates/issue.md) to add them.
+:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues).
 
 ## Doubts solving
 
@@ -52,26 +52,6 @@ Please follow the next rules for the commit messages:
   - Make a pull request.
   - The core dev can ask for changes before reaching the next stage.
 - Accepted: When the PR is merged into main.
-
-## Tests
-
-The official [conformance tests](https://en.wikipedia.org/wiki/Conformance_testing) suite is located under the [test](test) folder.
-
-For convenience, this project uses the [Qiskit](https://github.com/Qiskit/qiskit-terra) parser.
-
-The test runner uses all the circuit files in the [examples](examples) folder. They are run automatically to check they keep passing the parser. It allows dropping more files in those folders, even adding new ones.
-
-- The `invalid` folder includes circuits that should raise a `QasmException`.
-- The rest include valid circuits.
-- Optionally, they can include metadata in the header (inside comments, like [this one](examples/invalid/gate_no_found.qasm)):
-  - name: Descriptive name for the check this example is covering.
-  - section: Link to the related part of the specification.
-
-### Run
-
-- Install [Qiskit dependencies](https://github.com/Qiskit/qiskit-terra#installation).
-- The command `make test` should finish without errors communicate with the reviewer using the issue comments to show that we're done.
-
 
 ## Development Cycle
 
