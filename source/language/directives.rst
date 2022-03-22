@@ -12,12 +12,13 @@ Pragmas
 -------
 
 Pragma directives start with ``pragma`` and continue to the end of line. The
-``#pragma`` syntax is also accepted for reverse compatibility. Pragmas should be
-processed as soon as they are encountered; if a pragma is not supported by a
-compiler pass it should be ignored and preserved intact for future passes.
-Ideally, pragmas should be considered global and immutable; avoiding stateful
-interactions is recommended to prevent unexpected behaviors between source
-files.
+text after ``pragma`` is a single string, and parsing is left to the specific
+implementation. The ``#pragma`` syntax is deprecated, but is accepted for
+compatibility. Pragmas should be processed as soon as they are encountered; if a
+pragma is not supported by a compiler pass it should be ignored and preserved
+intact for future passes.  Ideally, pragmas should be considered global and
+immutable; avoiding stateful interactions is recommended to prevent unexpected
+behaviors between source files.
 
 Pragmas are useful for extending OpenQASM functionality that is not described in
 this specification, such as adding noise operations.
@@ -57,6 +58,9 @@ OpenQASM statement. These annotations will apply to the subsequent declaration,
 box, or single line of code. Annotations will start with a ``@`` symbol, have an
 identifying keyword and continue to the end of the line.
 
+Multiple annotations may be added to a single statement. No ordering or
+interaction between annotations are prescribed by this specification.
+
 \*Note: The following examples are simply possible implementations, this
 specification does not define any annotations. Please consult your tool's
 documentation for supported annotations.
@@ -78,8 +82,13 @@ documentation for supported annotations.
    @noswap
    box {
       rx(pi) q[0];
-      cnot q[0], q[1];
+      cnot q[0], q[3];
    }
+
+   // Apply multiple annotations
+   @crosstalk
+   @noise profile "gate_noise.qnf"
+   defcal noisy_gate $0 $1 { ... }
 
 
 Input/output
