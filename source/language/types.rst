@@ -182,33 +182,64 @@ types for the purposes of casting.
    // Declare a machine-precision float.
    float my_machine_float = 2.3;
 
-Fixed-point angles
-~~~~~~~~~~~~~~~~~~
+.. _angle-type:
 
-Fixed-point angles are interpreted as 2π times a 0:0:n
-fixed-point number. This represents angles in the interval
-:math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
-2π. The statement ``angle[size] name;`` declares an n-bit angle, and
-``angle name;`` declares an angle with machine-architecture-specified width.
-In cases where the width is not specified, bit-level operations are forbidden,
-and the type is different from all other sized angle types for the purposes of
-casting, similar to the rules for integers.
-OpenQASM3 introduces this specialized type because of the ubiquity of this angle
-representation in phase estimation circuits and numerically controlled
-oscillators found in hardware platform. Note that defining gate
-parameters with ``angle`` types may be necessary for those parameters to be
-compatible with run-time values on some platforms.
+Angles
+~~~~~~
 
-.. code-block:: c
-   :force:
+OpenQASM 3 includes a new type to represent classical angles: ``angle``.
+This type is intended to make manipulations of angles more efficient at runtime,
+when the hardware executing the program does not have built-in support for
+IEEE-754 floating-point.  The manipulations on ``angle`` values are designed to
+be significantly less expensive when done using integer hardware than the
+equivalent software emulation of IEEE-754 operations.
 
-   // Declare an angle with 20 bits of precision and assign it a value of π/2
+In brief, the type ``angle[size]`` is manipulated very similarly to a single
+unsigned integer, where the value ``1`` represents an angle of
+:math:`2\pi/2^{-\text{size}}`, and the largest representable value is
+this subtracted from :math:`2\pi`.  Addition with other angles, and
+multiplication and division by unsigned integers is defined by standard
+unsigned-integer arithmetic, with more details found in :ref:`the section on
+classical instructions <classical-instructions>`.
+
+The statement ``angle[size] name;`` statement declares a new angle called
+``name`` with ``size`` bits in its representation.  Angles can be assigned
+values using the constant ``π`` or ``pi``, such as::
+
+   // Declare a 20-bit angle with the value of "π/2"
    angle[20] my_angle = π / 2;
-   float[32] float_pi = π;
-   // equivalent to pi_by_2 up to rounding errors
-   angle[20](float_pi / 2);
    // Declare a machine-sized angle
    angle my_machine_angle;
+
+The bit representation of the type ``angle[size]`` is such that if
+``angle_as_uint`` is the integer whose representation as a ``uint[size]`` has
+the same bit pattern, the value of the angle (using exact mathematical
+operations on the field of real numbers) would be
+
+.. math::
+
+   2\pi \times \frac{\text{angle_as_uint}}{2^{\text{size}}}
+
+This "mathematical" value is the value used in casts from floating-point values
+(if available), whereas casts to and from ``bit[size]`` types reinterpret the
+bits directly.  This means that, unless ``a`` is sufficiently small::
+
+  float[32] a;
+  angle[32](bit[32](uint[32](a))) != angle[32](a)
+
+Explicitly, the most significant bit (bit index ``size - 1``) correpsonds to
+:math:`\pi`, and the least significant bit (bit index ``0``) corresponds to
+:math:`2^{-\text{size} + 1}\pi`.  For example, with the most-significant bit on
+the left in the bitstrings::
+
+   angle[4] my_pi = π;  // "1000"
+   angle[6] my_pi_over_two = π/2;  // "010000"
+   angle[8] my_angle = 7 * (π / 8);  // "01110000"
+
+Angles outside the interval :math:`[0, 2\pi)` are represented by their values
+modulo :math:`2\pi`.  Up to this modulo operation, the closest ``angle[size]``
+representation of an exact mathematical value is different from the true value
+by at most :math:`\epsilon\leq \pi/2^{\text{size}}`.
 
 Complex numbers
 ~~~~~~~~~~~~~~~
@@ -749,18 +780,37 @@ Casting from float
 discarding the fractional part for integer-type targets). As noted above,
 if the value is too large to be represented in the
 target type the result is implementation-specific.
-Casting a ``float`` value to an ``angle[m]`` is accomplished by first
-performing a modulo 2π operation on the float value. The resulting value
-is then converted to the nearest ``angle[m]`` possible. In the event of a
-tie between two possible nearest values the result is the one with an even
-least significant bit (*i.e.* round to nearest, ties to even).
+
+Casting a ``float[n]`` value to an ``angle[m]`` involves finding the nearest
+representable value modulo :math:`\text{float}_n(2\pi)`, where ties between two
+possible representations are resolved by choosing to have zero in the
+least-significant bit (*i.e.* round to nearest, ties to even).  Casting the
+floating-point values ``inf``, ``-inf`` and all representations of ``NaN`` to
+``angle[m]`` is not defined.
+
+For example, given the double-precision floating-point value::
+
+   // The closest double-precision representation of 2*pi.
+   const float[64] two_pi = 6.283185307179586
+   // For double precision, we have
+   //   (two_pi * (127./512.)) / two_pi == (127./512.)
+   // exactly.
+   float[64] f = two_pi * (127. / 512.)
+
+the result of the cast ``angle[8](f)`` should have the bitwise representation
+``"01000000"`` (which represents the exact angle
+:math:`2\pi\cdot\frac{64}{256} = \frac\pi2`), despite ``"00111111"``
+(:math:`2\pi\cdot\frac{63}{256}`) being equally close, because of the
+round-to-nearest ties-to-even behaviour.
 
 Casting from angle
 ~~~~~~~~~~~~~~~~~~
 
-``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``.
-Casting to ``bit[m]`` values is only allowed when
-``n==m``, otherwise explicit slicing syntax must be provided.
+``angle[n]`` values cast to ``bool`` using the convention ``val != 0``.  Casting
+to ``bit[m]`` values is only allowed when ``n==m``, otherwise explicit slicing
+syntax must be provided.  When casting to ``bit[m]``, the value is a direct
+copy of the bit pattern using the same little-endian ordering :ref:`as described
+above <angle-type>`.
 
 When casting between angles of differing precisions (``n!=m``): if the target
 has more significant bits, then the value is padded with ``m-n`` least
