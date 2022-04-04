@@ -31,7 +31,6 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 
 ### Pragmas
 
-
 **Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
 **Questions**:
 
@@ -63,6 +62,36 @@ BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum
 
 Chair: Dor Israeli (Quantum Machines)
 Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
+
+### Examples
+
+**Objectives**: Create example compiler passes using the Python AST to surface additional
+improvements to the spec, and to enlarge the library of OpenQASM 3.0 examples.
+
+**Description**:
+Some of the most interesting and important discussions about the OpenQASM 3.0 spec have originated
+from groups who are implementing compilers. For example, issue #307 on the physical mapping of 
+dynamically dereferenced qubits was inspired by work on integrating OpenQASM with another
+pulse-level programming framework.
+
+This working group will implement example compiler passes using the Python AST with the aim of
+identifying and clarifying more parts of the language. The code produced could potentially be used
+for a production compiler, but the constraints of a production compiler (eg. performance) will not
+be a concern for this group. The primary purpose of these passes will be as an educational
+reference.
+
+**Questions**:
+  - What are the most valuable compiler passes to tackle? Potentially interesting:
+    - Resolving timing
+    - Converting 'new-style' gates from #323 to 'old-style' gates
+
+**Completion of WG**:
+This working group will have completed its efforts when it has implemented ~3-5 compiler passes,
+a similar amount of examples, and created a clear path for future contributions to these libraries
+of examples.
+
+Chair: TBD
+Members: Steven Heidel (AWS Quantum) and 2-3 colleagues from AWS Quantum TBD, (your name here?)
 
 ## Past Working Groups
 
