@@ -31,7 +31,6 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 
 ### Pragmas
 
-
 **Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
 **Questions**:
 
@@ -63,6 +62,38 @@ BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum
 
 Chair: Dor Israeli (Quantum Machines)
 Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
+
+### Profiles & Releases
+
+**Objectives**: Define a minimum set of features for hardware implementors (base profile) and build
+the infrastructure for specifying profiles and release versions.
+
+**Description**:
+One of the core tenets of OpenQASM 3.0 is _versatility_, and in particular the idea that not all 
+hardware and tooling needs to support all OpenQASM 3.0 features. A hardware implementor can assume
+that certain aspects of compilation are dealt with at a higher-level, and can focus their
+implementation on only core features of the language.
+
+This working group will group various aspects of the language into "featuresets", and then create
+profiles which are a collection of those featuresets. Throughout this process they will also review
+all the featuresets of OpenQASM 3.0 and define a release version of the spec, plus its associated
+Github infrastructure.
+
+This WG will draw inspiration from a complementary effort in the QIR project:
+https://github.com/qir-alliance/.github/blob/main/workstreams/Base_Profile_Workstream.md
+
+**Questions**:
+- Are there additional profiles which would be useful beyond the base profile? For instance, maybe
+an OpenQASM 2.0 profile that would certify a tool is backwards compatible.
+
+**Completion of WG**
+This working group will have completed its efforts when:
+- All features have been defined and grouped into featuresets
+- At least one profile has been defined
+- The release version of OpenQASM 3.0, and associated infrastructure, is merged
+
+Chair: Steven Heidel (AWS Quantum)
+Members: 2-3 other AWS Quantum members TBD, Dor Israeli, Bettina Heim, (your name here?)
 
 ## Past Working Groups
 
