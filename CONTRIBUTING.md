@@ -1,3 +1,24 @@
+Table of Contents
+=================
+
+* [Contributing](#contributing)
+   * [Issue reporting](#issue-reporting)
+   * [Doubts solving](#doubts-solving)
+   * [Improvement proposal](#improvement-proposal)
+   * [Documentation](#documentation)
+   * [Code](#code)
+      * [Commits](#commits)
+      * [Pull requests](#pull-requests)
+   * [Spec proposals](#spec-proposals)
+   * [Development Cycle](#development-cycle)
+      * [Semantic Versioning](#semantic-versioning)
+      * [Branches](#branches)
+      * [Release Notes](#release-notes)
+         * [Adding a new release note](#adding-a-new-release-note)
+      * [Tags](#tags)
+      * [Release cycle](#release-cycle)
+         * [Example release cycle](#example-release-cycle)
+
 # Contributing
 
 **We appreciate all kinds of help, so thank you!** :clap: :kissing_heart:
@@ -93,6 +114,85 @@ Github into the target stable branch with the relevant cherry-picked commits.
 The new stable branch `HEAD` should be tagged (see [Tags](#tags)) with a new
 `<major.minor.patch>` version and pushed to Github.
 
+### Release Notes
+
+When making any end user facing changes in a contribution we have to make sure
+we document that when we release a new version of OpenQASM. The expectation
+is that if your code contribution has user facing changes that you will write
+the release documentation for these changes. This documentation must explain
+what was changed, why it was changed, and how users can either use or adapt
+to the change. The idea behind release documentation is that when a naive
+user with limited internal knowledge of the project is upgrading from the
+previous release to the new one, they should be able to read the release notes,
+understand if they need to update their project which uses OpenQASM, and how they
+would go about doing that. It ideally should explain why they need to make
+this change too, to provide the necessary context.
+
+To make sure we don't forget a release note or if the details of user facing
+changes over a release cycle we require that all user facing changes include
+documentation at the same time as the code. To accomplish this we use the
+[reno](https://docs.openstack.org/reno/latest/) tool which enables a Git-based
+workflow for writing and compiling release notes.
+
+#### Adding a new release note
+
+Making a new release note is quite straightforward. Ensure that you have reno
+installed with::
+
+    pip install -U reno
+
+Once you have reno installed you can make a new release note by running in
+your local repository checkout's root::
+
+    reno new short-description-string
+
+where short-description-string is a brief string (with no spaces) that describes
+what's in the release note. This will become the prefix for the release note
+file. Once that is run it will create a new yaml file in releasenotes/notes.
+Then open that yaml file in a text editor and write the release note. The basic
+structure of a release note is restructured text in yaml lists under category
+keys. You add individual items under each category and they will be grouped
+automatically by release when the release notes are compiled. A single file
+can have as many entries in it as needed, but to avoid potential conflicts
+you'll want to create a new file for each pull request that has user facing
+changes. When you open the newly created file it will be a full template of
+the different categories with a description of a category as a single entry
+in each category. You'll want to delete all the sections you aren't using and
+update the contents for those you are. For example, the end result should
+look something like::
+
+```yaml
+features:
+  - |
+    Introduced a new ``pragma fabulizer`` that adds support for new compiler technology
+    for ``defcal``s. For example::
+
+      pragma defcal_fabulizer
+      defcal reset $0 {
+      ...
+
+  - |
+    The ``defcal`` fabulizer will fabulize your defcal.
+
+deprecations:
+  - |
+    The ``pragma defcal_fromulizer`` has been deprecated and will be removed in a
+    future release. Its sole function has been superseded by the fabulizer.
+
+```
+
+You can also look at other release notes for other examples.
+
+You can use any restructured text feature in them (code sections, tables,
+enumerated lists, bulleted list, etc) to express what is being changed as
+needed. In general you want the release notes to include as much detail as
+needed so that users will understand what has changed, why it changed, and how
+they'll have to update their code.
+
+After you've finished writing your release notes you'll want to add the note
+file to your commit with `git add` and commit them to your PR branch to make
+sure they're included with the code in your PR.
+
 ### Tags
 Git tags are used to tag the specific commit associated with a versioned release.
 Tags must take the form of `<major>.<minor>.<patch>-<labels>`. For example the semver
@@ -101,7 +201,6 @@ minor version 2, and, patch version 1. The current development version would the
 `3.3.0-dev`. All official releases when tagged must always point to the current HEAD
 of a stable branch. TODO: Tags are used to trigger CI to deploy and publish new releases
 of the language specification.
-
 
 ### Release cycle
 
@@ -128,4 +227,3 @@ To trigger a minor release - `3.2.0`:
 1. Create a new stable branch `stable/3.2` using the current development branch as the base branch, eg., `git checkout -b stable/3.2 main`.
 2. Push this branch to Github.
 3. Tag the branch with `3.2.0` and push to Github.
-
