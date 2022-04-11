@@ -186,7 +186,8 @@ may optionally be followed by ``else { program }``.
 
 The statement ``for name in indexset { program }`` loops over integer values in the indexset, assigning them
 to ``name``. The for loop body is not permitted to modify the loop variable of
-the indexset.
+the indexset. The loop variable implicitly has the undesignated ``int`` type,
+but may optionally be given an explicit ``int`` or ``uint`` type.
 
 .. code-block:: c
 
@@ -197,7 +198,12 @@ the indexset.
    } // b == 16
 
    // loop over every even integer from 0 to 20 using an indexset
-   for i in [0:2:20] {
+   for i in [0:2:20] { // i is of type int
+      // do something
+   }
+
+   // high precision typed loop variable
+   for uint[64] i in [4294967296:4294967306] {
       // do something
    }
 
