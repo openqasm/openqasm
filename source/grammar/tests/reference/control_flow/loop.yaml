@@ -1,7 +1,7 @@
 # indent w/ 2 spaces
 source: |
   while (i < 10) {
-    for j in {1, 4, 6} reset q[j];
+    for uint j in {1, 4, 6} reset q[j];
     if (i == 8) break;
     else continue;
   }
@@ -46,6 +46,9 @@ reference: |
             loopStatement
               loopSignature
                 for
+                nonArrayType
+                  singleDesignatorType
+                    uint
                 j
                 in
                 setDeclaration

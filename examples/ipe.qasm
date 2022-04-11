@@ -20,7 +20,7 @@ h r;
 
 // iterative phase estimation loop
 uint[n] power = 1;
-for i in [0: n - 1] {  // implicitly cast val to int
+for uint i in [0: n - 1] {  // implicitly cast val to int
   reset q;
   h q;
   ctrl @ pow(power) @ phase(theta) q, r;

@@ -324,7 +324,7 @@ programBlock
 branchingStatement: IF LPAREN expression RPAREN programBlock (ELSE programBlock)?;
 
 loopSignature
-    : FOR Identifier IN setDeclaration
+    : FOR nonArrayType Identifier IN setDeclaration
     | WHILE LPAREN expression RPAREN
     ;
 

@@ -1,3 +1,6 @@
+import pytest
+import antlr4.error
+
 from openqasm3.ast import (
     AccessControl,
     AliasStatement,
@@ -1147,13 +1150,14 @@ def test_branch_statement():
 
 def test_for_in_loop():
     p = """
-    for i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; }
+    for uint[8] i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; }
     """.strip()
     program = parse(p)
     assert program == Program(
         statements=[
             ForInLoop(
-                loop_variable=Identifier("i"),
+                type=UintType(IntegerLiteral(8)),
+                identifier=Identifier("i"),
                 set_declaration=RangeDefinition(
                     start=IntegerLiteral(0), end=IntegerLiteral(2), step=None
                 ),
@@ -1268,7 +1272,7 @@ def test_quantumloop():
     p = """
     box [maxdur] {
         delay[start_stretch] $0;
-        for i in [1:2]{
+        for uint i in [1:2]{
             h $0;
             cx $0, $1;
         }
@@ -1276,7 +1280,6 @@ def test_quantumloop():
     }
     """.strip()
     program = parse(p)
-    print(parse(p))
     assert program == Program(
         statements=[
             Box(
@@ -1288,7 +1291,8 @@ def test_quantumloop():
                         qubits=[Identifier("$0")],
                     ),
                     ForInLoop(
-                        loop_variable=Identifier(name="i"),
+                        type=UintType(size=None),
+                        identifier=Identifier(name="i"),
                         set_declaration=RangeDefinition(
                             start=IntegerLiteral(value=1),
                             end=IntegerLiteral(value=2),
@@ -1321,7 +1325,7 @@ def test_quantumloop():
 
 def test_durationof():
     p = """
-    durationof({x $0;})
+    durationof({x $0;});
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -1419,3 +1423,10 @@ def test_pramga():
         ]
     )
     SpanGuard().visit(program)
+
+
+class TestFailurePaths:
+    def test_missing_for_loop_type(self):
+        p = "for a in b {};"  # No type of for-loop variable.
+        with pytest.raises(antlr4.error.Errors.ParseCancellationException):
+            parse(p)

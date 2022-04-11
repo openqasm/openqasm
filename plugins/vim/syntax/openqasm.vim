@@ -171,9 +171,8 @@ syntax region qasmTest start=#\V(# end=#\V)# contained transparent
 "" Looping constructs.
 if s:openqasm_version >= 3
     " for
-    syntax keyword qasmRepeat for nextgroup=qasmLoopVariable skipwhite skipempty
-    syntax match qasmLoopVariable #\v<\K\k*># contained nextgroup=qasmLoopIn skipwhite skipempty
-    syntax keyword qasmLoopIn in contained
+    syntax keyword qasmRepeat for nextgroup=qasmType skipwhite skipempty
+    syntax keyword qasmLoopIn in
         \ nextgroup=qasmLoopSet,qasmLoopRange,qasmLoopIdentifier skipwhite skipempty
     syntax region qasmLoopSet start=#\v\{# end=#\v\}# contained transparent
         \ nextgroup=@qasmStatementStart skipwhite skipempty

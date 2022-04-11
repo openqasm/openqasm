@@ -34,7 +34,7 @@ __all__ = [
 from typing import Union, TypeVar
 
 try:
-    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
+    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
 except ImportError as exc:
     raise ImportError(
@@ -123,16 +123,24 @@ from .ast import (
 _TYPE_NODE_INIT = {"int": IntType, "uint": UintType, "float": FloatType, "angle": AngleType}
 
 
-def parse(input_: str) -> Program:
+def parse(input_: str, permissive=False) -> Program:
     """
     Parse a complete OpenQASM 3 program from a string.
 
     :param input_: A string containing a complete OpenQASM 3 program.
+    :param permissive: A Boolean that can be set ``True`` to cause the
+        ANTLR-based parser to try and continue through parsing errors.  This
+        may cause AST generation to produce invalid trees.  Defaults to
+        ``False``.
     :return: A complete :obj:`~ast.Program` node.
     """
     lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
+    if not permissive:
+        # This should be `parser.setErrorHandler` but for some reason the Python
+        # ANTLR runtime doesn't define that method.  It's defined in Java.
+        parser._errHandler = BailErrorStrategy()
 
     tree = parser.program()
 
@@ -263,7 +271,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             )
         else:  # For In Loop
             return ForInLoop(
-                loop_variable=add_span(
+                type=self.visit(ctx.loopSignature().nonArrayType()),
+                identifier=add_span(
                     Identifier(ctx.loopSignature().Identifier().getText()),
                     get_span(ctx.loopSignature().Identifier()),
                 ),
@@ -987,7 +996,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             )
         else:  # For In Loop
             return ForInLoop(
-                loop_variable=add_span(
+                type=self.visit(ctx.loopSignature().nonArrayType()),
+                identifier=add_span(
                     Identifier(ctx.loopSignature().Identifier().getText()),
                     get_span(ctx.loopSignature().Identifier()),
                 ),

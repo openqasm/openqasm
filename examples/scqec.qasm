@@ -34,15 +34,15 @@ bit outcome;  // logical outcome
  */
 def hadamard_layer(qubit[n-1] ancilla) {
   // Hadamards in the bulk
-  for row in [0: d-2] {
-    for col in [0: d-2] {
+  for uint[32] row in [0: d-2] {
+    for uint[32] col in [0: d-2] {
       bit[32] sum = bit[32](row + col);
       if(sum[0] == 1)
         h ancilla[row * (d - 1) + col];
     }
   }
   // Hadamards on the left and right boundaries
-  for i in [0: d - 2] {
+  for uint[32] i in [0: d - 2] {
     h ancilla[(d - 1)^2 + (d - 1) + i];
   }
 }
@@ -54,8 +54,8 @@ def cycle(qubit[n] data, qubit[n-1] ancilla) -> bit[n-1] {
   hadamard_layer ancilla;
 
   // First round of CNOTs in the bulk
-  for row in [0: d - 2] {
-    for col in [0:d - 2] {
+  for uint[32] row in [0: d - 2] {
+    for uint[32] col in [0:d - 2] {
       bit[32] sum = bit[32](row + col);
       if(sum[0] == 0)
         cx data[row * d + col], ancilla[row * (d - 1) + col];
@@ -65,11 +65,11 @@ def cycle(qubit[n] data, qubit[n-1] ancilla) -> bit[n-1] {
     }
   }
   // First round of CNOTs on the bottom boundary
-  for i in [0: (d - 3) / 2] {
+  for uint[32] i in [0: (d - 3) / 2] {
     cx data[d * (d - 1) + 2 * i], ancilla[(d - 1) ^ 2 + ( d- 1) / 2 + i];
   }
   // First round of CNOTs on the right boundary
-  for i in [0: (d - 3) / 2] {
+  for uint[32] i in [0: (d - 3) / 2] {
     cx ancilla[(d - 1) ^ 2 + 3 * (d - 1) / 2 + i], data[2 * d - 1 + 2 * d * i];
   }
   // Remaining rounds of CNOTs, go here ...
@@ -79,7 +79,7 @@ def cycle(qubit[n] data, qubit[n-1] ancilla) -> bit[n-1] {
 }
 
 // Loop over shots
-for shot in [1: shots] {
+for uint[32] shot in [1: shots] {
 
   // Initialize
   reset data;
@@ -87,7 +87,7 @@ for shot in [1: shots] {
   zfirst(layer, shot, d);
 
   // m cycles of syndrome measurement
-  for i in [1: m] {
+  for int[32] i in [1: m] {
     layer = cycle(data, ancilla);
     send(layer, shot, i, d);
   }
