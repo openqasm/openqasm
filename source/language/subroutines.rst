@@ -2,13 +2,13 @@ Subroutines
 ===========
 
 Subroutines are declared using the statement ``def name(parameters) -> output_type { body }``.
-Zero or more quantum bits
-and classical values are passed to the subroutine by reference or name in ``qargs``.
-Classical types are passed by value in ``parameters``.
+The subroutine will define zero or more parameters as input, consisting of both quantum and classical arguments.
+Quantum bits and registers are passed in by reference or name, while classical types are passed in by value.
+All arguments are declared together with their type,
+for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
 The subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return type, the empty ``return``
-keyword may be used to immediately exit from the subroutine. All arguments are declared together
-with their type, for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
+keyword may be used to immediately exit from the subroutine.
 Qubit declarations are not allowed within subroutines as they are global. A subroutine
 is invoked with the syntax ``name(parameters)`` and may be assigned to an ``output`` as
 needed via an assignment operator (``=``, ``+=``, etc).
