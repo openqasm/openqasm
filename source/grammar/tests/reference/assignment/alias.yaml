@@ -69,15 +69,13 @@ reference: |
         q
         =
         aliasInitializer
-          aliasInitializer
-            expression
-              expressionTerminator
-                q1
+          expression
+            expressionTerminator
+              q1
           ++
-          aliasInitializer
-            expression
-              expressionTerminator
-                q2
+          expression
+            expressionTerminator
+              q2
         ;
     statement
       aliasStatement
@@ -85,47 +83,45 @@ reference: |
         c
         =
         aliasInitializer
-          aliasInitializer
-            expression
-              unaryExpression
-                powerExpression
+          expression
+            unaryExpression
+              powerExpression
+                indexExpression
                   indexExpression
-                    indexExpression
-                      expressionTerminator
-                        a
-                    indexOperator
-                      [
-                      discreteSet
-                        {
-                        expression
-                          expressionTerminator
-                            0
-                        ,
-                        expression
-                          expressionTerminator
-                            1
-                        }
-                      ]
+                    expressionTerminator
+                      a
+                  indexOperator
+                    [
+                    discreteSet
+                      {
+                      expression
+                        expressionTerminator
+                          0
+                      ,
+                      expression
+                        expressionTerminator
+                          1
+                      }
+                    ]
           ++
-          aliasInitializer
-            expression
-              unaryExpression
-                powerExpression
+          expression
+            unaryExpression
+              powerExpression
+                indexExpression
                   indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            1
-                        :
-                        expression
-                          expressionTerminator
-                            2
-                      ]
+                    expressionTerminator
+                      b
+                  indexOperator
+                    [
+                    rangeDefinition
+                      expression
+                        expressionTerminator
+                          1
+                      :
+                      expression
+                        expressionTerminator
+                          2
+                    ]
         ;
     statement
       aliasStatement
@@ -164,34 +160,32 @@ reference: |
         qqq
         =
         aliasInitializer
-          aliasInitializer
-            expression
-              expressionTerminator
-                qq
+          expression
+            expressionTerminator
+              qq
           ++
-          aliasInitializer
-            expression
-              unaryExpression
-                powerExpression
+          expression
+            unaryExpression
+              powerExpression
+                indexExpression
                   indexExpression
-                    indexExpression
-                      expressionTerminator
-                        q2
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            1
-                        :
-                        expression
-                          expressionTerminator
-                            2
-                        :
-                        expression
-                          expressionTerminator
-                            6
-                      ]
+                    expressionTerminator
+                      q2
+                  indexOperator
+                    [
+                    rangeDefinition
+                      expression
+                        expressionTerminator
+                          1
+                      :
+                      expression
+                        expressionTerminator
+                          2
+                      :
+                      expression
+                        expressionTerminator
+                          6
+                    ]
         ;
     statement
       aliasStatement

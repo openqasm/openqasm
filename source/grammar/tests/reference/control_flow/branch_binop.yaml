@@ -34,8 +34,7 @@ reference: |
                                           expressionTerminator
                                             i
                                         ]
-                      equalityOperator
-                        ==
+                      ==
                       comparisonExpression
                         bitShiftExpression
                           additiveExpression
@@ -87,8 +86,7 @@ reference: |
                                                                 expressionTerminator
                                                                   i
                                       ]
-                    equalityOperator
-                      ==
+                    ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression

@@ -30,8 +30,7 @@ reference: |
                                     indexExpression
                                       expressionTerminator
                                         i
-                        comparisonOperator
-                          <
+                        <
                         bitShiftExpression
                           additiveExpression
                             multiplicativeExpression
@@ -99,8 +98,7 @@ reference: |
                                         indexExpression
                                           expressionTerminator
                                             i
-                          equalityOperator
-                            ==
+                          ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
