@@ -131,8 +131,12 @@ Integers
 
 There are n-bit signed and unsigned integers. The statements ``int[size] name;`` and ``uint[size] name;`` declare
 signed 1:n-1:0 and unsigned 0:n:0 integers of the given size. The sizes
-are always explicitly part of the type; there is no implicit width for
-classical types in OpenQASM. Because register indices are integers, they
+and the surrounding brackets can be omitted (*e.g.* ``int name;``) to use
+a precision that is specified by the particular target architecture.
+Bit-level operations cannot be used on types without a specified width, and
+unspecified-width types are different to *all* specified-width types for
+the purposes of casting.
+Because register indices are integers, they
 can be cast from classical registers containing measurement outcomes and
 may only be known at run time. An n-bit classical register containing
 bits can also be reinterpreted as an integer, and these types can be
@@ -148,6 +152,8 @@ one another.
    // Declare a 16 bit signed integer
    int[16] my_int;
    my_int = int[16](my_uint);
+   // Declare a machine-sized integer
+   int my_machine_int;
 
 Floating point numbers
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -156,11 +162,18 @@ IEEE 754 floating point registers may be declared with ``float[size] name;``, wh
 indicate a standard double-precision float. Note that some hardware
 vendors may not support manipulating these values at run-time.
 
+Similar to integers, floating-point registers can be declared with an
+unspecified size.  The resulting precision is then set by the particular target
+architecture, and the unspecified-width type is different to all specified-width
+types for the purposes of casting.
+
 .. code-block:: c
    :force:
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
+   // Declare a machine-precision float.
+   float my_machine_float = 2.3;
 
 Fixed-point angles
 ~~~~~~~~~~~~~~~~~~
@@ -168,8 +181,12 @@ Fixed-point angles
 Fixed-point angles are interpreted as 2π times a 0:0:n
 fixed-point number. This represents angles in the interval
 :math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
-2π. The statement ``angle[size] name;`` declares an n-bit angle. OpenQASM3
-introduces this specialized type because of the ubiquity of this angle
+2π. The statement ``angle[size] name;`` declares an n-bit angle, and
+``angle name;`` declares an angle with machine-architecture-specified width.
+In cases where the width is not specified, bit-level operations are forbidden,
+and the type is different from all other sized angle types for the purposes of
+casting, similar to the rules for integers.
+OpenQASM3 introduces this specialized type because of the ubiquity of this angle
 representation in phase estimation circuits and numerically controlled
 oscillators found in hardware platform. Note that defining gate
 parameters with ``angle`` types may be necessary for those parameters to be
@@ -183,12 +200,14 @@ compatible with run-time values on some platforms.
    float[32] float_pi = π;
    // equivalent to pi_by_2 up to rounding errors
    angle[20](float_pi / 2);
+   // Declare a machine-sized angle
+   angle my_machine_angle;
 
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers may be declared as ``complex[type[size]] name``, for a numeric OpenQASM classical type
-``type`` (``int``, ``float``, ``angle``) and a number of bits ``size``. The real
+Complex numbers may be declared as ``complex[type] name``, for a numeric OpenQASM classical type
+``type`` (``int``, ``float``, ``angle`` plus their optional size). The real
 and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
 would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
 ``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
@@ -201,6 +220,7 @@ left of ``im`` and the two can only be seperated by spaces/tabs (or nothing at a
    c = 2.5 + 3.5im; // 2.5, 3.5 are resolved to be ``float[64]`` types
    complex[float[64]] d = 2.0+sin(π) + 3.1*5.5 im;
    complex[int[32]] f = 2 + 5 im; // 2, 5 are resolved to be ``int[32]`` types
+   complex[float] my_machine_complex;
 
 Boolean types
 ~~~~~~~~~~~~~
