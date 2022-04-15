@@ -46,7 +46,6 @@ identifierList: Identifier (COMMA Identifier)*;
 /** Quantum Types **/
 quantumDeclaration: QREG Identifier designator? | QUBIT designator? Identifier;
 quantumArgument: QREG Identifier designator? | QUBIT designator? Identifier;
-quantumArgumentList: quantumArgument (COMMA quantumArgument)*;
 
 /** Classical Types **/
 bitType: BIT | CREG;
