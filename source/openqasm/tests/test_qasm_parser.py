@@ -129,9 +129,51 @@ def test_qubit_and_bit_declaration():
     SpanGuard().visit(program)
 
 
+def test_simple_type_declarations():
+    p = """
+    int[32] a;
+    int[const_expr] a;
+    int a;
+    uint[32] a = 1;
+    uint[const_expr] a;
+    uint a = 1;
+    float[32] a;
+    float a;
+    angle[32] a;
+    angle a;
+    """.strip()
+    program = parse(p)
+    a = Identifier("a")
+    one = IntegerLiteral(1)
+    thirty_two = IntegerLiteral(32)
+    const_expr = Identifier("const_expr")
+    assert program == Program(
+        statements=[
+            ClassicalDeclaration(type=IntType(size=thirty_two), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=IntType(size=const_expr), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=IntType(size=None), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=UintType(size=thirty_two), identifier=a, init_expression=one),
+            ClassicalDeclaration(
+                type=UintType(size=const_expr), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=UintType(size=None), identifier=a, init_expression=one),
+            ClassicalDeclaration(
+                type=FloatType(size=thirty_two), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=FloatType(size=None), identifier=a, init_expression=None),
+            ClassicalDeclaration(
+                type=AngleType(size=thirty_two), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=AngleType(size=None), identifier=a, init_expression=None),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
 def test_complex_declaration():
     p = """
     complex[int[24]] iq;
+    complex[float] fq;
     """.strip()
     program = parse(p)
     assert program == Program(
@@ -139,6 +181,11 @@ def test_complex_declaration():
             ClassicalDeclaration(
                 ComplexType(base_type=IntType(IntegerLiteral(24))),
                 Identifier("iq"),
+                None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(base_type=FloatType(size=None)),
+                Identifier("fq"),
                 None,
             ),
         ]
@@ -151,6 +198,7 @@ def test_complex_declaration():
 def test_array_declaration():
     p = """
     array[uint[8], 2] a;
+    array[uint, 2] a;
     array[int[8], 2] a = {1, 1};
     array[bit, 2] a = b;
     array[float[32], 2, 2] a;
@@ -165,6 +213,11 @@ def test_array_declaration():
         statements=[
             ClassicalDeclaration(
                 type=ArrayType(base_type=UintType(eight), dimensions=[two]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=UintType(size=None), dimensions=[two]),
                 identifier=a,
                 init_expression=None,
             ),
