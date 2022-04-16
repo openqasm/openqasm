@@ -7,6 +7,7 @@ OpenQASM 3.x Live Specification
   intro
   language/index
   grammar/index
+  release_notes
 
 Bibliography
 ============
