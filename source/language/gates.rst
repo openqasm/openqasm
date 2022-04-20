@@ -167,13 +167,13 @@ and applies the controlled gate
 
 .. _sec:macros:
 
-Hierarchically defined unitary gates
-------------------------------------
+User-defined unitary gates
+--------------------------
 
-For new gates, we associate them with a corresponding unitary
-transformation by a sequence of built-in gates. For example, a CPHASE
-operation is shown schematically in :numref:`fig_gate`
-corresponding OpenQASM code is
+Programmers may define new gates, which may be resolved to a sequence of built-in
+gates, possibly through some program logic (such as `if` statements) or invocations
+of other user-defined gates. For example, a CPHASE operation is shown schematically
+in :numref:`fig_gate` corresponding OpenQASM code is
 
 .. code-block:: c
    :force:
@@ -191,10 +191,10 @@ corresponding OpenQASM code is
 .. _fig_gate:
 .. figure:: ../qpics/gate.svg
 
-   New gates are defined from previously defined gates. The gates are applied using the statement
-   ``name(params) qargs;`` just like the built-in gates. The parentheses are optional if there
-   are no parameters. The gate :math:`{cphase}(\theta)` corresponds to the unitary matrix
-   :math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
+New gates are defined from gates that have been defined previously in the source files.
+The gates are applied using the statement ``name(params) qargs;`` just like the built-in gates.
+The parentheses are optional if there are no parameters. The gate :math:`{cphase}(\theta)`
+corresponds to the unitary matrix :math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
 
 Note that this definition does not imply that ``cphase`` must be implemented with
 this series of gates. Rather, we have specified the unitary
@@ -202,7 +202,9 @@ transformation that corresponds to the symbol ``cphase``. The particular
 implementation is up to the compiler, given information about the basis
 gate set supported by a particular target.
 
-In general, new gates are defined by statements of the form
+In general, new gates may be declared in two different ways: a 'short'
+declaration syntax, and a more versatile 'general' declaration syntax.
+'Short' gate declarations are statements of the form
 
 .. code-block:: c
 
@@ -214,11 +216,12 @@ In general, new gates are defined by statements of the form
 
 where the optional parameter list ``params`` is a comma-separated list of variable
 parameters, and the argument list ``qargs`` is a comma-separated list of qubit
-arguments. The parameters are identifiers with arbitrary-precision numeric types.
+arguments. The parameters are identifiers with the type ``angle``.
 The qubit arguments are identifiers. If there are no
 variable parameters, the parentheses are optional. At least one qubit
-argument is required. The arguments in ``qargs`` cannot be indexed within the body
-of the gate definition.
+argument is required. 
+The arguments in ``qargs`` cannot be indexed within the body
+of the gate definition, as they in principle represent only individual qubits.
 
 .. code-block:: c
 
@@ -233,24 +236,83 @@ of the gate definition.
      U(0, 0, 0) a[0];
    }
 
-Only built-in gate statements, calls to previously defined gates, and
-timing directives can appear in ``body``. For example, it is not valid to
-declare a classical register in a gate body. Looping constructs over these quantum
-statements are valid.
+'General' gate declarations have a similar structure, with minor differences:
 
-The statements in the body
-can only refer to the symbols given in the parameter or argument list,
-and these symbols are scoped only to the subroutine body.
+.. code-block:: c
 
-An empty body corresponds to the identity gate.
+   // comment
+   gate name(typedParams) : typedQargs
+   {
+     body
+   }
 
-Gates must be declared before use and
+The (again, optional) parameter list ``typedParams`` is a comma-separated list of variable
+parameters, which in this case must be provided with explicit type specifications.
+The list ``typedQargs`` is a comma-separated list of operands which are either individual
+qubits, or registers/arrays of qubits, where each is again provided with an explicit type
+specification. 
+If there are no variable parameters, the parentheses are optional. At least
+one quantum operand is required, and the quantum operands
+must be immediately preceded by a ``:`` delimiter.
+The arguments in ``typedQargs`` can be indexed within the body
+of the gate definition if, and only if, it is a register or array of qubits.
+
+.. code-block:: c
+
+   // this is ok:
+   gate g (angle alpha, int k): qubit[3] a
+   {
+     U(0, 0, alpha) a[0];
+     U(0, 0, alpha/k) a[1];
+     U(0, 0, alpha/(k**2)) a[2];
+   }
+
+   // this is also ok:
+   gate qutritX : qubit[2] a {
+     x a[1];
+     cx a[1], a[0];
+     cx a[0], a[1];
+   }
+
+   // this is invalid:
+   gate g (angle alpha, int k): qubit a
+   {
+     U(0, 0, alpha) a[0];
+     U(0, 0, alpha/k) a[1];
+     U(0, 0, alpha/(k**2)) a[2];
+   }
+
+
+For either kind of gate declaration, the ``body`` may consist of the following:
+
+ * Declaration and initialisation of classical variables (but not re-assignment to them);
+
+ * Program logic (``if`` statements and ``for`` loops) with conditions/bounds involving constants,
+   and simple expressions depending on the gate arguments and local identifiers / loop iterators;
+
+ * Timing directives; and
+
+ * Calls to built-in gates and previously defined gates.
+
+Note in particular that classical variables and parameters in a ``gate`` body are treated as being immutable,
+and cannot be assigned to more than once. (For loop induction variables are treated as being constant within
+the scope of any single iteration of the ``for`` loop, and can only be modified by the logic of the loop
+itself.) External functions, ``reset`` operations, ``measure`` operations (or other operations with potentially
+random outcomes), cannot be involved in the program logic of a ``gate`` body. This ensures that an invocation of
+a user-defined ``gate``, corresponds to a definite finite sequence of built-in unitary gates.
+
+An empty ``body`` corresponds to the identity gate.
+
+Gates must be declared before use, and 
 cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
-and the variable parameters ``params`` can have any numeric type.
+and the variable parameters ``params`` must have the appropriate type (or be expressions which can be implicitly 
+cast to the appropriate type).
 
-The gate can be applied to any combination of qubit registers *of the same size*, as shown in the following example.
-
-The quantum circuit given by
+The quantum operands of a ``gate`` invocation must have the appropriate types, to the declaration of the ``gate``.
+There is one exception to this type-agreement condition: if a ``gate`` has one or more operands of type ``qubit``,
+the gate may instead act on some qubit register(s) *of identical size* for one or all of those operands.
+For example, using a 'short' ``gate`` declaration (all of whose operands are individual qubits):
+the quantum circuit given by
 
 .. code-block:: c
 
@@ -271,11 +333,27 @@ has a second-to-last line that means
 
    // FIXME: insert translation of algorithmic block from TeX source.
 
-   for j ← 0, 1 do
+   for j in [0:1] do
        g qr0[0],qr1[j],qr2[0],qr3[j];
 
 We provide this so that user-defined gates can be applied in parallel
-like the built-in gates.
+like the built-in gates. This functionality extends also to any ``gate`` declared with the
+'general' form, so long as all operands which are given an explicit size in the declaration,
+are provided with arguments of the corresponding type.
+
+.. code-block:: c
+
+   gate g : qubit qb0, qubit qb1, qubit[5] qreg
+   {
+     // body
+   }
+   qubit a[2];
+   qubit b[2];
+   qubit c[5];
+   qubit d[10];
+   g a, b, c; // ok: performs "g a[0], b[0], c; g a[1], b[1], c;"
+   g a, b, d; // error! third operand expects a register of size 5, not 10
+
 
 Quantum gate modifiers
 ----------------------
@@ -369,6 +447,13 @@ order of the gates in its definition and replacing each of those with their inve
    gate rzm(θ) q1 {
        rzp(-θ) q1;
    }
+
+   // a coherently controlled version of the "qutritX" gate defined further above,
+   // with a control register interpreted as an integer modulo 3
+   gate qutritCX : qubit[2] c, qubit[2] t {
+      ctrl @ qutritX c[0], t;
+      ctrl @ inv @ qutritX c[1], t;
+    }
 
 The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
 power :math:`U^k` for some positive integer or floating point number :math:`k` (not necessarily
