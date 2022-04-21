@@ -13,15 +13,16 @@ Pragmas
 
 Pragma directives start with ``pragma`` and continue to the end of line. The
 text after ``pragma`` is a single string, and parsing is left to the specific
-implementation. The ``#pragma`` syntax is deprecated, but is accepted for
-compatibility. Pragmas should be processed as soon as they are encountered; if a
+implementation. Implementations may optionally choose to support the older ``#pragma``
+keyword as a custom extension.
+Pragmas should be processed as soon as they are encountered; if a
 pragma is not supported by a compiler pass it should be ignored and preserved
-intact for future passes.  Ideally, pragmas should be considered global and
-immutable; avoiding stateful interactions is recommended to prevent unexpected
-behaviors between source files.
+intact for future passes.  Pragmas should be avoid stateful or positional
+interactions to avoid unexpected behaviors between included source files. If the
+position is relevant to a pragma, an annotation should be used instead.
 
 Pragmas are useful for extending OpenQASM functionality that is not described in
-this specification, such as adding noise operations.
+this specification, such as adding directives to a simulator.
 
 \*Note: The following examples are simply possible implementations, this
 specification does not define any pragmas. Please consult your tool's
@@ -30,8 +31,7 @@ documentation for supported pragmas.
 .. code-block:: c
    :force:
 
-   rx(0.15) q;
-   pragma noise bit_flip(0.1)
+   pragma simulator noise model "qpu1.noise"
 
 Pragmas can also be used to specify system-level information or assertions for
 the entire circuit.
@@ -54,9 +54,8 @@ Annotations
 -----------
 
 Annotations can be added to supply additional information to the following
-OpenQASM statement. These annotations will apply to the subsequent declaration,
-box, or single line of code. Annotations will start with a ``@`` symbol, have an
-identifying keyword and continue to the end of the line.
+OpenQASM ``statement`` as defined in the grammar. Annotations will start with a
+``@`` symbol, have an identifying keyword and continue to the end of the line.
 
 Multiple annotations may be added to a single statement. No ordering or
 interaction between annotations are prescribed by this specification.
