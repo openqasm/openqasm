@@ -5,7 +5,7 @@
 Gates
 =====
 
-In OpenQASM we refer to unitary quantum instructions as gates.
+In OpenQASM, we refer to unitary quantum instructions as gates.
 
 Built-in gates
 --------------
