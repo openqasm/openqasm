@@ -1,0 +1,10 @@
+include README.md
+include LICENSE.txt
+include setup.cfg
+include pyproject.toml
+include requirements.txt
+include openpulse/py.typed
+
+# ANTLR-generated files.
+include openpulse/antlr/*.interp
+include openpulse/antlr/*.tokens
