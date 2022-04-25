@@ -74,8 +74,7 @@ reference: |
                                                               indexExpression
                                                                 expressionTerminator
                                                                   builtInCall
-                                                                    builtInMath
-                                                                      sin
+                                                                    sin
                                                                     (
                                                                     expressionList
                                                                       expression

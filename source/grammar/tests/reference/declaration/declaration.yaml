@@ -104,8 +104,7 @@ reference: |
               =
               expression
                 expressionTerminator
-                  booleanLiteral
-                    true
+                  true
         ;
     statement
       classicalDeclarationStatement
@@ -142,8 +141,7 @@ reference: |
               =
               expression
                 expressionTerminator
-                  booleanLiteral
-                    false
+                  false
         ;
     statement
       classicalDeclarationStatement
@@ -192,8 +190,7 @@ reference: |
         classicalDeclaration
           noDesignatorDeclaration
             noDesignatorType
-              timingType
-                duration
+              duration
             dur
             equalsExpression
               =
@@ -207,8 +204,7 @@ reference: |
         classicalDeclaration
           noDesignatorDeclaration
             noDesignatorType
-              timingType
-                duration
+              duration
             dur2
             equalsExpression
               =
@@ -242,7 +238,6 @@ reference: |
         classicalDeclaration
           noDesignatorDeclaration
             noDesignatorType
-              timingType
-                stretch
+              stretch
             s
         ;

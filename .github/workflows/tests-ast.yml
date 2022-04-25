@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate grammar
         working-directory: source/grammar
-        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
 
       - name: Install Python packages for AST
         run: python -mpip install -r requirements.txt -r requirements-dev.txt
@@ -87,7 +87,7 @@ jobs:
       - name: Generate grammar
         working-directory: source/grammar
         run:
-          java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
+          java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
       - name: Install Python packages for AST
         run: python -mpip install -r requirements.txt -r requirements-dev.txt
       - name: Build package

@@ -24,7 +24,7 @@ If you let `pip` do this automatically when it installs the reference parser, it
 
 1. Build the grammar files into the package directory with
     ```bash
-    <antlr command> -o openqasm_reference_parser -Dlanguage=Python3 -visitor qasm3.g4
+    <antlr command> -o openqasm_reference_parser -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
     ```
    `<antlr command>` should be replaced with however you invoke ANTLR on your system.
    If you used a package manager, it is likely `antlr4` or `antlr`.

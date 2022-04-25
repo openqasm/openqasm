@@ -101,8 +101,7 @@ reference: |
                                         indexExpression
                                           expressionTerminator
                                             result
-                          equalityOperator
-                            ==
+                          ==
                           comparisonExpression
                             bitShiftExpression
                               additiveExpression
