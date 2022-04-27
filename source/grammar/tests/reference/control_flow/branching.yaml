@@ -27,8 +27,7 @@ reference: |
                                   indexExpression
                                     expressionTerminator
                                       x
-                    equalityOperator
-                      ==
+                    ==
                     comparisonExpression
                       bitShiftExpression
                         additiveExpression

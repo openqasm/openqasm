@@ -76,7 +76,7 @@ class SpanGuard(QASMVisitor):
         try:
             assert node.span is not None
             return super().visit(node)
-        except Exception as e:
+        except AssertionError as e:
             raise Exception(f"The span of {type(node)} is None.") from e
 
 

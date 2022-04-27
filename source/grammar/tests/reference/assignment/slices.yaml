@@ -2,7 +2,6 @@
 source: |
   array[uint[16], 2, 2] a = {{1, 2}, {3, 4}};
   array[uint[16], 2, 4] b = {{1, 2, 3, 4}, {5, 6, 7, 8}};
-
   // Various forms of testing that assignments can be made to indexed
   // identifiers, and from indexed identifiers.
   a = b[0:1][0:1];

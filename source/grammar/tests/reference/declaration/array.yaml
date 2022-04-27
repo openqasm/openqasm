@@ -8,7 +8,6 @@ source: |
   array[creg[16], 2, 2] x;
   array[complex[float[32]], 4] x;
   array[bool, 3] x;
-
   array[int[8], 4] x = {1, 2, 3, 4};
   array[int[8], 4] x = y;
   array[int[8], 2] x = {y, y+y};

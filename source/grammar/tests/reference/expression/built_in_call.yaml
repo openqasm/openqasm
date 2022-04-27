@@ -47,8 +47,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                sin
+              sin
               (
               expressionList
                 expression
@@ -61,8 +60,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                arcsin
+              arcsin
               (
               expressionList
                 expression
@@ -75,8 +73,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                cos
+              cos
               (
               expressionList
                 expression
@@ -89,8 +86,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                arccos
+              arccos
               (
               expressionList
                 expression
@@ -103,8 +99,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                tan
+              tan
               (
               expressionList
                 expression
@@ -117,8 +112,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                arctan
+              arctan
               (
               expressionList
                 expression
@@ -131,8 +125,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                exp
+              exp
               (
               expressionList
                 expression
@@ -145,8 +138,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                ln
+              ln
               (
               expressionList
                 expression
@@ -159,8 +151,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                sqrt
+              sqrt
               (
               expressionList
                 expression
@@ -173,8 +164,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                rotl
+              rotl
               (
               expressionList
                 expression
@@ -187,8 +177,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                rotr
+              rotr
               (
               expressionList
                 expression
@@ -201,8 +190,7 @@ reference: |
         expression
           expressionTerminator
             builtInCall
-              builtInMath
-                popcount
+              popcount
               (
               expressionList
                 expression
