@@ -56,6 +56,7 @@ from .ast import (
     BinaryExpression,
     BinaryOperator,
     BitType,
+    BitstringLiteral,
     BoolType,
     BooleanLiteral,
     Box,
@@ -81,6 +82,7 @@ from .ast import (
     EndStatement,
     ExpressionStatement,
     ExternDeclaration,
+    FloatLiteral,
     FloatType,
     ForInLoop,
     FunctionCall,
@@ -107,11 +109,9 @@ from .ast import (
     QuantumReset,
     QubitDeclaration,
     RangeDefinition,
-    RealLiteral,
     ReturnStatement,
     Span,
     StretchType,
-    StringLiteral,
     SubroutineDefinition,
     TimeUnit,
     UintType,
@@ -557,16 +557,23 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             else:
                 const_name = ConstantName[const_text]
             return Constant(const_name)
-        if ctx.Integer():
-            return IntegerLiteral(int(ctx.Integer().getText()))
-        if ctx.RealNumber():
-            return RealLiteral(float(ctx.RealNumber().getText()))
+        if ctx.BinaryIntegerLiteral():
+            return IntegerLiteral(int(ctx.BinaryIntegerLiteral().getText(), 2))
+        if ctx.OctalIntegerLiteral():
+            return IntegerLiteral(int(ctx.OctalIntegerLiteral().getText(), 8))
+        if ctx.DecimalIntegerLiteral():
+            return IntegerLiteral(int(ctx.DecimalIntegerLiteral().getText(), 10))
+        if ctx.HexIntegerLiteral():
+            return IntegerLiteral(int(ctx.HexIntegerLiteral().getText(), 16))
+        if ctx.FloatLiteral():
+            return FloatLiteral(float(ctx.FloatLiteral().getText()))
         if ctx.BooleanLiteral():
             return BooleanLiteral(ctx.BooleanLiteral().getText() == "true")
         if ctx.Identifier():
             return Identifier(ctx.Identifier().getText())
-        if ctx.StringLiteral():
-            return StringLiteral(ctx.StringLiteral().getText()[1:-1])
+        if ctx.BitstringLiteral():
+            bitstring = ctx.BitstringLiteral().getText()[1:-1].replace("_", "")
+            return BitstringLiteral(int(bitstring, 2), len(bitstring))
         if ctx.builtInCall():
             return self.visit(ctx.builtInCall())
         if ctx.externOrSubroutineCall():
