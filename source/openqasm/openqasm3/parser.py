@@ -31,7 +31,7 @@ __all__ = [
     "QASMNodeVisitor",
 ]
 
-from typing import Union
+from typing import Union, TypeVar
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext
@@ -44,7 +44,7 @@ except ImportError as exc:
 
 from .antlr.qasm3Lexer import qasm3Lexer
 from .antlr.qasm3Parser import qasm3Parser
-from .antlr.qasm3Visitor import qasm3Visitor
+from .antlr.qasm3ParserVisitor import qasm3ParserVisitor
 from .ast import (
     AccessControl,
     AliasStatement,
@@ -147,7 +147,10 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> Span:
         return Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)
 
 
-def add_span(node: QASMNode, span: Span) -> QASMNode:
+_NodeT = TypeVar("_NodeT", bound=QASMNode)
+
+
+def add_span(node: _NodeT, span: Span) -> _NodeT:
     """Set the span of a node and return the node"""
     node.span = span
     return node
@@ -173,7 +176,7 @@ def span(func):
     return wrapped
 
 
-class QASMNodeVisitor(qasm3Visitor):
+class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
 
@@ -435,9 +438,10 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitNoDesignatorType(self, ctx: qasm3Parser.NoDesignatorTypeContext):
-        if ctx.getText() == "bool":
+        type_text = ctx.getText()
+        if type_text == "bool":
             return add_span(BoolType(), get_span(ctx))
-        elif ctx.timingType().getText() == "duration":
+        elif type_text == "duration":
             return add_span(DurationType(), get_span(ctx))
         else:
             # stretch type
@@ -557,8 +561,8 @@ class QASMNodeVisitor(qasm3Visitor):
             return IntegerLiteral(int(ctx.Integer().getText()))
         if ctx.RealNumber():
             return RealLiteral(float(ctx.RealNumber().getText()))
-        if ctx.booleanLiteral():
-            return BooleanLiteral(True if ctx.booleanLiteral().getText() == "true" else False)
+        if ctx.BooleanLiteral():
+            return BooleanLiteral(ctx.BooleanLiteral().getText() == "true")
         if ctx.Identifier():
             return Identifier(ctx.Identifier().getText())
         if ctx.StringLiteral():
@@ -621,15 +625,14 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitBuiltInCall(self, ctx: qasm3Parser.BuiltInCallContext):
-        if ctx.builtInMath():
+        if ctx.BuiltinMath():
             return FunctionCall(
-                self.visit(ctx.builtInMath()),
+                add_span(Identifier(ctx.BuiltinMath().getText()), get_span(ctx.BuiltinMath())),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
         if ctx.SIZEOF():
-            name = add_span(Identifier(name=ctx.SIZEOF().getText()), get_span(ctx.SIZEOF()))
             return FunctionCall(
-                name,
+                add_span(Identifier(name=ctx.SIZEOF().getText()), get_span(ctx.SIZEOF())),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
         if ctx.castOperator():
@@ -637,10 +640,6 @@ class QASMNodeVisitor(qasm3Visitor):
                 self.visit(ctx.castOperator().classicalType()),
                 [self.visit(expression) for expression in ctx.expressionList().expression()],
             )
-
-    @span
-    def visitBuiltInMath(self, ctx: qasm3Parser.BuiltInMathContext):
-        return Identifier(ctx.getText())
 
     @span
     def visitExternDeclaration(self, ctx: qasm3Parser.ExternDeclarationContext):
@@ -731,12 +730,21 @@ class QASMNodeVisitor(qasm3Visitor):
 
     @span
     def visitAliasInitializer(self, ctx: qasm3Parser.AliasInitializerContext):
-        if ctx.expression():
-            return self.visit(ctx.expression())
-        return Concatenation(
-            lhs=self.visit(ctx.aliasInitializer(0)),
-            rhs=self.visit(ctx.aliasInitializer(1)),
-        )
+        # This choice in the recursion and the accompanying reversal of the
+        # iterator builds the tree as left-associative.  The logical operation
+        # is arbitrarily associative, but the AST needs us to make a choice.
+        def recurse(previous, iterator):
+            rhs = self.visit(previous)
+            try:
+                current = next(iterator)
+            except StopIteration:
+                return self.visit(previous)
+            lhs = recurse(current, iterator)
+            return add_span(Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
+
+        # This iterator should always be non-empty if ANTLR did its job right.
+        iterator = reversed(ctx.expression())
+        return recurse(next(iterator), iterator)
 
     @span
     def visitIndexExpression(self, ctx: qasm3Parser.IndexExpressionContext):
@@ -774,7 +782,7 @@ class QASMNodeVisitor(qasm3Visitor):
         self, ctx: qasm3Parser.CalibrationGrammarDeclarationContext
     ):
         return CalibrationGrammarDeclaration(
-            calibration_grammar=ctx.calibrationGrammar().getText()[1:-1]
+            calibration_grammar=ctx.StringLiteral().getText()[1:-1]
         )
 
     @span

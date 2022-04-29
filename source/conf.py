@@ -31,6 +31,7 @@ extensions = [
   'sphinx.ext.mathjax',
   'sphinx.ext.githubpages',
   'sphinxcontrib.bibtex',
+  'reno.sphinxext',
   'multifigure'
 ]
 

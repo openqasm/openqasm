@@ -1,3 +1,4 @@
 sphinx
 sphinxcontrib-bibtex
 pylint
+reno
