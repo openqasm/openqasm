@@ -201,3 +201,4 @@ pip-delete-this-directory.txt
 .DS_Store
 
 source/_build
+.antlr/

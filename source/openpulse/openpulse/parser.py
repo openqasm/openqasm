@@ -83,7 +83,9 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
     visitArrayDeclaration = QASMNodeVisitor.visitArrayDeclaration
     visitArrayInitializer = QASMNodeVisitor.visitArrayInitializer
     visitArrayReferenceType = QASMNodeVisitor.visitArrayReferenceType
-    visitArrayReferenceTypeDimensionSpecifier = QASMNodeVisitor.visitArrayReferenceTypeDimensionSpecifier
+    visitArrayReferenceTypeDimensionSpecifier = (
+        QASMNodeVisitor.visitArrayReferenceTypeDimensionSpecifier
+    )
     visitArrayType = QASMNodeVisitor.visitArrayType
     visitAssignmentOperator = QASMNodeVisitor.visitAssignmentOperator
     visitAssignmentStatement = QASMNodeVisitor.visitAssignmentStatement
@@ -184,7 +186,7 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
 
     @span
     def visitCalibrationDefinition(self, ctx: openpulseParser.CalibrationDefinitionContext):
-        # We overide this method in QASMNodeVisitor.visitCalibrationDefinition as we have a 
+        # We overide this method in QASMNodeVisitor.visitCalibrationDefinition as we have a
         # concrete pulse grammar.
         body_chars = []  # Python concatenation is slow so we build a list first
         for i in range(ctx.getChildCount() - 2, 0, -1):

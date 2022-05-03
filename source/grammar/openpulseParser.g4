@@ -4,8 +4,12 @@
 // We override several nodes in qasm3 to consume the new types.
 // The OpenPulse grammar can be used inside cal or defcal blocks.
 
-grammar openpulse;
-import qasm3;
+parser grammar openpulseParser;
+import qasm3Parser;
+
+options {
+    tokenVocab = openpulseLexer;
+}
 
 /**** OpenQASM3.0 overrides ****/
 
@@ -18,7 +22,7 @@ calibration
 
 // defcal body uses openpulse grammar
 calibrationDefinition
-    : 'defcal' Identifier
+    : DEFCAL Identifier
     ( LPAREN calibrationArgumentList? RPAREN )? identifierList
     returnSignature? LBRACE calStatement* returnStatement? RBRACE
 ;
@@ -26,15 +30,15 @@ calibrationDefinition
 // cal block is not yet defined in OpenQASM3.0. 
 // If it is defined in the future, this will be an override
 calBlock
-    : 'cal' LBRACE calStatement* RBRACE
+    : CAL LBRACE calStatement* RBRACE
     ;
 
 /**** OpenPulse types ****/
 // These types can only used inside cal and defcal blocks
 pulseType
-    : 'waveform'
-    | 'port'
-    | 'frame'
+    : WAVEFORM
+    | PORT
+    | FRAME
     ;
 
 pulseDeclaration
@@ -63,5 +67,5 @@ calTypeList
 
 // calExternDeclaration extends the extern declation in OpenPulse
 calExternDeclaration
-    : 'extern' Identifier LPAREN calTypeList? RPAREN (ARROW calType)? SEMICOLON
+    : EXTERN Identifier LPAREN calTypeList? RPAREN (ARROW calType)? SEMICOLON
     ;

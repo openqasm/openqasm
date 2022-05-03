@@ -1,9 +1,4 @@
-qasm3*.interp
-qasm3*.tokens
-qasm3Lexer.py
-qasm3Parser.py
-qasm3ParserListener.py
-qasm3ParserVisitor.py
+antlr/
 build/
 dist/
 
