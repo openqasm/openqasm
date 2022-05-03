@@ -36,7 +36,7 @@ from openqasm3.parser import get_span, add_span, span, QASMNodeVisitor
 
 from .antlr.openpulseLexer import openpulseLexer
 from .antlr.openpulseParser import openpulseParser
-from .antlr.openpulseVisitor import openpulseVisitor
+from .antlr.openpulseParserVisitor import openpulseParserVisitor
 from .ast import (
     CalibrationDefinition,
     ClassicalDeclaration,
@@ -65,8 +65,16 @@ def parse(input_: str) -> Program:
     return OpenPulseNodeVisitor().visitProgram(tree)
 
 
-class OpenPulseNodeVisitor(openpulseVisitor):
+class OpenPulseNodeVisitor(openpulseParserVisitor):
     # Try to reuse some methods from QASMNodeVisitor
+    # The following block can be generated/refreshed with:
+    # from openqasm3.parser import QASMNodeVisitor
+    # import re
+    # p = p = re.compile("_?visit.+")
+    # for m in dir(QASMNodeVisitor):
+    #  if p.match(m) and m != "visitCalibrationDefinition":
+    #    print(f"{m} = QASMNodeVisitor.{m}")
+    _visitBinaryExpression = QASMNodeVisitor._visitBinaryExpression
     visitAdditiveExpression = QASMNodeVisitor.visitAdditiveExpression
     visitAliasInitializer = QASMNodeVisitor.visitAliasInitializer
     visitAliasStatement = QASMNodeVisitor.visitAliasStatement
@@ -75,9 +83,7 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitArrayDeclaration = QASMNodeVisitor.visitArrayDeclaration
     visitArrayInitializer = QASMNodeVisitor.visitArrayInitializer
     visitArrayReferenceType = QASMNodeVisitor.visitArrayReferenceType
-    visitArrayReferenceTypeDimensionSpecifier = (
-        QASMNodeVisitor.visitArrayReferenceTypeDimensionSpecifier
-    )
+    visitArrayReferenceTypeDimensionSpecifier = QASMNodeVisitor.visitArrayReferenceTypeDimensionSpecifier
     visitArrayType = QASMNodeVisitor.visitArrayType
     visitAssignmentOperator = QASMNodeVisitor.visitAssignmentOperator
     visitAssignmentStatement = QASMNodeVisitor.visitAssignmentStatement
@@ -86,13 +92,10 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitBitOrExpression = QASMNodeVisitor.visitBitOrExpression
     visitBitShiftExpression = QASMNodeVisitor.visitBitShiftExpression
     visitBitType = QASMNodeVisitor.visitBitType
-    visitBooleanLiteral = QASMNodeVisitor.visitBooleanLiteral
     visitBranchingStatement = QASMNodeVisitor.visitBranchingStatement
     visitBuiltInCall = QASMNodeVisitor.visitBuiltInCall
-    visitBuiltInMath = QASMNodeVisitor.visitBuiltInMath
     visitCalibration = QASMNodeVisitor.visitCalibration
     visitCalibrationArgumentList = QASMNodeVisitor.visitCalibrationArgumentList
-    visitCalibrationGrammar = QASMNodeVisitor.visitCalibrationGrammar
     visitCalibrationGrammarDeclaration = QASMNodeVisitor.visitCalibrationGrammarDeclaration
     visitCastOperator = QASMNodeVisitor.visitCastOperator
     visitChildren = QASMNodeVisitor.visitChildren
@@ -104,7 +107,6 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitClassicalType = QASMNodeVisitor.visitClassicalType
     visitClassicalTypeList = QASMNodeVisitor.visitClassicalTypeList
     visitComparisonExpression = QASMNodeVisitor.visitComparisonExpression
-    visitComparisonOperator = QASMNodeVisitor.visitComparisonOperator
     visitComplexDeclaration = QASMNodeVisitor.visitComplexDeclaration
     visitConstantDeclaration = QASMNodeVisitor.visitConstantDeclaration
     visitControlDirective = QASMNodeVisitor.visitControlDirective
@@ -113,7 +115,6 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitDiscreteSet = QASMNodeVisitor.visitDiscreteSet
     visitEndStatement = QASMNodeVisitor.visitEndStatement
     visitEqualityExpression = QASMNodeVisitor.visitEqualityExpression
-    visitEqualityOperator = QASMNodeVisitor.visitEqualityOperator
     visitEqualsExpression = QASMNodeVisitor.visitEqualsExpression
     visitErrorNode = QASMNodeVisitor.visitErrorNode
     visitExpression = QASMNodeVisitor.visitExpression
@@ -132,7 +133,6 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitIo = QASMNodeVisitor.visitIo
     visitIoIdentifier = QASMNodeVisitor.visitIoIdentifier
     visitLogicalAndExpression = QASMNodeVisitor.visitLogicalAndExpression
-    visitLogicalOperator = QASMNodeVisitor.visitLogicalOperator
     visitLoopSignature = QASMNodeVisitor.visitLoopSignature
     visitLoopStatement = QASMNodeVisitor.visitLoopStatement
     visitMultiplicativeExpression = QASMNodeVisitor.visitMultiplicativeExpression
@@ -146,7 +146,6 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitProgram = QASMNodeVisitor.visitProgram
     visitProgramBlock = QASMNodeVisitor.visitProgramBlock
     visitQuantumArgument = QASMNodeVisitor.visitQuantumArgument
-    visitQuantumArgumentList = QASMNodeVisitor.visitQuantumArgumentList
     visitQuantumBarrier = QASMNodeVisitor.visitQuantumBarrier
     visitQuantumBlock = QASMNodeVisitor.visitQuantumBlock
     visitQuantumDeclaration = QASMNodeVisitor.visitQuantumDeclaration
@@ -177,20 +176,16 @@ class OpenPulseNodeVisitor(openpulseVisitor):
     visitTimingBox = QASMNodeVisitor.visitTimingBox
     visitTimingIdentifier = QASMNodeVisitor.visitTimingIdentifier
     visitTimingInstruction = QASMNodeVisitor.visitTimingInstruction
-    visitTimingInstructionName = QASMNodeVisitor.visitTimingInstructionName
     visitTimingStatement = QASMNodeVisitor.visitTimingStatement
-    visitTimingType = QASMNodeVisitor.visitTimingType
     visitUnaryExpression = QASMNodeVisitor.visitUnaryExpression
     visitUnaryOperator = QASMNodeVisitor.visitUnaryOperator
     visitVersion = QASMNodeVisitor.visitVersion
     visitXOrExpression = QASMNodeVisitor.visitXOrExpression
-    _visitBinaryExpression = QASMNodeVisitor._visitBinaryExpression
 
     @span
     def visitCalibrationDefinition(self, ctx: openpulseParser.CalibrationDefinitionContext):
-        # TODO: Possible grammar improvement. The current grammar return the body as a token
-        # stream. We reconstruct the body by concat the tokens space delimiter.
-        # This will not exactly reproduce the body but it can be parsed by another grammar.
+        # We overide this method in QASMNodeVisitor.visitCalibrationDefinition as we have a 
+        # concrete pulse grammar.
         body_chars = []  # Python concatenation is slow so we build a list first
         for i in range(ctx.getChildCount() - 2, 0, -1):
             node = ctx.getChild(i)

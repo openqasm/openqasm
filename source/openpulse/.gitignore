@@ -1,9 +1,4 @@
-openpulse*.interp
-openpulse*.tokens
-openpulseLexer.py
-openpulseListener.py
-openpulseParser.py
-openpulseVisitor.py
+antlr/
 build/
 dist/
 
