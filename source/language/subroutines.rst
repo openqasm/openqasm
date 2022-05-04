@@ -1,7 +1,6 @@
 Subroutines
 ===========
 
-<<<<<<< HEAD
 Subroutines are declared using the statement
 
     ``def name(parameters) -> output_type { body }``
@@ -9,32 +8,20 @@ Subroutines are declared using the statement
 Subroutines and their named arguments must be named according to the rules for
 identifiers (See :ref:`identifiers`).
 
-Zero or more quantum bits and classical values are passed to the subroutine by reference or name in ``qargs``.
-Classical types are passed by value in ``parameters``.
+The subroutine will define zero or more parameters as input, consisting of both
+quantum and classical arguments. Quantum bits and classical values are passed to
+the subroutine by reference or name in, while classical types are passed in by value.
+All arguments are declared together with their type. For example, ``qubit ancilla``
+defines a quantum bit argument named ``ancilla``.
 
 The subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return type, the empty ``return``
 keyword may be used to immediately exit from the subroutine.
 
-All arguments are declared together with their type, for example ``qubit ancilla``
-would define a quantum bit argument named ``ancilla``. Qubit declarations are not
-allowed within subroutines as those declarations are global.
+Qubit declarations are not allowed within subroutines as those declarations are global.
 
 A subroutine is invoked with the syntax ``name(parameters)`` and may be assigned
-to an ``output`` asneeded via an assignment operator (``=``, ``+=``, etc).
-=======
-Subroutines are declared using the statement ``def name(parameters) -> output_type { body }``.
-The subroutine will define zero or more parameters as input, consisting of both quantum and classical arguments.
-Quantum bits and registers are passed in by reference or name, while classical types are passed in by value.
-All arguments are declared together with their type,
-for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
-The subroutines return up to one value of classical type, signified by the
-``return`` keyword. If there is no return type, the empty ``return``
-keyword may be used to immediately exit from the subroutine.
-Qubit declarations are not allowed within subroutines as they are global. A subroutine
-is invoked with the syntax ``name(parameters)`` and may be assigned to an ``output`` as
-needed via an assignment operator (``=``, ``+=``, etc).
->>>>>>> dd63a2fda5ca06119b7ef3c95b4d510b38f44753
+to an ``output`` as needed via an assignment operator (``=``, ``+=``, etc).
 
 Using subroutines, we can define an X-basis measurement with the program
 
