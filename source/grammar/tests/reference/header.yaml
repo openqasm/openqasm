@@ -23,12 +23,12 @@ reference: |
           nonArrayType
             singleDesignatorType
               angle
-            designator
-              [
-              expression
-                expressionTerminator
-                  32
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
         param1
         ;
       io
@@ -38,12 +38,12 @@ reference: |
           nonArrayType
             singleDesignatorType
               angle
-            designator
-              [
-              expression
-                expressionTerminator
-                  32
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
         param2
         ;
       io

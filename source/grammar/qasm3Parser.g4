@@ -48,14 +48,14 @@ quantumDeclaration: QREG Identifier designator? | QUBIT designator? Identifier;
 quantumArgument: QREG Identifier designator? | QUBIT designator? Identifier;
 
 /** Classical Types **/
-bitType: BIT | CREG;
-singleDesignatorType: INT | UINT | FLOAT | ANGLE;
+bitType: (BIT | CREG) designator?;
+singleDesignatorType: (INT | UINT | FLOAT | ANGLE) designator?;
 noDesignatorType: BOOL | DURATION | STRETCH;
 
 nonArrayType
-    : singleDesignatorType designator
+    : singleDesignatorType
     | noDesignatorType
-    | bitType designator?
+    | bitType
     | COMPLEX LBRACKET numericType RBRACKET
 ;
 
@@ -72,13 +72,13 @@ classicalType
 ;
 
 // numeric OpenQASM types
-numericType: singleDesignatorType designator;
+numericType: singleDesignatorType;
 
 constantDeclaration: CONST classicalType Identifier equalsExpression;
 
 // if multiple variables declared at once, either none are assigned or all are assigned
 // prevents ambiguity w/ qubit arguments in subroutine calls
-singleDesignatorDeclaration: singleDesignatorType designator Identifier equalsExpression?;
+singleDesignatorDeclaration: singleDesignatorType Identifier equalsExpression?;
 
 noDesignatorDeclaration: noDesignatorType Identifier equalsExpression?;
 
@@ -102,7 +102,7 @@ classicalDeclaration
 
 classicalTypeList: classicalType (COMMA classicalType)*;
 classicalArgument
-    : (singleDesignatorType designator | noDesignatorType) Identifier
+    : (singleDesignatorType | noDesignatorType) Identifier
     | CREG Identifier designator?
     | BIT designator? Identifier
     | COMPLEX LBRACKET numericType RBRACKET Identifier

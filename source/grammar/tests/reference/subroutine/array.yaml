@@ -23,12 +23,12 @@ reference: |
                 nonArrayType
                   singleDesignatorType
                     uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          16
+                      ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
                   expressionList
@@ -60,12 +60,12 @@ reference: |
                 nonArrayType
                   singleDesignatorType
                     uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          16
+                      ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
                   expressionList
@@ -97,12 +97,12 @@ reference: |
                 nonArrayType
                   singleDesignatorType
                     uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          16
+                      ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
                   #dim
@@ -131,12 +131,12 @@ reference: |
                 nonArrayType
                   singleDesignatorType
                     uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          16
+                      ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
                   #dim
@@ -184,12 +184,12 @@ reference: |
                 nonArrayType
                   singleDesignatorType
                     int
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        8
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          8
+                      ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
                   #dim
@@ -212,12 +212,12 @@ reference: |
                   numericType
                     singleDesignatorType
                       float
-                    designator
-                      [
-                      expression
-                        expressionTerminator
-                          64
-                      ]
+                      designator
+                        [
+                        expression
+                          expressionTerminator
+                            64
+                        ]
                   ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
@@ -241,12 +241,12 @@ reference: |
                   numericType
                     singleDesignatorType
                       float
-                    designator
-                      [
-                      expression
-                        expressionTerminator
-                          64
-                      ]
+                      designator
+                        [
+                        expression
+                          expressionTerminator
+                            64
+                        ]
                   ]
                 ,
                 arrayReferenceTypeDimensionSpecifier
@@ -267,12 +267,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    8
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      8
+                  ]
         subroutineBlock
           {
           }

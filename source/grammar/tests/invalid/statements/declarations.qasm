@@ -6,13 +6,9 @@ creg[4];
 complex[float[32]];
 
 // Incorrect designators.
-int myvar;
 int[8, 8] myvar;
-uint myvar;
 uint[8, 8] myvar;
-float myvar;
 float[8, 8] myvar;
-angle myvar;
 angle[8, 8] myvar;
 bool[4] myvar;
 bool[4, 4] myvar;
@@ -22,7 +18,6 @@ creg[2, 2] myvar;
 qreg[2] myvar;
 qreg[2, 2] myvar;
 complex myvar;
-complex[float] myvar;
 complex[32] myvar;
 complex[mytype] myvar;
 complex[float[32], float[32]] myvar;

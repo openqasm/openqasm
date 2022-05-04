@@ -23,12 +23,12 @@ reference: |
             classicalArgument
               singleDesignatorType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      5
+                  ]
               i
           ,
           anyTypeArgument
@@ -59,12 +59,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    10
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      10
+                  ]
         subroutineBlock
           {
           statement
@@ -73,12 +73,12 @@ reference: |
                 singleDesignatorDeclaration
                   singleDesignatorType
                     int
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        10
-                    ]
+                    designator
+                      [
+                      expression
+                        expressionTerminator
+                          10
+                      ]
                   result
               ;
           statement
@@ -157,12 +157,12 @@ reference: |
             classicalArgument
               singleDesignatorType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      5
+                  ]
               i
           ,
           anyTypeArgument

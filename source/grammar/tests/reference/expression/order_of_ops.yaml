@@ -130,12 +130,12 @@ reference: |
                             nonArrayType
                               bitType
                                 bit
-                              designator
-                                [
-                                expression
-                                  expressionTerminator
-                                    8
-                                ]
+                                designator
+                                  [
+                                  expression
+                                    expressionTerminator
+                                      8
+                                  ]
                         (
                         expressionList
                           expression
