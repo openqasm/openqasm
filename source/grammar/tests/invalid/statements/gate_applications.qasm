@@ -1,4 +1,3 @@
-U () $0;
 U (1)(2) $0;
 notmodifier @ x $0;
 pow @ x $0;

@@ -8,108 +8,81 @@ source: |
   inv @ g q;
 reference: |
   program
-    header
-    globalStatement
+    statement
       quantumDeclarationStatement
-        quantumDeclaration
+        qubitType
           qubit
-          q
+        q
         ;
-    globalStatement
-      quantumGateDefinition
+    statement
+      gateStatement
         gate
-        quantumGateSignature
-          quantumGateName
-            g
-          identifierList
-            q
-        quantumBlock
+        g
+        identifierList
+          q
+        scope
           {
           }
     statement
-      quantumStatement
-        quantumInstruction
-          quantumGateCall
-            quantumGateModifier
-              ctrlModifier
-                ctrl
-                (
-                expression
-                  expressionTerminator
-                    2
-                )
-              @
-            quantumGateName
-              g
+      gateCallStatement
+        gateModifier
+          ctrl
+          (
+          expression
+            2
+          )
+          @
+        g
+        gateOperandList
+          gateOperand
             indexedIdentifier
               q
         ;
     statement
-      quantumStatement
-        quantumInstruction
-          quantumGateCall
-            quantumGateModifier
-              ctrlModifier
-                negctrl
-                (
-                expression
-                  expressionTerminator
-                    3
-                )
-              @
-            quantumGateName
-              g
+      gateCallStatement
+        gateModifier
+          negctrl
+          (
+          expression
+            3
+          )
+          @
+        g
+        gateOperandList
+          gateOperand
             indexedIdentifier
               q
         ;
     statement
-      quantumStatement
-        quantumInstruction
-          quantumGateCall
-            quantumGateModifier
-              powModifier
-                pow
-                (
-                expression
-                  logicalAndExpression
-                    bitOrExpression
-                      xOrExpression
-                        bitAndExpression
-                          equalityExpression
-                            comparisonExpression
-                              bitShiftExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    multiplicativeExpression
-                                      unaryExpression
-                                        unaryOperator
-                                          -
-                                        powerExpression
-                                          indexExpression
-                                            expressionTerminator
-                                              1
-                                    /
-                                    unaryExpression
-                                      powerExpression
-                                        indexExpression
-                                          expressionTerminator
-                                            2
-                )
-              @
-            quantumGateName
-              g
+      gateCallStatement
+        gateModifier
+          pow
+          (
+          expression
+            expression
+              -
+              expression
+                1
+            /
+            expression
+              2
+          )
+          @
+        g
+        gateOperandList
+          gateOperand
             indexedIdentifier
               q
         ;
     statement
-      quantumStatement
-        quantumInstruction
-          quantumGateCall
-            quantumGateModifier
-              inv
-              @
-            quantumGateName
-              g
+      gateCallStatement
+        gateModifier
+          inv
+          @
+        g
+        gateOperandList
+          gateOperand
             indexedIdentifier
               q
         ;
+    <EOF>
