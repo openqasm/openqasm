@@ -6,7 +6,7 @@ options {
 
 program: header (globalStatement | statement)*;
 header: version? include* io*;
-version: OPENQASM (Integer | RealNumber) SEMICOLON;
+version: OPENQASM (DecimalIntegerLiteral | FloatLiteral) SEMICOLON;
 include: INCLUDE StringLiteral SEMICOLON;
 
 ioIdentifier: INPUT | OUTPUT;
@@ -283,12 +283,15 @@ indexedIdentifier: Identifier indexOperator*;
 
 expressionTerminator
     : Constant
-    | Integer
-    | RealNumber
-    | ImagNumber
+    | BinaryIntegerLiteral
+    | OctalIntegerLiteral
+    | DecimalIntegerLiteral
+    | HexIntegerLiteral
+    | FloatLiteral
+    | ImaginaryLiteral
     | BooleanLiteral
+    | BitstringLiteral
     | Identifier
-    | StringLiteral
     | builtInCall
     | externOrSubroutineCall
     | timingIdentifier

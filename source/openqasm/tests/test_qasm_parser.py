@@ -9,6 +9,7 @@ from openqasm3.ast import (
     BinaryExpression,
     BinaryOperator,
     BitType,
+    BitstringLiteral,
     BoolType,
     BooleanLiteral,
     Box,
@@ -31,6 +32,7 @@ from openqasm3.ast import (
     DurationType,
     EndStatement,
     ExpressionStatement,
+    FloatLiteral,
     FloatType,
     ForInLoop,
     FunctionCall,
@@ -55,10 +57,8 @@ from openqasm3.ast import (
     QuantumPhase,
     QubitDeclaration,
     RangeDefinition,
-    RealLiteral,
     ReturnStatement,
     StretchType,
-    StringLiteral,
     SubroutineDefinition,
     TimeUnit,
     UintType,
@@ -124,6 +124,61 @@ def test_qubit_and_bit_declaration():
         statements=[
             ClassicalDeclaration(BitType(None), Identifier("c"), None),
             QubitDeclaration(qubit=Identifier(name="a"), size=None),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_integer_declaration():
+    p = """
+    uint[16] a = 100;
+    uint[16] a = 0b0110_0100;
+    int[16] a = 0B01100100;
+    uint[16] a = 0o144;
+    uint[16] a = 0xff_64;
+    int[16] a = 0X19_a_b;
+    """.strip()
+    program = parse(p)
+    uint16 = UintType(IntegerLiteral(16))
+    int16 = IntType(IntegerLiteral(16))
+    a = Identifier("a")
+    assert program == Program(
+        statements=[
+            ClassicalDeclaration(uint16, a, IntegerLiteral(100)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0b0110_0100)),
+            ClassicalDeclaration(int16, a, IntegerLiteral(0b0110_0100)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0o144)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0xFF64)),
+            ClassicalDeclaration(int16, a, IntegerLiteral(0x19AB)),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_float_declaration():
+    p = """
+    float[64] a = 125.;
+    float[64] a = 1_25.;
+    float[64] a = 1_25.e1;
+    float[64] a = .1_25;
+    float[64] a = .125e1;
+    float[64] a = .125e+1;
+    float[64] a = .125e-1;
+    float[64] a = 125.125e1_25;
+    """.strip()
+    program = parse(p)
+    float64 = FloatType(IntegerLiteral(64))
+    a = Identifier("a")
+    assert program == Program(
+        statements=[
+            ClassicalDeclaration(float64, a, FloatLiteral(125.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(125.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1250.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(0.125)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1.25)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1.25)),
+            ClassicalDeclaration(float64, a, FloatLiteral(0.0125)),
+            ClassicalDeclaration(float64, a, FloatLiteral(125.125e125)),
         ]
     )
     SpanGuard().visit(program)
@@ -508,7 +563,7 @@ def test_primary_expression():
     true;
     false;
     a;
-    "openqasm";
+    "0110_0100";
     sin(0.0);
     foo(x);
     1.1ns;
@@ -528,12 +583,12 @@ def test_primary_expression():
             ExpressionStatement(expression=Constant(name=ConstantName.pi)),
             ExpressionStatement(expression=Constant(name=ConstantName.pi)),
             ExpressionStatement(expression=IntegerLiteral(5)),
-            ExpressionStatement(expression=RealLiteral(2.0)),
+            ExpressionStatement(expression=FloatLiteral(2.0)),
             ExpressionStatement(expression=BooleanLiteral(True)),
             ExpressionStatement(expression=BooleanLiteral(False)),
             ExpressionStatement(expression=Identifier("a")),
-            ExpressionStatement(expression=StringLiteral("openqasm")),
-            ExpressionStatement(expression=FunctionCall(Identifier("sin"), [RealLiteral(0.0)])),
+            ExpressionStatement(expression=BitstringLiteral(100, 8)),
+            ExpressionStatement(expression=FunctionCall(Identifier("sin"), [FloatLiteral(0.0)])),
             ExpressionStatement(expression=FunctionCall(Identifier("foo"), [Identifier("x")])),
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
             ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),

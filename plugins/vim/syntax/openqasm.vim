@@ -119,9 +119,9 @@ syntax region qasmIndex matchgroup=qasmOperator start=#\v\[# end=#\v\]# transpar
 " statements to be matched correctly, when the test includes a function call.
 syntax region qasmParams start="(" end=")" transparent contained
 syntax region qasmDesignator start=#\v\[# end=#\v\]# transparent contained
-    \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
+    \ contains=qasmType,qasmOperator,qasmInteger,qasmFloat,qasmIdentifier nextgroup=qasmParams skipwhite skipempty
 syntax region qasmArraySpecifier start="\[" end="\]" transparent contained
-    \ contains=qasmType,qasmOperator,qasmInteger,qasmReal,qasmIdentifier,qasmArrayDimensions
+    \ contains=qasmType,qasmOperator,qasmInteger,qasmFloat,qasmIdentifier,qasmArrayDimensions
 
 " General keywords.
 syntax keyword qasmInclude include
@@ -254,12 +254,17 @@ endif
 "" Language literals.
 syntax region qasmString start=#"# end=#"#
 syntax region qasmString start=#'# end=#'#
-syntax match qasmInteger #\v<\d+# nextgroup=qasmTimeUnit
-syntax match qasmReal #\v<\d+\.\d*([eE][+-]?\d+)?# nextgroup=qasmTimeUnit skipwhite skipempty
+syntax match qasmFloat #\v\.\d+([eE][+-]?\d+)?# nextgroup=qasmTimeUnit
+syntax match qasmFloat #\v<\d+[eE][+-]?\d+# nextgroup=qasmTimeUnit
+syntax match qasmFloat #\v<\d+\.\d*([eE][+-]?\d+)?# nextgroup=qasmTimeUnit
+syntax match qasmInteger #\v<0[bB]([01]_?)*[01]#
+syntax match qasmInteger #\v<0o([0-7]_?)*[0-7]#
+syntax match qasmInteger #\v<0[xX]([0-9a-fA-F]_?)*[0-9a-fA-F]#
+syntax match qasmInteger #\v<(\d_?)*\d# nextgroup=qasmTimeUnit
 if s:openqasm_version >= 3
     syntax match qasmTimeUnit #\v(dt|ns|us|μs|ms|s)># contained display
 endif
-syntax cluster qasmNumber contains=qasmInteger,qasmReal
+syntax cluster qasmNumber contains=qasmInteger,qasmFloat
 syntax cluster qasmLiteral contains=@qasmNumber,qasmString
 
 syntax match qasmBlockStart #{# containedin=qasmBlock,qasmPragmaBlock
@@ -317,7 +322,7 @@ highlight default link qasmConditional          Conditional
 
 highlight default link qasmHardwareQubit        Special
 highlight default link qasmInteger              Number
-highlight default link qasmReal                 Float
+highlight default link qasmFloat                Float
 highlight default link qasmTimeUnit             Number
 highlight default link qasmBuiltinConstant      Constant
 highlight default link qasmString               String

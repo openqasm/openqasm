@@ -140,30 +140,37 @@ ComparisonOperator: '>' | '<' | '>=' | '<=';
 BitshiftOperator: '>>' | '<<';
 
 IMAG: 'im';
-ImagNumber : ( Integer | RealNumber ) IMAG ;
+ImaginaryLiteral : (DecimalIntegerLiteral | FloatLiteral) IMAG ;
 
 Constant: ('pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ');
 
-fragment Digit : [0-9] ;
-Integer : Digit+ ;
+BinaryIntegerLiteral: ('0b' | '0B') ([01] '_'?)* [01];
+OctalIntegerLiteral: '0o' ([0-7] '_'?)* [0-7];
+DecimalIntegerLiteral: ([0-9] '_'?)* [0-9];
+HexIntegerLiteral: ('0x' | '0X') ([0-9a-fA-F] '_'?)* [0-9a-fA-F];
 
-fragment ValidUnicode: [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}] ; // valid unicode chars
-fragment Letter: [A-Za-z] ;
-fragment FirstIdCharacter : '_' | '$' | ValidUnicode | Letter ;
-fragment GeneralIdCharacter : FirstIdCharacter | Digit;
+fragment ValidUnicode: [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}]; // valid unicode chars
+fragment Letter: [A-Za-z];
+fragment FirstIdCharacter: '_' | '$' | ValidUnicode | Letter;
+fragment GeneralIdCharacter: FirstIdCharacter | [0-9];
 
 Identifier: FirstIdCharacter GeneralIdCharacter*;
 
-fragment SciNotation: [eE];
-fragment PlusMinus: PLUS | MINUS;
-fragment Float: Digit+ DOT Digit*;
-RealNumber: (Integer | Float) (SciNotation PlusMinus? Integer)?;
+fragment FloatLiteralExponent: [eE] (PLUS | MINUS)? DecimalIntegerLiteral;
+FloatLiteral:
+    // 1_123e-3, 123e+4 or 123E5 (needs the exponent or it's just an integer)
+    DecimalIntegerLiteral FloatLiteralExponent
+    // .1234_5678 or .1e3 (no digits before the dot)
+    | DOT DecimalIntegerLiteral FloatLiteralExponent?
+    // 123.456, 123. or 145.32e+1_00
+    | DecimalIntegerLiteral DOT DecimalIntegerLiteral? FloatLiteralExponent?;
 
 fragment TimeUnit: 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's';
 // represents explicit time value in SI or backend units
-TimingLiteral : (Integer | RealNumber) TimeUnit;
+TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) TimeUnit;
 
 
+BitstringLiteral: '"' ([01] '_'?)* [01] '"';
 // allow ``"str"`` and ``'str'``
 StringLiteral
     : '"' ~["\r\t\n]+? '"'

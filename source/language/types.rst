@@ -346,6 +346,64 @@ their argument expression in parentheses:
       | tan      | (``float`` or ``angle``)          | ``float``                            |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
 
+Literals
+--------
+
+There are five types of literals in OpenQASM 3, integer, float, boolean,
+bit string, and timing.
+
+Integer literals can be written in decimal without a prefix, or as a hex, octal, or
+binary number, as denoted by a leading ``0x/0X``, ``0o``, or ``0b/0B`` prefix.
+Non-consecutive underscores ``_`` may be inserted between the first and last
+digit of the literal to improve readability for large values.
+
+.. code-block:: c
+
+   int i1 = 1; // decimal
+   int i2 = 0xff; // hex
+   int i3 = 0xffff_ffff // hex with _ for readability
+   int i4 = 0XBEEF; // uppercase HEX
+   int i5 = 0o73; // octal
+   int i6 = 0b1101; // binary
+   int i7 = 0B0110_1001; // uppercase B binary with _ for readability
+   int i8 = 1_000_000 // 1 million with _ for readability
+
+Float literals contain either
+   - one or more digits followed by a ``.`` and zero or more digits,
+   - a ``.`` followed by one or more digits.
+
+In addition, scientific notation can be used with a signed or unsigned integer
+exponent.
+
+.. code-block:: c
+
+   float f1 = 1.0;
+   float f2 = .1; // leading dot
+   float f3 = 0.; // trailing dot
+   float f4 = 2e10; // scientific
+   float f5 = 2e+1; // scientific with positive signed exponent
+   float f6 = 2.0E-1; // uppercase scientific with signed exponent
+
+The two boolean literals are the lowercase strings ``true`` and ``false``.
+
+Bit string literals are denoted by double quotes ``"`` surrounding a number of
+zero and one digits, and may include non-consecutive underscores to improve
+readability for large strings.
+
+.. code-block:: c
+
+   bit[8] b1 = "00010001";
+   bit[8] b2 = "0001_0001"; // underscore for readability
+
+Timing literals are float or integer literals with a unit of time.
+``ns, μs, us, ms, and s`` are used for SI time units. ``dt`` is a
+backend-dependent unit equivalent to one waveform sample.
+
+.. code-block:: c
+
+   duration one_second = 1000ms;
+   duration thousand_cycles = 1000dt;
+
 Arrays
 ------
 
@@ -408,8 +466,7 @@ Duration
 ~~~~~~~~
 
 We introduce a ``duration`` type to express timing.
-Durations are numbers with a unit of time. ``ns, μs, us, ms, and s`` are used for SI time
-units. ``dt`` is a backend-dependent unit equivalent to one waveform sample.
+Durations can be assigned with expressions including timing literals.
 ``durationof()`` is an intrinsic function used to reference the
 duration of a calibrated gate.
 
@@ -417,6 +474,7 @@ duration of a calibrated gate.
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
+   duration two_seconds = one_second + 1s;
    duration c = durationof({x $3;});
 
 ``duration`` is further discussed in :any:`duration-and-stretch`
@@ -603,6 +661,21 @@ Casting specifics
 The classical types are divided into the 'standard' classical types (bool, int, 
 uint, and float) that exist in languages like C, and the 'special' classical 
 types (bit, angle, duration, and stretch) that do not.
+The standard types follow rules that mimic those of C99 for `promotion and
+conversion <https://en.cppreference.com/w/c/language/conversion>`_ in mixed
+expressions and assignments. Like the C99 specification, all float values have
+higher rank than all integer types, and higher-precision types have higher rank
+than the same type with a lower precision (see `usual arithmetic conversions
+<https://en.cppreference.com/w/c/language/conversion#Usual_arithmetic_conversions>`_,
+`integer promotions <https://en.cppreference.com/w/c/language/conversion#Integer_promotions>`_, and
+`integer conversions <https://en.cppreference.com/w/c/language/conversion#Integer_conversions>`_).
+Standard and special classical types
+may only mix in expressions with operators defined for those mixed types,
+otherwise explicit casts must be provided, unless otherwise noted (such as for
+assigning float values or expressions to angles).
+Additionally, angle values will be implicitly promoted or converted in the same manner as
+unsigned integers when mixed with or assigned to angle values with differing
+precision.
 
 In general, for any cast between standard types that results in loss of 
 precision, if the source value is larger than can be represented in the target 
