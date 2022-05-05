@@ -16,12 +16,12 @@ reference: |
             numericType
               singleDesignatorType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    32
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      32
+                  ]
             ]
             a
         ;
@@ -34,12 +34,12 @@ reference: |
             numericType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    40
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      40
+                  ]
             ]
             b
             equalsExpression
@@ -77,12 +77,12 @@ reference: |
             numericType
               singleDesignatorType
                 angle
-              designator
-                [
-                expression
-                  expressionTerminator
-                    20
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      20
+                  ]
             ]
             d
             equalsExpression
@@ -120,12 +120,12 @@ reference: |
             numericType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    32
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      32
+                  ]
             ]
             c
             equalsExpression

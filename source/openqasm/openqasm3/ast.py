@@ -184,7 +184,7 @@ class QuantumGateDefinition(Statement):
     """
 
     name: Identifier
-    arguments: List[ClassicalArgument]
+    arguments: List[Identifier]
     qubits: List[Identifier]
     body: List[QuantumStatement]
 

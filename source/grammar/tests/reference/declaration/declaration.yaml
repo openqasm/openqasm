@@ -7,6 +7,7 @@ source: |
   uint[16] z = 0o12_34;
   uint[16] z = 0b1001_1001;
   uint[16] z = 0B1001_1001;
+  uint x;
   qubit[6] q1;
   qubit q2;
   bit[4] b1="0100";
@@ -30,12 +31,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
             x
         ;
     statement
@@ -44,12 +45,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
             y
         ;
     statement
@@ -58,12 +59,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  32
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
             z
             equalsExpression
               =
@@ -77,12 +78,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  32
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
             z
             equalsExpression
               =
@@ -96,12 +97,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  16
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    16
+                ]
             z
             equalsExpression
               =
@@ -115,12 +116,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  16
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    16
+                ]
             z
             equalsExpression
               =
@@ -134,18 +135,26 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               uint
-            designator
-              [
-              expression
-                expressionTerminator
-                  16
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    16
+                ]
             z
             equalsExpression
               =
               expression
                 expressionTerminator
                   0B1001_1001
+        ;
+    statement
+      classicalDeclarationStatement
+        classicalDeclaration
+          singleDesignatorDeclaration
+            singleDesignatorType
+              uint
+            x
         ;
     globalStatement
       quantumDeclarationStatement
@@ -271,12 +280,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    64
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      64
+                  ]
           c
           equalsExpression
             =
@@ -292,12 +301,12 @@ reference: |
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    64
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      64
+                  ]
           d
           equalsExpression
             =
@@ -311,12 +320,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               float
-            designator
-              [
-              expression
-                expressionTerminator
-                  32
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    32
+                ]
             f
             equalsExpression
               =
