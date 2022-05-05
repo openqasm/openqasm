@@ -10,7 +10,7 @@ identifiers (See :ref:`identifiers`).
 
 The subroutine will define zero or more parameters as input, consisting of both
 quantum and classical arguments. Quantum bits and classical values are passed to
-the subroutine by reference or name in, while classical types are passed in by value.
+the subroutine by reference or name, while classical types are passed in by value.
 All arguments are declared together with their type. For example, ``qubit ancilla``
 defines a quantum bit argument named ``ancilla``.
 
