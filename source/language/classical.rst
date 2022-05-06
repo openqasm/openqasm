@@ -210,9 +210,9 @@ iterations of the loop ``body``.  ``values`` can be:
   and ``stop`` is an ``int[16]``, the values to be assigned will all be of type
   ``int[16]``.
 
-- a value of type ``qubit[n]`` or ``bit[n]``, or the target of a
-  ``let`` statement.  The corresponding scalar type of the loop variable is
-  ``qubit`` or ``bit``, as appropriate.
+- a value of type ``bit[n]``, or the target of a ``let`` statement that creates
+  an alias to classical bits.  The corresponding scalar type of the loop
+  variable is ``bit``, as appropriate.
 
 - a value of type ``array[<scalar>, n]``, _i.e._ a one-dimensional
   array.  Values of type ``scalar`` must be able to be implicitly promoted to
@@ -253,11 +253,11 @@ accessible after the loop.
       // do something with 'f'
    }
 
-   // Loop over a register of qubits.
-   qubit[5] register;
-   for q in register {}
+   // Loop over a register of bits.
+   bit[5] register;
+   for b in register {}
    let alias = register[1:3];
-   for q in alias {}
+   for b in alias {}
 
 
 While loops
