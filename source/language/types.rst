@@ -404,6 +404,8 @@ backend-dependent unit equivalent to one waveform sample.
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
 
+.. _types-arrays:
+
 Arrays
 ------
 
@@ -654,6 +656,7 @@ the slices must match.
    twoD[1:2, 0] = anotherTwoD[0:1, 1]; // allowed
 
 .. _castingSpecifics:
+.. _implicit-promotion-rules:
 
 Casting specifics
 -----------------
