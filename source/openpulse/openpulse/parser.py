@@ -23,6 +23,8 @@ __all__ = [
     "OpenPulseNodeVisitor",
 ]
 
+import re
+
 try:
     from antlr4 import CommonTokenStream, InputStream
     from antlr4.tree.Tree import TerminalNode
@@ -79,100 +81,6 @@ openpulseParser.ExpressionContext = type("ExpressionContext", (qasm3Parser.Expre
 
 class OpenPulseNodeVisitor(openpulseParserVisitor):
     """Base class for the visitor of the OpenPulse AST."""
-
-    # Try to reuse some methods from QASMNodeVisitor
-    # The following block can be generated/refreshed with:
-    """
-    from openqasm3.parser import QASMNodeVisitor
-    import re
-    p = re.compile("_?visit.+")
-    excluded = ["visitErrorNode", "visitCalibrationDefinition", "visitChildren", "visitTerminal"]
-    for m in QASMNodeVisitor.__dict__:
-      if p.match(m) and not m in excluded:
-        print(f"{m} = QASMNodeVisitor.{m}")
-    """
-    visitProgram = QASMNodeVisitor.visitProgram
-    visitInclude = QASMNodeVisitor.visitInclude
-    visitGlobalStatement = QASMNodeVisitor.visitGlobalStatement
-    visitQuantumGateDefinition = QASMNodeVisitor.visitQuantumGateDefinition
-    visitQuantumGateName = QASMNodeVisitor.visitQuantumGateName
-    visitQuantumLoop = QASMNodeVisitor.visitQuantumLoop
-    visitQuantumLoopBlock = QASMNodeVisitor.visitQuantumLoopBlock
-    visitQuantumDeclarationStatement = QASMNodeVisitor.visitQuantumDeclarationStatement
-    visitQuantumDeclaration = QASMNodeVisitor.visitQuantumDeclaration
-    visitDesignator = QASMNodeVisitor.visitDesignator
-    visitStatement = QASMNodeVisitor.visitStatement
-    visitAliasStatement = QASMNodeVisitor.visitAliasStatement
-    visitExpressionStatement = QASMNodeVisitor.visitExpressionStatement
-    visitEndStatement = QASMNodeVisitor.visitEndStatement
-    visitQuantumStatement = QASMNodeVisitor.visitQuantumStatement
-    visitQuantumInstruction = QASMNodeVisitor.visitQuantumInstruction
-    visitQuantumGateCall = QASMNodeVisitor.visitQuantumGateCall
-    visitQuantumPhase = QASMNodeVisitor.visitQuantumPhase
-    visitQuantumReset = QASMNodeVisitor.visitQuantumReset
-    visitQuantumBarrier = QASMNodeVisitor.visitQuantumBarrier
-    visitQuantumMeasurement = QASMNodeVisitor.visitQuantumMeasurement
-    visitQuantumMeasurementAssignment = QASMNodeVisitor.visitQuantumMeasurementAssignment
-    visitClassicalDeclarationStatement = QASMNodeVisitor.visitClassicalDeclarationStatement
-    visitClassicalDeclaration = QASMNodeVisitor.visitClassicalDeclaration
-    visitConstantDeclaration = QASMNodeVisitor.visitConstantDeclaration
-    visitNoDesignatorDeclaration = QASMNodeVisitor.visitNoDesignatorDeclaration
-    visitNoDesignatorType = QASMNodeVisitor.visitNoDesignatorType
-    visitSingleDesignatorDeclaration = QASMNodeVisitor.visitSingleDesignatorDeclaration
-    visitBitDeclaration = QASMNodeVisitor.visitBitDeclaration
-    visitComplexDeclaration = QASMNodeVisitor.visitComplexDeclaration
-    visitArrayDeclaration = QASMNodeVisitor.visitArrayDeclaration
-    visitAssignmentStatement = QASMNodeVisitor.visitAssignmentStatement
-    visitQuantumGateModifier = QASMNodeVisitor.visitQuantumGateModifier
-    visitExpressionTerminator = QASMNodeVisitor.visitExpressionTerminator
-    visitArrayInitializer = QASMNodeVisitor.visitArrayInitializer
-    visitTimingIdentifier = QASMNodeVisitor.visitTimingIdentifier
-    visitUnaryExpression = QASMNodeVisitor.visitUnaryExpression
-    visitBuiltInCall = QASMNodeVisitor.visitBuiltInCall
-    visitExternDeclaration = QASMNodeVisitor.visitExternDeclaration
-    visitExternOrSubroutineCall = QASMNodeVisitor.visitExternOrSubroutineCall
-    visitExpression = QASMNodeVisitor.visitExpression
-    visitLogicalAndExpression = QASMNodeVisitor.visitLogicalAndExpression
-    visitBitOrExpression = QASMNodeVisitor.visitBitOrExpression
-    visitXOrExpression = QASMNodeVisitor.visitXOrExpression
-    visitBitAndExpression = QASMNodeVisitor.visitBitAndExpression
-    visitEqualityExpression = QASMNodeVisitor.visitEqualityExpression
-    visitComparisonExpression = QASMNodeVisitor.visitComparisonExpression
-    visitBitShiftExpression = QASMNodeVisitor.visitBitShiftExpression
-    visitAdditiveExpression = QASMNodeVisitor.visitAdditiveExpression
-    visitMultiplicativeExpression = QASMNodeVisitor.visitMultiplicativeExpression
-    visitPowerExpression = QASMNodeVisitor.visitPowerExpression
-    _visitBinaryExpression = QASMNodeVisitor._visitBinaryExpression
-    visitAliasInitializer = QASMNodeVisitor.visitAliasInitializer
-    visitIndexExpression = QASMNodeVisitor.visitIndexExpression
-    visitIndexedIdentifier = QASMNodeVisitor.visitIndexedIdentifier
-    visitIndexOperator = QASMNodeVisitor.visitIndexOperator
-    visitCalibrationGrammarDeclaration = QASMNodeVisitor.visitCalibrationGrammarDeclaration
-    visitClassicalArgumentList = QASMNodeVisitor.visitClassicalArgumentList
-    visitClassicalArgument = QASMNodeVisitor.visitClassicalArgument
-    visitExpressionList = QASMNodeVisitor.visitExpressionList
-    visitNonArrayType = QASMNodeVisitor.visitNonArrayType
-    visitArrayType = QASMNodeVisitor.visitArrayType
-    visitArrayReferenceType = QASMNodeVisitor.visitArrayReferenceType
-    visitNumericType = QASMNodeVisitor.visitNumericType
-    visitSubroutineDefinition = QASMNodeVisitor.visitSubroutineDefinition
-    visitAnyTypeArgument = QASMNodeVisitor.visitAnyTypeArgument
-    visitSubroutineBlock = QASMNodeVisitor.visitSubroutineBlock
-    visitPragma = QASMNodeVisitor.visitPragma
-    visitReturnStatement = QASMNodeVisitor.visitReturnStatement
-    visitQuantumArgument = QASMNodeVisitor.visitQuantumArgument
-    visitBranchingStatement = QASMNodeVisitor.visitBranchingStatement
-    visitProgramBlock = QASMNodeVisitor.visitProgramBlock
-    visitControlDirective = QASMNodeVisitor.visitControlDirective
-    visitLoopStatement = QASMNodeVisitor.visitLoopStatement
-    visitSetDeclaration = QASMNodeVisitor.visitSetDeclaration
-    visitRangeDefinition = QASMNodeVisitor.visitRangeDefinition
-    visitDiscreteSet = QASMNodeVisitor.visitDiscreteSet
-    visitTimingStatement = QASMNodeVisitor.visitTimingStatement
-    visitTimingInstruction = QASMNodeVisitor.visitTimingInstruction
-    visitTimingBox = QASMNodeVisitor.visitTimingBox
-    visitClassicalAssignment = QASMNodeVisitor.visitClassicalAssignment
-
     @span
     def visitCalibrationDefinition(self, ctx: openpulseParser.CalibrationDefinitionContext):
         # We overide this method in QASMNodeVisitor.visitCalibrationDefinition as we have a
@@ -245,3 +153,11 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
     @span
     def visitCalBlock(self, ctx: openpulseParser.CalBlockContext):
         return CalibrationBlock(body=[self.visit(statement) for statement in ctx.calStatement()])
+
+
+# Try to reuse some methods from QASMNodeVisitor
+p = re.compile("_?visit.+")
+excluded = ["visitErrorNode", "visitCalibrationDefinition", "visitChildren", "visitTerminal"]
+for m in QASMNodeVisitor.__dict__:
+    if p.match(m) and not m in excluded:
+        setattr(OpenPulseNodeVisitor, m, getattr(QASMNodeVisitor, m))
