@@ -56,6 +56,7 @@ from .ast import (
     BinaryExpression,
     BinaryOperator,
     BitType,
+    BitstringLiteral,
     BoolType,
     BooleanLiteral,
     Box,
@@ -81,6 +82,7 @@ from .ast import (
     EndStatement,
     ExpressionStatement,
     ExternDeclaration,
+    FloatLiteral,
     FloatType,
     ForInLoop,
     FunctionCall,
@@ -107,11 +109,9 @@ from .ast import (
     QuantumReset,
     QubitDeclaration,
     RangeDefinition,
-    RealLiteral,
     ReturnStatement,
     Span,
     StretchType,
-    StringLiteral,
     SubroutineDefinition,
     TimeUnit,
     UintType,
@@ -448,25 +448,28 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return add_span(StretchType(), get_span(ctx))
 
     @span
-    def visitSingleDesignatorDeclaration(self, ctx: qasm3Parser.SingleDesignatorDeclarationContext):
-        equals_expression = ctx.equalsExpression()
-        init_expression = self.visit(equals_expression.expression()) if equals_expression else None
-
-        type_name = ctx.singleDesignatorType().getText()
-        if type_name in _TYPE_NODE_INIT:
-            type_size = self.visit(ctx.designator())
-            type_node = _TYPE_NODE_INIT[type_name](type_size)
-        else:
+    def visitSingleDesignatorType(self, ctx: qasm3Parser.SingleDesignatorTypeContext):
+        type_name = ctx.getChild(0).getText()
+        if type_name not in _TYPE_NODE_INIT:
             # To capture potential parser errors.
             raise ValueError(f"Type name {type_name} not found.")
+        designator = ctx.designator()
+        type_size = self.visit(designator) if designator else None
+        return _TYPE_NODE_INIT[type_name](type_size)
 
+    @span
+    def visitBitType(self, ctx: qasm3Parser.BitTypeContext):
+        return BitType(
+            size=self.visit(ctx.designator()) if ctx.designator() else None,
+        )
+
+    @span
+    def visitSingleDesignatorDeclaration(self, ctx: qasm3Parser.SingleDesignatorDeclarationContext):
+        equals_expression = ctx.equalsExpression()
         return ClassicalDeclaration(
-            add_span(
-                type_node,
-                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
-            ),
+            self.visit(ctx.singleDesignatorType()),
             add_span(Identifier(ctx.Identifier().getText()), get_span(ctx.Identifier())),
-            init_expression,
+            self.visit(equals_expression.expression()) if equals_expression else None,
         )
 
     @span
@@ -557,16 +560,23 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             else:
                 const_name = ConstantName[const_text]
             return Constant(const_name)
-        if ctx.Integer():
-            return IntegerLiteral(int(ctx.Integer().getText()))
-        if ctx.RealNumber():
-            return RealLiteral(float(ctx.RealNumber().getText()))
+        if ctx.BinaryIntegerLiteral():
+            return IntegerLiteral(int(ctx.BinaryIntegerLiteral().getText(), 2))
+        if ctx.OctalIntegerLiteral():
+            return IntegerLiteral(int(ctx.OctalIntegerLiteral().getText(), 8))
+        if ctx.DecimalIntegerLiteral():
+            return IntegerLiteral(int(ctx.DecimalIntegerLiteral().getText(), 10))
+        if ctx.HexIntegerLiteral():
+            return IntegerLiteral(int(ctx.HexIntegerLiteral().getText(), 16))
+        if ctx.FloatLiteral():
+            return FloatLiteral(float(ctx.FloatLiteral().getText()))
         if ctx.BooleanLiteral():
             return BooleanLiteral(ctx.BooleanLiteral().getText() == "true")
         if ctx.Identifier():
             return Identifier(ctx.Identifier().getText())
-        if ctx.StringLiteral():
-            return StringLiteral(ctx.StringLiteral().getText()[1:-1])
+        if ctx.BitstringLiteral():
+            bitstring = ctx.BitstringLiteral().getText()[1:-1].replace("_", "")
+            return BitstringLiteral(int(bitstring, 2), len(bitstring))
         if ctx.builtInCall():
             return self.visit(ctx.builtInCall())
         if ctx.externOrSubroutineCall():
@@ -827,18 +837,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             access = None
 
         if ctx.singleDesignatorType():
-            type_name = ctx.singleDesignatorType().getText()
-            if type_name in _TYPE_NODE_INIT:
-                type_size = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_size)
-            else:
-                # To capture potential parser error.
-                raise ValueError("Type name {type_name} not found.")
-
-            classical_type = add_span(
-                type_node,
-                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
-            )
+            classical_type = self.visit(ctx.singleDesignatorType())
 
         elif ctx.noDesignatorType():
             classical_type = self.visit(ctx.noDesignatorType())
@@ -875,25 +874,11 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         # TODO: due to the way classical argument is declared, there some duplication
         # Consider refactor classical argument grammar
         if ctx.singleDesignatorType():
-            type_name = ctx.singleDesignatorType().getText()
-            if type_name in _TYPE_NODE_INIT:
-                type_size = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_size)
-            else:
-                # To capture potential parser errors.
-                raise ValueError(f"Type name {type_name} not found.")
-
-            return add_span(
-                type_node,
-                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
-            )
-
+            return self.visit(ctx.singleDesignatorType())
         elif ctx.noDesignatorType():
             return self.visit(ctx.noDesignatorType())
         elif ctx.bitType():
-            return BitType(
-                self.visit(ctx.designator()) if ctx.designator() else None,
-            )
+            return self.visit(ctx.bitType())
         elif ctx.numericType():
             return ComplexType(base_type=self.visit(ctx.numericType()))
 
@@ -917,21 +902,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitNumericType(self, ctx: qasm3Parser.NumericTypeContext):
-        # TODO: This method has significant duplication with visitClassicalType
-        # Need to refactor the syntax.
-        if ctx.singleDesignatorType():
-            type_name = ctx.singleDesignatorType().getText()
-            if type_name in _TYPE_NODE_INIT:
-                type_size = self.visit(ctx.designator())
-                type_node = _TYPE_NODE_INIT[type_name](type_size)
-            else:
-                # To capture potential parser errors.
-                raise ValueError(f"Type name {type_name} not found.")
-
-            return add_span(
-                type_node,
-                combine_span(get_span(ctx.singleDesignatorType()), get_span(ctx.designator())),
-            )
+        return self.visit(ctx.singleDesignatorType())
 
     @span
     def visitSubroutineDefinition(self, ctx: qasm3Parser.SubroutineDefinitionContext):

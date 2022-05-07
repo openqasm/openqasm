@@ -22,6 +22,7 @@ __all__ = [
     "BinaryExpression",
     "BinaryOperator",
     "BitType",
+    "BitstringLiteral",
     "BoolType",
     "BooleanLiteral",
     "Box",
@@ -49,6 +50,7 @@ __all__ = [
     "Expression",
     "ExpressionStatement",
     "ExternDeclaration",
+    "FloatLiteral",
     "FloatType",
     "ForInLoop",
     "FunctionCall",
@@ -77,7 +79,6 @@ __all__ = [
     "QuantumWhileLoop",
     "QubitDeclaration",
     "RangeDefinition",
-    "RealLiteral",
     "ReturnStatement",
     "Span",
     "Statement",
@@ -183,7 +184,7 @@ class QuantumGateDefinition(Statement):
     """
 
     name: Identifier
-    arguments: List[ClassicalArgument]
+    arguments: List[Identifier]
     qubits: List[Identifier]
     body: List[QuantumStatement]
 
@@ -312,6 +313,15 @@ class Constant(Expression):
 
 
 @dataclass
+class BitstringLiteral(Expression):
+    """A literal bitstring value.  The ``value`` is the numerical value of the
+    bitstring, and the ``width`` is the number of digits given."""
+
+    value: int
+    width: int
+
+
+@dataclass
 class IntegerLiteral(Expression):
     """
     An integer literal
@@ -326,7 +336,7 @@ class IntegerLiteral(Expression):
 
 
 @dataclass
-class RealLiteral(Expression):
+class FloatLiteral(Expression):
     """
     An real number literal
 

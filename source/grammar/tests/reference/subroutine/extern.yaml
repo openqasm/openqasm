@@ -14,34 +14,34 @@ reference: |
             nonArrayType
               bitType
                 bit
-              designator
-                [
-                expression
-                  expressionTerminator
-                    5
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      5
+                  ]
           ,
           classicalType
             nonArrayType
               singleDesignatorType
                 uint
-              designator
-                [
-                expression
-                  expressionTerminator
-                    10
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      10
+                  ]
           ,
           classicalType
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    16
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      16
+                  ]
           ,
           classicalType
             nonArrayType
@@ -50,12 +50,12 @@ reference: |
               numericType
                 singleDesignatorType
                   float
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      64
-                  ]
+                  designator
+                    [
+                    expression
+                      expressionTerminator
+                        64
+                    ]
               ]
         )
         returnSignature
@@ -64,10 +64,10 @@ reference: |
             nonArrayType
               singleDesignatorType
                 float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    6
-                ]
+                designator
+                  [
+                  expression
+                    expressionTerminator
+                      6
+                  ]
         ;

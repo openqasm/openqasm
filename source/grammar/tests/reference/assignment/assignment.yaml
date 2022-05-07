@@ -56,12 +56,12 @@ reference: |
           singleDesignatorDeclaration
             singleDesignatorType
               int
-            designator
-              [
-              expression
-                expressionTerminator
-                  10
-              ]
+              designator
+                [
+                expression
+                  expressionTerminator
+                    10
+                ]
             x
             equalsExpression
               =
@@ -111,12 +111,12 @@ reference: |
                     nonArrayType
                       singleDesignatorType
                         int
-                      designator
-                        [
-                        expression
-                          expressionTerminator
-                            10
-                        ]
+                        designator
+                          [
+                          expression
+                            expressionTerminator
+                              10
+                          ]
                 (
                 expressionList
                   expression
