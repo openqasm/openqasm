@@ -19,7 +19,6 @@ from openpulse.ast import (
     PulseTypeName,
     QASMNode,
     ReturnStatement,
-    StringLiteral,
     UnaryExpression,
     UnaryOperator,
 )
@@ -80,9 +79,9 @@ def test_calibration():
     cal {
         extern drag(complex[float[size]], duration, duration, float[size]) -> waveform;
 
-        port q0 = getport("q", $0);
+        port q0;
 
-        frame q0_frame = newframe(q0_freq, 0);
+        frame q0_frame = newframe(q0, 0);
     }
     """.strip()
     program = parse(p)
@@ -105,17 +104,14 @@ def test_calibration():
                     ClassicalDeclaration(
                         type=PulseType(type=PulseTypeName["port"]),
                         identifier=Identifier(name="q0"),
-                        init_expression=FunctionCall(
-                            name=Identifier(name="getport"),
-                            arguments=[StringLiteral("q"), Identifier(name="$0")],
-                        ),
+                        init_expression=None,
                     ),
                     ClassicalDeclaration(
                         type=PulseType(type=PulseTypeName["frame"]),
                         identifier=Identifier(name="q0_frame"),
                         init_expression=FunctionCall(
                             name=Identifier(name="newframe"),
-                            arguments=[Identifier(name="q0_freq"), IntegerLiteral(value=0)],
+                            arguments=[Identifier(name="q0"), IntegerLiteral(value=0)],
                         ),
                     ),
                 ]

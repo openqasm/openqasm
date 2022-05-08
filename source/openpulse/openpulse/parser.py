@@ -81,6 +81,7 @@ openpulseParser.ExpressionContext = type("ExpressionContext", (qasm3Parser.Expre
 
 class OpenPulseNodeVisitor(openpulseParserVisitor):
     """Base class for the visitor of the OpenPulse AST."""
+
     @span
     def visitCalibrationDefinition(self, ctx: openpulseParser.CalibrationDefinitionContext):
         # We overide this method in QASMNodeVisitor.visitCalibrationDefinition as we have a

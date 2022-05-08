@@ -2,50 +2,31 @@
 
 [![License](https://img.shields.io/github/license/Qiskit/openqasm.svg)](https://opensource.org/licenses/Apache-2.0)<!-- long-description-skip-begin -->[![Release](https://img.shields.io/pypi/v/openqasm3)](https://pypi.org/project/openqasm3)<!-- long-description-skip-end -->
 
-The `openpulse` package contains the reference abstract syntax tree (AST) for representing OpenPulse programs, tools to parse text into this AST, and tools to manipulate the AST.
+OpenPulse is a minor extension to OpenQASM 3 with a concrete implementation of pulse grammar.
+The `openpulse` package depends on the openqasm3 package, re-export the 
+identical `openqasm3.ast` nodes, and reuse many methods in `openpulse.parser`.
 
-The AST is intended to help with writing compiler passes for OpenPulse in Python. OpenPulse is a minor extension on
-OpenQASM 3 with additional types to describe pulse.
-It aims to have no dependencies for users who consume the Python tree structure, and minimal dependencies for parsing a string to this tree structure.
-The AST is simpler than a Concrete Syntax Tree (CST) which preserves comments, spacing, etc for use by editor plugins.
+The package is structured similarly to `openqasm3` with the modules:
 
-The package consists of the modules:
+* `openpulse.ast`: The AST nodes. Identical nodes from `openqasm3.ast` are re-exported.
 
-* `openpulse.ast`: The AST nodes.
-
-* `openpulse.parser`:
-  A parser based on an ANTLR grammar and reference parser also found in this repo.
-  It walks the ANTLR parse tree to generate the AST.
+* `openpulse.parser`: A parser similar to `openqasm3.parser`, but for OpenPulse.
 
 * `tests`: A set of unit tests.
 
+* No visitor module as `openqasm3.visitor` can be reused.
 
-**Note**: this reference Python package is currently in the early stages of development, and _no_ parts of the API should be considered stable at this time.
-The AST itself will be subject to change in backwards-incompatible ways, mirroring the development of the OpenQASM 3 language itself.
+The extensions to the OpenQASM 3 grammar are:
 
-
-## Installation
-
-The package can be installed from PyPI (`pip`) with the command
-
-```bash
-python -m pip install openpulse
-```
-
-If you want to use the parser, you will need to install the extra `parsing`, and to run the tests you need the extra `tests`, for example `pip install openpulse[tests]`.
-All extras can be installed with the target `openpulse[all]`.
-
+* Pulse types: `port`, `frame` and `waveform`.
+* Extension to OpenQASM 3 classical type to consume the pulse types.
+* Definition of `cal` block and redefinition of OpenQASM 3 `defcal` block with OpenPulse grammar.
 
 ## Development Environment
 
-To work on development, you will need to first follow the README in openqasm directory and install openqasm3 to your
-virtual environment. One way is from the openqasm directory,
-run:
-
-```bash
-python -m pip install -e .
-```
+You will need to first follow the README in the openqasm directory and install `openqasm3` to your
+virtual environment in editable mode.
 
 ### Developer tools
 
-This package uses the same developer tools as openqasm.
+This package uses the same developer tools as `openqasm3`.
