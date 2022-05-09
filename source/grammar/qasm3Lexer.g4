@@ -33,7 +33,8 @@ FOR: 'for';
 WHILE: 'while';
 IN: 'in';
 
-PRAGMA: '#pragma';
+PRAGMA: '#'? 'pragma' -> pushMode(EAT_TO_LINE_END);
+AnnotationKeyword: '@' Identifier ->  pushMode(EAT_TO_LINE_END);
 
 
 /* Types. */
@@ -171,3 +172,17 @@ BlockComment : '/*' .*? '*/' -> skip;
 mode VERSION_IDENTIFIER;
     VERSION_IDENTIFER_WHITESPACE: [ \t\r\n]+ -> skip;
     VersionSpecifier: [0-9]+ ('.' [0-9]+)? -> popMode;
+
+
+// A different lexer mode to swap to when we need handle tokens on a line basis
+// rather than the default arbitrary-whitespace-based tokenisation.  This is
+// used by the annotation and pragma rules.
+mode EAT_TO_LINE_END;
+    EAT_INITIAL_SPACE: [ \t]+ -> skip;
+    EAT_LINE_END: [\r\n] -> popMode, skip;
+
+    // The line content must be a non-empty token to satisfy ANTLR (otherwise it
+    // would be able to produce an infinite number of tokens).  We could include
+    // the line ending to guarantee that this is always non-empty, but that just
+    // puts an annoying burden on consumers to remove it again.
+    RemainingLineContent: ~[ \t\r\n] ~[\r\n]*;

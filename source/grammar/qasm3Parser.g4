@@ -12,7 +12,7 @@ version: OPENQASM VersionSpecifier SEMICOLON;
 // first statement of the file if present).  This file just defines rules for
 // parsing; we leave semantic analysis and rejection of invalid scopes for
 // compiler implementations.
-statement:
+statement: annotation* (
     pragma
     // All the actual statements of the language.
     | aliasDeclarationStatement
@@ -42,9 +42,10 @@ statement:
     | resetStatement
     | returnStatement
     | whileStatement
-;
+);
+annotation: AnnotationKeyword RemainingLineContent?;
 scope: LBRACE statement* RBRACE;
-pragma: PRAGMA scope;
+pragma: PRAGMA RemainingLineContent;
 
 statementOrScope: statement | scope;
 

@@ -187,15 +187,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitStatement(self, ctx: qasm3Parser.StatementContext):
-        return self.visit(ctx.getChild(0))
+        out = self.visit(ctx.getChild(-1))
+        out.annotations = [self.visit(annotation) for annotation in ctx.annotation()]
+        return out
+
+    @span
+    def visitAnnotation(self, ctx: qasm3Parser.AnnotationContext):
+        return ast.Annotation(
+            keyword=ctx.AnnotationKeyword().getText()[1:],
+            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None,
+        )
 
     def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
         return [self.visit(statement) for statement in ctx.statement()]
 
     @span
     def visitPragma(self, ctx: qasm3Parser.PragmaContext):
-        with self._push_scope(ctx):
-            return ast.Pragma(statements=self.visit(ctx.scope()))
+        return ast.Pragma(
+            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None
+        )
 
     @span
     def visitAliasDeclarationStatement(self, ctx: qasm3Parser.AliasDeclarationStatementContext):
