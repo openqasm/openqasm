@@ -70,13 +70,9 @@ def parse(input_: str) -> Program:
 
 # Hacks to reuse visitor methods in OpenPulseNodeVisitor
 # QASMNodeVisitor use isinstance check on a few Context types so we have to use the hack below
-openpulseParser.ArrayInitializerContext = type(
-    "ArrayInitializerContext", (qasm3Parser.ArrayInitializerContext,), {}
-)
-openpulseParser.RangeDefinitionContext = type(
-    "RangeDefinitionContext", (qasm3Parser.RangeDefinitionContext,), {}
-)
-openpulseParser.ExpressionContext = type("ExpressionContext", (qasm3Parser.ExpressionContext,), {})
+openpulseParser.ArrayInitializerContext = qasm3Parser.ArrayInitializerContext
+openpulseParser.RangeDefinitionContext = qasm3Parser.RangeDefinitionContext
+openpulseParser.ExpressionContext = qasm3Parser.ExpressionContext
 
 
 class OpenPulseNodeVisitor(openpulseParserVisitor):
@@ -157,8 +153,10 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
 
 
 # Try to reuse some methods from QASMNodeVisitor
+# We include 4 methods. The first is redefined in the OpenPulseNodeVisitor class. The other 3 are 
+# from the generated openpulseParserVisitor class.
 p = re.compile("_?visit.+")
-excluded = ["visitErrorNode", "visitCalibrationDefinition", "visitChildren", "visitTerminal"]
+excluded = ["visitCalibrationDefinition", "visitChildren", "visitErrorNode", "visitTerminal"]
 for m in QASMNodeVisitor.__dict__:
     if p.match(m) and not m in excluded:
         setattr(OpenPulseNodeVisitor, m, getattr(QASMNodeVisitor, m))
