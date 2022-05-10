@@ -37,6 +37,8 @@ from typing import Union, TypeVar, List
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
+    from antlr4.error.Errors import ParseCancellationException
+    from antlr4.error.ErrorStrategy import BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
 except ImportError as exc:
     raise ImportError(
@@ -62,19 +64,28 @@ class QASM3ParsingError(Exception):
     given program could not be correctly parsed."""
 
 
-def parse(input_: str) -> ast.Program:
+def parse(input_: str, *, permissive=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
 
     :param input_: A string containing a complete OpenQASM 3 program.
+    :param permissive: A Boolean controlling whether ANTLR should attempt to
+        recover from incorrect input or not.  Defaults to ``False``; if set to
+        ``True``, the reference AST produced may be invalid if ANTLR emits any
+        warning messages during its parsing phase.
     :return: A complete :obj:`~ast.Program` node.
     """
     lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
+    if not permissive:
+        # For some reason, the Python 3 runtime for ANTLR 4 is missing the
+        # setter method `setErrorHandler`, so we have to set the attribute
+        # directly.
+        parser._errHandler = BailErrorStrategy()
     try:
         tree = parser.program()
-    except RecognitionException as exc:
+    except (RecognitionException, ParseCancellationException) as exc:
         raise QASM3ParsingError() from exc
     return QASMNodeVisitor().visitProgram(tree)
 

@@ -1327,7 +1327,7 @@ def test_quantumloop():
 
 def test_durationof():
     p = """
-    durationof({x $0;})
+    durationof({x $0;});
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
