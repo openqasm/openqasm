@@ -67,7 +67,18 @@ whileStatement: WHILE LPAREN expression RPAREN statement;
 barrierStatement: BARRIER gateOperandList? SEMICOLON;
 boxStatement: BOX designator? statement;
 delayStatement: DELAY designator gateOperandList? SEMICOLON;
-gateCallStatement: gateModifier* (Identifier | GPHASE) (LPAREN expressionList? RPAREN)? designator? gateOperandList? SEMICOLON;
+/* `gateCallStatement`  is split in two to avoid a potential ambiguity with an
+ * `expressionStatement` that consists of a single function call.  The only
+ * "gate" that can have no operands is `gphase` with no control modifiers, and
+ * `gphase(pi);` looks grammatically identical to `fn(pi);`.  We disambiguate by
+ * having `gphase` be its own token, and requiring that all other gate calls
+ * grammatically have at least one qubit.  Strictly, as long as `gphase` is a
+ * separate token, ANTLR can disambiguate the statements by the definition
+ * order, but this is more robust. */
+gateCallStatement:
+    gateModifier* Identifier (LPAREN expressionList? RPAREN)? designator? gateOperandList SEMICOLON
+    | gateModifier* GPHASE (LPAREN expressionList? RPAREN)? designator? gateOperandList? SEMICOLON
+;
 measureArrowAssignmentStatement: MEASURE gateOperand ARROW indexedIdentifier SEMICOLON;
 resetStatement: RESET gateOperand SEMICOLON;
 

@@ -1119,6 +1119,21 @@ def test_subroutine_signatures():
     )
 
 
+def test_ambiguous_gate_calls():
+    p = """
+    gphase(pi);
+    fn(pi);
+    """.strip()
+    program = parse(p)
+    SpanGuard().visit(program)
+    assert _remove_spans(program) == Program(
+        statements=[
+            QuantumPhase(modifiers=[], argument=Identifier("pi"), qubits=[]),
+            ExpressionStatement(FunctionCall(name=Identifier("fn"), arguments=[Identifier("pi")])),
+        ],
+    )
+
+
 def test_branch_statement():
     p = """
     if(temp == 1) { ry(pi / 2) q; } else end;
