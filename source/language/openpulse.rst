@@ -156,12 +156,45 @@ NCO in analogy to virtual to physical register allocation.
 Frame Manipulation
 ~~~~~~~~~~~~~~~~~~
 
-The (frequency, phase) tuple of a frame can be manipulated throughout program
-by referencing ``.frequency``, and ``.phase``, with updates applied immediately
-at the current time of the frame. Operations must be appropriate for the respective type,
-``float`` for frequency and ``angle`` for phase. Again, the exact precision of these calculations
-is hardware specific. If either the frequency or phase are set to values that are invalid for
-the hardware, the compiler shall raise a compile-time error.
+The ``phase`` and ``frequency`` states of a frame can be manipulated throughout the program
+by using ``set`` and ``shift`` instructions and read using a ``get`` instruction. In particular,
+the `set_phase` and `shift_phase` instructions allow one to supply the frame and a value of type
+``angle`` representing the amount by which to set/shift the phase.
+
+.. code-block:: javascript
+
+  set_phase(angle phase, frame fr);
+  shift_frequency(angle phase, frame fr);
+
+The `get_phase` instruction allows one to supply the frame from which to retrieve the phase of
+type ``angle``.
+
+.. code-block:: javascript
+
+  get_phase(frame fr) -> angle;
+
+Analogously, the `set_frequency` and `shift_frequency` instructions allow one to supply the frame
+and a value of type ``float`` representing the amount by which to set/shift the frequency.
+
+.. code-block:: javascript
+
+  set_frequency(float freq, frame fr);
+  shift_frequency(float freq, frame fr);
+
+The `get_frequency` instruction allows one to supply the frame from which to retrieve the frequency
+of type ``float``.
+
+.. code-block:: javascript
+
+  get_frequency(frame fr) -> float;
+
+Changing the frequency or phase is an instantaneous operation. If a vendor
+is unable to support such instantaneous operations, it is expected that the
+compiler shall raise a compile-time error when encountering such frame manipulations.
+
+Moreover, the exact precision of these calculations is hardware specific. If either the frequency
+or phase are set to values that are invalid for the hardware, the compiler shall raise a
+compile-time error.
 
 Here's an example of manipulating the phase to calibrate an ``rz`` gate on a frame called
 ``driveframe``:
@@ -170,9 +203,9 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
 
   ...
 
-   // Example 1: Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
+   // Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
    cal {
-     driveframe.phase += pi/4;
+     shift_phase(pi/4, driveframe);
    }
 
    // The following is an example only. Frames as arrays has not been agreed on.
@@ -180,7 +213,7 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
    // which also has not been well-defined. We are exploring other solutions to
    // the problem of mapping qubits to pulse-level resources.
 
-   // Example 2: Define a calibration for the rz gate on all 8 physical qubits
+   // Define a calibration for the rz gate on all 8 physical qubits
    cal {
      array[frame, 8] rz_frames;
      frame[0] = newframe(...);
@@ -188,21 +221,17 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
    }
 
    defcal rz(angle[20] theta) $q {
-     rz_frames[q].phase -= theta;
+     shift_phase(-theta, rz_frames[q]);
    }
 
 Manipulating frames based on the state of other frames is also permitted:
 
 .. code-block:: javascript
 
-   // Swap phases between two frames
-   const angle temp = frame1.phase;
-   frame1.phase = frame2.phase;
-   frame2.phase = temp;
-
-Changing the frequency or phase is an instantaneous operation. If a vendor
-is unable to support such instantaneous operations, it is expected that the
-compiler shall raise a compile-time error when encountering such frame manipulations.
+   const angle temp1 = get_phase(frame1);
+   const angle temp2 = get_phase(frame2);
+   set_phase(temp2, frame1);
+   set_phase(temp1, frame2);
 
 Waveforms
 ---------
@@ -297,9 +326,9 @@ only appear inside a ``defcal`` block and have two required parameters:
 - A value of type ``waveform`` representing the waveform envelope.
 - The frame to use for the pulse.
 
-Here, the ``frame`` provides both time at which the ``waveform`` envelope is scheduled (i.e. via the frame ``.time``
-attribute), its carrier frequency (i.e. via the frames ``.frequency`` attribute), and its phase offset (i.e. via
-the frame ``.phase`` attribute).
+Here, the ``frame`` provides the time at which the ``waveform`` envelope is scheduled (i.e. via
+the frame's current ``time``), its carrier frequency (i.e. via the frames current ``frequency``),
+and its phase offset (i.e. via the frame's current ``phase``).
 
 .. code-block:: javascript
 
@@ -554,9 +583,10 @@ Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters t
 Phase tracking
 ~~~~~~~~~~~~~~
 
-As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a frame can be manipulated
-throughout a program by referencing ``.phase``. The phase is also implicitly manipulated when the time
-of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction e.g.
+As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a frame can be
+manipulated throughout a program via ``set_phase`` and ``shift_phase`` instructions. In addition,
+the phase is implicitly manipulated when the time of the frame is advanced using a ``delay``,
+``play``, or ``capture`` instruction e.g.
 
 .. code-block:: javascript
 
@@ -576,19 +606,19 @@ of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction
     delay[13ns] driveframe0;
   }
 
-  // driveframe0.phase = 0
+  // get_phase(driveframe0) == 0
   single_qubit_gate $0;
-  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * durationof(wf)
-  //                                         += 2π * 5e9 * 100e-9
+  // Implicit advancement: -> shift_phase(2π * get_frequency(driveframe0) * durationof(wf), driveframe0)
+  //                        = shift_phase(2π * 5e9 * 100e-9, driveframe0)
 
   // Change the frequency
   cal {
-    driveframe0.frequency = 6e9;
+    set_frequency(6e9, driveframe0);
   }
 
   single_qubit_delay $0;
-  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * 13e-9
-  //                                         += 2π * 6e9 * 13e-9
+  // Implicit advancement: -> set_phase(2π * get_frequency(driveframe0) * 13e-9, driveframe0)
+  //                        = set_phase(2π * 6e9 * 13e-9, driveframe0)
 
 
 
@@ -652,13 +682,13 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
 
   // step into a `cal` block to set the start of the frequency sweep
   cal {
-      driveframe.frequency = frequency_start;
+      set_frequency(frequency_start, driveframe);
   }
 
   for i in [1:frequency_num_steps] {
       // step into a `cal` block to adjust the pulse frequency via the frame frequency
       cal {
-          driveframe.frequency += frequency_step;
+          shift_frequency(frequency_step, driveframe);
       }
 
       saturation_pulse $0;
@@ -708,7 +738,7 @@ Cross-resonance gate
 
       // generate new frame for second drive that is locally scoped
       // initialized to time at the beginning of `cross_resonance`
-      frame temp_frame = newframe(d1, frame0.frequency, frame0.phase);
+      frame temp_frame = newframe(d1, get_frequency(frame0), get_phase(frame0));
 
       play(wf1, frame0);
       play(wf2, temp_frame);
@@ -851,9 +881,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
       delay[τ/2] raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
 
       // Time-proportional phase increment signals different amount
-      q1_frame.phase += tppi_1 * τ;
-      q2_frame.phase += tppi_2 * τ;
-      q3_frame.phase += tppi_3 * τ;
+      shift_phase(tppi_1 * τ, q1_frame);
+      shift_phase(tppi_2 * τ, q2_frame);
+      shift_phase(tppi_3 * τ, q3_frame);
     }
 
     // Second π/2 pulse

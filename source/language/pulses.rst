@@ -137,7 +137,7 @@ a global scope to all identifiers in order to declare values shared across all `
       waveform xp = gaussian(1.0, 160t, 40dt);
       // References frame and `new_freq` declared in top-level cal block
       play(xp, d0f);
-      frame.frequency = new_freq;
+      set_frequency(new_freq, d0f);
       play(xp, d0f);
    }
 
@@ -208,11 +208,11 @@ existing ``include`` mechanism.
    }
 
    defcal rz(angle theta) $0 {
-      q0_frame.phase += theta;
+      shift_phase(theta, q0_frame);
    }
 
    defcal rz(angle theta) $1 {
-      q1_frame.phase += theta;
+      shift_phase(theta, q1_frame);
    }
 
    defcal sx $0 {
