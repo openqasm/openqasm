@@ -16,6 +16,10 @@ The ANTLR grammar may serve as a guide when developing compiler tooling for Open
 
 .. _ANTLR: https://www.antlr.org/
 
-.. literalinclude:: qasm3.g4
+.. literalinclude:: qasm3Parser.g4
+   :language: antlr
+   :linenos:
+
+.. literalinclude:: qasm3Lexer.g4
    :language: antlr
    :linenos:
