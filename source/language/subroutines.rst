@@ -1,23 +1,37 @@
 Subroutines
 ===========
 
-Subroutines are declared using the statement ``def name(parameters) -> output_type { body }``.
-The subroutine will define zero or more parameters as input, consisting of both quantum and classical arguments.
-Quantum bits and registers are passed in by reference or name, while classical types are passed in by value.
-All arguments are declared together with their type,
-for example ``qubit ancilla`` would define a quantum bit argument named ``ancilla``.
+Subroutines are declared using the statement
+
+    ``def name(parameters) -> output_type { body }``
+
+Subroutines and their named arguments must be named according to the rules for
+identifiers (See :ref:`identifiers`).
+
+The subroutine will define zero or more parameters as input, consisting of both
+quantum and classical arguments. Quantum bits and classical values are passed to
+the subroutine by reference or name, while classical types are passed in by value.
+All arguments are declared together with their type. For example, ``qubit ancilla``
+defines a quantum bit argument named ``ancilla``.
+
 The subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return type, the empty ``return``
 keyword may be used to immediately exit from the subroutine.
-Qubit declarations are not allowed within subroutines as they are global. A subroutine
-is invoked with the syntax ``name(parameters)`` and may be assigned to an ``output`` as
-needed via an assignment operator (``=``, ``+=``, etc).
+
+Qubit declarations are not allowed within subroutines as those declarations are global.
+
+A subroutine is invoked with the syntax ``name(parameters)`` and may be assigned
+to an ``output`` as needed via an assignment operator (``=``, ``+=``, etc).
 
 Using subroutines, we can define an X-basis measurement with the program
-``def xmeasure(qubit q) -> bit { h q; return measure q; }``.
+
+    ``def xmeasure(qubit q) -> bit { h q; return measure q; }``
+
 We can also define more general classes of single-qubit measurements
 as
-``def pmeasure(angle[32] theta, qubit q) -> bit { rz(theta) q; h q; return measure q; }``.
+
+    ``def pmeasure(angle[32] theta, qubit q) -> bit {rz(theta) q; h q; return measure q;}``
+
 The type declarations are necessary if we want to mix qubit and
 register arguments. For example, we might define a parity check
 subroutine that takes qubits and registers
@@ -102,7 +116,7 @@ about the order that updates are made in.
 
    arr_subroutine(aa);
    arr_subroutine(bb[1, 0:3]);
-   mut_subroutine(aa[1:3]); // aa[3] = 10 
+   mut_subroutine(aa[1:3]); // aa[3] = 10
 
 The lifetime of the array reference is limited to within the scope of the
 subroutine definition, but it should be noted that since arrays are not
