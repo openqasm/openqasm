@@ -219,6 +219,11 @@ iterations of the loop ``body``.  ``values`` can be:
   values of type ``type``.  Modification of the loop variable does not change
   the corresponding value in the array.
 
+It is valid to use an indexing expression (e.g. ``my_array[1:3]``) to arrive at
+one of the types given above.  In the cases of sets, ``bit[n]``, classical
+aliases and ``array``, the iteration order is guaranteed to be in sequential
+index order, that is ``iden[0]`` then ``iden[1]``, and so on.
+
 The loop body can either be a single statement terminated by a semicolon, or a
 program block in curly braces ``{}`` containing several statements.
 
