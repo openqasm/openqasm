@@ -113,18 +113,23 @@ multiplication, division, and power and the corresponding assignment operators.
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers support addition, subtraction, multiplication, division, power and the corresponding
-assignment operators.
+Complex numbers support addition, subtraction, multiplication, division, power
+and the corresponding assignment operators.  These binary operators follow
+analogous semantics to those described in Annex G (section G.5) of the C99
+specification (note that OpenQASM 3.0 has no *imaginary* type, only *complex*).
+These operations use the floating-point semantics of the underlying component
+floating-point types, including their ``NaN`` propagation, and
+hardware-dependent rounding mode and subnormal handling.
 
 .. code-block:: c
 
    complex[float[64]] a = 10.0 + 5.0im;
    complex[float[64]] b = -2.0 - 7.0im;
-   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
-   complex[float[64]] d = a - b; // d = 12.0+12.0im;
-   complex[float[64]] e = a * b; // e = 15.0-80.0im;
-   complex[float[64]] f = a / b; // f = (-55.0+60.0im)/53.0
-   complex[float[64]] g = a ** b; // g = (0.10694695640729072+0.17536481119721312im)
+   complex[float[64]] c = a + b;   // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b;   // d = 12.0+12.0im;
+   complex[float[64]] e = a * b;   // e = 15.0-80.0im;
+   complex[float[64]] f = a / b;   // f = (-55.0+60.0im)/53.0
+   complex[float[64]] g = a ** b;  // g = (0.10694695640729072+0.17536481119721312im)
 
 Evaluation order
 ~~~~~~~~~~~~~~~~

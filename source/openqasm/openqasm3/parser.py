@@ -490,6 +490,11 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitComplexDeclaration(self, ctx: qasm3Parser.ComplexDeclarationContext):
+        base_type = self.visit(ctx.numericType())
+        if not isinstance(base_type, FloatType):
+            raise ValueError(
+                f"the base of a 'complex' type must be 'float', but received {base_type}"
+            )
         return ClassicalDeclaration(
             add_span(
                 ComplexType(base_type=self.visit(ctx.numericType())),

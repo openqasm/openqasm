@@ -778,11 +778,11 @@ class ComplexType(ClassicalType):
 
     Example::
 
-        complex[int[32]]
+        complex[float]
         complex[float[32]]
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType]
+    base_type: FloatType
 
 
 @dataclass

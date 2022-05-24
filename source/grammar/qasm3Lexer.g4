@@ -140,7 +140,7 @@ ComparisonOperator: '>' | '<' | '>=' | '<=';
 BitshiftOperator: '>>' | '<<';
 
 IMAG: 'im';
-ImaginaryLiteral : (DecimalIntegerLiteral | FloatLiteral) IMAG ;
+ImaginaryLiteral: (DecimalIntegerLiteral | FloatLiteral) ' '* IMAG;
 
 Constant: ('pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ');
 
