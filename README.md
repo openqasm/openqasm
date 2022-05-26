@@ -72,11 +72,6 @@ h input;
 output = measure input;  // should get zero
 ```
 
-## Plugins
-
-This repository also contains a plugin for working with OpenQASM 2.0 and 3.0 files in vim.
-You can find its full documentation in the [plugins/vim](plugins/vim) directory.
-
 ## Citation format
 
 For research papers, we encourage authors to reference.
