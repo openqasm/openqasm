@@ -79,7 +79,6 @@ __all__ = [
     "QubitDeclaration",
     "RangeDefinition",
     "ReturnStatement",
-    "Scope",
     "SizeOf",
     "Span",
     "Statement",
@@ -139,23 +138,6 @@ class Program(QASMNode):
 @dataclass
 class Statement(QASMNode):
     """A statement: anything that can appear on its own line"""
-
-
-@dataclass
-class Scope(Statement):
-    """A manual internal scoped block.  This object is generally only emitted when
-    there is an "unnecessary" scope, such as in::
-
-        x $0;
-        {
-            x $1;
-            x $2;
-        }
-
-    In other cases where a scope might be required, such as control-flow blocks,
-    the scope is implicit in the relevant AST nodes."""
-
-    statements: List[Statement]
 
 
 @dataclass

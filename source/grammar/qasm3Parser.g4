@@ -13,8 +13,7 @@ version: OPENQASM VersionSpecifier SEMICOLON;
 // parsing; we leave semantic analysis and rejection of invalid scopes for
 // compiler implementations.
 statement:
-    scope
-    | pragma
+    pragma
     // All the actual statements of the language.
     | aliasDeclarationStatement
     | assignmentStatement
@@ -47,6 +46,8 @@ statement:
 scope: LBRACE statement* RBRACE;
 pragma: PRAGMA scope;
 
+statementOrScope: statement | scope;
+
 
 /* Start top-level statement definitions. */
 
@@ -58,14 +59,14 @@ includeStatement: INCLUDE StringLiteral SEMICOLON;
 breakStatement: BREAK SEMICOLON;
 continueStatement: CONTINUE SEMICOLON;
 endStatement: END SEMICOLON;
-forStatement: FOR Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) statement;
-ifStatement: IF LPAREN expression RPAREN statement (ELSE statement)?;
+forStatement: FOR Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) body=statementOrScope;
+ifStatement: IF LPAREN expression RPAREN if_body=statementOrScope (ELSE else_body=statementOrScope)?;
 returnStatement: RETURN expression? SEMICOLON;
-whileStatement: WHILE LPAREN expression RPAREN statement;
+whileStatement: WHILE LPAREN expression RPAREN body=statementOrScope;
 
 // Quantum directive statements.
 barrierStatement: BARRIER gateOperandList? SEMICOLON;
-boxStatement: BOX designator? statement;
+boxStatement: BOX designator? scope;
 delayStatement: DELAY designator gateOperandList? SEMICOLON;
 /* `gateCallStatement`  is split in two to avoid a potential ambiguity with an
  * `expressionStatement` that consists of a single function call.  The only

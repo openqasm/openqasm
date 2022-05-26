@@ -80,16 +80,17 @@ reference: |
                 expression
                   2
               )
-              statement
-                returnStatement
-                  return
-                  expression
+              statementOrScope
+                statement
+                  returnStatement
+                    return
                     expression
-                      1
-                    +
-                    expression
-                      result
-                  ;
+                      expression
+                        1
+                      +
+                      expression
+                        result
+                    ;
           statement
             returnStatement
               return
@@ -147,14 +148,15 @@ reference: |
                 expression
                   3
                 }
-              statement
-                assignmentStatement
-                  indexedIdentifier
-                    i
-                  +=
-                  expression
-                    j
-                  ;
+              statementOrScope
+                statement
+                  assignmentStatement
+                    indexedIdentifier
+                      i
+                    +=
+                    expression
+                      j
+                    ;
           statement
             returnStatement
               return

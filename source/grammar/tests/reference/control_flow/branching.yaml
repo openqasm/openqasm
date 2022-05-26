@@ -17,7 +17,7 @@ reference: |
           expression
             a
         )
-        statement
+        statementOrScope
           scope
             {
             statement
@@ -36,41 +36,43 @@ reference: |
                   expression
                     4
                 ]
-                statement
-                  assignmentStatement
-                    indexedIdentifier
-                      x
-                      indexOperator
-                        [
-                        expression
-                          i
-                        ]
-                    +=
-                    expression
-                      1
-                    ;
+                statementOrScope
+                  statement
+                    assignmentStatement
+                      indexedIdentifier
+                        x
+                        indexOperator
+                          [
+                          expression
+                            i
+                          ]
+                      +=
+                      expression
+                        1
+                      ;
             }
         else
-        statement
-          gateCallStatement
-            CX
-            gateOperandList
-              gateOperand
-                indexedIdentifier
-                  x
-                  indexOperator
-                    [
-                    expression
-                      0
-                    ]
-              ,
-              gateOperand
-                indexedIdentifier
-                  x
-                  indexOperator
-                    [
-                    expression
-                      1
-                    ]
-            ;
+        statementOrScope
+          statement
+            gateCallStatement
+              CX
+              gateOperandList
+                gateOperand
+                  indexedIdentifier
+                    x
+                    indexOperator
+                      [
+                      expression
+                        0
+                      ]
+                ,
+                gateOperand
+                  indexedIdentifier
+                    x
+                    indexOperator
+                      [
+                      expression
+                        1
+                      ]
+              ;
     <EOF>

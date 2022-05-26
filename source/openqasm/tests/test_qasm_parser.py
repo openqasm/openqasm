@@ -1453,8 +1453,6 @@ class TestFailurePaths:
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"def fn() {{ {keyword}; }}")
         with pytest.raises(QASM3ParsingError, match=message):
-            parse(f"{{ {keyword}; }}")
-        with pytest.raises(QASM3ParsingError, match=message):
             parse(f"gate my_gate q {{ {keyword}; }}")
 
     def test_return_outside_subroutine(self):

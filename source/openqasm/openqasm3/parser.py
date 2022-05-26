@@ -125,12 +125,6 @@ def span(func):
     return wrapped
 
 
-def _statement_to_list(statement: ast.Statement):
-    if isinstance(statement, ast.Scope):
-        return statement.statements
-    return [statement]
-
-
 def _visit_identifier(identifier: TerminalNode):
     return add_span(ast.Identifier(identifier.getText()), get_span(identifier))
 
@@ -195,16 +189,13 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitStatement(self, ctx: qasm3Parser.StatementContext):
         return self.visit(ctx.getChild(0))
 
-    @span
-    def visitScope(self, ctx: qasm3Parser.ScopeContext):
-        with self._push_scope(ctx):
-            return ast.Scope(statements=[self.visit(statement) for statement in ctx.statement()])
+    def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
+        return [self.visit(statement) for statement in ctx.statement()]
 
     @span
     def visitPragma(self, ctx: qasm3Parser.PragmaContext):
-        return ast.Pragma(
-            statements=[self.visit(statement) for statement in ctx.scope().statement()]
-        )
+        with self._push_scope(ctx):
+            return ast.Pragma(statements=self.visit(ctx.scope()))
 
     @span
     def visitAliasDeclarationStatement(self, ctx: qasm3Parser.AliasDeclarationStatementContext):
@@ -237,7 +228,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         with self._push_scope(ctx):
             return ast.Box(
                 duration=self.visit(ctx.designator()) if ctx.designator() else None,
-                body=_statement_to_list(self.visit(ctx.statement())),
+                body=self.visit(ctx.scope()),
             )
 
     @span
@@ -295,7 +286,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
         with self._push_context(ctx):
-            body = [self.visit(statement) for statement in ctx.scope().statement()]
+            body = self.visit(ctx.scope())
         return ast.SubroutineDefinition(
             name=name, arguments=arguments, body=body, return_type=return_type
         )
@@ -385,7 +376,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         else:
             set_declaration = _visit_identifier(ctx.Identifier(1))
         with self._push_scope(ctx):
-            block = _statement_to_list(self.visit(ctx.statement()))
+            block = self.visit(ctx.body)
         return ast.ForInLoop(
             loop_variable=_visit_identifier(ctx.Identifier(0)),
             set_declaration=set_declaration,
@@ -431,14 +422,15 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
         qubits = [_visit_identifier(id_) for id_ in ctx.qubits.Identifier()]
         with self._push_context(ctx):
-            body = [self.visit(statement) for statement in ctx.scope().statement()]
+            body = self.visit(ctx.scope())
         return ast.QuantumGateDefinition(name, arguments, qubits, body)
 
     @span
     def visitIfStatement(self, ctx: qasm3Parser.IfStatementContext):
         with self._push_scope(ctx):
-            if_body = _statement_to_list(self.visit(ctx.statement(0)))
-            else_body = _statement_to_list(self.visit(ctx.statement(1))) if ctx.statement(1) else []
+            if_body = self.visit(ctx.if_body)
+        with self._push_scope(ctx):
+            else_body = self.visit(ctx.else_body) if ctx.else_body else []
         return ast.BranchingStatement(
             condition=self.visit(ctx.expression()), if_block=if_body, else_block=else_body
         )
@@ -524,7 +516,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitWhileStatement(self, ctx: qasm3Parser.WhileStatementContext):
         with self._push_scope(ctx):
-            block = _statement_to_list(self.visit(ctx.statement()))
+            block = self.visit(ctx.body)
         return ast.WhileLoop(while_condition=self.visit(ctx.expression()), block=block)
 
     @span
@@ -578,9 +570,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitDurationofExpression(self, ctx: qasm3Parser.DurationofExpressionContext):
         with self._push_scope(ctx):
-            return ast.DurationOf(
-                target=[self.visit(statement) for statement in ctx.scope().statement()]
-            )
+            return ast.DurationOf(target=self.visit(ctx.scope()))
 
     @span
     def visitCallExpression(self, ctx: qasm3Parser.CallExpressionContext):
@@ -830,3 +820,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.CREG():
             return ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         return self.visit(ctx.scalarType() or ctx.arrayReferenceType())
+
+    def visitStatementOrScope(
+        self, ctx: qasm3Parser.StatementOrScopeContext
+    ) -> List[ast.Statement]:
+        return self.visit(ctx.scope()) if ctx.scope() else [self.visit(ctx.statement())]

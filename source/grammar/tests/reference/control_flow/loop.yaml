@@ -19,7 +19,7 @@ reference: |
           expression
             10
         )
-        statement
+        statementOrScope
           scope
             {
             statement
@@ -38,18 +38,19 @@ reference: |
                   expression
                     6
                   }
-                statement
-                  resetStatement
-                    reset
-                    gateOperand
-                      indexedIdentifier
-                        q
-                        indexOperator
-                          [
-                          expression
-                            j
-                          ]
-                    ;
+                statementOrScope
+                  statement
+                    resetStatement
+                      reset
+                      gateOperand
+                        indexedIdentifier
+                          q
+                          indexOperator
+                            [
+                            expression
+                              j
+                            ]
+                      ;
             statement
               ifStatement
                 if
@@ -61,15 +62,17 @@ reference: |
                   expression
                     8
                 )
-                statement
-                  breakStatement
-                    break
-                    ;
+                statementOrScope
+                  statement
+                    breakStatement
+                      break
+                      ;
                 else
-                statement
-                  continueStatement
-                    continue
-                    ;
+                statementOrScope
+                  statement
+                    continueStatement
+                      continue
+                      ;
             }
     statement
       endStatement
