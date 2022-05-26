@@ -27,7 +27,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: openqasm/openqasm.github.io
           branch: main
           folder: build/html
