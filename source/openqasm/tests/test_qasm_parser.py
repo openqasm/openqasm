@@ -1386,14 +1386,14 @@ def test_classical_assignment():
 
 def test_header():
     p = """
-    OPENQASM 3.1.2;
+    OPENQASM 3.1;
     include "qelib1.inc";
     input angle[16] variable1;
     output angle[16] variable2;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
-        version="3.1.2",
+        version="3.1",
         statements=[
             Include("qelib1.inc"),
             IODeclaration(

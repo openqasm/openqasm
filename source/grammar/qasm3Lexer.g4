@@ -166,8 +166,8 @@ BlockComment : '/*' .*? '*/' -> skip;
 
 
 // The version identifier token would be ambiguous between itself and
-// integer/floating-point literals (if there's no patch version), so we use a
-// special mode to ensure it's lexed correctly.
+// integer/floating-point literals, so we use a special mode to ensure it's
+// lexed correctly.
 mode VERSION_IDENTIFIER;
     VERSION_IDENTIFER_WHITESPACE: [ \t\r\n]+ -> skip;
-    VersionSpecifier: [0-9]+ ('.' [0-9]+ ('.' [0-9]+)?)? -> popMode;
+    VersionSpecifier: [0-9]+ ('.' [0-9]+)? -> popMode;
