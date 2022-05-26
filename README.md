@@ -11,9 +11,9 @@ OpenQASM is a [Qiskit project](https://qiskit.org).
 
 ## Current version: **3.0**
 
-Live doc: [**version 3.0**](https://qiskit.github.io/openqasm)
+Live doc: [**version 3.0**](https://openqasm.github.io/)
 
-For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM2.x)
+For previous version see: [2.0](https://github.com/openqasm/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
@@ -21,7 +21,7 @@ On this repository, you'll find all the documentation related to OpenQASM, some 
 
 ### Language specs
 
-The live [language documentation](https://qiskit.github.io/openqasm) specification.
+The live [language documentation](https://openqasm.github.io/) specification.
 
 ### Examples
 
