@@ -1014,7 +1014,7 @@ class Pragma(Statement):
     Pragma
     Example::
 
-        #pragma val1 val2 val3
+        #pragma {verbatim;}
     """
 
     statements: List[Statement]
