@@ -10,6 +10,9 @@ source: |
       i += j;
     return i+1;
   }
+  def returns_a_measure(qubit q) {
+    return measure q;
+  }
 reference: |
   program
     statement
@@ -166,6 +169,29 @@ reference: |
                 +
                 expression
                   1
+              ;
+          }
+    statement
+      defStatement
+        def
+        returns_a_measure
+        (
+        argumentDefinitionList
+          argumentDefinition
+            qubitType
+              qubit
+            q
+        )
+        scope
+          {
+          statement
+            returnStatement
+              return
+              measureExpression
+                measure
+                gateOperand
+                  indexedIdentifier
+                    q
               ;
           }
     <EOF>

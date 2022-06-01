@@ -61,7 +61,7 @@ continueStatement: CONTINUE SEMICOLON;
 endStatement: END SEMICOLON;
 forStatement: FOR Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) body=statementOrScope;
 ifStatement: IF LPAREN expression RPAREN if_body=statementOrScope (ELSE else_body=statementOrScope)?;
-returnStatement: RETURN expression? SEMICOLON;
+returnStatement: RETURN (expression | measureExpression)? SEMICOLON;
 whileStatement: WHILE LPAREN expression RPAREN body=statementOrScope;
 
 // Quantum directive statements.
@@ -80,7 +80,9 @@ gateCallStatement:
     gateModifier* Identifier (LPAREN expressionList? RPAREN)? designator? gateOperandList SEMICOLON
     | gateModifier* GPHASE (LPAREN expressionList? RPAREN)? designator? gateOperandList? SEMICOLON
 ;
-measureArrowAssignmentStatement: MEASURE gateOperand ARROW indexedIdentifier SEMICOLON;
+// measureArrowAssignmentStatement also permits the case of not assigning the
+// result to any classical value too.
+measureArrowAssignmentStatement: measureExpression (ARROW indexedIdentifier)? SEMICOLON;
 resetStatement: RESET gateOperand SEMICOLON;
 
 // Primitive declaration statements.
@@ -97,7 +99,7 @@ externStatement: EXTERN Identifier LPAREN externArgumentList? RPAREN returnSigna
 gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=identifierList scope;
 
 // Non-declaration assignments and calculations.
-assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) expression SEMICOLON;
+assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | measureExpression) SEMICOLON;
 expressionStatement: expression SEMICOLON;
 
 // TODO: this handling of the defcal block is incorrect, because it is not
@@ -129,7 +131,6 @@ expression:
     | expression op=DOUBLE_PIPE expression                    # logicalOrExpression
     | (scalarType | arrayType) LPAREN expression RPAREN       # castExpression
     | DURATIONOF LPAREN scope RPAREN                          # durationofExpression
-    | MEASURE gateOperand                                     # measureExpression
     | Identifier LPAREN expressionList? RPAREN                # callExpression
     | (
         Identifier
@@ -149,7 +150,8 @@ expression:
 // Special-case expressions that are only valid in certain contexts.  These are
 // not in the expression tree, but can contain elements that are within it.
 aliasExpression: expression (DOUBLE_PLUS expression)*;
-declarationExpression: arrayLiteral | expression;
+declarationExpression: arrayLiteral | expression | measureExpression;
+measureExpression: MEASURE gateOperand;
 rangeExpression: expression? COLON expression? (COLON expression)?;
 setExpression: LBRACE expression (COMMA expression)* COMMA? RBRACE;
 arrayLiteral: LBRACE (expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA? RBRACE;

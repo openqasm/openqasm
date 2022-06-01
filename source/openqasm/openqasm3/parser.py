@@ -208,6 +208,11 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitAssignmentStatement(self, ctx: qasm3Parser.AssignmentStatementContext):
         if self._in_gate():
             _raise_from_context(ctx, "cannot assign to classical parameters in a gate")
+        if ctx.measureExpression():
+            return ast.QuantumMeasurementStatement(
+                measure=self.visit(ctx.measureExpression()),
+                target=self.visit(ctx.indexedIdentifier()),
+            )
         return ast.ClassicalAssignment(
             lvalue=self.visit(ctx.indexedIdentifier()),
             op=ast.AssignmentOperator[ctx.op.text],
@@ -458,14 +463,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     ):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
-        measurement = add_span(
-            ast.QuantumMeasurement(qubit=self.visit(ctx.gateOperand())),
-            combine_span(get_span(ctx.MEASURE()), get_span(ctx.gateOperand())),
-        )
-        return ast.ClassicalAssignment(
-            lvalue=self.visit(ctx.indexedIdentifier()),
-            op=ast.AssignmentOperator["="],
-            rvalue=measurement,
+        return ast.QuantumMeasurementStatement(
+            measure=self.visit(ctx.measureExpression()),
+            target=self.visit(ctx.indexedIdentifier()) if ctx.indexedIdentifier() else None,
         )
 
     @span
@@ -509,9 +509,13 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitReturnStatement(self, ctx: qasm3Parser.ReturnStatementContext):
         if not self._in_subroutine():
             _raise_from_context(ctx, "'return' statement outside subroutine")
-        return ast.ReturnStatement(
-            expression=self.visit(ctx.expression()) if ctx.expression() else None
-        )
+        if ctx.expression():
+            expression = self.visit(ctx.expression())
+        elif ctx.measureExpression():
+            expression = self.visit(ctx.measureExpression())
+        else:
+            expression = None
+        return ast.ReturnStatement(expression=expression)
 
     @span
     def visitWhileStatement(self, ctx: qasm3Parser.WhileStatementContext):

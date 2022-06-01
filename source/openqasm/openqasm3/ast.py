@@ -73,6 +73,7 @@ __all__ = [
     "QuantumGateDefinition",
     "QuantumGateModifier",
     "QuantumMeasurement",
+    "QuantumMeasurementAssignment",
     "QuantumPhase",
     "QuantumReset",
     "QuantumStatement",
@@ -525,8 +526,9 @@ class QuantumPhase(QuantumStatement):
     qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
+# Not a full expression because it can only be used in limited contexts.
 @dataclass
-class QuantumMeasurement(Expression):
+class QuantumMeasurement(QASMNode):
     """
     A quantum measurement instruction
 
@@ -536,6 +538,18 @@ class QuantumMeasurement(Expression):
     """
 
     qubit: Union[IndexedIdentifier, Identifier]
+
+
+# Note that this is not a QuantumStatement because it involves access to
+# classical bits.
+@dataclass
+class QuantumMeasurementStatement(Statement):
+    """Stand-alone statement of a quantum measurement, potentially assigning the
+    result to a classical variable.  This is not the only statement that
+    `measure` can appear in (it can also be in classical declaration statements
+    and returns)."""
+    measure: QuantumMeasurement
+    target: Optional[Union[IndexedIdentifier, Identifier]]
 
 
 @dataclass
@@ -587,7 +601,7 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Expression] = None
+    init_expression: Optional[Union[Expression, QuantumMeasurement]] = None
 
 
 @dataclass
@@ -841,7 +855,7 @@ class ReturnStatement(Statement):
 
     """
 
-    expression: Optional[Expression] = None
+    expression: Optional[Union[Expression, QuantumMeasurement]] = None
 
 
 class BreakStatement(Statement):

@@ -54,6 +54,7 @@ from openqasm3.ast import (
     QuantumGateDefinition,
     QuantumGateModifier,
     QuantumMeasurement,
+    QuantumMeasurementStatement,
     QuantumPhase,
     QubitDeclaration,
     RangeDefinition,
@@ -939,18 +940,16 @@ def test_measurement():
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
-            ExpressionStatement(QuantumMeasurement(qubit=Identifier("q"))),
-            ClassicalAssignment(
-                lvalue=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
-                op=AssignmentOperator["="],
-                rvalue=QuantumMeasurement(Identifier("q")),
+            QuantumMeasurementStatement(QuantumMeasurement(qubit=Identifier("q")), target=None),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(Identifier("q")),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
             ),
-            ClassicalAssignment(
-                lvalue=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
-                op=AssignmentOperator["="],
-                rvalue=QuantumMeasurement(
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
                     IndexedIdentifier(Identifier("q"), indices=[[IntegerLiteral(0)]])
                 ),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
             ),
         ]
     )

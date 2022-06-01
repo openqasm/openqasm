@@ -8,6 +8,7 @@ source: |
   x += int[10](a[1]);
   measure q[1] -> a[0];
   a = measure q[1:2];
+  measure q[0];
   b = a == 0;
 reference: |
   program
@@ -103,15 +104,16 @@ reference: |
         ;
     statement
       measureArrowAssignmentStatement
-        measure
-        gateOperand
-          indexedIdentifier
-            q
-            indexOperator
-              [
-              expression
-                1
-              ]
+        measureExpression
+          measure
+          gateOperand
+            indexedIdentifier
+              q
+              indexOperator
+                [
+                expression
+                  1
+                ]
         ->
         indexedIdentifier
           a
@@ -126,7 +128,7 @@ reference: |
         indexedIdentifier
           a
         =
-        expression
+        measureExpression
           measure
           gateOperand
             indexedIdentifier
@@ -139,6 +141,19 @@ reference: |
                   :
                   expression
                     2
+                ]
+        ;
+    statement
+      measureArrowAssignmentStatement
+        measureExpression
+          measure
+          gateOperand
+            indexedIdentifier
+              q
+              indexOperator
+                [
+                expression
+                  0
                 ]
         ;
     statement
