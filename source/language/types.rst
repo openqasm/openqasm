@@ -190,13 +190,15 @@ Angles
 OpenQASM 3 includes a new type to represent classical angles: ``angle``.
 This type is intended to make manipulations of angles more efficient at runtime,
 when the hardware executing the program does not have built-in support for
-IEEE-754 floating-point.  The manipulations on ``angle`` values are designed to
-be significantly less expensive when done using integer hardware than the
-equivalent software emulation of IEEE-754 operations.
+floating-point operations.  The manipulations on ``angle`` values are designed
+to be significantly less expensive when done using integer hardware than the
+equivalent software emulation of floating-point operations, by using the
+equivalence of angles modulo :math:`2\pi` to remove the need for large dynamic
+range.
 
 In brief, the type ``angle[size]`` is manipulated very similarly to a single
 unsigned integer, where the value ``1`` represents an angle of
-:math:`2\pi/2^{-\text{size}}`, and the largest representable value is
+:math:`2\pi/2^{\text{size}}`, and the largest representable value is
 this subtracted from :math:`2\pi`.  Addition with other angles, and
 multiplication and division by unsigned integers is defined by standard
 unsigned-integer arithmetic, with more details found in :ref:`the section on
