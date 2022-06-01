@@ -169,7 +169,9 @@ the body has completed (and we are back in the global scope), the identifier
 will refer to the same variable it did before the subroutine or gate.
 
 Subroutines cannot contain ``qubit`` declarations in their bodies, but can
-accept variables of type ``qubit`` in their parameter lists.
+accept variables of type ``qubit`` in their parameter lists.  Aliases can be
+declared within subroutine and gate scopes, and have the same lifetime and
+visibility as other local variables.
 
 For example:
 
@@ -217,8 +219,10 @@ For example:
 
    float[64] new_variable = 1.5;
 
-   def second_subroutine(qubit q) {
+   def second_subroutine(qubit[4] q) {
       int local = 8;
+
+      let alias = q[0:2];
 
       // Identifiers in scope are:
       //   - 'second_subroutine'
@@ -226,7 +230,8 @@ For example:
       //   - 'local': type 'int', value 8
       //   - 'c': type 'const int', value 3
       //   - 'd': type 'const int', value 4
-      //   - 'q': type 'qubit', a virtual, run-time-known qubit.
+      //   - 'q': type 'qubit[4]', a virtual, run-time-known qubit register.
+      //   - 'alias': alias for the first three qubits of 'q'.
       //   - 'new_variable': type 'float[64]', value 1.5
       //   - the other built-in identifiers like 'U' and 'pi'
       //   - the available hardware qubits like '$0'.
@@ -262,7 +267,7 @@ As with subroutine scopes, variables defined locally in these scopes (including
 the for-loop iteration variable) may shadow variables with the same name in
 outer scopes.  When the defining scope of a shadowing variable ends, the
 previous variable (which was shadowed) becomes accessible again.  Qubits and
-arrays cannot be declared within local block scopes.
+arrays cannot be declared within local block scopes, but aliases can.
 
 Some further examples:
 
@@ -271,8 +276,9 @@ Some further examples:
 
    OPENQASM 3.0
 
-   int ii = 100;  // 'ii' is declared in the global scope.
-   qubit q;       // 'q' is declared in the global scope.
+   int ii = 100;        // 'ii' is declared in the global scope.
+   qubit[5] q;          // 'q' is declared in the global scope.
+   let alias = q[0:2];  // alias 'alias' is declared in the global scope.
 
    if (true) {
      ii *= 2;    // This is the global 'ii', which now has the value 200.
@@ -306,3 +312,7 @@ Some further examples:
 
    // The lifetime of the local for-loop iteration variable 'ii' ended at the
    // conclusion of the for-loop body, and the global 'ii' is back in scope.
+
+   while (ii > 0) {
+     let alias = q[3:4];  // local alias 'alias' shadows the global alias.
+   }
