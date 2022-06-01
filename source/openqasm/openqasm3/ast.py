@@ -73,7 +73,7 @@ __all__ = [
     "QuantumGateDefinition",
     "QuantumGateModifier",
     "QuantumMeasurement",
-    "QuantumMeasurementAssignment",
+    "QuantumMeasurementStatement",
     "QuantumPhase",
     "QuantumReset",
     "QuantumStatement",
@@ -548,6 +548,7 @@ class QuantumMeasurementStatement(Statement):
     result to a classical variable.  This is not the only statement that
     `measure` can appear in (it can also be in classical declaration statements
     and returns)."""
+
     measure: QuantumMeasurement
     target: Optional[Union[IndexedIdentifier, Identifier]]
 
