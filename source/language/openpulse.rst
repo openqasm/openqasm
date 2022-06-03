@@ -164,7 +164,7 @@ the `set_phase` and `shift_phase` instructions allow one to supply the frame and
 .. code-block:: javascript
 
   set_phase(frame fr, angle phase);
-  shift_frequency(frame fr, angle phase);
+  shift_phase(frame fr, angle phase);
 
 The `get_phase` instruction allows one to supply the frame from which to retrieve the phase of
 type ``angle``.
@@ -188,13 +188,14 @@ of type ``float``.
 
   get_frequency(frame fr) -> float;
 
-Changing the frequency or phase is an instantaneous operation. If a vendor
+Changing the frequency or phase behaves as an instantaneous operation (ie., its
+duration is zero device ticks) at the current time point of the frame. If a vendor If a vendor
 is unable to support such instantaneous operations, it is expected that the
 compiler shall raise a compile-time error when encountering such frame manipulations.
 
-Moreover, the exact precision of these calculations is hardware specific. If either the frequency
-or phase are set to values that are invalid for the hardware, the compiler shall raise a
-compile-time error.
+The exact precision and range of the frequency is hardware specific, and it is likely
+hardware vendors will perform a float to fixed conversion in the backend. If the frequency
+is set to an out of bounds value, the compiler shall raise a compile-time error.
 
 Here's an example of manipulating the phase to calibrate an ``rz`` gate on a frame called
 ``driveframe``:
@@ -228,8 +229,8 @@ Manipulating frames based on the state of other frames is also permitted:
 
 .. code-block:: javascript
 
-   const angle temp1 = get_phase(frame1);
-   const angle temp2 = get_phase(frame2);
+   angle temp1 = get_phase(frame1);
+   angle temp2 = get_phase(frame2);
    set_phase(frame1, temp2);
    set_phase(frame2, temp1);
 
