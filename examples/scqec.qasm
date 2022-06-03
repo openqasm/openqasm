@@ -10,7 +10,7 @@ include "stdgates.inc";
 const int[32] d = 3;         // code distance
 const int[32] m = 10;        // number of syndrome measurement cycles
 const int[32] shots = 1000;  // number of samples
-const int[32] n = d^2;       // number of code qubits
+const int[32] n = d**2;      // number of code qubits
 
 uint[32] failures;  // number of observed failures
 
@@ -43,7 +43,7 @@ def hadamard_layer(qubit[n-1] ancilla) {
   }
   // Hadamards on the left and right boundaries
   for i in [0: d - 2] {
-    h ancilla[(d - 1)^2 + (d - 1) + i];
+    h ancilla[(d - 1)**2 + (d - 1) + i];
   }
 }
 
@@ -66,11 +66,11 @@ def cycle(qubit[n] data, qubit[n-1] ancilla) -> bit[n-1] {
   }
   // First round of CNOTs on the bottom boundary
   for i in [0: (d - 3) / 2] {
-    cx data[d * (d - 1) + 2 * i], ancilla[(d - 1) ^ 2 + ( d- 1) / 2 + i];
+    cx data[d * (d - 1) + 2 * i], ancilla[(d - 1) ** 2 + ( d- 1) / 2 + i];
   }
   // First round of CNOTs on the right boundary
   for i in [0: (d - 3) / 2] {
-    cx ancilla[(d - 1) ^ 2 + 3 * (d - 1) / 2 + i], data[2 * d - 1 + 2 * d * i];
+    cx ancilla[(d - 1) ** 2 + 3 * (d - 1) / 2 + i], data[2 * d - 1 + 2 * d * i];
   }
   // Remaining rounds of CNOTs, go here ...
 
