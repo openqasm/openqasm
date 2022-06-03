@@ -189,7 +189,7 @@ of type ``float``.
   get_frequency(frame fr) -> float;
 
 Changing the frequency or phase behaves as an instantaneous operation (ie., its
-duration is zero device ticks) at the current time point of the frame. If a vendor If a vendor
+duration is zero device ticks) at the current time point of the frame. If a vendor
 is unable to support such instantaneous operations, it is expected that the
 compiler shall raise a compile-time error when encountering such frame manipulations.
 
