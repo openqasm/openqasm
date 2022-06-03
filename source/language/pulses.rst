@@ -136,9 +136,9 @@ a global scope to all identifiers in order to declare values shared across all `
    defcal x $0 {
       waveform xp = gaussian(1.0, 160t, 40dt);
       // References frame and `new_freq` declared in top-level cal block
-      play(xp, d0f);
-      set_frequency(new_freq, d0f);
-      play(xp, d0f);
+      play(d0f, xp);
+      set_frequency(d0f, new_freq);
+      play(d0f, xp);
    }
 
 
@@ -208,21 +208,21 @@ existing ``include`` mechanism.
    }
 
    defcal rz(angle theta) $0 {
-      shift_phase(theta, q0_frame);
+      shift_phase(q0_frame, theta);
    }
 
    defcal rz(angle theta) $1 {
-      shift_phase(theta, q1_frame);
+      shift_phase(q1_frame, theta);
    }
 
    defcal sx $0 {
       waveform sx_wf = drag(0.2+0.1im, 160dt, 40dt, 0.05);
-      play(sx_wf, q0_frame);
+      play(q0_frame, sx_wf);
    }
 
    defcal sx $1 {
       waveform sx_wf = drag(0.1+0.05im, 160dt, 40dt, 0.1);
-      play(sx_wf, q1_frame);
+      play(q1_frame, sx_wf);
    }
 
    defcal cx $1, $0 {
@@ -232,14 +232,14 @@ existing ``include`` mechanism.
       rz(pi/2) $0; rz(-pi/2) $1;
       sx $0; sx $1;
       barrier $0, $1;
-      play(CR90p, q0_frame);
+      play(q0_frame, CR90p);
       barrier $0, $1;
       sx $0;
       sx $0;
       barrier $0, $1;
       rz(-pi/2) $0; rz(pi/2) $1;
       sx $0; sx $1;
-      play(CR90m, q0_frame);
+      play(q0_frame, CR90m);
    }
 
 The user would then include the ``backend.inc`` in their own program and use them as demonstrated below
@@ -254,7 +254,7 @@ The user would then include the ``backend.inc`` in their own program and use the
    // to "plugin" to the existing calibrations.
    defcal Y90p $0 {
       waveform y90p = drag(0.1-0.2im, 160dt, 40dt, 0.05);
-      play(y90p, q0_frame);
+      play(q0_frame, y90p);
    }
 
    // Teach the compiler what the unitary of a Y90p is

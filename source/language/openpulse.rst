@@ -163,8 +163,8 @@ the `set_phase` and `shift_phase` instructions allow one to supply the frame and
 
 .. code-block:: javascript
 
-  set_phase(angle phase, frame fr);
-  shift_frequency(angle phase, frame fr);
+  set_phase(frame fr, angle phase);
+  shift_frequency(frame fr, angle phase);
 
 The `get_phase` instruction allows one to supply the frame from which to retrieve the phase of
 type ``angle``.
@@ -178,8 +178,8 @@ and a value of type ``float`` representing the amount by which to set/shift the 
 
 .. code-block:: javascript
 
-  set_frequency(float freq, frame fr);
-  shift_frequency(float freq, frame fr);
+  set_frequency(frame fr, float freq);
+  shift_frequency(frame fr, float freq);
 
 The `get_frequency` instruction allows one to supply the frame from which to retrieve the frequency
 of type ``float``.
@@ -205,7 +205,7 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
 
    // Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
    cal {
-     shift_phase(pi/4, driveframe);
+     shift_phase(driveframe, pi/4);
    }
 
    // The following is an example only. Frames as arrays has not been agreed on.
@@ -221,7 +221,7 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
    }
 
    defcal rz(angle[20] theta) $q {
-     shift_phase(-theta, rz_frames[q]);
+     shift_phase(rz_frames[q], -theta);
    }
 
 Manipulating frames based on the state of other frames is also permitted:
@@ -230,8 +230,8 @@ Manipulating frames based on the state of other frames is also permitted:
 
    const angle temp1 = get_phase(frame1);
    const angle temp2 = get_phase(frame2);
-   set_phase(temp2, frame1);
-   set_phase(temp1, frame2);
+   set_phase(frame1, temp2);
+   set_phase(frame2, temp1);
 
 Waveforms
 ---------
@@ -323,8 +323,8 @@ Play instruction
 Waveforms are scheduled using the ``play`` instruction. These instructions may
 only appear inside a ``defcal`` block and have two required parameters:
 
-- A value of type ``waveform`` representing the waveform envelope.
 - The frame to use for the pulse.
+- A value of type ``waveform`` representing the waveform envelope.
 
 Here, the ``frame`` provides the time at which the ``waveform`` envelope is scheduled (i.e. via
 the frame's current ``time``), its carrier frequency (i.e. via the frames current ``frequency``),
@@ -332,7 +332,7 @@ and its phase offset (i.e. via the frame's current ``phase``).
 
 .. code-block:: javascript
 
-  play(waveform wfm, frame fr)
+  play(frame fr, waveform wfm)
 
 For example,
 
@@ -340,11 +340,11 @@ For example,
 
   defcal play_my_pulses $0 {
     // Play a 3 sample pulse on the tx0 port
-    play([1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im], driveframe);
+    play(driveframe, [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im]);
 
     // Play a gaussian pulse on the tx1 port
     frame f1 = newframe(tx1, q1_freq, 0.0);
-    play(gaussian(...), f1);
+    play(f1, gaussian(...));
   }
 
 If the ``waveform`` duration is not realizable by the sample rate of the associated ``port``,
@@ -379,16 +379,16 @@ extern definition at the top-level, such as:
    extern capture_v0(frame output);
 
    // A capture command that returns an iq value
-   extern capture_v1(waveform filter, frame output) -> complex[float[32]];
+   extern capture_v1(frame output, waveform filter) -> complex[float[32]];
 
    // A capture command that returns a discrimnated bit
-   extern capture_v2(waveform filter, frame output) -> bit;
+   extern capture_v2(frame output, waveform filter) -> bit;
 
    // A capture command that returns a raw waveform data
-   extern capture_v3(duration len, frame output) -> waveform;
+   extern capture_v3(frame output, duration len) -> waveform;
 
    // A capture that returns a count e.g. number of photons detected
-   extern capture_v4(duration len, frame output) -> int
+   extern capture_v4(frame output, duration len) -> int
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -421,14 +421,14 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
         waveform meas_wf = gaussian_square(1.0, 16000dt, 262dt, 13952dt);
 
         // Play the stimulus
-        play(meas_wf, stimulus_frame);
+        play(stimulus_frame, meas_wf);
 
         // Align measure and capture frames
         barrier stimulus_frame, capture_frame;
 
         // Capture transmitted data after interaction with measurement resonator
-        // extern capture(duration duration, frame capture_frame) -> waveform;
-        waveform raw_output = capture_v1(16000dt, capture_frame);
+        // extern capture_v1(frame capture_frame, duration duration) -> waveform;
+        waveform raw_output = capture_v1(capture_frame, 16000dt);
 
         // Kernel and discriminate
         complex[float[32]] iq = boxcar(raw_output);
@@ -467,22 +467,22 @@ would be absolute 0. Meanwhile, a ``defcal``\s start time is determined by when 
   }
 
   defcal my_gate1 $0 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   defcal my_gate2 $0 {
     // initialized to time at beginning of `my_gate2`
     frame driveframe2 = newframe(d0, 5.0e9, 0.0);
-    play(wf, driveframe2);
+    play(driveframe2, wf);
   }
 
   defcal my_gate3 $0 {
     // initialized to time at beginning of `my_gate3`
     frame driveframe3 = newframe(d0, 5.0e9, 0.0);
-    play(wf, driveframe3);
+    play(driveframe3, wf);
   }
 
-  // driveframe1.time = 0ns when `play(wf, driveframe1)` is issued, advances to 16ns after `play`
+  // driveframe1.time = 0ns when `play(driveframe1, wf)` is issued, advances to 16ns after `play`
   my_gate1 $0;
   // driveframe2.time = 16ns when initialized via `newframe`
   my_gate2 $0;
@@ -524,7 +524,7 @@ by the duration of the associated ``waveform`` argument.
   delay[13ns] driveframe;
   // driveframe.time is now 13ns
 
-  play(wf, driveframe);
+  play(driveframe, wf);
   // driveframe.time is now 29ns
 
 Barrier
@@ -566,13 +566,13 @@ Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters t
 
   defcal two_qubit_gate $1 $2 {
     // implicit: barrier driveframe1, driveframe2;
-    play(wf, driveframe1);
-    play(wf, driveframe2);
+    play(driveframe1, wf);
+    play(driveframe2, wf);
   }
 
   defcal single_qubit_gate $1 {
     // implicit: barrier driveframe1;
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   single_qubit_gate $1;
@@ -599,7 +599,7 @@ the phase is implicitly manipulated when the time of the frame is advanced using
   }
 
   defcal single_qubit_gate $0 {
-    play(wf, driveframe0);
+    play(driveframe0, wf);
   }
 
   defcal single_qubit_delay $0 {
@@ -608,17 +608,17 @@ the phase is implicitly manipulated when the time of the frame is advanced using
 
   // get_phase(driveframe0) == 0
   single_qubit_gate $0;
-  // Implicit advancement: -> shift_phase(2π * get_frequency(driveframe0) * durationof(wf), driveframe0)
-  //                        = shift_phase(2π * 5e9 * 100e-9, driveframe0)
+  // Implicit advancement: -> shift_phase(driveframe0, 2π * get_frequency(driveframe0) * durationof(wf))
+  //                        = shift_phase(driveframe0, 2π * 5e9 * 100e-9)
 
   // Change the frequency
   cal {
-    set_frequency(6e9, driveframe0);
+    set_frequency(driveframe0, 6e9);
   }
 
   single_qubit_delay $0;
-  // Implicit advancement: -> set_phase(2π * get_frequency(driveframe0) * 13e-9, driveframe0)
-  //                        = set_phase(2π * 6e9 * 13e-9, driveframe0)
+  // Implicit advancement: -> set_phase(driveframe0, 2π * get_frequency(driveframe0) * 13e-9)
+  //                        = set_phase(driveframe0, 2π * 6e9 * 13e-9)
 
 
 
@@ -636,11 +636,11 @@ considered a compile-time error e.g.
   ...
 
   defcal single_qubit_gate $0 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   defcal single_qubit_gate $1 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   ...
@@ -677,18 +677,18 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
   // define a long saturation pulse of a set duration and amplitude
   defcal saturation_pulse $0 {
       // assume frame can be linked from a vendor supplied `cal` block
-      play(constant(0.1, 100e-6), driveframe);
+      play(driveframe, constant(0.1, 100e-6));
   }
 
   // step into a `cal` block to set the start of the frequency sweep
   cal {
-      set_frequency(frequency_start, driveframe);
+      set_frequency(driveframe, frequency_start);
   }
 
   for i in [1:frequency_num_steps] {
       // step into a `cal` block to adjust the pulse frequency via the frame frequency
       cal {
-          shift_frequency(frequency_step, driveframe);
+          shift_frequency(driveframe, frequency_step);
       }
 
       saturation_pulse $0;
@@ -712,7 +712,7 @@ Here we want to sweep the time of the pulse and observe coherent Rabi flopping d
       cal {
           waveform wf = gaussian(0.5, pulse_length, sigma);
           // assume frame can be linked from a vendor supplied `cal` block
-          play(wf, driveframe);
+          play(driveframe, wf);
       }
       measure $0;
   }
@@ -740,8 +740,8 @@ Cross-resonance gate
       // initialized to time at the beginning of `cross_resonance`
       frame temp_frame = newframe(d1, get_frequency(frame0), get_phase(frame0));
 
-      play(wf1, frame0);
-      play(wf2, temp_frame);
+      play(frame0, wf1);
+      play(temp_frame, wf2);
 
       /*** Do post-rotation ***/
 
@@ -771,10 +771,10 @@ Geometric gate
       float[32] b = sqrt(1-a**2);
 
       // Double-tap
-      play(scale(a, X_01), frame_01);
-      play(scale(b, X_12), frame_12);
-      play(scale(a, X_01), frame_01);
-      play(scale(b, X_12), frame_12);
+      play(frame_01, scale(a, X_01));
+      play(frame_12, scale(b, X_12));
+      play(frame_01, scale(a, X_01));
+      play(frame_12, scale(b, X_12));
   }
 
 Neutral atoms
@@ -844,18 +844,18 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
   // π/2 pulses on all three qubits
   defcal rx(π/2) $1 $2 $3 {
         // Simultaneous π/2 pulses
-        play(constant(raman_a_amp, π_half_time) , raman_a_frame);
-        play(constant(raman_b_amp, π_half_time) , raman_b_frame);
-        play(q1_π_half_sig, q1_frame);
-        play(q2_π_half_sig, q2_frame);
-        play(q3_π_half_sig, q3_frame);
+        play(raman_a_frame, constant(raman_a_amp, π_half_time));
+        play(raman_b_frame, constant(raman_b_amp, π_half_time));
+        play(q1_frame, q1_π_half_sig);
+        play(q2_frame, q2_π_half_sig);
+        play(q3_frame, q3_π_half_sig);
   }
 
   // π/2 pulse on only qubit $2
   defcal rx(π/2) $2 {
-      play(constant(raman_a_amp, π_half_time) , raman_a_frame);
-      play(constant(raman_b_amp, π_half_time) , raman_b_frame);
-      play(q2_π_half_sig, q2_frame);
+      play(raman_a_frame, constant(raman_a_amp, π_half_time));
+      play(raman_b_frame, constant(raman_b_amp, π_half_time));
+      play(q2_frame, q2_π_half_sig);
   }
 
   // Ramsey sequence on qubit 1 and 3, Hahn echo on qubit 2
@@ -881,9 +881,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
       delay[τ/2] raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
 
       // Time-proportional phase increment signals different amount
-      shift_phase(tppi_1 * τ, q1_frame);
-      shift_phase(tppi_2 * τ, q2_frame);
-      shift_phase(tppi_3 * τ, q3_frame);
+      shift_phase(q1_frame, tppi_1 * τ);
+      shift_phase(q2_frame, tppi_2 * τ);
+      shift_phase(q3_frame, tppi_3 * τ);
     }
 
     // Second π/2 pulse
@@ -922,8 +922,8 @@ many (just adding more frames, waveforms, plays, and captures).
       waveform q1_ro_wf = constant(amp=0.2, d=...);
 
       // multiplexed readout
-      play(q0_ro_wf, q0_stimulus_frame);
-      play(q1_ro_wf, q1_stimulus_frame);
+      play(q0_stimulus_frame, q0_ro_wf);
+      play(q1_stimulus_frame, q1_ro_wf);
 
       // simple boxcar kernel
       waveform ro_kernel = constant(amp=1, d=...);
@@ -932,9 +932,9 @@ many (just adding more frames, waveforms, plays, and captures).
       delay[electrical_delay] q0_capture_frame q1_capture_frame;
 
       // multiplexed capture
-      // extern capture(waveform ro_kernel, frame capture_frame) -> bit;
-      b[1] = capture(ro_kernel, q0_capture_frame);
-      b[2] = capture(ro_kernel, q1_capture_frame);
+      // extern capture(frame capture_frame, waveform ro_kernel) -> bit;
+      b[1] = capture(q0_capture_frame, ro_kernel);
+      b[2] = capture(q1_capture_frame, ro_kernel);
 
       return b;
   }
