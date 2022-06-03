@@ -18,230 +18,175 @@ source: |
   sizeof(x, 1);
 reference: |
   program
-    header
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              castOperator
-                classicalType
-                  nonArrayType
-                    singleDesignatorType
-                      int
-                      designator
-                        [
-                        expression
-                          expressionTerminator
-                            32
-                        ]
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    10
-              )
+          scalarType
+            int
+            designator
+              [
+              expression
+                32
+              ]
+          (
+          expression
+            10
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              sin
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          sin
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              arcsin
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          arcsin
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              cos
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          cos
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              arccos
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          arccos
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              tan
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          tan
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              arctan
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          arctan
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              exp
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          exp
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              ln
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          ln
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              sqrt
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          sqrt
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              rotl
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          rotl
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              rotr
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          rotr
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              popcount
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    π
-              )
+          popcount
+          (
+          expressionList
+            expression
+              π
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              sizeof
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    x
-              )
+          sizeof
+          (
+          expressionList
+            expression
+              x
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              sizeof
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    x
-                ,
-                expression
-                  expressionTerminator
-                    0
-              )
+          sizeof
+          (
+          expressionList
+            expression
+              x
+            ,
+            expression
+              0
+          )
         ;
     statement
       expressionStatement
         expression
-          expressionTerminator
-            builtInCall
-              sizeof
-              (
-              expressionList
-                expression
-                  expressionTerminator
-                    x
-                ,
-                expression
-                  expressionTerminator
-                    1
-              )
+          sizeof
+          (
+          expressionList
+            expression
+              x
+            ,
+            expression
+              1
+          )
         ;
+    <EOF>

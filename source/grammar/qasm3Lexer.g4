@@ -13,9 +13,8 @@ lexer grammar qasm3Lexer;
 
 /* Language keywords. */
 
-OPENQASM: 'OPENQASM';
+OPENQASM: 'OPENQASM' -> pushMode(VERSION_IDENTIFIER);
 INCLUDE: 'include';
-PRAGMA: '#pragma';
 DEFCALGRAMMAR: 'defcalgrammar';
 DEF: 'def';
 DEFCAL: 'defcal';
@@ -34,6 +33,7 @@ FOR: 'for';
 WHILE: 'while';
 IN: 'in';
 
+PRAGMA: '#pragma';
 
 
 /* Types. */
@@ -62,9 +62,6 @@ STRETCH: 'stretch';
 
 /* Builtin identifiers and operations */
 
-U_: 'U';
-CX: 'CX';
-
 GPHASE: 'gphase';
 INV: 'inv';
 POW: 'pow';
@@ -72,25 +69,10 @@ CTRL: 'ctrl';
 NEGCTRL: 'negctrl';
 
 DIM: '#dim';
-SIZEOF: 'sizeof';
 
-BuiltinMath
-    : 'arccos'
-    | 'arcsin'
-    | 'arctan'
-    | 'cos'
-    | 'exp'
-    | 'ln'
-    | 'popcount'
-    | 'rotl'
-    | 'rotr'
-    | 'sin'
-    | 'sqrt'
-    | 'tan'
-    ;
 DURATIONOF: 'durationof';
-BuiltinTimingInstruction: 'delay' | 'rotary';
 
+DELAY: 'delay';
 RESET: 'reset';
 MEASURE: 'measure';
 BARRIER: 'barrier';
@@ -131,18 +113,13 @@ AT: '@';
 TILDE: '~';
 EXCLAMATION_POINT: '!';
 
-/* There is no lexer rule for 'UnaryOperator' (~, ! or -) because the MINUS
- * lexeme is context-dependent as to whether it is unary or binary.
- */
 EqualityOperator: '==' | '!=';
 CompoundAssignmentOperator: '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**=';
 ComparisonOperator: '>' | '<' | '>=' | '<=';
 BitshiftOperator: '>>' | '<<';
 
 IMAG: 'im';
-ImaginaryLiteral : (DecimalIntegerLiteral | FloatLiteral) IMAG ;
-
-Constant: ('pi' | 'π' | 'tau' | '𝜏' | 'euler' | 'ℇ');
+ImaginaryLiteral: (DecimalIntegerLiteral | FloatLiteral) IMAG;
 
 BinaryIntegerLiteral: ('0b' | '0B') ([01] '_'?)* [01];
 OctalIntegerLiteral: '0o' ([0-7] '_'?)* [0-7];
@@ -151,10 +128,14 @@ HexIntegerLiteral: ('0x' | '0X') ([0-9a-fA-F] '_'?)* [0-9a-fA-F];
 
 fragment ValidUnicode: [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}]; // valid unicode chars
 fragment Letter: [A-Za-z];
-fragment FirstIdCharacter: '_' | '$' | ValidUnicode | Letter;
+fragment FirstIdCharacter: '_' | ValidUnicode | Letter;
 fragment GeneralIdCharacter: FirstIdCharacter | [0-9];
 
 Identifier: FirstIdCharacter GeneralIdCharacter*;
+// TODO: OpenPulse asks for identifiers like '$q' in the argument list of
+// 'defcal' statements, though this is not a valid identifier by the OpenQASM 3
+// specification.  For now, we allow it as a special case.
+HardwareQubit: '$' ([0-9]+ | Identifier);
 
 fragment FloatLiteralExponent: [eE] (PLUS | MINUS)? DecimalIntegerLiteral;
 FloatLiteral:
@@ -182,3 +163,11 @@ Whitespace: [ \t]+ -> skip ;
 Newline: [\r\n]+ -> skip ;
 LineComment : '//' ~[\r\n]* -> skip;
 BlockComment : '/*' .*? '*/' -> skip;
+
+
+// The version identifier token would be ambiguous between itself and
+// integer/floating-point literals, so we use a special mode to ensure it's
+// lexed correctly.
+mode VERSION_IDENTIFIER;
+    VERSION_IDENTIFER_WHITESPACE: [ \t\r\n]+ -> skip;
+    VersionSpecifier: [0-9]+ ('.' [0-9]+)? -> popMode;
