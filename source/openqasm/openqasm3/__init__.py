@@ -16,7 +16,9 @@ the :obj:`~parser.parse` function.
 
 __version__ = "0.1.0"
 
-from . import ast, visitor
+from . import ast, visitor, properties
+
+from .printer import dump, dumps
 
 try:
     from . import parser

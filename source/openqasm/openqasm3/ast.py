@@ -217,8 +217,8 @@ class ExternDeclaration(Statement):
     """
 
     name: Identifier
-    classical_types: List[ClassicalType]
-    return_type: Optional[ClassicalType] = None
+    arguments: List[ExternArgument]
+    return_type: Optional[ExternArgument] = None
 
 
 class Expression(QASMNode):
@@ -587,6 +587,14 @@ class ClassicalArgument(QASMNode):
 
     type: ClassicalType
     name: Identifier
+    access: Optional[AccessControl] = None
+
+
+@dataclass
+class ExternArgument(QASMNode):
+    """Classical argument for an extern declaration."""
+
+    type: ClassicalType
     access: Optional[AccessControl] = None
 
 
