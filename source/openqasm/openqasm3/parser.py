@@ -358,7 +358,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitExternStatement(self, ctx: qasm3Parser.ExternStatementContext):
         if not self._in_global_scope():
             _raise_from_context(ctx, "extern declarations must be global")
-        classical_types = (
+        arguments = (
             [self.visit(type) for type in ctx.externArgumentList().externArgument()]
             if ctx.externArgumentList()
             else []
@@ -368,7 +368,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
         return ast.ExternDeclaration(
             name=_visit_identifier(ctx.Identifier()),
-            classical_types=classical_types,
+            arguments=arguments,
             return_type=return_type,
         )
 
@@ -724,9 +724,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitGateModifier(self, ctx: qasm3Parser.GateModifierContext):
-        if ctx.INV:
+        if ctx.INV():
             return ast.QuantumGateModifier(modifier=ast.GateModifierName["inv"], argument=None)
-        if ctx.POW:
+        if ctx.POW():
             return ast.QuantumGateModifier(
                 modifier=ast.GateModifierName["pow"], argument=self.visit(ctx.expression())
             )
@@ -822,9 +822,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitExternArgument(self, ctx: qasm3Parser.ExternArgumentContext):
+        access = None
         if ctx.CREG():
-            return ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
-        return self.visit(ctx.scalarType() or ctx.arrayReferenceType())
+            type_ = ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+        elif ctx.scalarType():
+            type_ = self.visit(ctx.scalarType())
+        else:
+            array_ctx = ctx.arrayReferenceType()
+            access = ast.AccessControl.const if array_ctx.CONST() else ast.AccessControl.mutable
+            base_type = self.visit(array_ctx.scalarType())
+            dimensions = (
+                self.visit(array_ctx.expression())
+                if array_ctx.expression()
+                else [self.visit(expr) for expr in array_ctx.expressionList().expression()]
+            )
+            type_ = add_span(
+                ast.ArrayReferenceType(base_type=base_type, dimensions=dimensions),
+                get_span(array_ctx),
+            )
+        return ast.ExternArgument(type=type_, access=access)
 
     def visitStatementOrScope(
         self, ctx: qasm3Parser.StatementOrScopeContext
