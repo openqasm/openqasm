@@ -8,121 +8,76 @@ source: |
   end;
 reference: |
   program
-    header
     statement
-      loopStatement
-        loopSignature
-          while
-          (
+      whileStatement
+        while
+        (
+        expression
           expression
-            logicalAndExpression
-              bitOrExpression
-                xOrExpression
-                  bitAndExpression
-                    equalityExpression
-                      comparisonExpression
-                        comparisonExpression
-                          bitShiftExpression
-                            additiveExpression
-                              multiplicativeExpression
-                                unaryExpression
-                                  powerExpression
-                                    indexExpression
-                                      expressionTerminator
-                                        i
-                        <
-                        bitShiftExpression
-                          additiveExpression
-                            multiplicativeExpression
-                              unaryExpression
-                                powerExpression
-                                  indexExpression
-                                    expressionTerminator
-                                      10
-          )
-        programBlock
-          {
-          statement
-            loopStatement
-              loopSignature
+            i
+          <
+          expression
+            10
+        )
+        statementOrScope
+          scope
+            {
+            statement
+              forStatement
                 for
-                nonArrayType
-                  singleDesignatorType
-                    uint
+                scalarType
+                  uint
                 j
                 in
-                setDeclaration
-                  discreteSet
-                    {
-                    expression
-                      expressionTerminator
-                        1
-                    ,
-                    expression
-                      expressionTerminator
-                        4
-                    ,
-                    expression
-                      expressionTerminator
-                        6
-                    }
-              programBlock
-                statement
-                  quantumStatement
-                    quantumInstruction
-                      quantumReset
-                        reset
+                setExpression
+                  {
+                  expression
+                    1
+                  ,
+                  expression
+                    4
+                  ,
+                  expression
+                    6
+                  }
+                statementOrScope
+                  statement
+                    resetStatement
+                      reset
+                      gateOperand
                         indexedIdentifier
                           q
                           indexOperator
                             [
                             expression
-                              expressionTerminator
-                                j
+                              j
                             ]
-                    ;
-          statement
-            branchingStatement
-              if
-              (
-              expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          equalityExpression
-                            comparisonExpression
-                              bitShiftExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    unaryExpression
-                                      powerExpression
-                                        indexExpression
-                                          expressionTerminator
-                                            i
-                          ==
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  unaryExpression
-                                    powerExpression
-                                      indexExpression
-                                        expressionTerminator
-                                          8
-              )
-              programBlock
-                controlDirective
-                  break
-                  ;
-              else
-              programBlock
-                controlDirective
-                  continue
-                  ;
-          }
+                      ;
+            statement
+              ifStatement
+                if
+                (
+                expression
+                  expression
+                    i
+                  ==
+                  expression
+                    8
+                )
+                statementOrScope
+                  statement
+                    breakStatement
+                      break
+                      ;
+                else
+                statementOrScope
+                  statement
+                    continueStatement
+                      continue
+                      ;
+            }
     statement
       endStatement
         end
         ;
+    <EOF>

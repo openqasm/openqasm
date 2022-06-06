@@ -4,362 +4,213 @@ options {
     tokenVocab = qasm3Lexer;
 }
 
-program: header (globalStatement | statement)*;
-header: version? include* io*;
-version: OPENQASM (DecimalIntegerLiteral | FloatLiteral) SEMICOLON;
-include: INCLUDE StringLiteral SEMICOLON;
+program: version? statement* EOF;
+version: OPENQASM VersionSpecifier SEMICOLON;
 
-ioIdentifier: INPUT | OUTPUT;
-io: ioIdentifier classicalType Identifier SEMICOLON;
-
-globalStatement
-    : subroutineDefinition
-    | externDeclaration
-    | quantumGateDefinition
-    | calibration
-    | quantumDeclarationStatement  // qubits are declared globally
-    | pragma
-    ;
-
-statement
-    : expressionStatement
+// A statement is any valid single statement of an OpenQASM 3 program, with the
+// exception of the version-definition statement (which must be unique, and the
+// first statement of the file if present).  This file just defines rules for
+// parsing; we leave semantic analysis and rejection of invalid scopes for
+// compiler implementations.
+statement:
+    pragma
+    // All the actual statements of the language.
+    | aliasDeclarationStatement
     | assignmentStatement
+    | barrierStatement
+    | boxStatement
+    | breakStatement
+    | calibrationGrammarStatement
     | classicalDeclarationStatement
-    | branchingStatement
-    | loopStatement
+    | constDeclarationStatement
+    | continueStatement
+    | defStatement
+    | defcalStatement
+    | delayStatement
     | endStatement
-    | aliasStatement
-    | quantumStatement
-    ;
-
-quantumDeclarationStatement : quantumDeclaration SEMICOLON ;
-classicalDeclarationStatement: (classicalDeclaration | constantDeclaration) SEMICOLON;
-classicalAssignment: indexedIdentifier assignmentOperator expression;
-assignmentStatement: (classicalAssignment | quantumMeasurementAssignment) SEMICOLON;
-returnSignature: ARROW classicalType;
-
-/*** Types and Casting ***/
-
-designator: LBRACKET expression RBRACKET;
-identifierList: Identifier (COMMA Identifier)*;
-
-/** Quantum Types **/
-quantumDeclaration: QREG Identifier designator? | QUBIT designator? Identifier;
-quantumArgument: QREG Identifier designator? | QUBIT designator? Identifier;
-
-/** Classical Types **/
-bitType: (BIT | CREG) designator?;
-singleDesignatorType: (INT | UINT | FLOAT | ANGLE) designator?;
-noDesignatorType: BOOL | DURATION | STRETCH;
-
-nonArrayType
-    : singleDesignatorType
-    | noDesignatorType
-    | bitType
-    | COMPLEX LBRACKET numericType RBRACKET
+    | expressionStatement
+    | externStatement
+    | forStatement
+    | gateCallStatement
+    | gateStatement
+    | ifStatement
+    | includeStatement
+    | ioDeclarationStatement
+    | measureArrowAssignmentStatement
+    | oldStyleDeclarationStatement
+    | quantumDeclarationStatement
+    | resetStatement
+    | returnStatement
+    | whileStatement
 ;
+scope: LBRACE statement* RBRACE;
+pragma: PRAGMA scope;
 
-arrayType: ARRAY LBRACKET nonArrayType COMMA expressionList RBRACKET;
-arrayReferenceTypeDimensionSpecifier
-    : expressionList
-    | DIM EQUALS expression
+statementOrScope: statement | scope;
+
+
+/* Start top-level statement definitions. */
+
+// Inclusion statements.
+calibrationGrammarStatement: DEFCALGRAMMAR StringLiteral SEMICOLON;
+includeStatement: INCLUDE StringLiteral SEMICOLON;
+
+// Control-flow statements.
+breakStatement: BREAK SEMICOLON;
+continueStatement: CONTINUE SEMICOLON;
+endStatement: END SEMICOLON;
+forStatement: FOR scalarType Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) body=statementOrScope;
+ifStatement: IF LPAREN expression RPAREN if_body=statementOrScope (ELSE else_body=statementOrScope)?;
+returnStatement: RETURN (expression | measureExpression)? SEMICOLON;
+whileStatement: WHILE LPAREN expression RPAREN body=statementOrScope;
+
+// Quantum directive statements.
+barrierStatement: BARRIER gateOperandList? SEMICOLON;
+boxStatement: BOX designator? scope;
+delayStatement: DELAY designator gateOperandList? SEMICOLON;
+/* `gateCallStatement`  is split in two to avoid a potential ambiguity with an
+ * `expressionStatement` that consists of a single function call.  The only
+ * "gate" that can have no operands is `gphase` with no control modifiers, and
+ * `gphase(pi);` looks grammatically identical to `fn(pi);`.  We disambiguate by
+ * having `gphase` be its own token, and requiring that all other gate calls
+ * grammatically have at least one qubit.  Strictly, as long as `gphase` is a
+ * separate token, ANTLR can disambiguate the statements by the definition
+ * order, but this is more robust. */
+gateCallStatement:
+    gateModifier* Identifier (LPAREN expressionList? RPAREN)? designator? gateOperandList SEMICOLON
+    | gateModifier* GPHASE (LPAREN expressionList? RPAREN)? designator? gateOperandList? SEMICOLON
 ;
-arrayReferenceType: ARRAY LBRACKET nonArrayType COMMA arrayReferenceTypeDimensionSpecifier RBRACKET;
+// measureArrowAssignmentStatement also permits the case of not assigning the
+// result to any classical value too.
+measureArrowAssignmentStatement: measureExpression (ARROW indexedIdentifier)? SEMICOLON;
+resetStatement: RESET gateOperand SEMICOLON;
 
-classicalType
-    : nonArrayType
-    | arrayType
-;
+// Primitive declaration statements.
+aliasDeclarationStatement: LET Identifier EQUALS aliasExpression SEMICOLON;
+classicalDeclarationStatement: (scalarType | arrayType) Identifier (EQUALS declarationExpression)? SEMICOLON;
+constDeclarationStatement: CONST scalarType Identifier EQUALS declarationExpression SEMICOLON;
+ioDeclarationStatement: (INPUT | OUTPUT) (scalarType | arrayType) Identifier SEMICOLON;
+oldStyleDeclarationStatement: (CREG | QREG) Identifier designator? SEMICOLON;
+quantumDeclarationStatement: qubitType Identifier SEMICOLON;
 
-// numeric OpenQASM types
-numericType: singleDesignatorType;
+// Declarations and definitions of higher-order objects.
+defStatement: DEF Identifier LPAREN argumentDefinitionList? RPAREN returnSignature? scope;
+externStatement: EXTERN Identifier LPAREN externArgumentList? RPAREN returnSignature? SEMICOLON;
+gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=identifierList scope;
 
-constantDeclaration: CONST classicalType Identifier equalsExpression;
-
-// if multiple variables declared at once, either none are assigned or all are assigned
-// prevents ambiguity w/ qubit arguments in subroutine calls
-singleDesignatorDeclaration: singleDesignatorType Identifier equalsExpression?;
-
-noDesignatorDeclaration: noDesignatorType Identifier equalsExpression?;
-
-bitDeclaration: ( CREG Identifier designator? | BIT designator? Identifier ) equalsExpression?;
-complexDeclaration: COMPLEX LBRACKET numericType RBRACKET Identifier equalsExpression?;
-
-arrayInitializer:
-    LBRACE
-    (expression | arrayInitializer)
-    (COMMA (expression | arrayInitializer))*
-    RBRACE;
-arrayDeclaration: arrayType Identifier (EQUALS (arrayInitializer | expression))?;
-
-classicalDeclaration
-    : singleDesignatorDeclaration
-    | noDesignatorDeclaration
-    | bitDeclaration
-    | complexDeclaration
-    | arrayDeclaration
-;
-
-classicalTypeList: classicalType (COMMA classicalType)*;
-classicalArgument
-    : (singleDesignatorType | noDesignatorType) Identifier
-    | CREG Identifier designator?
-    | BIT designator? Identifier
-    | COMPLEX LBRACKET numericType RBRACKET Identifier
-    | (CONST | MUTABLE) arrayReferenceType Identifier
-;
-
-classicalArgumentList: classicalArgument (COMMA classicalArgument)*;
-
-anyTypeArgument: classicalArgument | quantumArgument;
-anyTypeArgumentList: anyTypeArgument (COMMA anyTypeArgument)*;
-
-/** Aliasing **/
-aliasInitializer: expression (DOUBLE_PLUS expression)*;
-aliasStatement: LET Identifier EQUALS aliasInitializer SEMICOLON;
-
-/** Register Concatenation and Slicing **/
-
-rangeDefinition: expression? COLON expression? (COLON expression)?;
-
-/*** Gates and Built-in Quantum Instructions ***/
-
-quantumGateDefinition
-    : GATE quantumGateSignature quantumBlock
-    ;
-
-quantumGateSignature
-    : quantumGateName ( LPAREN identifierList? RPAREN )? identifierList
-    ;
-
-quantumGateName: U_ | CX | Identifier;
-quantumBlock
-    : LBRACE ( quantumStatement | quantumLoop )* RBRACE
-    ;
-
-// loops containing only quantum statements allowed in gates
-quantumLoop
-    : loopSignature quantumLoopBlock
-    ;
-
-quantumLoopBlock
-    : quantumStatement
-    | LBRACE quantumStatement* RBRACE
-    ;
-
-quantumStatement
-    : quantumInstruction SEMICOLON
-    | timingStatement
-    ;
-
-quantumInstruction
-    : quantumGateCall
-    | quantumPhase
-    | quantumMeasurement
-    | quantumReset
-    | quantumBarrier
-    ;
-
-quantumBarrier: BARRIER (indexedIdentifier (COMMA indexedIdentifier)*)?;
-quantumMeasurement: MEASURE indexedIdentifier;
-quantumPhase: quantumGateModifier* GPHASE LPAREN expression RPAREN (indexedIdentifier (COMMA indexedIdentifier)*)?;
-quantumReset: RESET indexedIdentifier;
-
-quantumMeasurementAssignment
-    : quantumMeasurement (ARROW indexedIdentifier)?
-    | indexedIdentifier EQUALS quantumMeasurement
-;
-
-powModifier: POW LPAREN expression RPAREN;
-ctrlModifier: (CTRL | NEGCTRL) ( LPAREN expression RPAREN )?;
-quantumGateModifier: (INV | powModifier | ctrlModifier) AT;
-quantumGateCall: quantumGateModifier* quantumGateName (LPAREN expressionList RPAREN)? indexedIdentifier (COMMA indexedIdentifier)*;
-
-/*** Classical Instructions ***/
-
-unaryOperator: TILDE | EXCLAMATION_POINT | MINUS;
-
+// Non-declaration assignments and calculations.
+assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | measureExpression) SEMICOLON;
 expressionStatement: expression SEMICOLON;
 
-expression
-    // include terminator/unary as base cases to simplify parsing
-    : expressionTerminator
-    | unaryExpression
-    // expression hierarchy
-    | logicalAndExpression
-    | expression DOUBLE_PIPE logicalAndExpression
-    ;
+// TODO: this handling of the defcal block is incorrect, because it is not
+// constrained to consume balanced brace blocks.  This needs more attention.
+defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)? hardwareQubitList returnSignature? LBRACE .*? RBRACE;
 
-/**  Expression hierarchy for non-terminators. Adapted from ANTLR4 C
-  *  grammar: https://github.com/antlr/grammars-v4/blob/master/c/C.g4
-  * Order (first to last evaluation):
-    Terminator (including Parens),
-    Unary Op,
-    Multiplicative
-    Additive
-    Bit Shift
-    Comparison
-    Equality
-    Bit And
-    Exlusive Or (xOr)
-    Bit Or
-    Logical And
-    Logical Or
-**/
 
-logicalAndExpression
-    : bitOrExpression
-    | logicalAndExpression DOUBLE_AMPERSAND bitOrExpression
-    ;
+/* End top-level statement definitions. */
+/* Start expression definitions. */
 
-bitOrExpression
-    : xOrExpression
-    | bitOrExpression PIPE xOrExpression
-    ;
 
-xOrExpression
-    : bitAndExpression
-    | xOrExpression CARET bitAndExpression
-    ;
+// ANTLR4 can handle direct left-recursive rules, and ambiguities are guaranteed
+// to resolve in the order of definition.  This means that the order of rules
+// here defines the precedence table, from most tightly binding to least.
+expression:
+    LPAREN expression RPAREN                                  # parenthesisExpression
+    | expression indexOperator                                # indexExpression
+    | <assoc=right> expression op=DOUBLE_ASTERISK expression  # powerExpression
+    | op=(TILDE | EXCLAMATION_POINT | MINUS) expression       # unaryExpression
+    | expression op=(ASTERISK | SLASH | PERCENT) expression   # multiplicativeExpression
+    | expression op=(PLUS | MINUS) expression                 # additiveExpression
+    | expression op=BitshiftOperator expression               # bitshiftExpression
+    | expression op=ComparisonOperator expression             # comparisonExpression
+    | expression op=EqualityOperator expression               # equalityExpression
+    | expression op=AMPERSAND expression                      # bitwiseAndExpression
+    | expression op=CARET expression                          # bitwiseXorExpression
+    | expression op=PIPE expression                           # bitwiseOrExpression
+    | expression op=DOUBLE_AMPERSAND expression               # logicalAndExpression
+    | expression op=DOUBLE_PIPE expression                    # logicalOrExpression
+    | (scalarType | arrayType) LPAREN expression RPAREN       # castExpression
+    | DURATIONOF LPAREN scope RPAREN                          # durationofExpression
+    | Identifier LPAREN expressionList? RPAREN                # callExpression
+    | (
+        Identifier
+        | BinaryIntegerLiteral
+        | OctalIntegerLiteral
+        | DecimalIntegerLiteral
+        | HexIntegerLiteral
+        | FloatLiteral
+        | ImaginaryLiteral
+        | BooleanLiteral
+        | BitstringLiteral
+        | TimingLiteral
+        | HardwareQubit
+      )                                                       # literalExpression
+;
 
-bitAndExpression
-    : equalityExpression
-    | bitAndExpression AMPERSAND equalityExpression
-    ;
-
-equalityExpression
-    : comparisonExpression
-    | equalityExpression EqualityOperator comparisonExpression
-    ;
-
-comparisonExpression
-    : bitShiftExpression
-    | comparisonExpression ComparisonOperator bitShiftExpression
-    ;
-
-bitShiftExpression
-    : additiveExpression
-    | bitShiftExpression BitshiftOperator additiveExpression
-    ;
-
-additiveExpression
-    : multiplicativeExpression
-    | additiveExpression (PLUS | MINUS) multiplicativeExpression
-    ;
-
-multiplicativeExpression
-    // base case either terminator or unary
-    : unaryExpression
-    | multiplicativeExpression (ASTERISK | SLASH | PERCENT) unaryExpression
-    ;
-
-unaryExpression: unaryOperator? powerExpression;
-
-powerExpression
-    : indexExpression
-    | powerExpression DOUBLE_ASTERISK indexExpression
-    ;
+// Special-case expressions that are only valid in certain contexts.  These are
+// not in the expression tree, but can contain elements that are within it.
+aliasExpression: expression (DOUBLE_PLUS expression)*;
+declarationExpression: arrayLiteral | expression | measureExpression;
+measureExpression: MEASURE gateOperand;
+rangeExpression: expression? COLON expression? (COLON expression)?;
+setExpression: LBRACE expression (COMMA expression)* COMMA? RBRACE;
+arrayLiteral: LBRACE (expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA? RBRACE;
 
 // The general form is a comma-separated list of indexing entities.
-// `discreteSet` is only valid when being used as a single index: registers can
-// support it for creating aliases, but arrays cannot.
+// `setExpression` is only valid when being used as a single index: registers
+// can support it for creating aliases, but arrays cannot.
 indexOperator:
     LBRACKET
     (
-        discreteSet
-        | (expression | rangeDefinition) (COMMA (expression | rangeDefinition))*
+        setExpression
+        | (expression | rangeExpression) (COMMA (expression | rangeExpression))* COMMA?
     )
     RBRACKET;
-indexExpression
-    : expressionTerminator
-    | indexExpression indexOperator
-;
-
 // Alternative form to `indexExpression` for cases where an obvious l-value is
 // better grammatically than a generic expression.  Some current uses of this
 // rule may be better as `expression`, leaving the semantic analysis to later
 // (for example in gate calls).
 indexedIdentifier: Identifier indexOperator*;
 
-expressionTerminator
-    : Constant
-    | BinaryIntegerLiteral
-    | OctalIntegerLiteral
-    | DecimalIntegerLiteral
-    | HexIntegerLiteral
-    | FloatLiteral
-    | ImaginaryLiteral
-    | BooleanLiteral
-    | BitstringLiteral
-    | Identifier
-    | builtInCall
-    | externOrSubroutineCall
-    | timingIdentifier
-    | LPAREN expression RPAREN
+/* End expression definitions. */
+/* Start type definitions. */
+
+returnSignature: ARROW scalarType;
+gateModifier: (
+    INV
+    | POW LPAREN expression RPAREN
+    | (CTRL | NEGCTRL) (LPAREN expression RPAREN)?
+) AT;
+
+scalarType:
+    BIT designator?
+    | INT designator?
+    | UINT designator?
+    | FLOAT designator?
+    | ANGLE designator?
+    | BOOL
+    | DURATION
+    | STRETCH
+    | COMPLEX LBRACKET scalarType RBRACKET
 ;
-/** End expression hierarchy **/
+qubitType: QUBIT designator?;
+arrayType: ARRAY LBRACKET scalarType COMMA expressionList RBRACKET;
+arrayReferenceType: (CONST | MUTABLE) ARRAY LBRACKET scalarType COMMA (expressionList | DIM EQUALS expression) RBRACKET;
 
-builtInCall: (BuiltinMath | castOperator | SIZEOF) LPAREN expressionList RPAREN;
+designator: LBRACKET expression RBRACKET;
 
-castOperator: classicalType;
+gateOperand: indexedIdentifier | HardwareQubit;
+externArgument: scalarType | arrayReferenceType | CREG designator?;
+argumentDefinition:
+    scalarType Identifier
+    | qubitType Identifier
+    | (CREG | QREG) Identifier designator?
+    | arrayReferenceType Identifier
+;
 
-expressionList: expression (COMMA expression)*;
-
-equalsExpression: EQUALS expression;
-assignmentOperator : EQUALS | CompoundAssignmentOperator;
-
-discreteSet: LBRACE expression (COMMA expression)* RBRACE;
-
-setDeclaration
-    : discreteSet
-    | LBRACKET rangeDefinition RBRACKET
-    | Identifier
-    ;
-
-programBlock
-    : statement | controlDirective
-    | LBRACE ( statement | controlDirective )* RBRACE
-    ;
-
-branchingStatement: IF LPAREN expression RPAREN programBlock (ELSE programBlock)?;
-
-loopSignature
-    : FOR nonArrayType Identifier IN setDeclaration
-    | WHILE LPAREN expression RPAREN
-    ;
-
-loopStatement: loopSignature programBlock;
-endStatement: END SEMICOLON;
-returnStatement: RETURN (expression | quantumMeasurement)? SEMICOLON;
-
-controlDirective
-    : (BREAK| CONTINUE) SEMICOLON
-    | endStatement
-    | returnStatement
-    ;
-
-externDeclaration: EXTERN Identifier LPAREN classicalTypeList? RPAREN returnSignature? SEMICOLON;
-
-// if have function call w/ out args, is ambiguous; may get matched as identifier
-externOrSubroutineCall: Identifier LPAREN expressionList? RPAREN;
-
-/*** Subroutines ***/
-subroutineDefinition: DEF Identifier LPAREN anyTypeArgumentList? RPAREN returnSignature? subroutineBlock;
-subroutineBlock: LBRACE statement* returnStatement? RBRACE;
-
-/*** Directives ***/
-pragma: PRAGMA LBRACE statement* RBRACE;
-
-/*** Circuit Timing ***/
-timingBox: BOX designator? quantumBlock;
-timingIdentifier: TimingLiteral | DURATIONOF LPAREN (Identifier | quantumBlock) RPAREN;
-timingInstruction: BuiltinTimingInstruction (LPAREN expressionList? RPAREN)?  designator indexedIdentifier (COMMA indexedIdentifier)*;
-timingStatement: timingInstruction SEMICOLON | timingBox;
-
-/*** Pulse Level Descriptions of Gates and Measurement ***/
-// TODO: Update when pulse grammar is formalized
-calibration: calibrationGrammarDeclaration | calibrationDefinition;
-calibrationGrammarDeclaration: DEFCALGRAMMAR StringLiteral SEMICOLON;
-// For now, the defcal parser just matches anything at all within the braces.
-calibrationDefinition: DEFCAL Identifier (LPAREN calibrationArgumentList? RPAREN)? identifierList returnSignature? LBRACE .*? RBRACE;
-calibrationArgumentList: classicalArgumentList | expressionList;
+argumentDefinitionList: argumentDefinition (COMMA argumentDefinition)* COMMA?;
+expressionList: expression (COMMA expression)* COMMA?;
+hardwareQubitList: HardwareQubit (COMMA HardwareQubit)* COMMA?;
+identifierList: Identifier (COMMA Identifier)* COMMA?;
+gateOperandList: gateOperand (COMMA gateOperand)* COMMA?;
+externArgumentList: externArgument (COMMA externArgument)* COMMA?;

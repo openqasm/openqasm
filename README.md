@@ -5,13 +5,15 @@ OpenQASM is an imperative programming language for describing quantum circuits. 
 describe universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
-Specs, examples and tools for the OpenQASM intermediate representation.
+This repo contains the OpenQASM specification, examples, and tools for the OpenQASM intermediate representation.
+
+OpenQASM is a [Qiskit project](https://qiskit.org).
 
 ## Current version: **3.0**
 
-Live doc: [**version 3.0**](https://qiskit.github.io/openqasm)
+Live doc: [**version 3.0**](https://openqasm.github.io/)
 
-For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM2.x)
+For previous version see: [2.0](https://github.com/openqasm/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
@@ -19,7 +21,7 @@ On this repository, you'll find all the documentation related to OpenQASM, some 
 
 ### Language specs
 
-The live [language documentation](https://qiskit.github.io/openqasm) specification.
+The live [language documentation](https://openqasm.github.io/) specification.
 
 ### Examples
 
@@ -70,11 +72,6 @@ h input;
 output = measure input;  // should get zero
 ```
 
-## Plugins
-
-This repository also contains a plugin for working with OpenQASM 2.0 and 3.0 files in vim.
-You can find its full documentation in the [plugins/vim](plugins/vim) directory.
-
 ## Citation format
 
 For research papers, we encourage authors to reference.
@@ -89,7 +86,7 @@ The OpenQASM project has a process for accepting changes to the language and mak
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
 
 
 ## Contributing
