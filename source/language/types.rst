@@ -5,17 +5,24 @@
 Types and Casting
 =================
 
-Generalities
-------------
+.. _identifiers:
 
-Variable identifiers must begin with a letter [A-Za-z], an underscore or an element from the Unicode character categories
-Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`. The set of permissible
-continuation characters consists of all members of the aforementioned character
-sets with the addition of decimal numerals [0-9]. Variable identifiers may not
-override a reserved identifier.
+Identifiers
+-----------
 
-In addition to being assigned values within a program, all of the classical
-types can be initialized on declaration. Any classical variable or Boolean that is not explicitly
+Identifiers must begin with a letter [A-Za-z], an underscore or an element from
+the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
+The set of permissible continuation characters consists of all members of the
+aforementioned character sets with the addition of decimal numerals [0-9].
+Identifiers may not override a reserved identifier.
+
+.. _variables:
+
+Variables
+---------
+Variables must be named according to the rules for identifiers (See :ref:`identifiers`).
+Variables may be assigned values within a program. Variables representing any classical type
+can be initialized on declaration. Any classical variable or Boolean that is not explicitly
 initialized is undefined. Classical types can be mutually cast to one another using the typename.
 See :ref:`castingSpecifics` for more details on casting.
 
@@ -456,7 +463,7 @@ the shape and type of the assigned value must match that of the reference.
 
    bb[0] = 1 // error - shape mismatch
 
-Arrays may be passed to subroutines and externs. For more details, see 
+Arrays may be passed to subroutines and externs. For more details, see
 :any:`arrays-in-subroutines`.
 
 Types related to timing
@@ -658,8 +665,8 @@ the slices must match.
 Casting specifics
 -----------------
 
-The classical types are divided into the 'standard' classical types (bool, int, 
-uint, and float) that exist in languages like C, and the 'special' classical 
+The classical types are divided into the 'standard' classical types (bool, int,
+uint, and float) that exist in languages like C, and the 'special' classical
 types (bit, angle, duration, and stretch) that do not.
 The standard types follow rules that mimic those of C99 for `promotion and
 conversion <https://en.cppreference.com/w/c/language/conversion>`_ in mixed
@@ -677,9 +684,9 @@ Additionally, angle values will be implicitly promoted or converted in the same 
 unsigned integers when mixed with or assigned to angle values with differing
 precision.
 
-In general, for any cast between standard types that results in loss of 
-precision, if the source value is larger than can be represented in the target 
-type, the exact behavior is implementation specific and must be documented by 
+In general, for any cast between standard types that results in loss of
+precision, if the source value is larger than can be represented in the target
+type, the exact behavior is implementation specific and must be documented by
 the vendor.
 
 Allowed casts
@@ -716,8 +723,8 @@ Allowed casts
 Casting from bool
 ~~~~~~~~~~~~~~~~~
 
-``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or 
-an equivalent representation. ``bool`` values can only be cast to ``bit[1]`` 
+``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or
+an equivalent representation. ``bool`` values can only be cast to ``bit[1]``
 (a single bit), so explicit index syntax must be given if the target ``bit``
 has more than 1 bit of precision.
 
@@ -727,39 +734,39 @@ Casting from int/uint
 ``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C99
 behavior. Casting to ``bool`` values follows the convention ``val != 0``.
 As noted above, if the value is too large to be represented in the
-target type the result is implementation-specific. However, 
+target type the result is implementation-specific. However,
 casting between ``int[n]`` and ``uint[n]`` is expected to preserve the bit
 ordering, specifically it should be the case that ``x == int[n](uint[n](x))``
 and vice versa. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target
 ``bit`` has more or less precision, then explicit slicing syntax must be given.
-As noted, the conversion is done assuming a little-endian 2's complement 
+As noted, the conversion is done assuming a little-endian 2's complement
 representation.
 
 Casting from float
 ~~~~~~~~~~~~~~~~~~
 
-``float[n]`` values cast to the standard types mimicking C99 behavior (*e.g.* 
-discarding the fractional part for integer-type targets). As noted above, 
-if the value is too large to be represented in the 
-target type the result is implementation-specific. 
-Casting a ``float`` value to an ``angle[m]`` is accomplished by first 
-performing a modulo 2π operation on the float value. The resulting value 
-is then converted to the nearest ``angle[m]`` possible. In the event of a 
-tie between two possible nearest values the result is the one with an even 
+``float[n]`` values cast to the standard types mimicking C99 behavior (*e.g.*
+discarding the fractional part for integer-type targets). As noted above,
+if the value is too large to be represented in the
+target type the result is implementation-specific.
+Casting a ``float`` value to an ``angle[m]`` is accomplished by first
+performing a modulo 2π operation on the float value. The resulting value
+is then converted to the nearest ``angle[m]`` possible. In the event of a
+tie between two possible nearest values the result is the one with an even
 least significant bit (*i.e.* round to nearest, ties to even).
 
 Casting from angle
 ~~~~~~~~~~~~~~~~~~
 
-``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``. 
-Casting to ``bit[m]`` values is only allowed when 
+``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``.
+Casting to ``bit[m]`` values is only allowed when
 ``n==m``, otherwise explicit slicing syntax must be provided.
 
-When casting between angles of differing precisions (``n!=m``): if the target 
-has more significant bits, then the value is padded with ``m-n`` least 
-significant bits of ``0``; if the target has fewer significant bits, then 
-there are two acceptable behaviors that can be supported by compilers: 
-rounding and truncation. For rounding the value is rounded to the nearest 
+When casting between angles of differing precisions (``n!=m``): if the target
+has more significant bits, then the value is padded with ``m-n`` least
+significant bits of ``0``; if the target has fewer significant bits, then
+there are two acceptable behaviors that can be supported by compilers:
+rounding and truncation. For rounding the value is rounded to the nearest
 value, with ties going to the value with the even least significant bit.
 Trunction is likely to have more hardware support. This behavior can be
 controlled by the use of a ``#pragma``.
@@ -767,12 +774,12 @@ controlled by the use of a ``#pragma``.
 Casting from bit
 ~~~~~~~~~~~~~~~~
 
-``bit[n]`` values cast to ``bool`` using the convention ``val != 0``. Casting to 
-``int[m]`` or ``uint[m]`` is done assuming a little endian 2's complement 
-representation, and is only allowed when ``n==m``, otherwise explicit slicing 
-syntax must be given. Likewise, ``bit[n]`` can only be cast to ``angle[m]`` 
-when ``n==m``, in which case an exact per-bit copy is done using little-endian 
-bit order. Finally, casting between bits of differing precisions is not 
+``bit[n]`` values cast to ``bool`` using the convention ``val != 0``. Casting to
+``int[m]`` or ``uint[m]`` is done assuming a little endian 2's complement
+representation, and is only allowed when ``n==m``, otherwise explicit slicing
+syntax must be given. Likewise, ``bit[n]`` can only be cast to ``angle[m]``
+when ``n==m``, in which case an exact per-bit copy is done using little-endian
+bit order. Finally, casting between bits of differing precisions is not
 allowed, explicit slicing syntax must be given.
 
 .. _divideDuration:
@@ -780,8 +787,8 @@ allowed, explicit slicing syntax must be given.
 Converting duration to other types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Casting from or to duration values is not allowed, however, operations on 
-durations that produce values of different types is allowed. For example, 
+Casting from or to duration values is not allowed, however, operations on
+durations that produce values of different types is allowed. For example,
 dividing a duration by a duration produces a machine-precision ``float``.
 
 .. code-block:: c

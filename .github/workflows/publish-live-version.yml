@@ -25,9 +25,9 @@ jobs:
         run: make html
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: build/html
-          CLEAN: false
+          token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
+          repository-name: openqasm/openqasm.github.io
+          branch: main
+          folder: build/html
