@@ -125,7 +125,7 @@ extern f();
 extern f() -> bool;
 extern f(bool);
 extern f(int[32], uint[32]);
-extern f(array[complex[float[64]], N_ELEMENTS]) -> int[2 * INT_SIZE];
+extern f(mutable array[complex[float[64]], N_ELEMENTS]) -> int[2 * INT_SIZE];
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_

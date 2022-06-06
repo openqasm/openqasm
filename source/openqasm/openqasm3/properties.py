@@ -15,13 +15,11 @@ _PRECEDENCE_TABLE = {
     # Identifiers/literals are the top, since you never need to put brackets
     # around a single literal or identifier.
     ast.Identifier: 14,
-    ast.Constant: 14,
     ast.BitstringLiteral: 14,
     ast.BooleanLiteral: 14,
     ast.DurationLiteral: 14,
     ast.FloatLiteral: 14,
     ast.IntegerLiteral: 14,
-    ast.StringLiteral: 14,
     ast.ArrayLiteral: 14,
 }
 

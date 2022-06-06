@@ -229,10 +229,6 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_Program(self, node: ast.Program, context: PrinterState) -> None:
         if node.version:
             self._write_statement(f"OPENQASM {node.version}", context)
-        for include in node.includes:
-            self.visit(include, context)
-        for io_declaration in node.io_variables:
-            self.visit(io_declaration, context)
         for statement in node.statements:
             self.visit(statement, context)
 
@@ -280,7 +276,7 @@ class Printer(QASMVisitor[PrinterState]):
         self._start_line(context)
         self.stream.write("extern ")
         self.visit(node.name, context)
-        self._visit_sequence(node.classical_types, context, start="(", end=")", separator=", ")
+        self._visit_sequence(node.arguments, context, start="(", end=")", separator=", ")
         if node.return_type is not None:
             self.stream.write(" -> ")
             self.visit(node.return_type, context)
@@ -315,9 +311,6 @@ class Printer(QASMVisitor[PrinterState]):
         else:
             self.visit(node.rhs, context)
 
-    def visit_Constant(self, node: ast.Constant, context: PrinterState) -> None:
-        self.stream.write(node.name.name)
-
     def visit_BitstringLiteral(self, node: ast.BitstringLiteral, context: PrinterState) -> None:
         value = bin(node.value)[2:]
         if len(value) < node.width:
@@ -333,9 +326,6 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_BooleanLiteral(self, node: ast.BooleanLiteral, context: PrinterState) -> None:
         self.stream.write("true" if node.value else "false")
 
-    def visit_StringLiteral(self, node: ast.StringLiteral, context: PrinterState) -> None:
-        self.stream.write(f'"{node.value}"')
-
     def visit_DurationLiteral(self, node: ast.DurationLiteral, context: PrinterState) -> None:
         self.stream.write(f"{node.value}{node.unit.name}")
 
@@ -348,7 +338,9 @@ class Printer(QASMVisitor[PrinterState]):
 
     def visit_Cast(self, node: ast.Cast, context: PrinterState) -> None:
         self.visit(node.type)
-        self._visit_sequence(node.arguments, context, start="(", end=")", separator=", ")
+        self.stream.write("(")
+        self.visit(node.argument)
+        self.stream.write(")")
 
     def visit_DiscreteSet(self, node: ast.DiscreteSet, context: PrinterState) -> None:
         self._visit_sequence(node.values, context, start="{", end="}", separator=", ")
@@ -431,8 +423,8 @@ class Printer(QASMVisitor[PrinterState]):
 
     def visit_QuantumPhase(self, node: ast.QuantumPhase, context: PrinterState) -> None:
         self._start_line(context)
-        if node.quantum_gate_modifiers:
-            self._visit_sequence(node.quantum_gate_modifiers, context, end=" @ ", separator=" @ ")
+        if node.modifiers:
+            self._visit_sequence(node.modifiers, context, end=" @ ", separator=" @ ")
         self.stream.write("gphase(")
         self.visit(node.argument, context)
         self.stream.write(")")
@@ -441,10 +433,8 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_statement(context)
 
     def visit_QuantumMeasurement(self, node: ast.QuantumMeasurement, context: PrinterState) -> None:
-        self._start_line(context)
         self.stream.write("measure ")
         self.visit(node.qubit, context)
-        self._end_statement(context)
 
     def visit_QuantumReset(self, node: ast.QuantumReset, context: PrinterState) -> None:
         self._start_line(context)
@@ -458,34 +448,33 @@ class Printer(QASMVisitor[PrinterState]):
         self._visit_sequence(node.qubits, context, separator=", ")
         self._end_statement(context)
 
-    def visit_QuantumMeasurementAssignment(
-        self, node: ast.QuantumMeasurementAssignment, context: PrinterState
+    def visit_QuantumMeasurementStatement(
+        self, node: ast.QuantumMeasurementStatement, context: PrinterState
     ) -> None:
-        if node.target is None:
-            # If we're here, this node has matched in the context of being the
-            # rhs of some assignment to a variable.
-            self.stream.write("measure ")
-            self.visit(node.measure_instruction.qubit, context)
-            self._end_statement(context)
-            return
         self._start_line(context)
-        if self.old_measurement:
-            self.stream.write("measure ")
-            self.visit(node.measure_instruction.qubit, context)
+        if node.target is None:
+            self.visit(node.measure, context)
+        elif self.old_measurement:
+            self.visit(node.measure, context)
             self.stream.write(" -> ")
             self.visit(node.target, context)
         else:
             self.visit(node.target, context)
-            self.stream.write(" = measure ")
-            self.visit(node.measure_instruction.qubit, context)
+            self.stream.write(" = ")
+            self.visit(node.measure, context)
         self._end_statement(context)
 
     def visit_ClassicalArgument(self, node: ast.ClassicalArgument, context: PrinterState) -> None:
         if node.access is not None:
-            self.stream.write("const " if node.access == ast.AccessControl.CONST else "mutable ")
+            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
         self.visit(node.type, context)
         self.stream.write(" ")
         self.visit(node.name, context)
+
+    def visit_ExternArgument(self, node: ast.ExternArgument, context: PrinterState) -> None:
+        if node.access is not None:
+            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
+        self.visit(node.type, context)
 
     def visit_ClassicalDeclaration(
         self, node: ast.ClassicalDeclaration, context: PrinterState
@@ -505,9 +494,6 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.type)
         self.stream.write(" ")
         self.visit(node.identifier, context)
-        if node.init_expression is not None:
-            self.stream.write(" = ")
-            self.visit(node.init_expression)
         self._end_statement(context)
 
     def visit_ConstantDeclaration(
@@ -590,7 +576,7 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_CalibrationGrammarDeclaration(
         self, node: ast.CalibrationGrammarDeclaration, context: PrinterState
     ) -> None:
-        self._write_statement(f'defcalgrammar "{node.calibration_grammar}"', context)
+        self._write_statement(f'defcalgrammar "{node.name}"', context)
 
     def visit_CalibrationDefinition(
         self, node: ast.CalibrationDefinition, context: PrinterState
@@ -637,19 +623,14 @@ class Printer(QASMVisitor[PrinterState]):
             self.visit(node.size, context)
             self.stream.write("]")
         self.stream.write(" ")
-        self.visit(node.qubit, context)
+        self.visit(node.name, context)
 
     def visit_ReturnStatement(self, node: ast.ReturnStatement, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("return")
         if node.expression is not None:
             self.stream.write(" ")
-            if isinstance(node.expression, ast.QuantumMeasurement):
-                # Handle this specially, since in most cases it's a statement.
-                self.stream.write("measure ")
-                self.visit(node.expression.qubit, context)
-            else:
-                self.visit(node.expression)
+            self.visit(node.expression)
         self._end_statement(context)
 
     def visit_BreakStatement(self, node: ast.BreakStatement, context: PrinterState) -> None:
@@ -768,6 +749,14 @@ class Printer(QASMVisitor[PrinterState]):
                     self.visit(statement, context)
             self._start_line(context)
             self.stream.write("}")
+        self.stream.write(")")
+
+    def visit_SizeOf(self, node: ast.SizeOf, context: PrinterState) -> None:
+        self.stream.write("sizeof(")
+        self.visit(node.target, context)
+        if node.index is not None:
+            self.stream.write(", ")
+            self.visit(node.index)
         self.stream.write(")")
 
     def visit_AliasStatement(self, node: ast.AliasStatement, context: PrinterState) -> None:
