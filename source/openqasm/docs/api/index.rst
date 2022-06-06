@@ -11,4 +11,5 @@ In addition, a reference parser to this AST is provided in its simplest form by 
 
    ast.rst
    parser.rst
+   printer.rst
    visitor.rst
