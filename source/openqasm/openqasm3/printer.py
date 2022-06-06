@@ -56,6 +56,7 @@ state object is mutated by the visit, and will reflect the output state at the e
 import contextlib
 import dataclasses
 import io
+import functools
 
 from typing import Sequence, Optional
 
@@ -110,6 +111,16 @@ class PrinterState:
             yield
         finally:
             self.current_indent -= 1
+
+
+def _maybe_annotated(method):
+    @functools.wraps(method)
+    def annotated(self: "Printer", node: ast.Statement, context: PrinterState) -> None:
+        for annotation in node.annotations:
+            self.visit(annotation)
+        return method(self, node, context)
+
+    return annotated
 
 
 class Printer(QASMVisitor[PrinterState]):
@@ -232,9 +243,11 @@ class Printer(QASMVisitor[PrinterState]):
         for statement in node.statements:
             self.visit(statement, context)
 
+    @_maybe_annotated
     def visit_Include(self, node: ast.Include, context: PrinterState) -> None:
         self._write_statement(f'include "{node.filename}"', context)
 
+    @_maybe_annotated
     def visit_ExpressionStatement(
         self, node: ast.ExpressionStatement, context: PrinterState
     ) -> None:
@@ -242,6 +255,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.expression, context)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_QubitDeclaration(self, node: ast.QubitDeclaration, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("qubit")
@@ -253,6 +267,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.qubit, context)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_QuantumGateDefinition(
         self, node: ast.QuantumGateDefinition, context: PrinterState
     ) -> None:
@@ -272,6 +287,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("}")
         self._end_line(context)
 
+    @_maybe_annotated
     def visit_ExternDeclaration(self, node: ast.ExternDeclaration, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("extern ")
@@ -401,6 +417,7 @@ class Printer(QASMVisitor[PrinterState]):
         else:
             self.visit(node.rhs, context)
 
+    @_maybe_annotated
     def visit_QuantumGate(self, node: ast.QuantumGate, context: PrinterState) -> None:
         self._start_line(context)
         if node.modifiers:
@@ -421,6 +438,7 @@ class Printer(QASMVisitor[PrinterState]):
             self.visit(node.argument, context)
             self.stream.write(")")
 
+    @_maybe_annotated
     def visit_QuantumPhase(self, node: ast.QuantumPhase, context: PrinterState) -> None:
         self._start_line(context)
         if node.modifiers:
@@ -436,18 +454,21 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("measure ")
         self.visit(node.qubit, context)
 
+    @_maybe_annotated
     def visit_QuantumReset(self, node: ast.QuantumReset, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("reset ")
         self.visit(node.qubits, context)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_QuantumBarrier(self, node: ast.QuantumBarrier, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("barrier ")
         self._visit_sequence(node.qubits, context, separator=", ")
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_QuantumMeasurementStatement(
         self, node: ast.QuantumMeasurementStatement, context: PrinterState
     ) -> None:
@@ -476,6 +497,7 @@ class Printer(QASMVisitor[PrinterState]):
             self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
         self.visit(node.type, context)
 
+    @_maybe_annotated
     def visit_ClassicalDeclaration(
         self, node: ast.ClassicalDeclaration, context: PrinterState
     ) -> None:
@@ -488,6 +510,7 @@ class Printer(QASMVisitor[PrinterState]):
             self.visit(node.init_expression)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_IODeclaration(self, node: ast.IODeclaration, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write(f"{node.io_identifier.name} ")
@@ -496,6 +519,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.identifier, context)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_ConstantDeclaration(
         self, node: ast.ConstantDeclaration, context: PrinterState
     ) -> None:
@@ -573,11 +597,13 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_StretchType(self, node: ast.StretchType, context: PrinterState) -> None:
         self.stream.write("stretch")
 
+    @_maybe_annotated
     def visit_CalibrationGrammarDeclaration(
         self, node: ast.CalibrationGrammarDeclaration, context: PrinterState
     ) -> None:
         self._write_statement(f'defcalgrammar "{node.name}"', context)
 
+    @_maybe_annotated
     def visit_CalibrationDefinition(
         self, node: ast.CalibrationDefinition, context: PrinterState
     ) -> None:
@@ -597,6 +623,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("}")
         self._end_line(context)
 
+    @_maybe_annotated
     def visit_SubroutineDefinition(
         self, node: ast.SubroutineDefinition, context: PrinterState
     ) -> None:
@@ -625,6 +652,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write(" ")
         self.visit(node.name, context)
 
+    @_maybe_annotated
     def visit_ReturnStatement(self, node: ast.ReturnStatement, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("return")
@@ -633,15 +661,19 @@ class Printer(QASMVisitor[PrinterState]):
             self.visit(node.expression)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_BreakStatement(self, node: ast.BreakStatement, context: PrinterState) -> None:
         self._write_statement("break", context)
 
+    @_maybe_annotated
     def visit_ContinueStatement(self, node: ast.ContinueStatement, context: PrinterState) -> None:
         self._write_statement("continue", context)
 
+    @_maybe_annotated
     def visit_EndStatement(self, node: ast.EndStatement, context: PrinterState) -> None:
         self._write_statement("end", context)
 
+    @_maybe_annotated
     def visit_BranchingStatement(self, node: ast.BranchingStatement, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("if (")
@@ -664,6 +696,7 @@ class Printer(QASMVisitor[PrinterState]):
                 self.chain_else_if
                 and len(node.else_block) == 1
                 and isinstance(node.else_block[0], ast.BranchingStatement)
+                and not node.annotations
             ):
                 context.skip_next_indent = True
                 self.visit(node.else_block[0], context)
@@ -680,6 +713,7 @@ class Printer(QASMVisitor[PrinterState]):
         else:
             self._end_line(context)
 
+    @_maybe_annotated
     def visit_WhileLoop(self, node: ast.WhileLoop, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("while (")
@@ -693,6 +727,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("}")
         self._end_line(context)
 
+    @_maybe_annotated
     def visit_ForInLoop(self, node: ast.ForInLoop, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("for ")
@@ -713,6 +748,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("}")
         self._end_line(context)
 
+    @_maybe_annotated
     def visit_DelayInstruction(self, node: ast.DelayInstruction, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("delay[")
@@ -721,6 +757,7 @@ class Printer(QASMVisitor[PrinterState]):
         self._visit_sequence(node.qubits, context, separator=", ")
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_Box(self, node: ast.Box, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("box")
@@ -759,6 +796,7 @@ class Printer(QASMVisitor[PrinterState]):
             self.visit(node.index)
         self.stream.write(")")
 
+    @_maybe_annotated
     def visit_AliasStatement(self, node: ast.AliasStatement, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("let ")
@@ -767,6 +805,7 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.value, context)
         self._end_statement(context)
 
+    @_maybe_annotated
     def visit_ClassicalAssignment(
         self, node: ast.ClassicalAssignment, context: PrinterState
     ) -> None:
@@ -776,13 +815,18 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.rvalue, context)
         self._end_statement(context)
 
+    def visit_Annotation(self, node: ast.Annotation, context: PrinterState) -> None:
+        self._start_line(context)
+        self.stream.write("@")
+        self.stream.write(node.keyword)
+        if node.command is not None:
+            self.stream.write(" ")
+            self.stream.write(node.command)
+        self._end_line(context)
+
+    @_maybe_annotated
     def visit_Pragma(self, node: ast.Pragma, context: PrinterState) -> None:
         self._start_line(context)
-        self.stream.write("#pragma {")
-        self._end_line(context)
-        with context.increase_scope():
-            for statement in node.statements:
-                self.visit(statement, context)
-        self._start_line(context)
-        self.stream.write("}")
+        self.stream.write("pragma ")
+        self.stream.write(node.command)
         self._end_line(context)

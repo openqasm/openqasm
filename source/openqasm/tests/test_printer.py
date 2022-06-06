@@ -531,12 +531,58 @@ duration a = durationof({
 
     def test_pragma(self):
         input_ = """
-#pragma {
-  val1;
-  val2;
-}
-""".strip()
-        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
+pragma blah blah blah
+pragma command
+pragma !%^* word
+""".lstrip()  # The ending newline is important for pragmas.
+        output = openqasm3.dumps(openqasm3.parse(input_))
+        assert output == input_
+
+    @pytest.fixture(
+        params=[
+            pytest.param("", id="none"),
+            pytest.param("@command\n", id="single"),
+            pytest.param("@command keyword\n", id="single keyword"),
+            pytest.param("@command !£4&8 hello world\n", id="hard to tokenise"),
+            pytest.param("@command1\n@command2 keyword\n", id="multiple"),
+        ]
+    )
+    def annotations(self, request):
+        return request.param
+
+    @pytest.mark.parametrize(
+        "statement",
+        [
+            pytest.param("let alias = q[1:3];", id="alias"),
+            pytest.param("a = b;", id="assignment"),
+            pytest.param("barrier q;", id="barrier"),
+            pytest.param("box {\n}", id="box"),
+            pytest.param('defcalgrammar "openpulse";', id="defcal"),
+            pytest.param("int[8] a;", id="classical declaration"),
+            pytest.param("const uint SIZE = 5;", id="const declaration"),
+            pytest.param("def f() {\n}", id="subroutine definition"),
+            pytest.param("delay[50.0ms] $0;", id="delay"),
+            pytest.param("4 * 5 + 3;", id="expression"),
+            pytest.param("extern f();", id="extern"),
+            pytest.param("for i in [0:1] {\n}", id="for"),
+            pytest.param("ctrl @ h q;", id="gate call"),
+            pytest.param("gphase(0.5);", id="gphase call"),
+            pytest.param("gate f q {\n}", id="gate definition"),
+            pytest.param("if (true) {\n}", id="if"),
+            pytest.param("if (true) {\n} else {\n  1;\n}", id="if-else"),
+            pytest.param('include "stdgates.inc";', id="include"),
+            pytest.param("input uint[8] i;", id="input declaration"),
+            pytest.param("output uint[8] i;", id="output declaration"),
+            pytest.param("measure $0;", id="measure"),
+            pytest.param("a = measure b;", id="measure assign"),
+            pytest.param("qubit[5] q;", id="qubit declaration"),
+            pytest.param("reset $0;", id="reset"),
+            pytest.param("while (true) {\n}", id="while"),
+        ],
+    )
+    def test_annotations(self, statement, annotations):
+        input_ = annotations + statement + "\n"
+        output = openqasm3.dumps(openqasm3.parse(input_), indent="  ")
         assert output == input_
 
 
