@@ -698,7 +698,7 @@ class ComplexType(ClassicalType):
         complex[float[32]]
     """
 
-    base_type: FloatType
+    base_type: Optional[FloatType]
 
 
 @dataclass

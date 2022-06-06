@@ -17,7 +17,6 @@ creg[2] myvar;
 creg[2, 2] myvar;
 qreg[2] myvar;
 qreg[2, 2] myvar;
-complex myvar;
 complex[32] myvar;
 complex[mytype] myvar;
 complex[float[32], float[32]] myvar;

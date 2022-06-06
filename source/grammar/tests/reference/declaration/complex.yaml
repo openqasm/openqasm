@@ -4,6 +4,7 @@ source: |
   complex[float] b = 4 - 5.5im;
   complex[float[64]] d = a + 3 im;
   complex[float[32]] c = a ** b;
+  complex z;
 reference: |
   program
     statement
@@ -79,5 +80,11 @@ reference: |
             **
             expression
               b
+        ;
+    statement
+      classicalDeclarationStatement
+        scalarType
+          complex
+        z
         ;
     <EOF>

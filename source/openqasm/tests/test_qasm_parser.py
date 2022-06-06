@@ -257,6 +257,7 @@ def test_complex_declaration():
     p = """
     complex[float[64]] a;
     complex[float] fq;
+    complex implicit;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -269,6 +270,11 @@ def test_complex_declaration():
             ClassicalDeclaration(
                 ComplexType(base_type=FloatType(size=None)),
                 Identifier("fq"),
+                None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(base_type=None),
+                Identifier("implicit"),
                 None,
             ),
         ]

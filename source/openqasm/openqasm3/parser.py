@@ -753,8 +753,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.ANGLE():
             return ast.AngleType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         if ctx.COMPLEX():
-            base = self.visit(ctx.scalarType())
-            if not isinstance(base, ast.FloatType):
+            base = self.visit(ctx.scalarType()) if ctx.scalarType() else None
+            if base is not None and not isinstance(base, ast.FloatType):
                 _raise_from_context(ctx.scalarType(), f"invalid type of complex components")
             return ast.ComplexType(base_type=base)
         _raise_from_context(ctx, "unhandled type: {ctx.getText()}")

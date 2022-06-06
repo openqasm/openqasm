@@ -217,7 +217,8 @@ Complex numbers
 Complex numbers may be declared as ``complex[float[size]] name``, where ``size``
 is the size of the IEEE-754 floating-point number used to store the real and
 imaginary components.  Each component behaves as a ``float[size]`` type.  The
-designator ``[size]`` can be omitted to use the default hardware ``float``.
+designator ``[size]`` can be omitted to use the default hardware ``float``, and
+``complex`` with no arguments is a synonym for ``complex[float]``.
 
 Imaginary literals are written as a decimal-integer or floating-point literal
 followed by the letters ``im``.  There may be zero or more spaces between the
