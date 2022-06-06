@@ -3,15 +3,11 @@ source: |
   !my_var;
 reference: |
   program
-    header
     statement
       expressionStatement
         expression
-          unaryExpression
-            unaryOperator
-              !
-            powerExpression
-              indexExpression
-                expressionTerminator
-                  my_var
+          !
+          expression
+            my_var
         ;
+    <EOF>
