@@ -3,20 +3,18 @@ source: |
   #pragma { __directive_info__ = 0; }
 reference: |
   program
-    header
-    globalStatement
+    statement
       pragma
         #pragma
-        {
-        statement
-          assignmentStatement
-            classicalAssignment
+        scope
+          {
+          statement
+            assignmentStatement
               indexedIdentifier
                 __directive_info__
-              assignmentOperator
-                =
+              =
               expression
-                expressionTerminator
-                  0
-            ;
-        }
+                0
+              ;
+          }
+    <EOF>
