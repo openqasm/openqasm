@@ -80,7 +80,7 @@ A simple example of scoping between a main program file and an included file:
 
    include "my_definitions.qasm";
 
-   // Identifiers 'h', 'my_gate', 'i' and 'SIZE' are defined and in scope.
+   // Identifiers 'h', 'my_gate', 'i' and 'j' are defined and in scope.
 
 .. code-block:: c
    :caption: File ``my_definitions.qasm``
@@ -217,7 +217,7 @@ For example:
    // 'local' (from the subroutine body) is not in scope, while 'my_routine'
    // (the subroutine) is.
 
-   float[64] new_variable = 1.5;
+   const float[64] new_variable = 1.5;
 
    def second_subroutine(qubit[4] q) {
       int local = 8;
@@ -232,7 +232,7 @@ For example:
       //   - 'd': type 'const int', value 4
       //   - 'q': type 'qubit[4]', a virtual, run-time-known qubit register.
       //   - 'alias': alias for the first three qubits of 'q'.
-      //   - 'new_variable': type 'float[64]', value 1.5
+      //   - 'new_variable': type 'const float[64]', value 1.5
       //   - the other built-in identifiers like 'U' and 'pi'
       //   - the available hardware qubits like '$0'.
    }
