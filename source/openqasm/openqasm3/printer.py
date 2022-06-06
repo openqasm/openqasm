@@ -16,7 +16,7 @@ def dump(node: ast.QASMNode, file: io.TextIOBase, **kwargs):
 
 def dumps(node: ast.QASMNode, **kwargs):
     out = io.StringIO()
-    _Printer(out, **kwargs).visit(node)
+    dump(node, out, **kwargs)
     return out.getvalue()
 
 
