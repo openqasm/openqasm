@@ -1,3 +1,5 @@
+import dataclasses
+
 from openqasm3.visitor import QASMVisitor
 
 from openpulse.parser import parse
@@ -9,18 +11,20 @@ from openpulse.ast import (
     ClassicalDeclaration,
     ComplexType,
     DurationType,
+    ExternArgument,
     ExternDeclaration,
     FloatType,
     FunctionCall,
     Identifier,
     IntegerLiteral,
     Program,
-    PulseType,
-    PulseTypeName,
     QASMNode,
     ReturnStatement,
     UnaryExpression,
     UnaryOperator,
+    FrameType,
+    PortType,
+    WaveformType,
 )
 
 
@@ -35,12 +39,32 @@ class SpanGuard(QASMVisitor):
             raise Exception(f"The span of {type(node)} is None.") from e
 
 
+def _remove_spans(node):
+    """Return a new ``QASMNode`` with all spans recursively set to ``None`` to
+    reduce noise in test failure messages."""
+    if isinstance(node, list):
+        return [_remove_spans(item) for item in node]
+    if not isinstance(node, QASMNode):
+        return node
+    kwargs = {}
+    no_init = {}
+    for field in dataclasses.fields(node):
+        if field.name == "span":
+            continue
+        target = kwargs if field.init else no_init
+        target[field.name] = _remove_spans(getattr(node, field.name))
+    out = type(node)(**kwargs)
+    for attribute, value in no_init.items():
+        setattr(out, attribute, value)
+    return out
+
+
 def test_calibration_definition():
     p = """
     defcal rz(angle[20] theta) $q{ return shift_phase(drive($q), -theta); }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             CalibrationDefinition(
                 name=Identifier("rz"),
@@ -85,29 +109,31 @@ def test_calibration():
     }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             CalibrationBlock(
                 body=[
                     ExternDeclaration(
-                        name="drag",
-                        classical_types=[
-                            ComplexType(
-                                base_type=FloatType(Identifier("size")),
+                        name=Identifier("drag"),
+                        arguments=[
+                            ExternArgument(
+                                type=ComplexType(
+                                    base_type=FloatType(size=Identifier("size")),
+                                )
                             ),
-                            DurationType(),
-                            DurationType(),
-                            FloatType(Identifier("size")),
+                            ExternArgument(type=DurationType()),
+                            ExternArgument(type=DurationType()),
+                            ExternArgument(type=FloatType(Identifier("size"))),
                         ],
-                        return_type=PulseType(type=PulseTypeName["waveform"]),
+                        return_type=WaveformType(),
                     ),
                     ClassicalDeclaration(
-                        type=PulseType(type=PulseTypeName["port"]),
+                        type=PortType(),
                         identifier=Identifier(name="q0"),
                         init_expression=None,
                     ),
                     ClassicalDeclaration(
-                        type=PulseType(type=PulseTypeName["frame"]),
+                        type=FrameType(),
                         identifier=Identifier(name="q0_frame"),
                         init_expression=FunctionCall(
                             name=Identifier(name="newframe"),
