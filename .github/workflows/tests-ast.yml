@@ -57,6 +57,23 @@ jobs:
       - name: Run tests
         run: pytest -vv --color=yes tests
 
+      # Build and test script for openpulse
+      - name: Generate openpulse grammar
+        working-directory: source/grammar
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openpulse/openpulse/antlr -Dlanguage=Python3 -visitor openpulseLexer.g4 openpulseParser.g4
+
+      - name: Check openpulse format
+        working-directory: source/openpulse
+        run: black --check --diff openpulse tests
+
+      - name: Check openpulse style
+        working-directory: source/openpulse
+        run: pylint openpulse tests
+
+      - name: Run openpulse tests
+        working-directory: source/openpulse
+        run: pytest -vv --color=yes tests
+
   docs:
     name: Documentation build
     runs-on: ubuntu-latest
