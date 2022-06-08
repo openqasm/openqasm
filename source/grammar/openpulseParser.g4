@@ -12,60 +12,59 @@ options {
 }
 
 /**** OpenQASM3.0 overrides ****/
+defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)? hardwareQubitList returnSignature? LBRACE statement* RBRACE;
 
-// calBlock is the new addition
-calibration
-    : calibrationGrammarDeclaration
-    | calibrationDefinition
-    | calBlock
-    ;
-
-// defcal body uses openpulse grammar
-calibrationDefinition
-    : DEFCAL Identifier
-    ( LPAREN calibrationArgumentList? RPAREN )? identifierList
-    returnSignature? LBRACE calStatement* returnStatement? RBRACE
-;
-
-// cal block is not yet defined in OpenQASM3.0. 
+// cal statement is not yet defined in OpenQASM3.0. 
 // If it is defined in the future, this will be an override
-calBlock
-    : CAL LBRACE calStatement* RBRACE
-    ;
+calStatement: CAL LBRACE statement* RBRACE;
 
-/**** OpenPulse types ****/
-// These types can only used inside cal and defcal blocks
-pulseType
-    : WAVEFORM
+/** In the following we extend existing OpenQASM nodes. Need to refresh whenever OpenQASM is updated. **/
+// We extend the scalarType with WAVEFORM, PORT and FRAME
+scalarType:
+    BIT designator?
+    | INT designator?
+    | UINT designator?
+    | FLOAT designator?
+    | ANGLE designator?
+    | BOOL
+    | DURATION
+    | STRETCH
+    | COMPLEX LBRACKET scalarType RBRACKET
+    | WAVEFORM
     | PORT
     | FRAME
     ;
 
-pulseDeclaration
-    : pulseType Identifier equalsExpression? SEMICOLON
-    ;
-
-// A collection of existing OpenQASM3.0 statements that can be used in OpenPulse
-// as well as the new OpenPulse statements.
-calStatement
-    : quantumStatement 
-    | quantumLoop
-    | pulseDeclaration
-    | statement
-    | calExternDeclaration
-    ;
-
-// calType extend the classicalType with pulseType
-calType
-    : classicalType
-    | pulseType
-    ;
-
-calTypeList
-    : ( calType COMMA )* calType
-    ;
-
-// calExternDeclaration extends the extern declation in OpenPulse
-calExternDeclaration
-    : EXTERN Identifier LPAREN calTypeList? RPAREN (ARROW calType)? SEMICOLON
-    ;
+// we extend the statement with the calStatement
+statement:
+    pragma
+    // All the actual statements of the language.
+    | aliasDeclarationStatement
+    | assignmentStatement
+    | barrierStatement
+    | boxStatement
+    | breakStatement
+    | calibrationGrammarStatement
+    | classicalDeclarationStatement
+    | constDeclarationStatement
+    | continueStatement
+    | defStatement
+    | defcalStatement
+    | delayStatement
+    | endStatement
+    | expressionStatement
+    | externStatement
+    | forStatement
+    | gateCallStatement
+    | gateStatement
+    | ifStatement
+    | includeStatement
+    | ioDeclarationStatement
+    | measureArrowAssignmentStatement
+    | oldStyleDeclarationStatement
+    | quantumDeclarationStatement
+    | resetStatement
+    | returnStatement
+    | whileStatement
+    | calStatement
+;
