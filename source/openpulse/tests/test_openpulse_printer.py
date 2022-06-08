@@ -8,18 +8,18 @@ from openpulse.printer import dumps
 @pytest.mark.parametrize(
     "p",
     [
-        "b = capture(ro_kernel, q0_capture_frame);",
+        "b = capture(q0_capture_frame, ro_kernel);",
         "barrier q;",
         "delay[10.0ns] q;",
-        "play(wf1, frame1);",
+        "play(frame1, wf1);",
         """
         cal {
-          set_frequency(1000000000, frame1);
+          set_frequency(frame1, 1000000000);
         }
         """,
         """
         cal {
-          set_phase(1.1, phase);
+          set_phase(frame1, 1.1);
         }
         """,
         """
@@ -38,7 +38,7 @@ from openpulse.printer import dumps
         """,
         """
         defcal x90() $q {
-          set_phase(0.22 * 2 * pi, frame1);
+          set_phase(frame1, 0.22 * 2 * pi);
         }
         """,
         """
@@ -83,7 +83,7 @@ from openpulse.printer import dumps
         "v = (x / z) ** y;",
         """
         cal {
-          set_frequency(1000000000, frame1);
+          set_frequency(frame1, 1000000000);
         }
         """,
         """
