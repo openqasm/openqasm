@@ -1043,7 +1043,7 @@ class ClassicalAssignment(Statement):
 
 
 @dataclass
-class Pragma(Statement):
+class Pragma(QASMNode):
     """
     Pragma
     Example::

@@ -824,7 +824,6 @@ class Printer(QASMVisitor[PrinterState]):
             self.stream.write(node.command)
         self._end_line(context)
 
-    @_maybe_annotated
     def visit_Pragma(self, node: ast.Pragma, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("pragma ")
