@@ -295,17 +295,37 @@ Some further examples:
    ii *= 2;  // global 'ii' is now 400.
 
    uint sum = 0;
-   for uint ii in [1:10] {
+   for uint ii in [1:4] {
      // The global 'ii' is shadowed by the iteration variable 'ii', which also
      // has a different type.  The outer 'sum' is still accessible.
 
+     // Values at this point in various iterations:
+     //  Iteration   ii    sum
+     //     0        1     0
+     //     1        2     2
+     //     2        3     6
+     //     3        4     12
+
      sum += ii;  // Iteration variable 'ii' is added to global 'sum'
+
+     //  Iteration   ii    sum
+     //     0        1     1
+     //     1        2     4
+     //     2        3     9
+     //     3        4     16
+
      if (sum > 10) {
        float ii = 10.0; // For-loop iteration variable shadowed.
-       sum += uint(ii*2);
+       sum += uint(ii * 2.0);
      } else {
        sum += ii;      // 'ii' is the for-loop iteration variable.
      }
+
+     //  Iteration   ii    sum
+     //     0        1     2
+     //     1        2     6
+     //     2        3     12
+     //     3        4     36
 
      U(0, 0, (sum / 55) * pi) q;  // Global-scope qubit 'q' is in scope here.
    }
