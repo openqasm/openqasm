@@ -7,51 +7,44 @@ source: |
   output bit result;
 reference: |
   program
-    header
-      version
-        OPENQASM
-        3.0
-        ;
-      include
+    version
+      OPENQASM
+      3.0
+      ;
+    statement
+      includeStatement
         include
         "std_gates.inc"
         ;
-      io
-        ioIdentifier
-          input
-        classicalType
-          nonArrayType
-            singleDesignatorType
-              angle
-              designator
-                [
-                expression
-                  expressionTerminator
-                    32
-                ]
+    statement
+      ioDeclarationStatement
+        input
+        scalarType
+          angle
+          designator
+            [
+            expression
+              32
+            ]
         param1
         ;
-      io
-        ioIdentifier
-          input
-        classicalType
-          nonArrayType
-            singleDesignatorType
-              angle
-              designator
-                [
-                expression
-                  expressionTerminator
-                    32
-                ]
+    statement
+      ioDeclarationStatement
+        input
+        scalarType
+          angle
+          designator
+            [
+            expression
+              32
+            ]
         param2
         ;
-      io
-        ioIdentifier
-          output
-        classicalType
-          nonArrayType
-            bitType
-              bit
+    statement
+      ioDeclarationStatement
+        output
+        scalarType
+          bit
         result
         ;
+    <EOF>
