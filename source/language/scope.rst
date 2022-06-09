@@ -191,7 +191,7 @@ For example:
       // In this body, 'a' refers to the subroutine parameter, not the external
       // variable, which wouldn't be visible even without the shadowing.
 
-      int local = 5;
+      int in_body = 5;
 
       // Identifiers in scope are:
       //  - 'my_routine': the subroutine itself
@@ -200,8 +200,8 @@ For example:
       //      int' 'c').
       //  - 'd': type 'const int', value 4, visible from the global scope
       //      because it is a 'const' type.
-      //  - 'local': type 'int', value 5, from regular definition in the current
-      //      scope.
+      //  - 'in_body': type 'int', value 5, from regular definition in the
+      //      current scope.
       //  - other built-in identifiers (such as 'U' and 'pi') that are
       //      implicitly defined in the global scope.
       //  - all available hardware qubits (such as '$0')
@@ -214,24 +214,24 @@ For example:
 
    // After the subroutine block, 'a' and 'c' once again refer to the variables
    // of type 'int' and 'const int' defined on lines 3 and 5 respectively.
-   // 'local' (from the subroutine body) is not in scope, while 'my_routine'
+   // 'in_body' (from the subroutine body) is not in scope, while 'my_routine'
    // (the subroutine) is.
 
    const float[64] new_variable = 1.5;
 
    def second_subroutine(qubit[4] q) {
-      int local = 8;
+      int in_body = 8;
 
-      let alias = q[0:2];
+      let some_qubits = q[0:2];
 
       // Identifiers in scope are:
       //   - 'second_subroutine'
       //   - 'my_subroutine'
-      //   - 'local': type 'int', value 8
+      //   - 'in_body': type 'int', value 8
       //   - 'c': type 'const int', value 3
       //   - 'd': type 'const int', value 4
       //   - 'q': type 'qubit[4]', a virtual, run-time-known qubit register.
-      //   - 'alias': alias for the first three qubits of 'q'.
+      //   - 'some_qubits': alias for the first three qubits of 'q'.
       //   - 'new_variable': type 'const float[64]', value 1.5
       //   - the other built-in identifiers like 'U' and 'pi'
       //   - the available hardware qubits like '$0'.
@@ -276,9 +276,9 @@ Some further examples:
 
    OPENQASM 3.0
 
-   int ii = 100;        // 'ii' is declared in the global scope.
-   qubit[5] q;          // 'q' is declared in the global scope.
-   let alias = q[0:2];  // alias 'alias' is declared in the global scope.
+   int ii = 100;         // 'ii' is declared in the global scope.
+   qubit[5] q;           // 'q' is declared in the global scope.
+   let some_q = q[0:2];  // alias 'some_q' is declared in the global scope.
 
    if (true) {
      ii *= 2;    // This is the global 'ii', which now has the value 200.
@@ -314,5 +314,5 @@ Some further examples:
    // conclusion of the for-loop body, and the global 'ii' is back in scope.
 
    while (ii > 0) {
-     let alias = q[3:4];  // local alias 'alias' shadows the global alias.
+     let some_q = q[3:4];  // local alias 'some_q' shadows the global alias.
    }
