@@ -187,6 +187,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitStatement(self, ctx: qasm3Parser.StatementContext):
+        if ctx.pragma():
+            return self.visit(ctx.pragma())
         out = self.visit(ctx.getChild(-1))
         out.annotations = [self.visit(annotation) for annotation in ctx.annotation()]
         return out
@@ -203,6 +205,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitPragma(self, ctx: qasm3Parser.PragmaContext):
+        if not self._in_global_scope():
+            _raise_from_context(ctx, "pragmas must be global")
         return ast.Pragma(
             command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None
         )

@@ -1600,6 +1600,7 @@ class TestFailurePaths:
             ("qubit q;", "qubit declarations must be global"),
             ("qreg q;", "qubit declarations must be global"),
             ("qreg q[5];", "qubit declarations must be global"),
+            ("\npragma command\n", "pragmas must be global"),
         ),
     )
     def test_global_statement_in_nonglobal_context(self, statement, message):
