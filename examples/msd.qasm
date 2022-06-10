@@ -112,7 +112,7 @@ def distill_and_buffer(int[32] num, qubit[33] work, qubit[buffer_size] buffer) {
 
   // Run first-level circuits until 10 successes,
   // storing the outputs for use in the second level
-  for i in [0: 9] {
+  for uint i in [0: 9] {
     rus_level_0 magic_lvl0, scratch;
     swap magic_lvl0[0], magic_lvl1_0[i];
     swap magic_lvl0[1], magic_lvl1_1[i];

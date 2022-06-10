@@ -240,6 +240,7 @@ angle[SIZE] x;
 float x = 2.0;
 float[SIZE * 2] x = 4.0;
 complex[float[64]] x;
+complex z;
 duration a = 1.0us;
 stretch b;
 """.strip()
@@ -337,22 +338,22 @@ float(2.0);
 
     def test_for_loop(self):
         input_ = """
-for i in [0:2] {
+for uint i in [0:2] {
   a += 1;
 }
-for i in [a:b] {
+for int[8] i in [a:b] {
   a += 1;
 }
-for i in [a:2 * b:c] {
+for float[64] i in [a:2 * b:c] {
+  a += 1.0;
+}
+for uint i in {1, 2, 3} {
   a += 1;
 }
-for i in {1, 2, 3} {
+for int i in {2 * j, 2 + 3 / 4, j + j} {
   a += 1;
 }
-for i in {2 * j, 2 + 3 / 4, j + j} {
-  a += 1;
-}
-for i in j {
+for complex[float[64]] i in j {
   a += 1;
 }
 """.strip()
@@ -747,7 +748,7 @@ def f(int[32] a) -> bool {{
 gate g(param) q {{
 {indent}h q;
 }}
-for i in [0:2] {{
+for uint i in [0:2] {{
 {indent}true;
 }}
 while (i) {{
@@ -782,7 +783,7 @@ durationof({{
     )
     def test_indent_nested(self, indent, outer_start, outer_end, allow_classical):
         classicals = f"""
-for i in [0:2] {{
+for uint i in [0:2] {{
 {indent}true;
 }}
 while (i) {{
@@ -907,7 +908,7 @@ if (i) {
 }
 if (i) {
 } else {
-  for j in [0:1] {
+  for uint j in [0:1] {
   }
 }
 if (i) {

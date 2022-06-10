@@ -397,7 +397,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         with self._push_scope(ctx):
             block = self.visit(ctx.body)
         return ast.ForInLoop(
-            loop_variable=_visit_identifier(ctx.Identifier(0)),
+            type=self.visit(ctx.scalarType()),
+            identifier=_visit_identifier(ctx.Identifier(0)),
             set_declaration=set_declaration,
             block=block,
         )
@@ -767,8 +768,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.ANGLE():
             return ast.AngleType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         if ctx.COMPLEX():
-            base = self.visit(ctx.scalarType())
-            if not isinstance(base, (ast.IntType, ast.FloatType, ast.AngleType)):
+            base = self.visit(ctx.scalarType()) if ctx.scalarType() else None
+            if base is not None and not isinstance(base, ast.FloatType):
                 _raise_from_context(ctx.scalarType(), f"invalid type of complex components")
             return ast.ComplexType(base_type=base)
         _raise_from_context(ctx, "unhandled type: {ctx.getText()}")
