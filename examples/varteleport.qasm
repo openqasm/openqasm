@@ -26,7 +26,7 @@ xprepare(input_qubit);
 rz(pi / 4) input_qubit;
 
 let io = input_qubit;
-for i in [0: n_pairs - 1] {
+for uint i in [0: n_pairs - 1] {
   let bp = q[{2*i, 2*i + 1}];
   bit[2] pf;
   bellprep bp;
