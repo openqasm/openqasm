@@ -170,7 +170,7 @@ and applies the controlled gate
 User-defined unitary gates
 --------------------------
 
-Programmers may define new gates, which may be resolved to a sequence of built-in
+Programmers may define new gates which can be resolved to a sequence of built-in
 gates, possibly through some program logic (such as `if` statements) or invocations
 of other user-defined gates. For example, a CPHASE operation is shown schematically
 in :numref:`fig_gate` corresponding OpenQASM code is
@@ -233,7 +233,7 @@ of the gate definition, as they in principle represent only individual qubits.
    // this is invalid:
    gate g a
    {
-     U(0, 0, 0) a[0];
+     U(0, 0, 0) a[0]; // not allowed to index an individual qubit operand
    }
 
 'General' gate declarations have a similar structure, with minor differences:
@@ -260,7 +260,7 @@ of the gate definition if, and only if, it is a register or array of qubits.
 .. code-block:: c
 
    // this is ok:
-   gate g (angle alpha, int k): qubit[3] a
+   gate g(angle alpha, int k): qubit[3] a
    {
      U(0, 0, alpha) a[0];
      U(0, 0, alpha/k) a[1];
@@ -275,9 +275,9 @@ of the gate definition if, and only if, it is a register or array of qubits.
    }
 
    // this is invalid:
-   gate g (angle alpha, int k): qubit a
+   gate g(angle alpha, int k): qubit a
    {
-     U(0, 0, alpha) a[0];
+     U(0, 0, alpha) a[0]; // not allowed to index an individual qubit operand
      U(0, 0, alpha/k) a[1];
      U(0, 0, alpha/(k**2)) a[2];
    }
@@ -285,14 +285,12 @@ of the gate definition if, and only if, it is a register or array of qubits.
 
 For either kind of gate declaration, the ``body`` may consist of the following:
 
- * Declaration and initialisation of classical variables (but not re-assignment to them);
+ * declaration and initialisation of classical variables (but not re-assignment to them);
 
- * Program logic (``if`` statements and ``for`` loops) with conditions/bounds involving constants,
+ * program logic (``if`` statements and ``for`` loops) with conditions/bounds involving constants,
    and simple expressions depending on the gate arguments and local identifiers / loop iterators;
 
- * Timing directives; and
-
- * Calls to built-in gates and previously defined gates.
+ * and calls to built-in gates and previously defined gates.
 
 For instance, the following defines a quantum Fourier transform on eight qubits:
 
