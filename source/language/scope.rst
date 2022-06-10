@@ -43,11 +43,12 @@ scope.  Approximately, ``const`` variables, gates and subroutines are visible
 within *all* inner scopes, while other variables in outer scopes are visible
 within inner control-flow scopes but not gate and function scopes.
 
-The ``include`` statement should be seen as extending the scope it is contained
-within; all variables that are in scope at the time of the ``include`` statement
-are also in scope while the included file is being parsed, and variables defined
-in that file will be available in the containing scope once the inclusion has
-been parsed.  There is no separate namespacing defined in OpenQASM 3.0.
+The ``include`` statement should be seen as extending the global scope of the
+file it is contained within; all variables that are in scope at the time of the
+``include`` statement are also in scope while the included file is being parsed,
+and variables defined in that file will be available in the containing file's
+scope once the inclusion has been parsed.  There is no separate namespacing
+defined in OpenQASM 3.0.
 
 
 .. _scope-global:
