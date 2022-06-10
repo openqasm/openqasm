@@ -255,15 +255,16 @@ def test_simple_type_declarations():
 
 def test_complex_declaration():
     p = """
-    complex[int[24]] iq;
+    complex[float[64]] a;
     complex[float] fq;
+    complex implicit;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
             ClassicalDeclaration(
-                ComplexType(base_type=IntType(IntegerLiteral(24))),
-                Identifier("iq"),
+                ComplexType(base_type=FloatType(IntegerLiteral(64))),
+                Identifier("a"),
                 None,
             ),
             ClassicalDeclaration(
@@ -271,11 +272,16 @@ def test_complex_declaration():
                 Identifier("fq"),
                 None,
             ),
+            ClassicalDeclaration(
+                ComplexType(base_type=None),
+                Identifier("implicit"),
+                None,
+            ),
         ]
     )
     SpanGuard().visit(program)
     context_declaration = program.statements[0]
-    assert context_declaration.span == Span(1, 0, 1, 19)
+    assert context_declaration.span == Span(1, 0, 1, 20)
 
 
 def test_array_declaration():

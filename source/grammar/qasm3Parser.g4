@@ -191,7 +191,7 @@ scalarType:
     | BOOL
     | DURATION
     | STRETCH
-    | COMPLEX LBRACKET scalarType RBRACKET
+    | COMPLEX (LBRACKET scalarType RBRACKET)?
 ;
 qubitType: QUBIT designator?;
 arrayType: ARRAY LBRACKET scalarType COMMA expressionList RBRACKET;

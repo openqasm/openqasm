@@ -240,6 +240,7 @@ angle[SIZE] x;
 float x = 2.0;
 float[SIZE * 2] x = 4.0;
 complex[float[64]] x;
+complex z;
 duration a = 1.0us;
 stretch b;
 """.strip()
