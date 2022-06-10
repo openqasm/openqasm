@@ -294,7 +294,22 @@ For either kind of gate declaration, the ``body`` may consist of the following:
 
  * Calls to built-in gates and previously defined gates.
 
-Note in particular that classical variables and parameters in a ``gate`` body are treated as being immutable,
+For instance, the following defines a quantum Fourier transform on eight qubits:
+
+.. code-block:: c
+  gate QFT256 : qubit[8] q {
+        uint n = 8;
+        for uini j in [0 : n-1] {
+          h q[j];
+          for uint k in [j+1 : n-1]
+           ctrl @ Rz(pi / 2**(k-j+1)) q[j], q[k];
+          }
+        for uint j in [0:n-1]
+          if (j != n-1-j)
+            swap q[j], q[n-1-j]
+  }
+
+Classical storage types and parameters in a ``gate`` body are treated as being immutable,
 and cannot be assigned to more than once. (For loop induction variables are treated as being constant within
 the scope of any single iteration of the ``for`` loop, and can only be modified by the logic of the loop
 itself.) External functions, ``reset`` operations, ``measure`` operations (or other operations with potentially
