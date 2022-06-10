@@ -131,18 +131,3 @@ class TestInvalidProgramsFailToParse:
     def test_single_global_statement(self, statement):
         with pytest.raises(openqasm_reference_parser.Qasm3ParserError):
             openqasm_reference_parser.pretty_tree(program=statement)
-
-    @pytest.mark.parametrize(
-        "statement",
-        cases_from_lines(
-            TEST_DIR / "valid" / "statements" / "globals.qasm",
-            root=TEST_DIR / "valid" / "statements",
-        )
-    )
-    def test_scoped_global_statements(self, statement):
-        # Check that the statement is a valid global statement ...
-        openqasm_reference_parser.pretty_tree(program=statement)
-        # ... but it fails if not in the global scope.
-        scoped = f"if (true) {{ {statement} }}"
-        with pytest.raises(openqasm_reference_parser.Qasm3ParserError):
-            openqasm_reference_parser.pretty_tree(program=scoped)

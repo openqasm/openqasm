@@ -243,24 +243,52 @@ modulo :math:`2\pi`.  Up to this modulo operation, the closest ``angle[size]``
 representation of an exact mathematical value is different from the true value
 by at most :math:`\epsilon\leq \pi/2^{\text{size}}`.
 
+
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers may be declared as ``complex[type] name``, for a numeric OpenQASM classical type
-``type`` (``int``, ``float``, ``angle`` plus their optional size). The real
-and imaginary parts of the complex number are ``type[size]`` types. For instance, ``complex[float[32]] c``
-would declare a complex number with real and imaginary parts that are 32-bit floating point numbers. The
-``im`` keyword defines the imaginary number :math:`sqrt(-1)`. ``complex[type[size]]`` types are initalized as
-``a + b im``, where ``a`` and ``b`` must be of the same type as ``type[size]``. ``b`` must occur to the
-left of ``im`` and the two can only be seperated by spaces/tabs (or nothing at all).
+Complex numbers may be declared as ``complex[float[size]] name``, where ``size``
+is the size of the IEEE-754 floating-point number used to store the real and
+imaginary components.  Each component behaves as a ``float[size]`` type.  The
+designator ``[size]`` can be omitted to use the default hardware ``float``, and
+``complex`` with no arguments is a synonym for ``complex[float]``.
+
+Imaginary literals are written as a decimal-integer or floating-point literal
+followed by the letters ``im``.  There may be zero or more spaces between the
+numeric component and the ``im`` component.  The type of this token is
+``complex`` (its value has zero real component), and the component type is as
+normal given the floating-point literal, or the machine-size ``float`` if the
+numeric component is an integer.
+
+The real and imaginary components of a complex number can be extracted using the
+builtin functions ``real()`` and ``imag()`` respectively.  The output types of
+these functions is the component type specified in the type declaration.  For
+example, given a declaration ``complex[float[64]] c;`` the output type of
+``imag(c)`` would be ``float[64]``.  The ``real()`` and ``imag()`` functions
+can be used in compile-time constant expressions when called on compile-time
+constant values.
 
 .. code-block::
 
    complex[float[64]] c;
-   c = 2.5 + 3.5im; // 2.5, 3.5 are resolved to be ``float[64]`` types
-   complex[float[64]] d = 2.0+sin(π) + 3.1*5.5 im;
-   complex[int[32]] f = 2 + 5 im; // 2, 5 are resolved to be ``int[32]`` types
-   complex[float] my_machine_complex;
+   c = 2.5 + 3.5im;
+   complex[float] d = 2.0+sin(π/2) + (3.1 * 5.5 im);
+   float d_real = real(d);  // equal to 3.0
+
+.. note::
+
+   Real-world hardware may not support run-time manipulation of ``complex``
+   values.  Consult your hardware's documentation to determine whether these
+   language features will be available at run time.
+
+.. warning::
+
+   The OpenQASM 3.0 specification only directly permits complex numbers with
+   floating-point component types.  Individually language implementations may
+   choose to make other component types available, but this version of the
+   specification prescribes no portable semantics in these cases.  It is
+   possible that a later version of the OpenQASM specification will define
+   semantics for non-\ ``float`` component types.
 
 Boolean types
 ~~~~~~~~~~~~~
@@ -443,6 +471,8 @@ backend-dependent unit equivalent to one waveform sample.
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
+
+.. _types-arrays:
 
 Arrays
 ------
@@ -694,21 +724,30 @@ the slices must match.
    twoD[1:2, 0] = anotherTwoD[0:1, 1]; // allowed
 
 .. _castingSpecifics:
+.. _implicit-promotion-rules:
 
 Casting specifics
 -----------------
 
 The classical types are divided into the 'standard' classical types (bool, int,
-uint, and float) that exist in languages like C, and the 'special' classical
-types (bit, angle, duration, and stretch) that do not.
+uint, float, and complex) that exist in languages like C, and the 'special'
+classical types (bit, angle, duration, and stretch) that do not.
 The standard types follow rules that mimic those of C99 for `promotion and
 conversion <https://en.cppreference.com/w/c/language/conversion>`_ in mixed
-expressions and assignments. Like the C99 specification, all float values have
-higher rank than all integer types, and higher-precision types have higher rank
-than the same type with a lower precision (see `usual arithmetic conversions
-<https://en.cppreference.com/w/c/language/conversion#Usual_arithmetic_conversions>`_,
+expressions and assignments.
+
+If values with two different types are used as the operands of a binary
+operation, the lesser of the two types is cast to the greater of the two.  All
+``complex`` are greater than all ``float``, and all ``complex`` and all
+``float`` are greater than all ``int`` or ``uint``.  Within each level of
+``complex`` and ``float``, types with greater width are greater than types with
+lower width.  For more information, see the `usual arithmetic conversions in C
+<https://en.cppreference.com/w/c/language/conversion#Usual_arithmetic_conversions>`_.
+
+The rules for rank of integer conversions mimic those of C99.  For more, see
 `integer promotions <https://en.cppreference.com/w/c/language/conversion#Integer_promotions>`_, and
-`integer conversions <https://en.cppreference.com/w/c/language/conversion#Integer_conversions>`_).
+`integer conversions <https://en.cppreference.com/w/c/language/conversion#Integer_conversions>`_.
+
 Standard and special classical types
 may only mix in expressions with operators defined for those mixed types,
 otherwise explicit casts must be provided, unless otherwise noted (such as for
