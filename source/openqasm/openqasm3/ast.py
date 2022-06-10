@@ -944,7 +944,8 @@ class ForInLoop(Statement):
         }
     """
 
-    loop_variable: Identifier
+    type: ClassicalType
+    identifier: Identifier
     set_declaration: Union[RangeDefinition, DiscreteSet, Identifier]
     block: List[Statement]
 

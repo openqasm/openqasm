@@ -696,7 +696,9 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_ForInLoop(self, node: ast.ForInLoop, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("for ")
-        self.visit(node.loop_variable, context)
+        self.visit(node.type)
+        self.stream.write(" ")
+        self.visit(node.identifier, context)
         self.stream.write(" in ")
         if isinstance(node.set_declaration, ast.RangeDefinition):
             self.stream.write("[")

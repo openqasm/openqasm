@@ -1169,13 +1169,14 @@ def test_branch_statement():
 
 def test_for_in_loop():
     p = """
-    for i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; continue; }
+    for uint[8] i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; continue; }
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
             ForInLoop(
-                loop_variable=Identifier("i"),
+                type=UintType(IntegerLiteral(8)),
+                identifier=Identifier("i"),
                 set_declaration=RangeDefinition(
                     start=IntegerLiteral(0), end=IntegerLiteral(2), step=None
                 ),
@@ -1289,7 +1290,7 @@ def test_quantumloop():
     p = """
     box [maxdur] {
         delay[start_stretch] $0;
-        for i in [1:2]{
+        for uint i in [1:2]{
             h $0;
             cx $0, $1;
         }
@@ -1297,7 +1298,6 @@ def test_quantumloop():
     }
     """.strip()
     program = parse(p)
-    print(parse(p))
     assert _remove_spans(program) == Program(
         statements=[
             Box(
@@ -1308,7 +1308,8 @@ def test_quantumloop():
                         qubits=[Identifier("$0")],
                     ),
                     ForInLoop(
-                        loop_variable=Identifier(name="i"),
+                        type=UintType(size=None),
+                        identifier=Identifier(name="i"),
                         set_declaration=RangeDefinition(
                             start=IntegerLiteral(value=1),
                             end=IntegerLiteral(value=2),
@@ -1442,6 +1443,11 @@ def test_pramga():
 
 
 class TestFailurePaths:
+    def test_missing_for_loop_type(self):
+        p = "for a in b {};"  # No type of for-loop variable.
+        with pytest.raises(QASM3ParsingError):
+            parse(p)
+
     @pytest.mark.parametrize("keyword", ("continue", "break"))
     def test_control_flow_outside_loop(self, keyword):
         message = f"'{keyword}' statement outside loop"
@@ -1495,7 +1501,7 @@ class TestFailurePaths:
     )
     def test_global_statement_in_nonglobal_context(self, statement, message):
         with pytest.raises(QASM3ParsingError, match=message):
-            parse(f"for i in [0:4] {{ {statement} }}")
+            parse(f"for uint[8] i in [0:4] {{ {statement} }}")
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"while (true) {{ {statement} }}")
         with pytest.raises(QASM3ParsingError, match=message):
