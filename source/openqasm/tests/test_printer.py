@@ -565,7 +565,7 @@ pragma !%^* word
             pytest.param("delay[50.0ms] $0;", id="delay"),
             pytest.param("4 * 5 + 3;", id="expression"),
             pytest.param("extern f();", id="extern"),
-            pytest.param("for i in [0:1] {\n}", id="for"),
+            pytest.param("for uint i in [0:1] {\n}", id="for"),
             pytest.param("ctrl @ h q;", id="gate call"),
             pytest.param("gphase(0.5);", id="gphase call"),
             pytest.param("gate f q {\n}", id="gate definition"),
