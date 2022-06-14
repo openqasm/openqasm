@@ -65,11 +65,44 @@ declares a reference to a quantum bit. These qubits are referred
 to as "virtual qubits" (in distinction to "physical qubits" on
 actual hardware; see below). The statement ``qubit[size] name;``
 declares a quantum register with ``size`` qubits.
-Sizes must always be constant positive integers. The label ``name[j]``
-refers to a qubit of this register, where
-:math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+Sizes must always be :ref:`compile-time constant <const-expression>` positive
+integers.
 Quantum registers are static arrays of qubits
 that cannot be dynamically resized.
+
+The label ``name[j]`` refers to a qubit of this register, where
+:math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
+
+.. note::
+
+   To be compliant with the base OpenQASM 3.0 specification, an implementation
+   is only required to allow this "quantum-register indexing" with a
+   :ref:`compile-time constant value <const-expression>` (those with ``const``
+   types).  Implementations are permitted to treat indexing into a quantum
+   register with a value of non-\ ``const`` type as an error.  Consult your
+   compiler and hardware documentation for details.
+
+.. code-block::
+
+   // Valid statements
+
+   include "stdgates.inc";
+
+   qubit[5] q1;
+   const uint SIZE = 4;
+   uint runtime_u = 2;
+   qubit[SIZE] q2;  // Declare a 4-qubit register.
+
+   x q1[0];
+   z q2[SIZE - 2];  // The index operand is of type `const uint`.
+
+
+   // Validity is implementation-defined.
+
+   x q1[runtime_u];
+   // Indexing with a value with a non-`const` type (`uint`, in this case) is
+   // not guaranteed to be supported.
+
 
 The keyword ``qreg`` is included
 for backwards compatibility and will be removed in the future.
@@ -103,8 +136,8 @@ circuits. Physical qubits must not be declared and they are, as all the qubits, 
    // CNOT gate between physical qubits 0 and 1
    CX $0, $1;
 
-Classical types
----------------
+Classical scalar types
+----------------------
 
 Classical bits and registers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -302,63 +335,172 @@ be true and 0 will be false.
    // Assign a cast bit to a boolean
    my_bool = bool(my_bit);
 
-Const values
-~~~~~~~~~~~~
 
-To support mathematical expressions, immutable constants of any classical type
-may be declared using the type modifier ``const``. On
-declaration, they take their assigned value and cannot be redefined
-within the same scope. These are constructed using an in-fix notation
-and scientific calculator features such as scientific notation, real
-arithmetic, logarithmic, trigonometric, and exponential functions
-including ``sqrt``, ``floor``, ``ceiling``, ``log``, ``pow``, ``div``, ``mod`` and the built-in constant π. The
-statement ``const type name = expression;`` defines a new constant. The expression on the right hand side
-has a similar syntax as OpenQASM 2 parameter expressions; however,
-previously defined constants can be referenced in later variable
-declarations. ``const`` values are compile-time constants, allowing the
-compiler to do constant folding and other such optimizations. Scientific
-calculator-like operations on run-time values require extern function
-calls as described later and are not available by default. Real
-constants can be cast to other types, just like other values.
+.. _const-expression:
 
-A standard set of built-in constants which are included in the default
-namespace are listed in table `1 <#tab:real-constants>`__. These constants
-are all of type ``float[64]``.
+Compile-time constants
+----------------------
+
+A typed declaration of a scalar type may be modified by the ``const`` keyword,
+such as ``const int a = 1;``.  This defines a compile-time constant.  Values of
+type ``const T`` may be used in all locations where a value of type ``T`` is
+valid.  ``const``-typed values are required when specifying the widths of types
+(e.g. in ``float[SIZE] f;``, ``SIZE`` must have a ``const`` unsigned integer
+type).  All scalar literals are ``const`` types.
 
 .. code-block::
 
-   // Declare a constant
-   const int my_const = 1234;
-   // Scientific notation is supported
-   const int[64] another_const = 1e12;
-   // Constant expressions are supported
-   const float[64] pi_by_2 = π / 2;
-   // Constants may be cast to real-time values
-   float[32] pi_by_2_val = float[32](pi_by_2)
+   // Valid statements
+   
+   const uint SIZE = 32;  // Declares a compile-time unsigned integer.
+
+   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`. 
+   int[SIZE] i1;    // Declares a signed integer called `i1` with 32 bits.
+
+
+   // Invalid statements
+
+   uint runtime_size = 32;
+   qubit[runtime_size] q2;  // Invalid; runtime_size is not a `const` type.
+   int[runtime_size] i2;    // Invalid for the same reason.
+
+.. _const-expression-initialization:
+
+Identifiers whose type is ``const T`` must be initialized, and may not be
+assigned to in subsequent statements.  The type of the result of the
+initialization expression for a ``const`` declaration must be ``const S``, where
+``S`` is a type that is either ``T`` or can be :ref:`implicitly promoted
+<implicit-promotion-rules>` to ``T``.
+
+.. code-block::
+
+   // Valid statements
+
+   const uint u1 = 4;
+   const int[8] i1 = 8;
+   float[64] runtime_f1 = 2.0;
+
+   const uint u2 = u1;       // `u1` is of type `const uint`.
+   const float[32] f2 = u1;  // `const uint` is implicitly promoted to `const float[32]`.
+
+
+   // Invalid statements
+
+   const int[64] i2 = f2;  // `const float[32]` cannot be implicitly promoted to `const int[64]`.
+   const float[64] f3 = runtime_f1;  // `runtime_f1` is not `const`.
+
+
+.. _const-expression-operator:
+
+Operator expressions, e.g. ``a + b`` (addition), ``a[b]`` (bit-level indexing)
+and ``a == b`` (equality), and :ref:`certain built-in functions
+<const-expression-functions>` acting only on ``const`` operands will be
+evaluated at compile time.  The resulting values are of type ``const T``, where
+the type ``T`` is the type of the result when acting on non-\ ``const``
+operands.
+
+.. code-block::
+
+   // Valid statements
+
+   const uint[8] SIZE = 5;
+
+   const uint[16] u1 = 2 * SIZE;  // Compile-time value 10.
+   const float[64] f1 = 5.0 * SIZE;  // Compile-time value 25.0.
+   const bit b1 = u1[1];  // Compile-time value `"1"`.
+   const bit[SIZE - 1] b2 = u1[0:3];  // Compile-time value `"1010"`.
+
+
+.. _const-expression-cast:
+
+The resultant type of a cast to type ``T`` is ``const T`` if the input value has
+a type ``const S``, where values of type ``S`` can be cast to type ``T``.  If
+``S`` cannot be cast to ``T``, the expression is invalid.  The cast operator
+does not contain the keyword ``const``.
+
+.. code-block::
+
+   // Valid statements
+
+   const float[64] f1 = 2.5;
+   uint[8] runtime_u = 7;
+
+   const int[8] i1 = int[8](f1);  // `i1` has compile-time value 2.
+   const uint u1 = 2 * uint(f1);  // `u1` has compile-time value 4.
+
+
+   // Invalid statements
+
+   const bit[2] b1 = bit[2](f1);  // `float[64]` cannot be cast to `bit[2]`.
+   const int[16] i2 = int[16](runtime_u);  // Casting runtime values is not `const`.
+
+
+.. _const-expression-nonconst:
+
+The resultant type of any expression involving a value that is not ``const`` is
+not ``const``.  The output type of a call to a subroutine defined by a ``def``,
+or a call to a subroutine linked by an ``extern`` statement is not ``const``.
+In these cases, values of type ``const T`` are converted to type ``T`` (which
+has no runtime cost and no effect on the value), then evaluation continues as
+usual.
+
+.. code-block::
+
+   // Valid statements
+
+   int[8] runtime_i1 = 4;
+
+   def f(int[8] a) -> int[8] {
+      return a;
+   }
+
+
+   // Invalid statements
+
+   const int[8] i2 = 2 * runtime_i1;
+   // Initialization expression has type `int[8]`, not `const int[8]`.
+   const int[8] i3 = f(runtime_i1);
+   // User-defined function calls do not propagate `const` values.
+
+
+Built-in constants
+~~~~~~~~~~~~~~~~~~
+
+Six identifiers are automatically defined in the global scope at the beginning
+of all OpenQASM 3 programs.  There are two identifiers for each of the
+mathematical constants :math:`\pi`, :math:`\tau = 2\pi` and Euler's number
+:math:`e`.  Each of these values has one ASCII-only identifier and one
+single-Unicode-character identifier.
 
 .. container::
    :name: tab:real-constants
 
    .. table:: [tab:real-constants] Built-in real constants in OpenQASM3 of type ``float[64]``.
 
-      +-------------------------------+--------------+--------------+---------------------+
-      | Constant                      | Alphanumeric | Unicode      | Approximate Base 10 |
-      +===============================+==============+==============+=====================+
-      | Pi                            | pi           | π            | 3.1415926535...     |
-      +-------------------------------+--------------+--------------+---------------------+
-      | Tau                           | tau          | τ            | 6.283185...         |
-      +-------------------------------+--------------+--------------+---------------------+
-      | Euler’s number                | euler        | ℇ            | 2.7182818284...     |
-      +-------------------------------+--------------+--------------+---------------------+
+      +-------------------------------+--------+--------------+---------------------+
+      | Constant                      | ASCII  | Unicode      | Approximate Base 10 |
+      +===============================+========+==============+=====================+
+      | :math:`\pi`                   | pi     | π            | 3.1415926535...     |
+      +-------------------------------+--------+--------------+---------------------+
+      | :math:`\tau = 2\pi`           | tau    | τ            | 6.283185...         |
+      +-------------------------------+--------+--------------+---------------------+
+      | Euler’s number :math:`e`      | euler  | ℇ            | 2.7182818284...     |
+      +-------------------------------+--------+--------------+---------------------+
 
-Note that `e` is a valid identifier. `e/E` are also used in scientific notation where appropriate.
 
-Mathematical functions available for constant initialization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. _const-expression-functions:
 
-In addition to simple arithmetic functions used in expressions initializing constants,
-OpenQASM 3 offers the following built-in mathematical operators followed by
-their argument expression in parentheses:
+Built-in constant expression functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following identifiers are compile-time functions that take ``const`` inputs
+and have a ``const`` output.  The normal implicit casting rules apply to the
+inputs of these functions.
+
+.. note::
+
+   These functions may not be available for use on runtime values; consult your
+   compiler and hardware documentation for details.
 
 .. container::
    :name: tab:built-in-math
@@ -368,54 +510,112 @@ their argument expression in parentheses:
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
       | Function | Input Range/Type, [...]           | Output Range/Type                    | Notes                                  |
       +==========+===================================+======================================+========================================+
-      | arccos   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[0, \pi]`        |                                        |
+      | arccos   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[0, \pi]`        | Inverse cosine.                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | arcsin   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[-\pi/2, \pi/2]` |                                        |
+      | arcsin   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse sine.                          |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | arctan   | ``float``                         | ``float`` on :math:`[-\pi/2, \pi/2]` |                                        |
+      | arctan   | ``float``                         | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse tangent.                       |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | ceiling  | ``float``                         | ``float``                            |                                        |
+      | ceiling  | ``float``                         | ``float``                            | Round to the nearest representable     |
+      |          |                                   |                                      | integer equal or greater in value.     |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | cos      | (``float`` or ``angle``)          | ``float``                            |                                        |
+      | cos      | (``float`` or ``angle``)          | ``float``                            | Cosine.                                |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | exp      | ``float``                         | ``float``                            |                                        |
+      | exp      | ``float``                         | ``float``                            | Exponential :math:`e^x`.               |
       |          |                                   |                                      |                                        |
       |          | ``complex``                       | ``complex``                          |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | floor    | ``float``                         | ``float``                            |                                        |
+      | floor    | ``float``                         | ``float``                            | Round to the nearest representable     |
+      |          |                                   |                                      | integer equal or lesser in value.      |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | log      | ``float``                         | ``float``                            | Logarithm base :math:`e`               |
+      | log      | ``float``                         | ``float``                            | Logarithm base :math:`e`.              |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | mod      | ``int``, ``int``                  | ``int``                              |                                        |
-      |          |                                   |                                      |                                        |
-      |          | ``float``, (``int`` or ``float``) | ``float``                            |                                        |
+      | mod      | ``int``, ``int``                  | ``int``                              | Modulus.  The remainder from the       |
+      |          |                                   |                                      | integer division of the first argument |
+      |          | ``float``, ``float``              | ``float``                            | by the second argument.                |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | popcount | ``bit[_]``, ``uint``              | ``uint``                             |                                        |
+      | popcount | ``bit[_]``                        | ``uint``                             | Number of set (1) bits.                |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | pow      | ``int``, ``uint``                 | ``int``                              |                                        |
+      | pow      | ``int``, ``uint``                 | ``int``                              | :math:`\texttt{pow(a, b)} = a^b`.      |
       |          |                                   |                                      |                                        |
       |          | ``float``, ``float``              | ``float``                            | For floating-point and complex values, |
       |          |                                   |                                      | the principal value is returned.       |
       |          | ``complex``, ``complex``          | ``complex``                          |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotl     | ``bit[n]``, (``int`` or ``uint``) | ``bit[n]``                           |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotr     | ``bit[n]``, (``int`` or ``uint``) | ``bit[n]``                           |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | sin      | (``float`` or ``angle``)          | ``float``                            |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | sqrt     | ``float``                         | ``float``                            | Returns the principal root.            |
+      | rotl     | ``bit[n]``, ``int``               | ``bit[n]``                           | Rotate the bits in the representation  |
+      |          |                                   |                                      | ``n`` to the left (towards higher      |
+      |          |                                   |                                      | indices).  This is similar to a bit    |
+      |          |                                   |                                      | shift operation, except the vacated    |
+      |          |                                   |                                      | bits are filled from the overflow,     |
+      |          |                                   |                                      | rather than being set to zero.  The    |
+      |          |                                   |                                      | width of the output is set equal to    |
+      |          |                                   |                                      | the width of the input.                |
       |          |                                   |                                      |                                        |
+      |          |                                   |                                      | ``rotl(a, n) == rotr(a, -n)``.         |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | rotr     | ``bit[n]``, ``int``               | ``bit[n]``                           | Rotate the bits in the representation  |
+      |          |                                   |                                      | ``n`` to the right (towards lower      |
+      |          |                                   |                                      | indices).                              |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | sin      | (``float`` or ``angle``)          | ``float``                            | Sine.                                  |
+      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      | sqrt     | ``float``                         | ``float``                            | Square root.  This always returns the  |
+      |          |                                   |                                      | principal root.                        |
       |          | ``complex``                       | ``complex``                          |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | tan      | (``float`` or ``angle``)          | ``float``                            |                                        |
+      | tan      | (``float`` or ``angle``)          | ``float``                            | Tangent.                               |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+
+For each built-in function, the chosen overload is the first one to appear in
+the list above where all given operands can be implicitly cast to the valid
+input types.  The output type is not considered when choosing an overload.  It
+is an error if there is no valid overload for a given sequence of operands.
+
+.. code-block::
+
+   // Valid statements.
+
+   const float[64] f1 = 2.5;
+   const int[8] i1 = 4;
+   const uint[4] u1 = 3;
+   const bit[8] b1 = "0010_1010";
+   const complex[float[64]] c1 = 1.0 + 2.0im;
+
+   const float[64] f2 = 2.0 * exp(f1);
+   const float[64] f3 = exp(i1);
+   // The ``float -> float`` overload of ``exp`` is chosen in both of these
+   // cases; in the first, there is an exact type match, in the second the
+   // ``int[8]`` input can be implicitly promoted to ``float``.
+
+   const int[8] i2 = pow(i1, u1);
+   // Value 64, expression has type `const int`.  The first overload of `pow`
+   // is chosen, because `i1` can be implicitly promoted to `const int` and
+   // `u1` to `const uint`.
+
+   const float[64] f4 = pow(i1, -2);
+   // Value 0.0625, expression has type `const float`.  The second,
+   // `(float, float) -> float`, overload is chosen, because `-2` (type
+   // `const int`) cannot be implicitly promoted to `const uint`, but both
+   // input types can be implicitly promoted to `float`.  The `complex` overload
+   // is not attempted, because it has lower priority.
+
+   const bit[8] b2 = rotl(b1, 3);
+   // Value "0101_0001", expression has type `const bit[8]` (the 
+
+
+   // Invalid statements.
+
+   const complex[float[64]] c2 = mod(c1, 2);
+   // No valid overload is possible; the first given operand has type
+   // `const complex[float[64]]`, which cannot be implicitly promoted to
+   // `int` or `float`.
+
 
 Literals
 --------
 
 There are five types of literals in OpenQASM 3, integer, float, boolean,
-bit string, and timing.
+bit string, and timing.  These literals have ``const`` types.
 
 Integer literals can be written in decimal without a prefix, or as a hex, octal, or
 binary number, as denoted by a leading ``0x/0X``, ``0o``, or ``0b/0B`` prefix.
