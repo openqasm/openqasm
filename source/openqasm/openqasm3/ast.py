@@ -93,7 +93,7 @@ __all__ = [
     "WhileLoop",
 ]
 
-AccessControl = Enum("AccessControl", "const mutable")
+AccessControl = Enum("AccessControl", "readonly mutable")
 AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
 BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
 GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")

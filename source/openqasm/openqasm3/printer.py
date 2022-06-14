@@ -487,14 +487,18 @@ class Printer(QASMVisitor[PrinterState]):
 
     def visit_ClassicalArgument(self, node: ast.ClassicalArgument, context: PrinterState) -> None:
         if node.access is not None:
-            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
+            self.stream.write(
+                "readonly " if node.access == ast.AccessControl.readonly else "mutable "
+            )
         self.visit(node.type, context)
         self.stream.write(" ")
         self.visit(node.name, context)
 
     def visit_ExternArgument(self, node: ast.ExternArgument, context: PrinterState) -> None:
         if node.access is not None:
-            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
+            self.stream.write(
+                "readonly " if node.access == ast.AccessControl.readonly else "mutable "
+            )
         self.visit(node.type, context)
 
     @_maybe_annotated

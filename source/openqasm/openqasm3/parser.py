@@ -814,7 +814,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             )
         elif ctx.arrayReferenceType():
             array_ctx = ctx.arrayReferenceType()
-            access = ast.AccessControl.const if array_ctx.CONST() else ast.AccessControl.mutable
+            access = (
+                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+            )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())
@@ -838,7 +840,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             type_ = self.visit(ctx.scalarType())
         else:
             array_ctx = ctx.arrayReferenceType()
-            access = ast.AccessControl.const if array_ctx.CONST() else ast.AccessControl.mutable
+            access = (
+                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+            )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())

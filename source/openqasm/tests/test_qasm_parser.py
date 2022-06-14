@@ -1039,8 +1039,8 @@ def test_subroutine_signatures():
     def a(int[8] b) {}
     def a(complex[float[32]] b, qubit c) -> int[32] {}
     def a(bit[5] b, qubit[2] c) -> complex[float[64]] {}
-    def a(qubit b, const array[uint[8], 2, 3] c) {}
-    def a(mutable array[uint[8], #dim=5] b, const array[uint[8], 5] c) {}
+    def a(qubit b, readonly array[uint[8], 2, 3] c) {}
+    def a(mutable array[uint[8], #dim=5] b, readonly array[uint[8], 5] c) {}
     """.strip()
     program = parse(p)
     a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
@@ -1087,7 +1087,7 @@ def test_subroutine_signatures():
                             dimensions=[IntegerLiteral(2), IntegerLiteral(3)],
                         ),
                         name=c,
-                        access=AccessControl.const,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,
@@ -1115,7 +1115,7 @@ def test_subroutine_signatures():
                             dimensions=[IntegerLiteral(5)],
                         ),
                         name=c,
-                        access=AccessControl.const,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,
