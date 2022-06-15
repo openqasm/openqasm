@@ -23,8 +23,8 @@ defcal x $q {
    play drive($q), gaussian(100, 30, 5);
 }
 
-for p in [0 : points-1] {
-    for i in [1 : shots] {
+for uint p in [0 : points-1] {
+    for uint i in [1 : shots] {
         // start of a basic block
         reset $0;
         reset $1;
