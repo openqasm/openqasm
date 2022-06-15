@@ -59,7 +59,7 @@ includeStatement: INCLUDE StringLiteral SEMICOLON;
 breakStatement: BREAK SEMICOLON;
 continueStatement: CONTINUE SEMICOLON;
 endStatement: END SEMICOLON;
-forStatement: FOR Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) body=statementOrScope;
+forStatement: FOR scalarType Identifier IN (setExpression | LBRACKET rangeExpression RBRACKET | Identifier) body=statementOrScope;
 ifStatement: IF LPAREN expression RPAREN if_body=statementOrScope (ELSE else_body=statementOrScope)?;
 returnStatement: RETURN (expression | measureExpression)? SEMICOLON;
 whileStatement: WHILE LPAREN expression RPAREN body=statementOrScope;
@@ -191,7 +191,7 @@ scalarType:
     | BOOL
     | DURATION
     | STRETCH
-    | COMPLEX LBRACKET scalarType RBRACKET
+    | COMPLEX (LBRACKET scalarType RBRACKET)?
 ;
 qubitType: QUBIT designator?;
 arrayType: ARRAY LBRACKET scalarType COMMA expressionList RBRACKET;

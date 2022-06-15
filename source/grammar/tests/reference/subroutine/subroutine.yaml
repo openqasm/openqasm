@@ -6,7 +6,7 @@ source: |
     return result;
   }
   def test_sub2(int[5] i, bit[2] b, creg c[3]) {
-    for j in {2, 3}
+    for int[5] j in {2, 3}
       i += j;
     return i+1;
   }
@@ -141,6 +141,13 @@ reference: |
           statement
             forStatement
               for
+              scalarType
+                int
+                designator
+                  [
+                  expression
+                    5
+                  ]
               j
               in
               setExpression

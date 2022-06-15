@@ -702,11 +702,11 @@ class ComplexType(ClassicalType):
 
     Example::
 
-        complex[int[32]]
+        complex[float]
         complex[float[32]]
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType]
+    base_type: Optional[FloatType]
 
 
 @dataclass
@@ -944,7 +944,8 @@ class ForInLoop(Statement):
         }
     """
 
-    loop_variable: Identifier
+    type: ClassicalType
+    identifier: Identifier
     set_declaration: Union[RangeDefinition, DiscreteSet, Identifier]
     block: List[Statement]
 

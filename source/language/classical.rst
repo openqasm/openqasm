@@ -113,18 +113,23 @@ multiplication, division, and power and the corresponding assignment operators.
 Complex numbers
 ~~~~~~~~~~~~~~~
 
-Complex numbers support addition, subtraction, multiplication, division, power and the corresponding
-assignment operators.
+Complex numbers support addition, subtraction, multiplication, division, power
+and the corresponding assignment operators.  These binary operators follow
+analogous semantics to those described in Annex G (section G.5) of the C99
+specification (note that OpenQASM 3.0 has no *imaginary* type, only *complex*).
+These operations use the floating-point semantics of the underlying component
+floating-point types, including their ``NaN`` propagation, and
+hardware-dependent rounding mode and subnormal handling.
 
 .. code-block:: c
 
    complex[float[64]] a = 10.0 + 5.0im;
    complex[float[64]] b = -2.0 - 7.0im;
-   complex[float[64]] c = a + b; // c = 8.0 - 2.0im
-   complex[float[64]] d = a - b; // d = 12.0+12.0im;
-   complex[float[64]] e = a * b; // e = 15.0-80.0im;
-   complex[float[64]] f = a / b; // f = (-55.0+60.0im)/53.0
-   complex[float[64]] g = a ** b; // g = (0.10694695640729072+0.17536481119721312im)
+   complex[float[64]] c = a + b;   // c = 8.0 - 2.0im
+   complex[float[64]] d = a - b;   // d = 12.0+12.0im;
+   complex[float[64]] e = a * b;   // e = 15.0-80.0im;
+   complex[float[64]] f = a / b;   // f = (-55.0+60.0im)/53.0
+   complex[float[64]] g = a ** b;  // g = (0.10694695640729072+0.17536481119721312im)
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
@@ -167,8 +172,13 @@ OpenQASM evaluates expressions from left to right.
 Looping and branching
 ~~~~~~~~~~~~~~~~~~~~~
 
-The statement ``if ( bool ) { program }`` branches to program if the Boolean evaluates to true and
-may optionally be followed by ``else { program }``.
+If-else statements
+..................
+
+The statement ``if ( bool ) <true-body>`` branches to program if the Boolean evaluates to true and
+may optionally be followed by ``else <false-body>``.  Both ``true-body`` and
+``false-body`` can be a single statement terminated by a semicolon, or a program
+block of several statements ``{ stmt1; stmt2; }``.
 
 .. code-block:: c
 
@@ -184,26 +194,90 @@ may optionally be followed by ``else { program }``.
       // do something else
    }
 
-The statement ``for name in indexset { program }`` loops over integer values in the indexset, assigning them
-to ``name``. The for loop body is not permitted to modify the loop variable of
-the indexset.
+For loops
+.........
+
+The statement ``for <type> <name> in <values> <body>`` loops over the
+items in ``values``, assigning each value to the variable ``name`` in subsequent
+iterations of the loop ``body``.  ``values`` can be:
+
+- a discrete set of scalar types, defined using the
+  :ref:`array-literal syntax <types-arrays>`, such as ``{1, 2, 3}``.  Each value
+  in the set must be able to be implicitly promoted to the type ``type``.
+
+- a range expression in square brackets of the form ``[start : (step :)? stop]``,
+  where ``step`` is equal to ``1`` if omitted.  As in other range expressions,
+  the range is inclusive at both ends.  Both ``start`` and ``stop`` must be
+  given.  All three values must be of integer or unsigned-integer types.  The
+  scalar type of elements in the resulting range expression is the same as the
+  type of result of the :ref:`implicit promotion <implicit-promotion-rules>`
+  between ``start`` and ``stop``.  For example, if ``start`` is a ``uint[8]``
+  and ``stop`` is an ``int[16]``, the values to be assigned will all be of type
+  ``int[16]``.
+
+- a value of type ``bit[n]``, or the target of a ``let`` statement that creates
+  an alias to classical bits.  The corresponding scalar type of the loop
+  variable is ``bit``, as appropriate.
+
+- a value of type ``array[<scalar>, n]``, _i.e._ a one-dimensional
+  array.  Values of type ``scalar`` must be able to be implicitly promoted to
+  values of type ``type``.  Modification of the loop variable does not change
+  the corresponding value in the array.
+
+It is valid to use an indexing expression (e.g. ``my_array[1:3]``) to arrive at
+one of the types given above.  In the cases of sets, ``bit[n]``, classical
+aliases and ``array``, the iteration order is guaranteed to be in sequential
+index order, that is ``iden[0]`` then ``iden[1]``, and so on.
+
+The loop body can either be a single statement terminated by a semicolon, or a
+program block in curly braces ``{}`` containing several statements.
+
+Assigning a value to the loop variable within an iteration over the body does
+not affect the next value that the loop variable will take.
+
+The scope of the loop variable is limited to the body of the loop.  It is not
+accessible after the loop.
 
 .. code-block:: c
 
-   int[32] b;
+   int[32] b = 0;
    // loop over a discrete set of values
-   for i in {1, 5, 10} {
+   for int[32] i in {1, 5, 10} {
        b += i;
-   } // b == 16
+   }
+   // b == 16, and i is not in scope.
 
-   // loop over every even integer from 0 to 20 using an indexset
-   for i in [0:2:20] {
+   // loop over every even integer from 0 to 20 using a range, and call a
+   // subroutine with that value.
+   for int i in [0:2:20]
+      subroutine(i);
+
+   // high precision typed loop variable
+   for uint[64] i in [4294967296:4294967306] {
       // do something
    }
 
-The statement ``while ( bool ) { program }`` executes program until the Boolean evaluates to
+   // Loop over an array of floats.
+   array[float[64], 4] my_floats = {1.2, -3.4, 0.5, 9.8};
+   for float[64] f in my_floats {
+      // do something with 'f'
+   }
+
+   // Loop over a register of bits.
+   bit[5] register;
+   for b in register {}
+   let alias = register[1:3];
+   for b in alias {}
+
+
+While loops
+...........
+
+The statement ``while ( bool ) <body>`` executes program until the Boolean evaluates to
 false [3]_. Variables in the loop condition statement may be modified
-within the while loop body.
+within the while loop body.  The ``body`` can be either a single statement
+terminated by a semicolon, or a program block in curly braces ``{}`` of several
+statements:
 
 .. code-block:: c
 
@@ -221,10 +295,17 @@ within the while loop body.
        }
    }
 
-A block ``{ program }`` can be exited with the statement ``break;``. The statement ``continue;`` can appear in
-the body of a for or while loop. It returns control to the loop
-condition. The statement ``end;`` terminates the program. In all of the
-preceding, ``{ program }`` can also be replaced by a statement without the braces.
+Breaking and continuing loops
+.............................
+
+The statement ``break;`` moves control to the statement immediately following
+the closest containing ``for`` or ``while`` loop.
+
+The statement ``continue;`` causes execution to jump to the next step in the
+closest containing ``for`` or ``while`` loop.  In a ``while`` loop, this point
+is the evaluation of the loop condition.  In a ``for`` loop, this is the
+assignment of the next value of the loop variable, or the end of the loop if the
+current value is the last in the set.
 
 .. code-block:: c
 
@@ -246,6 +327,26 @@ preceding, ``{ program }`` can also be replaced by a statement without the brace
 
        // more program
    }
+
+It is an error to have a ``break;`` or ``continue;`` statement outside a loop,
+such as at the top level of the main circuit or of a subroutine.
+
+.. code-block:: c
+   
+   OPENQASM 3.0;
+
+   break;  // Invalid: no containing loop.
+
+   def fn() {
+      continue; // Invalid: no containing loop.
+   }
+
+
+Terminating the program early
+.............................
+
+The statement ``end;`` immediately terminates the program, no matter what scope
+it is called from.
 
 Extern function calls
 ---------------------

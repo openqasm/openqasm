@@ -1,9 +1,10 @@
 # indent w/ 2 spaces
 source: |
-  complex[int[32]] a;
-  complex[float[40]] b = 4-5.5im;
-  complex[angle[20]] d = a + b;
+  complex[float] a;
+  complex[float] b = 4 - 5.5im;
+  complex[float[64]] d = a + 3 im;
   complex[float[32]] c = a ** b;
+  complex z;
 reference: |
   program
     statement
@@ -12,12 +13,7 @@ reference: |
           complex
           [
           scalarType
-            int
-            designator
-              [
-              expression
-                32
-              ]
+            float
           ]
         a
         ;
@@ -28,11 +24,6 @@ reference: |
           [
           scalarType
             float
-            designator
-              [
-              expression
-                40
-              ]
           ]
         b
         =
@@ -50,11 +41,11 @@ reference: |
           complex
           [
           scalarType
-            angle
+            float
             designator
               [
               expression
-                20
+                64
               ]
           ]
         d
@@ -65,7 +56,7 @@ reference: |
               a
             +
             expression
-              b
+              3 im
         ;
     statement
       classicalDeclarationStatement
@@ -89,5 +80,11 @@ reference: |
             **
             expression
               b
+        ;
+    statement
+      classicalDeclarationStatement
+        scalarType
+          complex
+        z
         ;
     <EOF>

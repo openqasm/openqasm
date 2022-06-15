@@ -530,9 +530,11 @@ class Printer(QASMVisitor[PrinterState]):
             self.stream.write("]")
 
     def visit_ComplexType(self, node: ast.ComplexType, context: PrinterState) -> None:
-        self.stream.write("complex[")
-        self.visit(node.base_type, context)
-        self.stream.write("]")
+        self.stream.write("complex")
+        if node.base_type is not None:
+            self.stream.write("[")
+            self.visit(node.base_type, context)
+            self.stream.write("]")
 
     def visit_AngleType(self, node: ast.AngleType, context: PrinterState) -> None:
         self.stream.write("angle")
@@ -696,7 +698,9 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_ForInLoop(self, node: ast.ForInLoop, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("for ")
-        self.visit(node.loop_variable, context)
+        self.visit(node.type)
+        self.stream.write(" ")
+        self.visit(node.identifier, context)
         self.stream.write(" in ")
         if isinstance(node.set_declaration, ast.RangeDefinition):
             self.stream.write("[")
