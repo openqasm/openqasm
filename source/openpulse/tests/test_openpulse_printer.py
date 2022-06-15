@@ -54,7 +54,7 @@ from openpulse.printer import dumps
         }
         """,
         """
-        for x in [1:2:10] {
+        for int x in [1:2:10] {
           step();
         }
         """,
