@@ -100,6 +100,10 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
    necessarily true; if ``ang`` represents the angle :math:`3\pi/2`, then
    ``2*ang == pi`` and ``pi < ang``.
 
+   This is the same behavior as unsigned integers in many languages (including
+   OpenQASM 3), but the types of operation commonly performed on ``angle`` are
+   particularly likely to trigger these modulo arithmetic effects.
+
 Integers
 ~~~~~~~~
 
