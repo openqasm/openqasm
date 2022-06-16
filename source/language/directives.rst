@@ -28,16 +28,14 @@ this specification, such as adding directives to a simulator.
 specification does not define any pragmas. Please consult your tool's
 documentation for supported pragmas.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    pragma simulator noise model "qpu1.noise"
 
 Pragmas can also be used to specify system-level information or assertions for
 the entire circuit.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    OPENQASM 3.0;
 
@@ -64,8 +62,7 @@ interaction between annotations are prescribed by this specification.
 specification does not define any annotations. Please consult your tool's
 documentation for supported annotations.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Manage port binding on a physical device
    @bind IOPORT[3:2]
@@ -129,8 +126,7 @@ file, which only has to be compiled once, amortizing the cost of compilation
 across many runs. For an example, we may consider a parameterized circuit which
 performs a measurement in a basis given by an input parameter:
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    input int basis; // 0 = X basis, 1 = Y basis, 2 = Z basis
    output bit result;
@@ -148,7 +144,7 @@ many times using different sets of free parameters to minimize an expectation
 value. The following is an example, in which there is also more than one input
 variable:
 
-.. code-block:: c
+.. code-block::
 
    input angle[32] param1;
    input angle[32] param2;
@@ -164,7 +160,6 @@ The following Python pseudocode illustrates the differences between using and
 not using parameterized circuits in a quantum program for the case of the VQE:
 
 .. code-block:: python
-   :force:
 
    # Example without using parametric circuits:
 

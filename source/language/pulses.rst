@@ -22,7 +22,7 @@ The entry point to such gate and measurement definitions is the ``defcal`` keywo
 analogous to the ``gate`` keyword, but where the ``defcal`` body specifies a pulse-level
 instruction sequence on *physical* qubits, e.g.
 
-.. code-block:: c
+.. code-block::
 
    defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
@@ -48,7 +48,7 @@ causes that calibration definition to be valid for all physical qubits.
 This is most likely to be useful for gates that are implemented virtually.
 For instance, to define an equivalent `rz` calibration on qubits 0 and 1, we could write
 
-.. code-block:: c
+.. code-block::
 
    defcal rz(angle[20] theta) q { ... }
    // we've defined ``rz`` on arbitrary physical qubits, so we can do:
@@ -60,7 +60,7 @@ As a consequence of the need for specialization of operations on
 particular qubits, the same symbol may be defined multiple
 times, e.g.
 
-.. code-block:: c
+.. code-block::
 
    defcal h $0 { ... }
    defcal h $1 { ... }
@@ -69,7 +69,7 @@ and so forth. Some operations require further specialization on
 parameter values, so we also allow multiple declarations on the same
 physical qubits with different parameter values, e.g.
 
-.. code-block:: c
+.. code-block::
 
    defcal rx(pi) $0 { ... }
    defcal rx(pi / 2) $0 { ... }
@@ -90,7 +90,7 @@ Users specify the grammar used inside ``defcal`` blocks with a
 ``defcalgrammar "name"`` declaration. One such grammar is a
 `textual representation of OpenPulse <openpulse.html>`_ specified by:
 
-.. code-block:: c
+.. code-block::
 
    defcalgrammar "openpulse";
 
@@ -118,7 +118,7 @@ that may observe that scope as defined by the calibration grammar. Values may no
 In practice, calibration grammars such as OpenPulse may apply
 a global scope to all identifiers in order to declare values shared across all ``defcal`` calls thereby linking them together.
 
-.. code-block:: c
+.. code-block::
 
    OPENQASM 3;
    defcalgrammar "openpulse";
@@ -158,7 +158,7 @@ For example,  consider the case of a ``reset`` gate. The ``defcal`` for a
 ``reset`` gate can be composed of a single if statement, provided each branch
 of the if statement has definite and equivalent duration.
 
-.. code-block:: c
+.. code-block::
 
    defcal reset $0 {
       bit res = // measure qubit $0
@@ -188,7 +188,7 @@ cross-resonance device using a ``backend.inc`` include file.
 The name ``backend.inc`` is arbitrary - it's just a file to be included using the
 existing ``include`` mechanism.
 
-.. code-block:: c
+.. code-block::
 
    // backend.inc for openpulse two-qubit device
 
@@ -246,7 +246,7 @@ existing ``include`` mechanism.
 
 The user would then include the ``backend.inc`` in their own program and use them as demonstrated below
 
-.. code-block:: c
+.. code-block::
 
    OPENQASM 3.0;
 
