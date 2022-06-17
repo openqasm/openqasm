@@ -15,36 +15,39 @@ version: OPENQASM VersionSpecifier SEMICOLON;
 statement:
     pragma
     // All the actual statements of the language.
-    | aliasDeclarationStatement
-    | assignmentStatement
-    | barrierStatement
-    | boxStatement
-    | breakStatement
-    | calibrationGrammarStatement
-    | classicalDeclarationStatement
-    | constDeclarationStatement
-    | continueStatement
-    | defStatement
-    | defcalStatement
-    | delayStatement
-    | endStatement
-    | expressionStatement
-    | externStatement
-    | forStatement
-    | gateCallStatement
-    | gateStatement
-    | ifStatement
-    | includeStatement
-    | ioDeclarationStatement
-    | measureArrowAssignmentStatement
-    | oldStyleDeclarationStatement
-    | quantumDeclarationStatement
-    | resetStatement
-    | returnStatement
-    | whileStatement
+    | annotation* (
+        aliasDeclarationStatement
+        | assignmentStatement
+        | barrierStatement
+        | boxStatement
+        | breakStatement
+        | calibrationGrammarStatement
+        | classicalDeclarationStatement
+        | constDeclarationStatement
+        | continueStatement
+        | defStatement
+        | defcalStatement
+        | delayStatement
+        | endStatement
+        | expressionStatement
+        | externStatement
+        | forStatement
+        | gateCallStatement
+        | gateStatement
+        | ifStatement
+        | includeStatement
+        | ioDeclarationStatement
+        | measureArrowAssignmentStatement
+        | oldStyleDeclarationStatement
+        | quantumDeclarationStatement
+        | resetStatement
+        | returnStatement
+        | whileStatement
+    )
 ;
+annotation: AnnotationKeyword RemainingLineContent?;
 scope: LBRACE statement* RBRACE;
-pragma: PRAGMA scope;
+pragma: PRAGMA RemainingLineContent;
 
 statementOrScope: statement | scope;
 
