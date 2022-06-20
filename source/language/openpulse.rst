@@ -404,12 +404,12 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
 
     defcalgrammar "openpulse";
 
-    // Use a boxcar function to generate IQ data from raw waveform
-    extern boxcar(waveform input) -> complex[float[64]];
-    // Use a linear discriminator to generate bits from IQ data
-    extern discriminate(complex[float[64]] iq) -> bit;
-
     cal {
+        // Use a boxcar function to generate IQ data from raw waveform
+        extern boxcar(waveform input) -> complex[float[64]];
+        // Use a linear discriminator to generate bits from IQ data
+        extern discriminate(complex[float[64]] iq) -> bit;
+
         // Define the ports
         extern port m0;
         extern port cap0;
@@ -713,7 +713,7 @@ Here we want to sweep the time of the pulse and observe coherent Rabi flopping d
   const duration pulse_length_step = 1dt;
   const int pulse_length_num_steps = 100;
 
-  for i in [1:pulse_length_num_steps] {
+  for int i in [1:pulse_length_num_steps] {
       duration pulse_length = pulse_length_start + (i-1)*pulse_length_step);
       duration sigma = pulse_length / 4;
       // since we are manipulating pulse lengths it is easier to define and play the waveform in a `cal` block
