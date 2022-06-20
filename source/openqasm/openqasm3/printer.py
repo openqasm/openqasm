@@ -626,6 +626,18 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_line(context)
 
     @_maybe_annotated
+    def visit_CalibrationStatement(
+        self, node: ast.CalibrationStatement, context: PrinterState
+    ) -> None:
+        self._start_line(context)
+        self.stream.write("cal {")
+        # At this point we _should_ be deferring to something else to handle formatting the
+        # calibration grammar statements, but we're neither we nor the AST are set up to do that.
+        self.stream.write(node.body)
+        self.stream.write("}")
+        self._end_line(context)
+
+    @_maybe_annotated
     def visit_SubroutineDefinition(
         self, node: ast.SubroutineDefinition, context: PrinterState
     ) -> None:

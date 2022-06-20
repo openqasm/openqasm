@@ -17,7 +17,8 @@ OPENQASM: 'OPENQASM' -> pushMode(VERSION_IDENTIFIER);
 INCLUDE: 'include';
 DEFCALGRAMMAR: 'defcalgrammar';
 DEF: 'def';
-DEFCAL: 'defcal';
+CAL: 'cal' -> mode(CAL_PRELUDE);
+DEFCAL: 'defcal' -> mode(DEFCAL_PRELUDE);
 GATE: 'gate';
 EXTERN: 'extern';
 BOX: 'box';
@@ -183,3 +184,74 @@ mode EAT_TO_LINE_END;
     // the line ending to guarantee that this is always non-empty, but that just
     // puts an annoying burden on consumers to remove it again.
     RemainingLineContent: ~[ \t\r\n] ~[\r\n]*;
+
+
+// We need to do a little context-aware lexing when we hit a `cal` or `defcal`
+// token.  In both cases, there's a small interlude before the pulse grammar
+// block starts, and we need to be able to lex our way through that.  We don't
+// want to tie this grammar to one host language by injecting host code to
+// manage the state of the lexer, so instead we need to do a little duplication
+// of the tokens, because ANTLR doesn't allow us to inherit rules directly.
+mode CAL_PRELUDE;
+    CAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
+    CAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
+    CAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
+
+mode DEFCAL_PRELUDE;
+    DEFCAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
+    DEFCAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
+    DEFCAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
+
+    // Duplications of valid constant expression tokens that may appear in the
+    // argument list.  This is an unfortunately large number of duplications.
+
+    // Types.
+    DEFCAL_PRELUDE_QREG: QREG -> type(QREG);
+    DEFCAL_PRELUDE_QUBIT: QUBIT -> type(QUBIT);
+    DEFCAL_PRELUDE_CREG: CREG -> type(CREG);
+    DEFCAL_PRELUDE_BOOL: BOOL -> type(BOOL);
+    DEFCAL_PRELUDE_BIT: BIT -> type(BIT);
+    DEFCAL_PRELUDE_INT: INT -> type(INT);
+    DEFCAL_PRELUDE_UINT: UINT -> type(UINT);
+    DEFCAL_PRELUDE_ANGLE: ANGLE -> type(ANGLE);
+    DEFCAL_PRELUDE_FLOAT: FLOAT -> type(FLOAT);
+    DEFCAL_PRELUDE_COMPLEX: COMPLEX -> type(COMPLEX);
+    DEFCAL_PRELUDE_ARRAY: ARRAY -> type(ARRAY);
+    DEFCAL_PRELUDE_DURATION: DURATION -> type(DURATION);
+    // Punctuation.
+    DEFCAL_PRELUDE_LBRACKET: LBRACKET -> type(LBRACKET);
+    DEFCAL_PRELUDE_RBRACKET: RBRACKET -> type(RBRACKET);
+    DEFCAL_PRELUDE_LPAREN: LPAREN -> type(LPAREN);
+    DEFCAL_PRELUDE_RPAREN: RPAREN -> type(RPAREN);
+    DEFCAL_PRELUDE_ARROW: ARROW -> type(ARROW);
+    DEFCAL_PRELUDE_COMMA: COMMA -> type(COMMA);
+    DEFCAL_PRELUDE_PLUS: PLUS -> type(PLUS);
+    DEFCAL_PRELUDE_MINUS: MINUS -> type(MINUS);
+    DEFCAL_PRELUDE_ASTERISK: ASTERISK -> type(ASTERISK);
+    DEFCAL_PRELUDE_SLASH: SLASH -> type(SLASH);
+    DEFCAL_PRELUDE_BitshiftOperator: BitshiftOperator -> type(BitshiftOperator);
+    // Literals and names.
+    DEFCAL_PRELUDE_BitstringLiteral: BitstringLiteral -> type(BitstringLiteral);
+    DEFCAL_PRELUDE_BinaryIntegerLiteral: BinaryIntegerLiteral -> type(BinaryIntegerLiteral);
+    DEFCAL_PRELUDE_OctalIntegerLiteral: OctalIntegerLiteral -> type(OctalIntegerLiteral);
+    DEFCAL_PRELUDE_DecimalIntegerLiteral: DecimalIntegerLiteral -> type(DecimalIntegerLiteral);
+    DEFCAL_PRELUDE_HexIntegerLiteral: HexIntegerLiteral -> type(HexIntegerLiteral);
+    DEFCAL_PRELUDE_FloatLiteral: FloatLiteral -> type(FloatLiteral);
+    DEFCAL_PRELUDE_MEASURE: MEASURE -> type(MEASURE);
+    DEFCAL_PRELUDE_DELAY: DELAY -> type(DELAY);
+    DEFCAL_PRELUDE_RESET: RESET -> type(RESET);
+    DEFCAL_PRELUDE_Identifier: Identifier -> type(Identifier);
+    DEFCAL_PRELUDE_HardwareQubit: HardwareQubit -> type(HardwareQubit);
+
+
+// The meat-and-potatoes of matching a calibration block with balanced inner
+// braces.  We enter `CAL_BLOCK` with the opening brace already tokenised
+// (that's how the lexer knew to swap modes to us), and with the token left open
+// to continue to accumulate.  We want to tokenise until we hit the balancing
+// brace.  Since we have _no_ knowledge of what the inner langauge is doing,
+// things like unbalanced braces in comments will cause a failure, but there's
+// not much we can do about that without greater spec restrictions.
+mode CAL_BLOCK;
+    fragment NestedCalibrationBlock: LBRACE (NestedCalibrationBlock | ~[{}])* RBRACE;
+    CalibrationBlock: (NestedCalibrationBlock | ~[{}])+;
+    CAL_BLOCK_RBRACE: RBRACE -> type(RBRACE), mode(DEFAULT_MODE);
