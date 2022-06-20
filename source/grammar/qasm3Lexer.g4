@@ -133,10 +133,7 @@ fragment FirstIdCharacter: '_' | ValidUnicode | Letter;
 fragment GeneralIdCharacter: FirstIdCharacter | [0-9];
 
 Identifier: FirstIdCharacter GeneralIdCharacter*;
-// TODO: OpenPulse asks for identifiers like '$q' in the argument list of
-// 'defcal' statements, though this is not a valid identifier by the OpenQASM 3
-// specification.  For now, we allow it as a special case.
-HardwareQubit: '$' ([0-9]+ | Identifier);
+HardwareQubit: '$' [0-9]+;
 
 fragment FloatLiteralExponent: [eE] (PLUS | MINUS)? DecimalIntegerLiteral;
 FloatLiteral:

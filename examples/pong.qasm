@@ -5,19 +5,19 @@
  */
 defcalgrammar "openpulse";
 
-defcal pong(angle[32] amp, duration dur) $q {
+defcal pong(angle[32] amp, duration dur) q {
     play d0, gaussian(amp, dur)
 }
 
-defcal pong_cx(angle[32] amp) $q0, $q1, $q2 {
-    barrier $q0, $q1, $q2;
-    cross-res(pi/4) $q0, $q1
-    x(pi) $q0;  // this is a defcal
-    cross-res(-pi/4) $q0, $q1;
-    glue[1]-pong(amp) $q1;
-    glue[2]-pong(-amp) $q1;
-    glue[1]-pong(amp) $q1;
-    barrier $q0, $q1, $q2;
+defcal pong_cx(angle[32] amp) q0, q1, q2 {
+    barrier q0, q1, q2;
+    cross-res(pi/4) q0, q1
+    x(pi) q0;  // this is a defcal
+    cross-res(-pi/4) q0, q1;
+    glue[1]-pong(amp) q1;
+    glue[2]-pong(-amp) q1;
+    glue[1]-pong(amp) q1;
+    barrier q0, q1, q2;
 }
 
 barrier $0, $1, $2;
