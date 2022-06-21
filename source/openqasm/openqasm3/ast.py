@@ -18,6 +18,7 @@ __all__ = [
     "AccessControl",
     "AliasStatement",
     "AngleType",
+    "Annotation",
     "ArrayLiteral",
     "ArrayReferenceType",
     "ArrayType",
@@ -137,8 +138,18 @@ class Program(QASMNode):
 
 
 @dataclass
+class Annotation(QASMNode):
+    """An annotation applied to a statment."""
+
+    keyword: str
+    command: Optional[str] = None
+
+
+@dataclass
 class Statement(QASMNode):
     """A statement: anything that can appear on its own line"""
+
+    annotations: List[Annotation] = field(init=False, default_factory=list)
 
 
 @dataclass
@@ -1033,12 +1044,12 @@ class ClassicalAssignment(Statement):
 
 
 @dataclass
-class Pragma(Statement):
+class Pragma(QASMNode):
     """
     Pragma
     Example::
 
-        #pragma {verbatim;}
+        #pragma val1 val2 val3
     """
 
-    statements: List[Statement]
+    command: str

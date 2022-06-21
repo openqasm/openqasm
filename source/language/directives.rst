@@ -17,7 +17,7 @@ implementation. Implementations may optionally choose to support the older ``#pr
 keyword as a custom extension.
 Pragmas should be processed as soon as they are encountered; if a
 pragma is not supported by a compiler pass it should be ignored and preserved
-intact for future passes.  Pragmas should be avoid stateful or positional
+intact for future passes.  Pragmas should avoid stateful or positional
 interactions to avoid unexpected behaviors between included source files. If the
 position is relevant to a pragma, an annotation should be used instead.
 

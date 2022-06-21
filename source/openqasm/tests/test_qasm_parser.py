@@ -5,6 +5,7 @@ from openqasm3.ast import (
     AccessControl,
     AliasStatement,
     AngleType,
+    Annotation,
     ArrayLiteral,
     ArrayReferenceType,
     ArrayType,
@@ -1426,23 +1427,131 @@ def test_end_statement():
     SpanGuard().visit(program)
 
 
-def test_pramga():
+def test_annotations():
     p = """
-    #pragma {verbatim;}
-    #pragma {my_statement1; my_statement2;}
-    end;
+    @word1 command1
+    input uint[32] x;
+
+    @keyword command command
+
+    x = 1;
+
+    @word1 command1
+    @word2 command2 32f%^&
+    gate my_gate q {}
+
+    @word1 @not_a_separate_annotation uint x;
+    int[8] x;
+
+    @word1
+    qubit q; uint[4] y;
+
+    @outer
+    def fn() {
+        @inner1
+        int[8] x;
+        @inner2 command
+        x = 19;
+    }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
-            Pragma(statements=[ExpressionStatement(Identifier("verbatim"))]),
-            Pragma(
-                statements=[
-                    ExpressionStatement(Identifier("my_statement1")),
-                    ExpressionStatement(Identifier("my_statement2")),
-                ]
+            _with_annotations(
+                IODeclaration(
+                    type=UintType(IntegerLiteral(32)),
+                    io_identifier=IOKeyword.input,
+                    identifier=Identifier("x"),
+                ),
+                [Annotation(keyword="word1", command="command1")],
             ),
-            EndStatement(),
+            # Extra spacing between the annotation and the statement is no problem.
+            _with_annotations(
+                ClassicalAssignment(
+                    lvalue=Identifier("x"),
+                    op=AssignmentOperator["="],
+                    rvalue=IntegerLiteral(1),
+                ),
+                [Annotation(keyword="keyword", command="command command")],
+            ),
+            # Multiple annotations are correctly split in the list.
+            _with_annotations(
+                QuantumGateDefinition(
+                    name=Identifier("my_gate"), arguments=[], qubits=[Identifier("q")], body=[]
+                ),
+                [
+                    Annotation(keyword="word1", command="command1"),
+                    Annotation(keyword="word2", command="command2 32f%^&"),
+                ],
+            ),
+            # Nesting the annotation syntax doesn't cause problems.
+            _with_annotations(
+                ClassicalDeclaration(
+                    type=IntType(IntegerLiteral(8)),
+                    identifier=Identifier("x"),
+                    init_expression=None,
+                ),
+                [Annotation(keyword="word1", command="@not_a_separate_annotation uint x;")],
+            ),
+            # Annotations only apply to the next statement, even if the next
+            # line contains several statements.
+            _with_annotations(
+                QubitDeclaration(size=None, qubit=Identifier("q")),
+                [Annotation(keyword="word1", command=None)],
+            ),
+            ClassicalDeclaration(
+                type=UintType(IntegerLiteral(4)), identifier=Identifier("y"), init_expression=None
+            ),
+            # Annotations work both outside and inside nested scopes.
+            _with_annotations(
+                SubroutineDefinition(
+                    name=Identifier("fn"),
+                    arguments=[],
+                    return_type=None,
+                    body=[
+                        _with_annotations(
+                            ClassicalDeclaration(
+                                type=IntType(IntegerLiteral(8)),
+                                identifier=Identifier("x"),
+                                init_expression=None,
+                            ),
+                            [Annotation(keyword="inner1", command=None)],
+                        ),
+                        _with_annotations(
+                            ClassicalAssignment(
+                                lvalue=Identifier("x"),
+                                op=AssignmentOperator["="],
+                                rvalue=IntegerLiteral(19),
+                            ),
+                            [Annotation(keyword="inner2", command="command")],
+                        ),
+                    ],
+                ),
+                [Annotation(keyword="outer", command=None)],
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_pragma():
+    p = """
+    #pragma verbatim
+    pragma verbatim
+    #pragma command arg1 arg2
+    pragma command arg1 arg2
+    #pragma otherwise_invalid_token 1a2%&
+    pragma otherwise_invalid_token 1a2%&
+    """  # No strip because all line endings are important for pragmas.
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            Pragma(command="verbatim"),
+            Pragma(command="verbatim"),
+            Pragma(command="command arg1 arg2"),
+            Pragma(command="command arg1 arg2"),
+            Pragma(command="otherwise_invalid_token 1a2%&"),
+            Pragma(command="otherwise_invalid_token 1a2%&"),
         ]
     )
     SpanGuard().visit(program)
@@ -1503,6 +1612,7 @@ class TestFailurePaths:
             ("qubit q;", "qubit declarations must be global"),
             ("qreg q;", "qubit declarations must be global"),
             ("qreg q[5];", "qubit declarations must be global"),
+            ("\npragma command\n", "pragmas must be global"),
         ),
     )
     def test_global_statement_in_nonglobal_context(self, statement, message):
