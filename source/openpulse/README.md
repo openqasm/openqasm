@@ -1,6 +1,6 @@
 # OpenPulse Python Reference
 
-[![License](https://img.shields.io/github/license/Qiskit/openqasm.svg)](https://opensource.org/licenses/Apache-2.0)<!-- long-description-skip-begin -->[![Release](https://img.shields.io/pypi/v/openqasm3)](https://pypi.org/project/openqasm3)<!-- long-description-skip-end -->
+[![License](https://img.shields.io/github/license/openqasm/openqasm.svg)](https://opensource.org/licenses/Apache-2.0)<!-- long-description-skip-begin -->[![Release](https://img.shields.io/pypi/v/openpulse)](https://pypi.org/project/openpulse)<!-- long-description-skip-end -->
 
 OpenPulse is a minor extension to OpenQASM 3 with a concrete implementation of pulse grammar.
 The `openpulse` package depends on the openqasm3 package, re-export the 
