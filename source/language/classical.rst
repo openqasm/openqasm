@@ -1,3 +1,5 @@
+.. _classical-instructions:
+
 Classical instructions
 ======================
 
@@ -39,12 +41,13 @@ assigned variable on the LHS.
 Classical bits and registers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Classical registers and bits support bitwise operators and the
-corresponding assignment operators between registers of the same size:
-and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift ``>>`` by an unsigned
-integer, and the corresponding assignment operators. The shift operators
-shift bits off the end. They also support not ``~``, ``popcount`` [1]_, and left and
-right circular shift, ``rotl`` and ``rotr``, respectively.
+Classical registers, ``bit``, ``uint`` and ``angle`` support bitwise operators
+and the corresponding assignment operators with registers of the same size:
+and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift
+``>>`` by an unsigned integer, and the corresponding assignment operators. The
+shift operators shift bits off the end. They also support bitwise negation ``~``,
+``popcount`` [1]_, and left and right circular shift, ``rotl`` and ``rotr``,
+respectively.
 
 .. code-block:: c
 
@@ -55,6 +58,17 @@ right circular shift, ``rotl`` and ``rotr``, respectively.
    rotl(a, 2) // Produces "00111110"
    a | b; // Produces "11111111"
    a & b; // Produces "00000000"
+
+For ``uint`` and ``angle``, the results of these operations are defined as if
+the operations were applied to their defined bit representations::
+
+   angle[4] a = 9 * (pi / 8);  // "1001"
+   a << 2;  // Produces pi/2, which is "0100"
+   a >> 2;  // Produces pi/4, which is "0010"
+
+   uint[6] b = 37;  // "100101"
+   popcount(b);  // Produces 3.
+   rotl(b, 3);   // Produces 44, which is "101100"
 
 Comparison (Boolean) Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,6 +93,17 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
    // Susceptible to floating point casting errors
    e == float(d);
 
+.. note::
+
+   Angles are naturally defined on a ring, and so comparisons may not work
+   exactly how you might expect.  For example, ``2 * ang >= ang`` is not
+   necessarily true; if ``ang`` represents the angle :math:`3\pi/2`, then
+   ``2*ang == pi`` and ``pi < ang``.
+
+   This is the same behavior as unsigned integers in many languages (including
+   OpenQASM 3), but the types of operation commonly performed on ``angle`` are
+   particularly likely to trigger these modulo arithmetic effects.
+
 Integers
 ~~~~~~~~
 
@@ -95,11 +120,59 @@ Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, i
    a ** b; // 8
    a += 4; // a == 6
 
-Floating-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Angles
+~~~~~~
 
-Floating-point and angle types support addition, subtraction,
-multiplication, division, and power and the corresponding assignment operators.
+In addition to the bitwise operations mentioned above, angles support:
+
+- Addition ``+`` and subtraction ``-`` by other angles of the same size, which
+  returns an angle of the same size.
+- Multiplication ``*`` and division ``/`` by unsigned integers of the same size.
+  The result is an ``angle`` type of the same size.  Both ``uint * angle`` and
+  ``angle * uint`` are valid and produce the same result, but only ``angle /
+  uint`` is valid; it is not allowed to divide an integer by an angle.
+- Division ``/`` by another angle of the same size.  This returns a ``uint`` of
+  the same size.
+- Unary negation ``-``, which represents the mathematical operation :math:`-a
+  \equiv 2\pi - a`.
+- Compound assignment operators ``+=``, ``-=`` and ``/=`` with angles of the
+  same size as both left- and right operands.  These have the same effect as if
+  the equivalent binary operation had been written out in full.
+- The compound assignment operators ``*=`` and ``/=`` with an unsigned integer
+  of the same size as the right operand.  This has the same effect as if the
+  multiplication or division had been written as a binary operation and
+  assigned.
+
+In all of these cases, except for unary negation, the bit pattern of the result
+of these operations is the same as if the operations had been carried out
+between two ``uint`` types of the same size with the same bit representations,
+including both upper and lower overflow.  Explicitly::
+
+  angle[4] a = 7 * (pi / 8);  // "0111"
+  angle[4] b = pi / 8;        // "0001"
+  angle[4] c = 5 * (pi / 4);  // "1010"
+  uint[4] two = 2;
+
+  a + b;    // angle[4] │ pi           │ "1000"
+  b - a;    // angle[4] │ 5 * (pi / 4) │ "1010"
+  a / two;  // angle[4] │ 3 * (pi / 8) │ "0011"
+  two * c;  // angle[4] │ pi / 2       │ "0100"
+  c / b;    // uint[4]  │ 10           │ "1010"
+  pi * 2;   // angle[4] │ 0            │ "0000"
+
+Unary negation of an angle ``a`` is defined to produce the same value as
+``0 - a``, such that ``a + (-a)`` is always equal to zero.  This is the same as
+the C99 definition for unsigned integers.  In bitwise operations, the negation
+can be written as ``(~a) + 1``. Explicitly::
+
+  angle[4] a = pi / 4;  // "0010"
+  angle[4] b = -a;  // 7*(pi/4) │ "1110"
+
+Floating-point numbers
+~~~~~~~~~~~~~~~~~~~~~~
+
+Floating-point numbers support addition, subtraction, multiplication, division,
+and power and the corresponding assignment operators.
 
 .. code-block:: c
 
@@ -109,6 +182,12 @@ multiplication, division, and power and the corresponding assignment operators.
    a ** b; // 4.1316...
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+.. note::
+
+   Real hardware may well not have access to floating-point operations at
+   runtime.  OpenQASM 3 compilers may reject programs that require runtime
+   operations on these values if the target backend does not support them.
 
 Complex numbers
 ~~~~~~~~~~~~~~~
