@@ -107,7 +107,7 @@ expressionStatement: expression SEMICOLON;
 
 // TODO: this handling of the defcal block is incorrect, because it is not
 // constrained to consume balanced brace blocks.  This needs more attention.
-defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)? hardwareQubitList returnSignature? LBRACE .*? RBRACE;
+defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)?  defcalArgumentList returnSignature? LBRACE .*? RBRACE;
 
 
 /* End top-level statement definitions. */
@@ -204,6 +204,7 @@ designator: LBRACKET expression RBRACKET;
 
 gateOperand: indexedIdentifier | HardwareQubit;
 externArgument: scalarType | arrayReferenceType | CREG designator?;
+defcalArgument: HardwareQubit | Identifier;
 argumentDefinition:
     scalarType Identifier
     | qubitType Identifier
@@ -213,7 +214,7 @@ argumentDefinition:
 
 argumentDefinitionList: argumentDefinition (COMMA argumentDefinition)* COMMA?;
 expressionList: expression (COMMA expression)* COMMA?;
-hardwareQubitList: HardwareQubit (COMMA HardwareQubit)* COMMA?;
+defcalArgumentList: defcalArgument (COMMA defcalArgument)* COMMA?;
 identifierList: Identifier (COMMA Identifier)* COMMA?;
 gateOperandList: gateOperand (COMMA gateOperand)* COMMA?;
 externArgumentList: externArgument (COMMA externArgument)* COMMA?;

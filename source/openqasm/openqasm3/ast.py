@@ -820,8 +820,8 @@ class CalibrationDefinition(Statement):
 
     Example::
 
-        defcal rz(angle[20] theta) $q {
-            shift_phase drive($q), -theta;
+        defcal rz(angle[20] theta) q {
+            shift_phase drive(q), -theta;
         }
     """
 

@@ -26,7 +26,7 @@ instruction sequence on *physical* qubits, e.g.
 
    defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
-   defcal measure_iq $q -> complex[32] { ... }
+   defcal measure_iq q -> complex[32] { ... }
 
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
@@ -43,12 +43,14 @@ QASM achieves this by prefixing qubit references with ``$`` to indicate
 a specific qubit on the device, e.g. ``$2`` would refer to physical
 qubit 2.
 
-One can define a `defcal` using an arbitrary `$` identifier, provided that gate is called using physical
-qubits. For instance, to define an equivalent `rz` calibration on qubits 0 and 1, we could write
+One can define a `defcal` using a regular identifier for a qubit, which
+causes that calibration definition to be valid for all physical qubits.
+This is most likely to be useful for gates that are implemented virtually.
+For instance, to define an equivalent `rz` calibration on qubits 0 and 1, we could write
 
 .. code-block:: c
 
-   defcal rz(angle[20] theta) $q { ... }
+   defcal rz(angle[20] theta) q { ... }
    // we've defined ``rz`` on arbitrary physical qubits, so we can do:
    rz(3.14) $0;
    rz(3.14) $1;
@@ -75,7 +77,7 @@ physical qubits with different parameter values, e.g.
 Given multiple definitions of the same symbol, the compiler will match
 the most specific definition found for a given operation. Thus, given,
 
-#. ``defcal rx(angle[20] theta) $q  ...``
+#. ``defcal rx(angle[20] theta) q  ...``
 
 #. ``defcal rx(angle[20] theta) $0  ...``
 

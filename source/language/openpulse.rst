@@ -221,7 +221,7 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
      // and so on
    }
 
-   defcal rz(angle[20] theta) $q {
+   defcal rz(angle[20] theta) q {
      shift_phase(rz_frames[q], -theta);
    }
 
@@ -761,7 +761,7 @@ Geometric gate
       frame frame_12 = newframe(dq, fq_01 + anharm, 0);
   }
 
-  defcal geo_gate(angle[32] theta) $q {
+  defcal geo_gate(angle[32] theta) q {
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
