@@ -30,7 +30,7 @@ Declaration and initialization must be done one variable at a time for both quan
 types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
 example, to declare a set of qubits one must do
 
-.. code-block:: c
+.. code-block::
 
    qubit q0;
    qubit q1;
@@ -38,7 +38,7 @@ example, to declare a set of qubits one must do
 
 and to declare a set of classical variables
 
-.. code-block:: c
+.. code-block::
 
    int[32] a;
    float[32] b = 5.5;
@@ -92,8 +92,7 @@ references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a qubit
    qubit gamma;
@@ -126,7 +125,7 @@ register. It is interpreted to assign each bit of the register to
 corresponding value 0 or 1 in the string, where the least-significant
 bit is on the right.
 
-.. code-block:: c
+.. code-block::
 
    // Declare a register of 20 bits
    bit[20] bit_array;
@@ -152,7 +151,7 @@ conversion will be done assuming little-endian bit ordering. The example
 below demonstrates how to declare, assign and cast integer types amongst
 one another.
 
-.. code-block:: c
+.. code-block::
 
    // Declare a 32-bit unsigned integer
    uint[32] my_uint = 10;
@@ -174,8 +173,7 @@ unspecified size.  The resulting precision is then set by the particular target
 architecture, and the unspecified-width type is different to all specified-width
 types for the purposes of casting.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
@@ -297,7 +295,7 @@ There is a Boolean type ``bool name;`` that takes values ``true`` or ``false``. 
 can be converted from a classical ``bit`` type to a Boolean using ``bool(c)``, where 1 will
 be true and 0 will be false.
 
-.. code-block:: c
+.. code-block::
 
    bit my_bit = 0;
    bool my_bool;
@@ -327,8 +325,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__. These constants
 are all of type ``float[64]``.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a constant
    const int my_const = 1234;
@@ -425,7 +422,7 @@ binary number, as denoted by a leading ``0x/0X``, ``0o``, or ``0b/0B`` prefix.
 Non-consecutive underscores ``_`` may be inserted between the first and last
 digit of the literal to improve readability for large values.
 
-.. code-block:: c
+.. code-block::
 
    int i1 = 1; // decimal
    int i2 = 0xff; // hex
@@ -443,7 +440,7 @@ Float literals contain either
 In addition, scientific notation can be used with a signed or unsigned integer
 exponent.
 
-.. code-block:: c
+.. code-block::
 
    float f1 = 1.0;
    float f2 = .1; // leading dot
@@ -458,7 +455,7 @@ Bit string literals are denoted by double quotes ``"`` surrounding a number of
 zero and one digits, and may include non-consecutive underscores to improve
 readability for large strings.
 
-.. code-block:: c
+.. code-block::
 
    bit[8] b1 = "00010001";
    bit[8] b2 = "0001_0001"; // underscore for readability
@@ -467,7 +464,7 @@ Timing literals are float or integer literals with a unit of time.
 ``ns, μs, us, ms, and s`` are used for SI time units. ``dt`` is a
 backend-dependent unit equivalent to one waveform sample.
 
-.. code-block:: c
+.. code-block::
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
@@ -480,7 +477,7 @@ Arrays
 Statically-sized arrays of values can be created and initialized, and individual elements
 can be accessed, using the following general syntax:
 
-.. code-block:: c
+.. code-block::
 
    array[int[32], 5] myArray = {0, 1, 2, 3, 4};
    array[float[32], 3, 2] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
@@ -516,7 +513,7 @@ with the left-hand side of the assignment operating as a reference, thereby
 updating the values inside the original array. For multi-dimensional arrays,
 the shape and type of the assigned value must match that of the reference.
 
-.. code-block:: c
+.. code-block::
 
    array[int[8], 3] aa;
    array[int[8], 4, 3] bb;
@@ -540,7 +537,7 @@ Durations can be assigned with expressions including timing literals.
 ``durationof()`` is an intrinsic function used to reference the
 duration of a calibrated gate.
 
-.. code-block:: c
+.. code-block::
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
@@ -566,7 +563,7 @@ Aliasing
 The ``let`` keyword allows quantum bits and registers to be referred to by
 another name as long as the alias is in scope.
 
-.. code-block:: c
+.. code-block::
 
   qubit[5] q;
   // myreg[0] refers to the qubit q[1]
@@ -605,7 +602,7 @@ empty set. If :math:`c` is not given, it is assumed to be one, and
 :math:`c` cannot be zero. Note the index sets can be defined by
 variables whose values may only be known at run time.
 
-.. code-block:: c
+.. code-block::
 
    qubit[2] one;
    qubit[10] two;
@@ -633,7 +630,7 @@ A subset of classical values (int, uint, and angle) may be accessed at the bit
 level using index sets similar to register slicing. The bit slicing operation
 always returns a bit array of size equal to the size of the index set.
 
-.. code-block:: c
+.. code-block::
 
    int[32] myInt = 15; // 0xF or 0b1111
    bit[1] lastBit = myInt[0]; // 1
@@ -652,7 +649,7 @@ subscript operator to reduce confusion. With this convention nearly all
 instances of multiple subscripts ``[][]`` will be bit-level accesses of array
 elements.
 
-.. code-block:: c
+.. code-block::
 
    array[int[32], 5] intArr = {0, 1, 2, 3, 4};
    // Access bit 0 of element 0 of intArr and set it to 1
@@ -674,7 +671,7 @@ operator is forbidden to be used directly in the argument list of a subroutine
 or extern call. If a concatenated array is to be passed to a subroutine then it
 should be explicitly declared and assigned the concatenation.
 
-.. code-block:: c
+.. code-block::
 
    array[int[8], 2] first = {0, 1};
    array[int[8], 3] second = {2, 3, 4};
@@ -703,7 +700,7 @@ multi-dimensional arrays.
 For sliced assignments, as with non-sliced assignments, the shapes and types of
 the slices must match.
 
-.. code-block:: c
+.. code-block::
 
    int[8] scalar;
    array[int[8], 2] oneD;
@@ -882,7 +879,7 @@ Casting from or to duration values is not allowed, however, operations on
 durations that produce values of different types is allowed. For example,
 dividing a duration by a duration produces a machine-precision ``float``.
 
-.. code-block:: c
+.. code-block::
 
    duration one_ns = 1ns;
    duration a = 500ns;

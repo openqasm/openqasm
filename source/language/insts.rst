@@ -11,7 +11,7 @@ The statement ``reset qubit|qubit[];`` resets a qubit or quantum register to the
 (i.e. discarding them) before replacing them with
 :math:`|0\rangle\langle 0|`. Reset is shown in :numref:`fig_prepare`.
 
-.. code-block:: c
+.. code-block::
 
    // Initialize and reset a register of 10 qubits
    qubit[10] qubits;
@@ -43,7 +43,7 @@ arguments are register-type and have the same size, the statement  ``b = measure
 broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``. Measurement is shown in
 :numref:`fig_measure`.
 
-.. code-block:: c
+.. code-block::
 
    // Initialize, flip and measure a register of 10 qubits
    qubit[10] qubits;

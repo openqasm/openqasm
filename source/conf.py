@@ -45,6 +45,12 @@ exclude_patterns: List[str] = [
     "openqasm/docs",
 ]
 
+# Sets the default code-highlighting language.  `.. code-block::` directives
+# that are not OQ3 should specify the language manually.  The value is
+# interpreted as a Pygments lexer alias; this needs the dependency
+# `openqasm_pygments`.
+highlight_language = "qasm3"
+
 
 # -- Options for HTML output -------------------------------------------------
 

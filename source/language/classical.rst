@@ -28,7 +28,7 @@ right-hand-side (RHS) of the assignment operator must be of the same
 type. For real-time values assignment is by copy of the RHS value to the
 assigned variable on the LHS.
 
-.. code-block:: c
+.. code-block::
 
    int[32] a;
    int[32] b = 10; // Combined declaration and assignment
@@ -49,7 +49,7 @@ shift operators shift bits off the end. They also support bitwise negation ``~``
 ``popcount`` [1]_, and left and right circular shift, ``rotl`` and ``rotr``,
 respectively.
 
-.. code-block:: c
+.. code-block::
 
    bit[8] a = "10001111";
    bit[8] b = "01110000";
@@ -79,7 +79,7 @@ be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 operators: and ``&&``, or ``||``, not ``!``. The keyword ``in`` tests if an integer belongs to
 an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and ``false`` otherwise.
 
-.. code-block:: c
+.. code-block::
 
    bool a = false;
    int[32] b = 1;
@@ -109,7 +109,7 @@ Integers
 
 Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``, modulo ``%``, and power ``**``, as well as the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=``, and ``**=``.
 
-.. code-block:: c
+.. code-block::
 
    int[32] a = 2;
    int[32] b = 3;
@@ -174,7 +174,7 @@ Floating-point numbers
 Floating-point numbers support addition, subtraction, multiplication, division,
 and power and the corresponding assignment operators.
 
-.. code-block:: c
+.. code-block::
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
@@ -200,7 +200,7 @@ These operations use the floating-point semantics of the underlying component
 floating-point types, including their ``NaN`` propagation, and
 hardware-dependent rounding mode and subnormal handling.
 
-.. code-block:: c
+.. code-block::
 
    complex[float[64]] a = 10.0 + 5.0im;
    complex[float[64]] b = -2.0 - 7.0im;
@@ -259,7 +259,7 @@ may optionally be followed by ``else <false-body>``.  Both ``true-body`` and
 ``false-body`` can be a single statement terminated by a semicolon, or a program
 block of several statements ``{ stmt1; stmt2; }``.
 
-.. code-block:: c
+.. code-block::
 
    bool target = false;
    qubit a;
@@ -317,7 +317,7 @@ not affect the next value that the loop variable will take.
 The scope of the loop variable is limited to the body of the loop.  It is not
 accessible after the loop.
 
-.. code-block:: c
+.. code-block::
 
    int[32] b = 0;
    // loop over a discrete set of values
@@ -358,7 +358,7 @@ within the while loop body.  The ``body`` can be either a single statement
 terminated by a semicolon, or a program block in curly braces ``{}`` of several
 statements:
 
-.. code-block:: c
+.. code-block::
 
    qubit q;
    bit result;
@@ -386,7 +386,7 @@ is the evaluation of the loop condition.  In a ``for`` loop, this is the
 assignment of the next value of the loop variable, or the end of the loop if the
 current value is the last in the set.
 
-.. code-block:: c
+.. code-block::
 
    int[32] i = 0;
 
@@ -410,7 +410,7 @@ current value is the last in the set.
 It is an error to have a ``break;`` or ``continue;`` statement outside a loop,
 such as at the top level of the main circuit or of a subroutine.
 
-.. code-block:: c
+.. code-block::
    
    OPENQASM 3.0;
 
