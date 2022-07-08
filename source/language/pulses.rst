@@ -26,7 +26,7 @@ instruction sequence on *physical* qubits, e.g.
 
    defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
-   defcal measure_iq q -> complex[32] { ... }
+   defcal measure_iq q -> complex[float[32]] { ... }
 
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
@@ -123,7 +123,7 @@ a global scope to all identifiers in order to declare values shared across all `
    OPENQASM 3;
    defcalgrammar "openpulse";
 
-   const original_freq = 5.9e9;
+   const float original_freq = 5.9e9;
 
    cal {
       // Defined within `cal`, so it may not leak back out to the enclosing blocks scope
@@ -194,8 +194,8 @@ existing ``include`` mechanism.
 
    defcalgrammar "openpulse";
 
-   const q0_freq = 5.0e9;
-   const q1_freq = 5.1e9;
+   const float q0_freq = 5.0e9;
+   const float q1_freq = 5.1e9;
 
    cal {
 
