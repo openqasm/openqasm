@@ -3,13 +3,13 @@ Comments
 
 Comments begin with a pair of forward slashes ``//`` and end with a new line:
 
-.. code-block:: c
+.. code-block::
 
    // A comment line
 
 A comment block begins with ``/*`` and ends with ``*/``:
 
-.. code-block:: c
+.. code-block::
 
    /*
    A comment block
@@ -36,7 +36,7 @@ Included files
 The statement ``include "filename";`` continues parsing ``filename`` as if the
 contents of the file were inserted at the location of the ``include`` statement.
 
-.. code-block:: c
+.. code-block::
 
    // First non-comment is a version string
    OPENQASM 3.0;

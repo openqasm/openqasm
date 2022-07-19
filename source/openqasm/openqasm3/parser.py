@@ -331,14 +331,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             if ctx.argumentDefinitionList()
             else []
         )
-        qubits = (
-            [
-                add_span(ast.Identifier(qubit.getText()), get_span(qubit))
-                for qubit in ctx.hardwareQubitList().HardwareQubit()
-            ]
-            if ctx.hardwareQubitList()
-            else []
-        )
+        qubits = [
+            self.visit(argument) for argument in ctx.defcalArgumentList().defcalArgument() or []
+        ]
         return_type = (
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
@@ -855,6 +850,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 get_span(array_ctx),
             )
         return ast.ExternArgument(type=type_, access=access)
+
+    @span
+    def visitDefcalArgument(self, ctx: qasm3Parser.DefcalArgumentContext):
+        if ctx.HardwareQubit():
+            return ast.Identifier(ctx.HardwareQubit().getText())
+        return _visit_identifier(ctx.Identifier())
 
     def visitStatementOrScope(
         self, ctx: qasm3Parser.StatementOrScopeContext

@@ -42,8 +42,7 @@ global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to q
 New gates are associated to a unitary transformation by defining them as a sequence of built-in or
 previously defined gates. For example the ``gate`` block
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    gate h q {
       U(π/2, 0, π) q;
@@ -57,8 +56,7 @@ the user and/or compiler, given information about the instructions supported by 
 Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    gate CX a, b {
       ctrl @ U(π, 0, π) a, b;
@@ -136,8 +134,7 @@ that is applied when the control qubit is one. To capture the programmer's inten
 allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` adds a global phase
 of :math:`e^{i\gamma}` to the scope containing the instruction. For example
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    gate rz(tau) q {
      gphase(-tau/2);
@@ -175,8 +172,7 @@ transformation by a sequence of built-in gates. For example, a CPHASE
 operation is shown schematically in :numref:`fig_gate`
 corresponding OpenQASM code is
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    gate cphase(θ) a, b
    {
@@ -204,7 +200,7 @@ gate set supported by a particular target.
 
 In general, new gates are defined by statements of the form
 
-.. code-block:: c
+.. code-block::
 
    // comment
    gate name(params) qargs
@@ -220,7 +216,7 @@ variable parameters, the parentheses are optional. At least one qubit
 argument is required. The arguments in ``qargs`` cannot be indexed within the body
 of the gate definition.
 
-.. code-block:: c
+.. code-block::
 
    // this is ok:
    gate g a
@@ -252,7 +248,7 @@ The gate can be applied to any combination of qubit registers *of the same size*
 
 The quantum circuit given by
 
-.. code-block:: c
+.. code-block::
 
    gate g qb0, qb1, qb2, qb3
    {
@@ -267,7 +263,7 @@ The quantum circuit given by
 
 has a second-to-last line that means
 
-.. code-block:: c
+.. code-block:: text
 
    // FIXME: insert translation of algorithmic block from TeX source.
 
@@ -297,8 +293,7 @@ gate does not use any additional scratch space and may require compilation to be
 We define a special case, the controlled *global* phase gate, as
 :math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Define a controlled Rz operation using the ctrl gate modifier.
    // q1 is control, q2 is target
@@ -311,8 +306,7 @@ controlled value of 0 rather than 1. Mathematically, the negative controlled-:ma
 given by :math:`N_U = I \otimes U^{1-c}`, where :math:`c` is the integer value of the control bit
 and :math:`N_U` is the negative controlled-:math:`U` gate.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Define a negative controlled X operation using the negctrl gate modifier.
    // q1 is control, q2 is target
@@ -334,8 +328,7 @@ where :math:`c_1`, :math:`c_2`, ..., :math:`c_n` are the integer values of the c
 :math:`C^n_U` are the n-bit controlled-:math:`U` and n-bit negative controlled-:math:`U` gates,
 respectively.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // A reversible boolean function
    // Demonstrates use of ``ctrl(n) @`` and ``negctrl(n) @``
@@ -352,14 +345,16 @@ The modifier ``inv @`` replaces its gate argument :math:`U` with its inverse
 :math:`U^\dagger`. This can be computed from gate :math:`U` via the following rules
 
 - The inverse of any gate :math:`U=U_m U_{m-1} ... U_1` can be defined recursively by reversing the
-order of the gates in its definition and replacing each of those with their inverse
-:math:`U^\dagger = U_1^\dagger U_2^\dagger ... U_m^\dagger`.
-- The inverse of a controlled operation is defined by inverting the control unitary. That is,
-``inv @ ctrl @ U = ctrl @ inv @ U``.
-- The base case is given by replacing ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)`` and
-``inv @ gphase(a)`` by ``gphase(-a)``.
+  order of the gates in its definition and replacing each of those with their inverse
+  :math:`U^\dagger = U_1^\dagger U_2^\dagger ... U_m^\dagger`.
 
-.. code-block:: c
+- The inverse of a controlled operation is defined by inverting the control unitary. That is,
+  ``inv @ ctrl @ U = ctrl @ inv @ U``.
+
+- The base case is given by replacing ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)``
+  and ``inv @ gphase(a)`` by ``gphase(-a)``.
+
+.. code-block::
 
    // Define a negative z rotation and the inverse of a positive z rotation
    gate rzm(θ) q1 {
@@ -376,7 +371,7 @@ constant). In the case that :math:`k` is an integer, the gate can be implemented
 inefficiently) by :math:`k` repetitions of :math:`U` for :math:`k > 0` and :math:`k`
 repetitions of ``inv @ U`` for :math:`k < 0`.
 
-.. code-block:: c
+.. code-block::
 
    // define x as the square of sqrt(x) ``sx`` gate
    gate x q1 {

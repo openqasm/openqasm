@@ -19,11 +19,11 @@ bit c1;
 defcalgrammar "openpulse";
 
 // define a gate calibration for an X gate on any qubit
-defcal x $q {
-   play drive($q), gaussian(100, 30, 5);
+defcal x q {
+   play drive(q), gaussian(100, 30, 5);
 }
 
-for uint p in [0 : points-1] {
+for int[32] p in [0 : points-1] {
     for uint i in [1 : shots] {
         // start of a basic block
         reset $0;

@@ -30,7 +30,7 @@ Declaration and initialization must be done one variable at a time for both quan
 types. Comma seperated declaration/initialization (``int x, y, z``) is NOT allowed for any type. For
 example, to declare a set of qubits one must do
 
-.. code-block:: c
+.. code-block::
 
    qubit q0;
    qubit q1;
@@ -38,7 +38,7 @@ example, to declare a set of qubits one must do
 
 and to declare a set of classical variables
 
-.. code-block:: c
+.. code-block::
 
    int[32] a;
    float[32] b = 5.5;
@@ -92,8 +92,7 @@ references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
 circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a qubit
    qubit gamma;
@@ -126,7 +125,7 @@ register. It is interpreted to assign each bit of the register to
 corresponding value 0 or 1 in the string, where the least-significant
 bit is on the right.
 
-.. code-block:: c
+.. code-block::
 
    // Declare a register of 20 bits
    bit[20] bit_array;
@@ -152,7 +151,7 @@ conversion will be done assuming little-endian bit ordering. The example
 below demonstrates how to declare, assign and cast integer types amongst
 one another.
 
-.. code-block:: c
+.. code-block::
 
    // Declare a 32-bit unsigned integer
    uint[32] my_uint = 10;
@@ -174,41 +173,73 @@ unspecified size.  The resulting precision is then set by the particular target
 architecture, and the unspecified-width type is different to all specified-width
 types for the purposes of casting.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a single-precision 32-bit float
    float[32] my_float = π;
    // Declare a machine-precision float.
    float my_machine_float = 2.3;
 
-Fixed-point angles
-~~~~~~~~~~~~~~~~~~
+.. _angle-type:
 
-Fixed-point angles are interpreted as 2π times a 0:0:n
-fixed-point number. This represents angles in the interval
-:math:`[0,2\pi)` up to an error :math:`\epsilon\leq \pi/2^{n-1}` modulo
-2π. The statement ``angle[size] name;`` declares an n-bit angle, and
-``angle name;`` declares an angle with machine-architecture-specified width.
-In cases where the width is not specified, bit-level operations are forbidden,
-and the type is different from all other sized angle types for the purposes of
-casting, similar to the rules for integers.
-OpenQASM3 introduces this specialized type because of the ubiquity of this angle
-representation in phase estimation circuits and numerically controlled
-oscillators found in hardware platform. Note that defining gate
-parameters with ``angle`` types may be necessary for those parameters to be
-compatible with run-time values on some platforms.
+Angles
+~~~~~~
 
-.. code-block:: c
-   :force:
+OpenQASM 3 includes a new type to represent classical angles: ``angle``.
+This type is intended to make manipulations of angles more efficient at runtime,
+when the hardware executing the program does not have built-in support for
+floating-point operations.  The manipulations on ``angle`` values are designed
+to be significantly less expensive when done using integer hardware than the
+equivalent software emulation of floating-point operations, by using the
+equivalence of angles modulo :math:`2\pi` to remove the need for large dynamic
+range.
 
-   // Declare an angle with 20 bits of precision and assign it a value of π/2
+In brief, the type ``angle[size]`` is manipulated very similarly to a single
+unsigned integer, where the value ``1`` represents an angle of
+:math:`2\pi/2^{\text{size}}`, and the largest representable value is
+this subtracted from :math:`2\pi`.  Addition with other angles, and
+multiplication and division by unsigned integers is defined by standard
+unsigned-integer arithmetic, with more details found in :ref:`the section on
+classical instructions <classical-instructions>`.
+
+The statement ``angle[size] name;`` statement declares a new angle called
+``name`` with ``size`` bits in its representation.  Angles can be assigned
+values using the constant ``π`` or ``pi``, such as::
+
+   // Declare a 20-bit angle with the value of "π/2"
    angle[20] my_angle = π / 2;
-   float[32] float_pi = π;
-   // equivalent to pi_by_2 up to rounding errors
-   angle[20](float_pi / 2);
    // Declare a machine-sized angle
    angle my_machine_angle;
+
+The bit representation of the type ``angle[size]`` is such that if
+``angle_as_uint`` is the integer whose representation as a ``uint[size]`` has
+the same bit pattern, the value of the angle (using exact mathematical
+operations on the field of real numbers) would be
+
+.. math::
+
+   2\pi \times \frac{\text{angle_as_uint}}{2^{\text{size}}}
+
+This "mathematical" value is the value used in casts from floating-point values
+(if available), whereas casts to and from ``bit[size]`` types reinterpret the
+bits directly.  This means that, unless ``a`` is sufficiently small::
+
+  float[32] a;
+  angle[32](bit[32](uint[32](a))) != angle[32](a)
+
+Explicitly, the most significant bit (bit index ``size - 1``) correpsonds to
+:math:`\pi`, and the least significant bit (bit index ``0``) corresponds to
+:math:`2^{-\text{size} + 1}\pi`.  For example, with the most-significant bit on
+the left in the bitstrings::
+
+   angle[4] my_pi = π;  // "1000"
+   angle[6] my_pi_over_two = π/2;  // "010000"
+   angle[8] my_angle = 7 * (π / 8);  // "01110000"
+
+Angles outside the interval :math:`[0, 2\pi)` are represented by their values
+modulo :math:`2\pi`.  Up to this modulo operation, the closest ``angle[size]``
+representation of an exact mathematical value is different from the true value
+by at most :math:`\epsilon\leq \pi/2^{\text{size}}`.
 
 
 Complex numbers
@@ -264,7 +295,7 @@ There is a Boolean type ``bool name;`` that takes values ``true`` or ``false``. 
 can be converted from a classical ``bit`` type to a Boolean using ``bool(c)``, where 1 will
 be true and 0 will be false.
 
-.. code-block:: c
+.. code-block::
 
    bit my_bit = 0;
    bool my_bool;
@@ -294,8 +325,7 @@ A standard set of built-in constants which are included in the default
 namespace are listed in table `1 <#tab:real-constants>`__. These constants
 are all of type ``float[64]``.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Declare a constant
    const int my_const = 1234;
@@ -392,7 +422,7 @@ binary number, as denoted by a leading ``0x/0X``, ``0o``, or ``0b/0B`` prefix.
 Non-consecutive underscores ``_`` may be inserted between the first and last
 digit of the literal to improve readability for large values.
 
-.. code-block:: c
+.. code-block::
 
    int i1 = 1; // decimal
    int i2 = 0xff; // hex
@@ -410,7 +440,7 @@ Float literals contain either
 In addition, scientific notation can be used with a signed or unsigned integer
 exponent.
 
-.. code-block:: c
+.. code-block::
 
    float f1 = 1.0;
    float f2 = .1; // leading dot
@@ -425,7 +455,7 @@ Bit string literals are denoted by double quotes ``"`` surrounding a number of
 zero and one digits, and may include non-consecutive underscores to improve
 readability for large strings.
 
-.. code-block:: c
+.. code-block::
 
    bit[8] b1 = "00010001";
    bit[8] b2 = "0001_0001"; // underscore for readability
@@ -434,7 +464,7 @@ Timing literals are float or integer literals with a unit of time.
 ``ns, μs, us, ms, and s`` are used for SI time units. ``dt`` is a
 backend-dependent unit equivalent to one waveform sample.
 
-.. code-block:: c
+.. code-block::
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
@@ -447,7 +477,7 @@ Arrays
 Statically-sized arrays of values can be created and initialized, and individual elements
 can be accessed, using the following general syntax:
 
-.. code-block:: c
+.. code-block::
 
    array[int[32], 5] myArray = {0, 1, 2, 3, 4};
    array[float[32], 3, 2] multiDim = {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}};
@@ -483,7 +513,7 @@ with the left-hand side of the assignment operating as a reference, thereby
 updating the values inside the original array. For multi-dimensional arrays,
 the shape and type of the assigned value must match that of the reference.
 
-.. code-block:: c
+.. code-block::
 
    array[int[8], 3] aa;
    array[int[8], 4, 3] bb;
@@ -507,7 +537,7 @@ Durations can be assigned with expressions including timing literals.
 ``durationof()`` is an intrinsic function used to reference the
 duration of a calibrated gate.
 
-.. code-block:: c
+.. code-block::
 
    duration one_second = 1000ms;
    duration thousand_cycles = 1000dt;
@@ -533,7 +563,7 @@ Aliasing
 The ``let`` keyword allows quantum bits and registers to be referred to by
 another name as long as the alias is in scope.
 
-.. code-block:: c
+.. code-block::
 
   qubit[5] q;
   // myreg[0] refers to the qubit q[1]
@@ -572,7 +602,7 @@ empty set. If :math:`c` is not given, it is assumed to be one, and
 :math:`c` cannot be zero. Note the index sets can be defined by
 variables whose values may only be known at run time.
 
-.. code-block:: c
+.. code-block::
 
    qubit[2] one;
    qubit[10] two;
@@ -600,7 +630,7 @@ A subset of classical values (int, uint, and angle) may be accessed at the bit
 level using index sets similar to register slicing. The bit slicing operation
 always returns a bit array of size equal to the size of the index set.
 
-.. code-block:: c
+.. code-block::
 
    int[32] myInt = 15; // 0xF or 0b1111
    bit[1] lastBit = myInt[0]; // 1
@@ -619,7 +649,7 @@ subscript operator to reduce confusion. With this convention nearly all
 instances of multiple subscripts ``[][]`` will be bit-level accesses of array
 elements.
 
-.. code-block:: c
+.. code-block::
 
    array[int[32], 5] intArr = {0, 1, 2, 3, 4};
    // Access bit 0 of element 0 of intArr and set it to 1
@@ -641,7 +671,7 @@ operator is forbidden to be used directly in the argument list of a subroutine
 or extern call. If a concatenated array is to be passed to a subroutine then it
 should be explicitly declared and assigned the concatenation.
 
-.. code-block:: c
+.. code-block::
 
    array[int[8], 2] first = {0, 1};
    array[int[8], 3] second = {2, 3, 4};
@@ -670,7 +700,7 @@ multi-dimensional arrays.
 For sliced assignments, as with non-sliced assignments, the shapes and types of
 the slices must match.
 
-.. code-block:: c
+.. code-block::
 
    int[8] scalar;
    array[int[8], 2] oneD;
@@ -788,18 +818,37 @@ Casting from float
 discarding the fractional part for integer-type targets). As noted above,
 if the value is too large to be represented in the
 target type the result is implementation-specific.
-Casting a ``float`` value to an ``angle[m]`` is accomplished by first
-performing a modulo 2π operation on the float value. The resulting value
-is then converted to the nearest ``angle[m]`` possible. In the event of a
-tie between two possible nearest values the result is the one with an even
-least significant bit (*i.e.* round to nearest, ties to even).
+
+Casting a ``float[n]`` value to an ``angle[m]`` involves finding the nearest
+representable value modulo :math:`\text{float}_n(2\pi)`, where ties between two
+possible representations are resolved by choosing to have zero in the
+least-significant bit (*i.e.* round to nearest, ties to even).  Casting the
+floating-point values ``inf``, ``-inf`` and all representations of ``NaN`` to
+``angle[m]`` is not defined.
+
+For example, given the double-precision floating-point value::
+
+   // The closest double-precision representation of 2*pi.
+   const float[64] two_pi = 6.283185307179586
+   // For double precision, we have
+   //   (two_pi * (127./512.)) / two_pi == (127./512.)
+   // exactly.
+   float[64] f = two_pi * (127. / 512.)
+
+the result of the cast ``angle[8](f)`` should have the bitwise representation
+``"01000000"`` (which represents the exact angle
+:math:`2\pi\cdot\frac{64}{256} = \frac\pi2`), despite ``"00111111"``
+(:math:`2\pi\cdot\frac{63}{256}`) being equally close, because of the
+round-to-nearest ties-to-even behaviour.
 
 Casting from angle
 ~~~~~~~~~~~~~~~~~~
 
-``angle[n]`` values cast to ``bool`` using the convention ``val != 0.0``.
-Casting to ``bit[m]`` values is only allowed when
-``n==m``, otherwise explicit slicing syntax must be provided.
+``angle[n]`` values cast to ``bool`` using the convention ``val != 0``.  Casting
+to ``bit[m]`` values is only allowed when ``n==m``, otherwise explicit slicing
+syntax must be provided.  When casting to ``bit[m]``, the value is a direct
+copy of the bit pattern using the same little-endian ordering :ref:`as described
+above <angle-type>`.
 
 When casting between angles of differing precisions (``n!=m``): if the target
 has more significant bits, then the value is padded with ``m-n`` least
@@ -830,7 +879,7 @@ Casting from or to duration values is not allowed, however, operations on
 durations that produce values of different types is allowed. For example,
 dividing a duration by a duration produces a machine-precision ``float``.
 
-.. code-block:: c
+.. code-block::
 
    duration one_ns = 1ns;
    duration a = 500ns;

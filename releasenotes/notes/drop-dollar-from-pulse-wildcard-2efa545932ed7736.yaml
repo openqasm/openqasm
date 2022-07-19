@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    The "wildcard" identifiers in pulse grammars are now regular OpenQASM 3
+    identifiers, without the leading dollar sign (``$``), *e.g.* what was ``$q``
+    before is now simply ``q``.  Precise hardware qubits are still referenced
+    as ``$0``, for example.  This was made for better consistency in identifiers;
+    having the dollar sign in the wildcard carried no information, since it
+    applied to any qubit already.

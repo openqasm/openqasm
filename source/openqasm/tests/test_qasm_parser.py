@@ -976,7 +976,7 @@ def test_calibration_grammar_declaration():
 
 def test_calibration_definition():
     p = """
-    defcal rz(angle[20] theta) $q -> bit { return shift_phase drive($q), -theta; }
+    defcal rz(angle[20] theta) q -> bit { return shift_phase drive(q), -theta; }
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -989,9 +989,9 @@ def test_calibration_definition():
                         name=Identifier("theta"),
                     )
                 ],
-                qubits=[Identifier("$q")],
+                qubits=[Identifier("q")],
                 return_type=BitType(None),
-                body="return shift_phase drive ( $q ) , - theta ;",
+                body="return shift_phase drive ( q ) , - theta ;",
             )
         ]
     )

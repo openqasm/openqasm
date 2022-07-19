@@ -1,3 +1,5 @@
+.. _classical-instructions:
+
 Classical instructions
 ======================
 
@@ -26,7 +28,7 @@ right-hand-side (RHS) of the assignment operator must be of the same
 type. For real-time values assignment is by copy of the RHS value to the
 assigned variable on the LHS.
 
-.. code-block:: c
+.. code-block::
 
    int[32] a;
    int[32] b = 10; // Combined declaration and assignment
@@ -39,14 +41,15 @@ assigned variable on the LHS.
 Classical bits and registers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Classical registers and bits support bitwise operators and the
-corresponding assignment operators between registers of the same size:
-and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift ``>>`` by an unsigned
-integer, and the corresponding assignment operators. The shift operators
-shift bits off the end. They also support not ``~``, ``popcount`` [1]_, and left and
-right circular shift, ``rotl`` and ``rotr``, respectively.
+Classical registers, ``bit``, ``uint`` and ``angle`` support bitwise operators
+and the corresponding assignment operators with registers of the same size:
+and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift
+``>>`` by an unsigned integer, and the corresponding assignment operators. The
+shift operators shift bits off the end. They also support bitwise negation ``~``,
+``popcount`` [1]_, and left and right circular shift, ``rotl`` and ``rotr``,
+respectively.
 
-.. code-block:: c
+.. code-block::
 
    bit[8] a = "10001111";
    bit[8] b = "01110000";
@@ -55,6 +58,17 @@ right circular shift, ``rotl`` and ``rotr``, respectively.
    rotl(a, 2) // Produces "00111110"
    a | b; // Produces "11111111"
    a & b; // Produces "00000000"
+
+For ``uint`` and ``angle``, the results of these operations are defined as if
+the operations were applied to their defined bit representations::
+
+   angle[4] a = 9 * (pi / 8);  // "1001"
+   a << 2;  // Produces pi/2, which is "0100"
+   a >> 2;  // Produces pi/4, which is "0010"
+
+   uint[6] b = 37;  // "100101"
+   popcount(b);  // Produces 3.
+   rotl(b, 3);   // Produces 44, which is "101100"
 
 Comparison (Boolean) Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +79,7 @@ be compared (:math:`>`, :math:`>=`, :math:`<`, :math:`<=`, :math:`==`,
 operators: and ``&&``, or ``||``, not ``!``. The keyword ``in`` tests if an integer belongs to
 an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and ``false`` otherwise.
 
-.. code-block:: c
+.. code-block::
 
    bool a = false;
    int[32] b = 1;
@@ -79,12 +93,23 @@ an index set, for example ``i in {0,3}`` returns ``true`` if i equals 0 or 3 and
    // Susceptible to floating point casting errors
    e == float(d);
 
+.. note::
+
+   Angles are naturally defined on a ring, and so comparisons may not work
+   exactly how you might expect.  For example, ``2 * ang >= ang`` is not
+   necessarily true; if ``ang`` represents the angle :math:`3\pi/2`, then
+   ``2*ang == pi`` and ``pi < ang``.
+
+   This is the same behavior as unsigned integers in many languages (including
+   OpenQASM 3), but the types of operation commonly performed on ``angle`` are
+   particularly likely to trigger these modulo arithmetic effects.
+
 Integers
 ~~~~~~~~
 
 Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, integer division [2]_ ``/``, modulo ``%``, and power ``**``, as well as the corresponding assignments ``+=``, ``-=``, ``*=``, ``/=``, ``%=``, and ``**=``.
 
-.. code-block:: c
+.. code-block::
 
    int[32] a = 2;
    int[32] b = 3;
@@ -95,13 +120,61 @@ Integer types support addition ``+``, subtraction ``-``, multiplication ``*``, i
    a ** b; // 8
    a += 4; // a == 6
 
-Floating-point numbers and angles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Angles
+~~~~~~
 
-Floating-point and angle types support addition, subtraction,
-multiplication, division, and power and the corresponding assignment operators.
+In addition to the bitwise operations mentioned above, angles support:
 
-.. code-block:: c
+- Addition ``+`` and subtraction ``-`` by other angles of the same size, which
+  returns an angle of the same size.
+- Multiplication ``*`` and division ``/`` by unsigned integers of the same size.
+  The result is an ``angle`` type of the same size.  Both ``uint * angle`` and
+  ``angle * uint`` are valid and produce the same result, but only ``angle /
+  uint`` is valid; it is not allowed to divide an integer by an angle.
+- Division ``/`` by another angle of the same size.  This returns a ``uint`` of
+  the same size.
+- Unary negation ``-``, which represents the mathematical operation :math:`-a
+  \equiv 2\pi - a`.
+- Compound assignment operators ``+=``, ``-=`` and ``/=`` with angles of the
+  same size as both left- and right operands.  These have the same effect as if
+  the equivalent binary operation had been written out in full.
+- The compound assignment operators ``*=`` and ``/=`` with an unsigned integer
+  of the same size as the right operand.  This has the same effect as if the
+  multiplication or division had been written as a binary operation and
+  assigned.
+
+In all of these cases, except for unary negation, the bit pattern of the result
+of these operations is the same as if the operations had been carried out
+between two ``uint`` types of the same size with the same bit representations,
+including both upper and lower overflow.  Explicitly::
+
+  angle[4] a = 7 * (pi / 8);  // "0111"
+  angle[4] b = pi / 8;        // "0001"
+  angle[4] c = 5 * (pi / 4);  // "1010"
+  uint[4] two = 2;
+
+  a + b;    // angle[4] │ pi           │ "1000"
+  b - a;    // angle[4] │ 5 * (pi / 4) │ "1010"
+  a / two;  // angle[4] │ 3 * (pi / 8) │ "0011"
+  two * c;  // angle[4] │ pi / 2       │ "0100"
+  c / b;    // uint[4]  │ 10           │ "1010"
+  pi * 2;   // angle[4] │ 0            │ "0000"
+
+Unary negation of an angle ``a`` is defined to produce the same value as
+``0 - a``, such that ``a + (-a)`` is always equal to zero.  This is the same as
+the C99 definition for unsigned integers.  In bitwise operations, the negation
+can be written as ``(~a) + 1``. Explicitly::
+
+  angle[4] a = pi / 4;  // "0010"
+  angle[4] b = -a;  // 7*(pi/4) │ "1110"
+
+Floating-point numbers
+~~~~~~~~~~~~~~~~~~~~~~
+
+Floating-point numbers support addition, subtraction, multiplication, division,
+and power and the corresponding assignment operators.
+
+.. code-block::
 
    angle[20] a = pi / 2;
    angle[20] b = pi;
@@ -109,6 +182,12 @@ multiplication, division, and power and the corresponding assignment operators.
    a ** b; // 4.1316...
    angle[10] c;
    c = angle(a + b); // cast to angle[10]
+
+.. note::
+
+   Real hardware may well not have access to floating-point operations at
+   runtime.  OpenQASM 3 compilers may reject programs that require runtime
+   operations on these values if the target backend does not support them.
 
 Complex numbers
 ~~~~~~~~~~~~~~~
@@ -121,7 +200,7 @@ These operations use the floating-point semantics of the underlying component
 floating-point types, including their ``NaN`` propagation, and
 hardware-dependent rounding mode and subnormal handling.
 
-.. code-block:: c
+.. code-block::
 
    complex[float[64]] a = 10.0 + 5.0im;
    complex[float[64]] b = -2.0 - 7.0im;
@@ -180,7 +259,7 @@ may optionally be followed by ``else <false-body>``.  Both ``true-body`` and
 ``false-body`` can be a single statement terminated by a semicolon, or a program
 block of several statements ``{ stmt1; stmt2; }``.
 
-.. code-block:: c
+.. code-block::
 
    bool target = false;
    qubit a;
@@ -238,7 +317,7 @@ not affect the next value that the loop variable will take.
 The scope of the loop variable is limited to the body of the loop.  It is not
 accessible after the loop.
 
-.. code-block:: c
+.. code-block::
 
    int[32] b = 0;
    // loop over a discrete set of values
@@ -279,7 +358,7 @@ within the while loop body.  The ``body`` can be either a single statement
 terminated by a semicolon, or a program block in curly braces ``{}`` of several
 statements:
 
-.. code-block:: c
+.. code-block::
 
    qubit q;
    bit result;
@@ -307,7 +386,7 @@ is the evaluation of the loop condition.  In a ``for`` loop, this is the
 assignment of the next value of the loop variable, or the end of the loop if the
 current value is the last in the set.
 
-.. code-block:: c
+.. code-block::
 
    int[32] i = 0;
 
@@ -331,7 +410,7 @@ current value is the last in the set.
 It is an error to have a ``break;`` or ``continue;`` statement outside a loop,
 such as at the top level of the main circuit or of a subroutine.
 
-.. code-block:: c
+.. code-block::
    
    OPENQASM 3.0;
 
