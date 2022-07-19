@@ -61,7 +61,7 @@ def _remove_spans(node):
 
 def test_calibration_definition():
     p = """
-    defcal rz(angle[20] theta) $q{ return shift_phase(drive($q), -theta); }
+    defcal rz(angle[20] theta) $1 { return shift_phase(drive($1), -theta); }
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -74,7 +74,7 @@ def test_calibration_definition():
                         name=Identifier("theta"),
                     )
                 ],
-                qubits=[Identifier("$q")],
+                qubits=[Identifier("$1")],
                 return_type=None,
                 body=[
                     ReturnStatement(
@@ -83,7 +83,7 @@ def test_calibration_definition():
                             arguments=[
                                 FunctionCall(
                                     name=Identifier(name="drive"),
-                                    arguments=[Identifier(name="$q")],
+                                    arguments=[Identifier(name="$1")],
                                 ),
                                 UnaryExpression(
                                     op=UnaryOperator["-"], expression=Identifier(name="theta")

@@ -28,16 +28,16 @@ from openpulse.printer import dumps
         }
         """,
         """
-        defcal rz(angle[20] theta) $q {
-          return shift_phase(drive($q), -theta);
+        defcal rz(angle[20] theta) q {
+          return shift_phase(drive(q), -theta);
         }
         """,
         """
-        defcal x90() $q {
+        defcal x90() q {
         }
         """,
         """
-        defcal x90() $q {
+        defcal x90() q {
           set_phase(frame1, 0.22 * 2 * pi);
         }
         """,
@@ -87,12 +87,12 @@ from openpulse.printer import dumps
         }
         """,
         """
-        defcal rz(angle[20] theta) $q {
-          return shift_phase(drive($q), -theta);
+        defcal rz(angle[20] theta) $1 {
+          return shift_phase(drive($1), -theta);
         }
         """,
         """
-        defcal x90() $q {
+        defcal x90() q {
         }
         """,
     ],

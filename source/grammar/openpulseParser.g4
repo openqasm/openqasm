@@ -12,7 +12,7 @@ options {
 }
 
 /**** OpenQASM3.0 overrides ****/
-defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)? hardwareQubitList returnSignature? LBRACE statement* RBRACE;
+defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)?  defcalArgumentList returnSignature? LBRACE statement* RBRACE;
 
 // cal statement is not yet defined in OpenQASM3.0. 
 // If it is defined in the future, this will be an override

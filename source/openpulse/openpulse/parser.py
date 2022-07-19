@@ -36,8 +36,6 @@ except ImportError as exc:
     ) from exc
 
 from openqasm3.parser import (
-    get_span,
-    add_span,
     span,
     QASMNodeVisitor,
     _visit_identifier,
@@ -171,14 +169,9 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
             if ctx.argumentDefinitionList()
             else []
         )
-        qubits = (
-            [
-                add_span(ast.Identifier(qubit.getText()), get_span(qubit))
-                for qubit in ctx.hardwareQubitList().HardwareQubit()
-            ]
-            if ctx.hardwareQubitList()
-            else []
-        )
+        qubits = [
+            self.visit(argument) for argument in ctx.defcalArgumentList().defcalArgument() or []
+        ]
         return_type = (
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
