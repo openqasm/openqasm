@@ -11,6 +11,7 @@ from openpulse.printer import dumps
         "b = capture(q0_capture_frame, ro_kernel);",
         "barrier q;",
         "delay[10.0ns] q;",
+        "delay[1000.0ns];",
         "play(frame1, wf1);",
         """
         cal {
@@ -33,11 +34,11 @@ from openpulse.printer import dumps
         }
         """,
         """
-        defcal x90() q {
+        defcal x90 q {
         }
         """,
         """
-        defcal x90() q {
+        defcal x90 q {
           set_phase(frame1, 0.22 * 2 * pi);
         }
         """,
@@ -55,6 +56,11 @@ from openpulse.printer import dumps
         """,
         """
         for int x in [1:2:10] {
+          step();
+        }
+        """,
+        """
+        for int x in [1:1000] {
           step();
         }
         """,
@@ -81,20 +87,6 @@ from openpulse.printer import dumps
         "v = x ** (y / z);",
         "v = x ** y / z;",
         "v = (x / z) ** y;",
-        """
-        cal {
-          set_frequency(frame1, 1000000000);
-        }
-        """,
-        """
-        defcal rz(angle[20] theta) $1 {
-          return shift_phase(drive($1), -theta);
-        }
-        """,
-        """
-        defcal x90() q {
-        }
-        """,
     ],
 )
 def test_print(p: str):

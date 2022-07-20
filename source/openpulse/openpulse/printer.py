@@ -1,7 +1,7 @@
 import io
 
 from openqasm3.printer import Printer as QASMPrinter
-from openqasm3.printer import PrinterState
+from openqasm3.printer import PrinterState, _maybe_annotated
 
 import openpulse.ast as ast
 
@@ -43,13 +43,15 @@ class Printer(QASMPrinter):
     def visit_WaveformType(self, node: ast.WaveformType, context: PrinterState) -> None:
         self.stream.write("waveform")
 
+    @_maybe_annotated
     def visit_CalibrationDefinition(
         self, node: ast.CalibrationDefinition, context: PrinterState
     ) -> None:
         self._start_line(context)
         self.stream.write("defcal ")
         self.visit(node.name, context)
-        self._visit_sequence(node.arguments, context, start="(", end=")", separator=", ")
+        if node.arguments:
+            self._visit_sequence(node.arguments, context, start="(", end=")", separator=", ")
         self.stream.write(" ")
         self._visit_sequence(node.qubits, context, separator=", ")
         if node.return_type is not None:
@@ -74,3 +76,15 @@ class Printer(QASMPrinter):
         self._start_line(context)
         self.stream.write("}")
         self._end_line(context)
+
+    # TODO: Remove once the bug is fixed in openqasm3
+    @_maybe_annotated
+    def visit_DelayInstruction(self, node: ast.DelayInstruction, context: PrinterState) -> None:
+        self._start_line(context)
+        self.stream.write("delay[")
+        self.visit(node.duration, context)
+        self.stream.write("]")
+        if node.qubits:
+            self.stream.write(" ")
+            self._visit_sequence(node.qubits, context, separator=", ")
+        self._end_statement(context)
