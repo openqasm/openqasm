@@ -68,7 +68,7 @@ defines the gate
 
 .. math::
 
-   \mathrm{CX} := |0 \rangle \langle 0| \otimes I + |1 \rangle \langle 1| \otimes X = \left(\begin{array}{cccc}
+   \mathrm{CX} := I \oplus X = \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 1 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
