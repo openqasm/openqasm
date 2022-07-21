@@ -68,7 +68,7 @@ defines the gate
 
 .. math::
 
-   \mathrm{CX} := I\times X = \left(\begin{array}{cccc}
+   \mathrm{CX} := |0 \rangle \langle 0| \otimes I + |1 \rangle \langle 1| \otimes X = \left(\begin{array}{cccc}
    1 & 0 & 0 & 0 \\
    0 & 1 & 0 & 0 \\
    0 & 0 & 0 & 1 \\
@@ -124,7 +124,7 @@ index ``j`` into register ``a``.
    .. image:: ../qpics/ur.svg
 
    The single-qubit unitary gates are built-in. These gates are parameterized by three real
-   parameters :math:`\theta`, :math:`\phi`, and :math:`\lambda$`. If the argument ``q`` is a quantum register, the
+   parameters :math:`\theta`, :math:`\phi`, and :math:`\lambda`. If the argument ``q`` is a quantum register, the
    statement applies ``size(q)`` gates in parallel to the qubits of the
    register.
 
