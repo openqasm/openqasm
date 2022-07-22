@@ -272,7 +272,7 @@ Boxed expressions
 
 We introduce a ``box`` statement for scoping the timing of a particular part of the circuit.
 A boxed subcircuit is different from a ``gate`` or ``def`` subroutine, in that it is merely 
-an enclosure to a piece of code within the larger scope which constains it. This can be used to
+an enclosure to a piece of code within the larger scope which constrains it. This can be used to
 signal permissible logical-level optimizations to the compiler: optimizing operations within
 a ``box`` definition is permitted, and optimizations that move operations from one side to
 the other side of a box are permitted, but moving operations either into or out of the box as
