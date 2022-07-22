@@ -20,6 +20,7 @@ from openqasm3.ast import (
     BranchingStatement,
     CalibrationDefinition,
     CalibrationGrammarDeclaration,
+    CalibrationStatement,
     Cast,
     ClassicalArgument,
     ClassicalAssignment,
@@ -974,9 +975,30 @@ def test_calibration_grammar_declaration():
     SpanGuard().visit(program)
 
 
+def test_calibration_statement():
+    p = """
+    cal {shift_phase(drive($0), -theta);}
+    cal {Outer {nested} outer again.}
+    cal {Untokenisable: *$£()"*}
+    cal {}
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationStatement(body="shift_phase(drive($0), -theta);"),
+            CalibrationStatement(body="Outer {nested} outer again."),
+            CalibrationStatement(body='Untokenisable: *$£()"*'),
+            CalibrationStatement(body=""),
+        ],
+    )
+
+
 def test_calibration_definition():
     p = """
-    defcal rz(angle[20] theta) q -> bit { return shift_phase drive(q), -theta; }
+    defcal rz(angle[20] theta) q { shift_phase drive(q), -theta; }
+    defcal measure $0 -> bit {Outer {nested} outer again.}
+    defcal rx(pi / 2) $1 {Untokenisable: *$£()"*}
+    defcal cx $0, $1 {}
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -990,9 +1012,36 @@ def test_calibration_definition():
                     )
                 ],
                 qubits=[Identifier("q")],
-                return_type=BitType(None),
-                body="return shift_phase drive ( q ) , - theta ;",
-            )
+                return_type=None,
+                body=" shift_phase drive(q), -theta; ",
+            ),
+            CalibrationDefinition(
+                name=Identifier("measure"),
+                arguments=[],
+                qubits=[Identifier("$0")],
+                return_type=BitType(size=None),
+                body="Outer {nested} outer again.",
+            ),
+            CalibrationDefinition(
+                name=Identifier("rx"),
+                arguments=[
+                    BinaryExpression(
+                        lhs=Identifier("pi"),
+                        op=BinaryOperator["/"],
+                        rhs=IntegerLiteral(2),
+                    )
+                ],
+                qubits=[Identifier("$1")],
+                return_type=None,
+                body='Untokenisable: *$£()"*',
+            ),
+            CalibrationDefinition(
+                name=Identifier("cx"),
+                arguments=[],
+                qubits=[Identifier("$0"), Identifier("$1")],
+                return_type=None,
+                body="",
+            ),
         ]
     )
     SpanGuard().visit(program)
