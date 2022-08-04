@@ -542,7 +542,7 @@ inputs of these functions.
       |          |                                   |                                      | the principal value is returned.       |
       |          | ``complex``, ``complex``          | ``complex``                          |                                        |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotl     | ``bit[n]``, ``int``               | ``bit[n]``                           | Rotate the bits in the representation  |
+      | rotl     | ``bit[n]``, ``uint``              | ``bit[n]``                           | Rotate the bits in the representation  |
       |          |                                   |                                      | ``n`` to the left (towards higher      |
       |          |                                   |                                      | indices).  This is similar to a bit    |
       |          |                                   |                                      | shift operation, except the vacated    |
@@ -553,7 +553,7 @@ inputs of these functions.
       |          |                                   |                                      |                                        |
       |          |                                   |                                      | ``rotl(a, n) == rotr(a, -n)``.         |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotr     | ``bit[n]``, ``int``               | ``bit[n]``                           | Rotate the bits in the representation  |
+      | rotr     | ``bit[n]``, ``uint``              | ``bit[n]``                           | Rotate the bits in the representation  |
       |          |                                   |                                      | ``n`` to the right (towards lower      |
       |          |                                   |                                      | indices).                              |
       +----------+-----------------------------------+--------------------------------------+----------------------------------------+
