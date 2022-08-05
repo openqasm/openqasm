@@ -9,8 +9,8 @@ import openpulse
 TEST_DIR = pathlib.Path(__file__).parent
 ROOT_DIR = TEST_DIR.parents[2]
 EXAMPLES_DIR = ROOT_DIR / "examples"
-# The following 2 examples need to fixed to match the latest openpulse specification
-EXCLUDES = ["defcal.qasm", "pong.qasm"]
+# The following example needs to be fixed to match the latest openpulse specification
+EXCLUDES = ["defcal.qasm"]
 PREDICATE = lambda f: not f.name in EXCLUDES
 EXAMPLES = tuple(filter(PREDICATE, EXAMPLES_DIR.glob("**/*.qasm")))
 
