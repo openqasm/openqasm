@@ -66,7 +66,9 @@ class Printer(QASMPrinter):
         self.stream.write("}")
         self._end_line(context)
 
-    def visit_CalibrationBlock(self, node: ast.CalibrationBlock, context: PrinterState) -> None:
+    def visit_CalibrationStatement(
+        self, node: ast.CalibrationStatement, context: PrinterState
+    ) -> None:
         self._start_line(context)
         self.stream.write("cal {")
         self._end_line(context)

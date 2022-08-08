@@ -12,11 +12,8 @@ options {
 }
 
 /**** OpenQASM3.0 overrides ****/
-defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)?  defcalArgumentList returnSignature? LBRACE statement* RBRACE;
-
-// cal statement is not yet defined in OpenQASM3.0. 
-// If it is defined in the future, this will be an override
 calStatement: CAL LBRACE statement* RBRACE;
+defcalStatement: DEFCAL defcalTarget (LPAREN defcalArgumentDefinitionList? RPAREN)? defcalOperandList returnSignature? LBRACE statement* RBRACE;
 
 /** In the following we extend existing OpenQASM nodes. Need to refresh whenever OpenQASM is updated. **/
 // We extend the scalarType with WAVEFORM, PORT and FRAME

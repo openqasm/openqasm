@@ -38,7 +38,6 @@ except ImportError as exc:
 from openqasm3.parser import (
     span,
     QASMNodeVisitor,
-    _visit_identifier,
     _raise_from_context,
 )
 from openqasm3.antlr.qasm3Parser import qasm3Parser
@@ -150,7 +149,9 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
 
     @span
     def visitCalStatement(self, ctx: openpulseParser.CalStatementContext):
-        return ast.CalibrationBlock(body=[self.visit(statement) for statement in ctx.statement()])
+        return ast.CalibrationStatement(
+            body=[self.visit(statement) for statement in ctx.statement()]
+        )
 
     def visitScalarType(self, ctx: openpulseParser.ScalarTypeContext):
         if ctx.WAVEFORM() or ctx.PORT() or ctx.FRAME():
@@ -165,19 +166,20 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
         with self._push_context(ctx):
             statements = [self.visit(statement) for statement in ctx.statement()]
         arguments = (
-            [self.visit(argument) for argument in ctx.argumentDefinitionList().argumentDefinition()]
-            if ctx.argumentDefinitionList()
+            [
+                self.visit(argument)
+                for argument in ctx.defcalArgumentDefinitionList().defcalArgumentDefinition()
+            ]
+            if ctx.defcalArgumentDefinitionList()
             else []
         )
-        qubits = [
-            self.visit(argument) for argument in ctx.defcalArgumentList().defcalArgument() or []
-        ]
+        qubits = [self.visit(operand) for operand in ctx.defcalOperandList().defcalOperand() or []]
         return_type = (
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
 
         return ast.CalibrationDefinition(
-            name=_visit_identifier(ctx.Identifier()),
+            name=self.visit(ctx.defcalTarget()),
             arguments=arguments,
             qubits=qubits,
             return_type=return_type,
@@ -246,6 +248,7 @@ excluded = [
     "visitTerminal",
     "visitArrayLiteral",
     "visitCalibrationGrammarStatement",
+    "visitCalStatement",
     "visitDefcalStatement",
     "visitIndexOperator",
     "visitRangeExpression",
