@@ -5,8 +5,8 @@ from openqasm3.visitor import QASMVisitor
 from openpulse.parser import parse
 from openpulse.ast import (
     AngleType,
-    CalibrationBlock,
     CalibrationDefinition,
+    CalibrationStatement,
     ClassicalArgument,
     ClassicalDeclaration,
     ComplexType,
@@ -111,7 +111,7 @@ def test_calibration():
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
-            CalibrationBlock(
+            CalibrationStatement(
                 body=[
                     ExternDeclaration(
                         name=Identifier("drag"),

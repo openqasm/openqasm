@@ -41,8 +41,10 @@ class FrameType(ClassicalType):
     """
 
 
+# Override the class from openqasm3
 @dataclass
-class CalibrationBlock(Statement):
+class CalibrationStatement(Statement):
+    # pylint: disable=E0102
     """
     Cal block
 
