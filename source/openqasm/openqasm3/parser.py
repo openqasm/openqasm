@@ -257,6 +257,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.BreakStatement()
 
     @span
+    def visitCalStatement(self, ctx: qasm3Parser.CalStatementContext):
+        return ast.CalibrationStatement(
+            body=ctx.CalibrationBlock().getText() if ctx.CalibrationBlock() else ""
+        )
+
+    @span
     def visitCalibrationGrammarStatement(self, ctx: qasm3Parser.CalibrationGrammarStatementContext):
         if not self._in_global_scope():
             _raise_from_context(ctx, "'defcalgrammar' statements must be global")
@@ -312,38 +318,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitDefcalStatement(self, ctx: qasm3Parser.DefcalStatementContext):
-        # TODO: Possible grammar improvement. The current grammar return the body as a token
-        # stream. We reconstruct the body by concat the tokens space delimiter.
-        # This will not exactly reproduce the body but it can be parsed by another grammar.
-        with self._push_context(ctx):
-            body_chars = []  # Python concatenation is slow so we build a list first
-            for i in range(ctx.getChildCount() - 2, 0, -1):
-                node = ctx.getChild(i)
-                if isinstance(node, TerminalNode):
-                    body_chars.append(node.getText())
-                else:
-                    if body_chars:
-                        body_chars.pop()
-                    break
-            body = " ".join(body_chars[::-1])
         arguments = (
-            [self.visit(argument) for argument in ctx.argumentDefinitionList().argumentDefinition()]
-            if ctx.argumentDefinitionList()
+            [
+                self.visit(argument)
+                for argument in ctx.defcalArgumentDefinitionList().defcalArgumentDefinition()
+            ]
+            if ctx.defcalArgumentDefinitionList()
             else []
         )
-        qubits = [
-            self.visit(argument) for argument in ctx.defcalArgumentList().defcalArgument() or []
-        ]
+        qubits = [self.visit(operand) for operand in ctx.defcalOperandList().defcalOperand() or []]
         return_type = (
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
 
         return ast.CalibrationDefinition(
-            name=_visit_identifier(ctx.Identifier()),
+            name=self.visit(ctx.defcalTarget()),
             arguments=arguments,
             qubits=qubits,
             return_type=return_type,
-            body=body,
+            body=ctx.CalibrationBlock().getText() if ctx.CalibrationBlock() else "",
         )
 
     @span
@@ -797,6 +790,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return self.visit(ctx.indexedIdentifier())
 
     @span
+    def visitDefcalTarget(self, ctx: qasm3Parser.DefcalTargetContext):
+        return ast.Identifier(name=ctx.getText())
+
+    @span
     def visitArgumentDefinition(self, ctx: qasm3Parser.ArgumentDefinitionContext):
         name = _visit_identifier(ctx.Identifier())
         if ctx.qubitType() or ctx.QREG():
@@ -830,6 +827,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.ClassicalArgument(type=type_, name=name, access=access)
 
     @span
+    def visitDefcalArgumentDefinition(self, ctx: qasm3Parser.DefcalArgumentDefinitionContext):
+        return self.visit(ctx.getChild(0))
+
+    @span
     def visitExternArgument(self, ctx: qasm3Parser.ExternArgumentContext):
         access = None
         if ctx.CREG():
@@ -852,7 +853,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.ExternArgument(type=type_, access=access)
 
     @span
-    def visitDefcalArgument(self, ctx: qasm3Parser.DefcalArgumentContext):
+    def visitDefcalOperand(self, ctx: qasm3Parser.DefcalOperandContext):
         if ctx.HardwareQubit():
             return ast.Identifier(ctx.HardwareQubit().getText())
         return _visit_identifier(ctx.Identifier())

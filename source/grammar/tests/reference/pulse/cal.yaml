@@ -1,0 +1,24 @@
+source: |
+  cal {}
+  cal {One long, otherwise invalid token.}
+  cal {Outer {nested} outer}
+reference: |
+  program
+    statement
+      calStatement
+        cal
+        {
+        }
+    statement
+      calStatement
+        cal
+        {
+        One long, otherwise invalid token.
+        }
+    statement
+      calStatement
+        cal
+        {
+        Outer {nested} outer
+        }
+    <EOF>

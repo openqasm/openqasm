@@ -34,6 +34,7 @@ __all__ = [
     "BreakStatement",
     "CalibrationDefinition",
     "CalibrationGrammarDeclaration",
+    "CalibrationStatement",
     "Cast",
     "ClassicalArgument",
     "ClassicalAssignment",
@@ -814,6 +815,20 @@ class CalibrationGrammarDeclaration(Statement):
 
 
 @dataclass
+class CalibrationStatement(Statement):
+    """An inline ``cal`` statement for embedded pulse-grammar interactions.
+
+    Example::
+
+        cal {
+            shift_phase(drive($0), theta);
+        }
+    """
+
+    body: str
+
+
+@dataclass
 class CalibrationDefinition(Statement):
     """
     Calibration definition
@@ -826,7 +841,7 @@ class CalibrationDefinition(Statement):
     """
 
     name: Identifier
-    arguments: List[ClassicalArgument]
+    arguments: List[Union[ClassicalArgument, Expression]]
     qubits: List[Identifier]
     return_type: Optional[ClassicalType]
     body: str

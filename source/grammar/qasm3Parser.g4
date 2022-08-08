@@ -21,6 +21,7 @@ statement:
         | barrierStatement
         | boxStatement
         | breakStatement
+        | calStatement
         | calibrationGrammarStatement
         | classicalDeclarationStatement
         | constDeclarationStatement
@@ -105,9 +106,9 @@ gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=id
 assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | measureExpression) SEMICOLON;
 expressionStatement: expression SEMICOLON;
 
-// TODO: this handling of the defcal block is incorrect, because it is not
-// constrained to consume balanced brace blocks.  This needs more attention.
-defcalStatement: DEFCAL Identifier (LPAREN argumentDefinitionList? RPAREN)?  defcalArgumentList returnSignature? LBRACE .*? RBRACE;
+// Statements where the bulk is in the calibration language.
+calStatement: CAL LBRACE CalibrationBlock? RBRACE;
+defcalStatement: DEFCAL defcalTarget (LPAREN defcalArgumentDefinitionList? RPAREN)? defcalOperandList returnSignature? LBRACE CalibrationBlock? RBRACE;
 
 
 /* End top-level statement definitions. */
@@ -202,9 +203,11 @@ arrayReferenceType: (CONST | MUTABLE) ARRAY LBRACKET scalarType COMMA (expressio
 
 designator: LBRACKET expression RBRACKET;
 
+defcalTarget: MEASURE | RESET | DELAY | Identifier;
+defcalArgumentDefinition: expression | argumentDefinition;
+defcalOperand: HardwareQubit | Identifier;
 gateOperand: indexedIdentifier | HardwareQubit;
 externArgument: scalarType | arrayReferenceType | CREG designator?;
-defcalArgument: HardwareQubit | Identifier;
 argumentDefinition:
     scalarType Identifier
     | qubitType Identifier
@@ -213,8 +216,9 @@ argumentDefinition:
 ;
 
 argumentDefinitionList: argumentDefinition (COMMA argumentDefinition)* COMMA?;
+defcalArgumentDefinitionList: defcalArgumentDefinition (COMMA defcalArgumentDefinition)* COMMA?;
+defcalOperandList: defcalOperand (COMMA defcalOperand)* COMMA?;
 expressionList: expression (COMMA expression)* COMMA?;
-defcalArgumentList: defcalArgument (COMMA defcalArgument)* COMMA?;
 identifierList: Identifier (COMMA Identifier)* COMMA?;
 gateOperandList: gateOperand (COMMA gateOperand)* COMMA?;
 externArgumentList: externArgument (COMMA externArgument)* COMMA?;
