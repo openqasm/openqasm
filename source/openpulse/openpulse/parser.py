@@ -24,7 +24,6 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-import re
 from typing import List
 
 try:
@@ -237,12 +236,9 @@ class OpenPulseNodeVisitor(openpulseParserVisitor):
         return ast.ReturnStatement(expression=expression)
 
 
-# Try to reuse some methods from QASMNodeVisitor
-# We exclude some methods. The first 3 are from the generated openpulseParserVisitor class.
-# The rest are redefined in the OpenPulseNodeVisitor class.
-# We need to redefine some methods does instanceof checks.
-p = re.compile("_?(visit).+")
-excluded = [
+# Reuse some QASMNodeVisitor methods in OpenPulseNodeVisitor
+# The following methods are overridden in OpenPulseNodeVisitor and thuys not imported:
+"""
     "visitChildren",
     "visitErrorNode",
     "visitTerminal",
@@ -254,7 +250,75 @@ excluded = [
     "visitRangeExpression",
     "visitReturnStatement",
     "visitScalarType",
-]
-for m in QASMNodeVisitor.__dict__:
-    if p.match(m) and not m in excluded:
-        setattr(OpenPulseNodeVisitor, m, getattr(QASMNodeVisitor, m))
+"""
+OpenPulseNodeVisitor._visit_binary_expression = QASMNodeVisitor._visit_binary_expression
+OpenPulseNodeVisitor.visitAdditiveExpression = QASMNodeVisitor.visitAdditiveExpression
+OpenPulseNodeVisitor.visitAliasDeclarationStatement = QASMNodeVisitor.visitAliasDeclarationStatement
+OpenPulseNodeVisitor.visitAliasExpression = QASMNodeVisitor.visitAliasExpression
+OpenPulseNodeVisitor.visitAnnotation = QASMNodeVisitor.visitAnnotation
+OpenPulseNodeVisitor.visitArgumentDefinition = QASMNodeVisitor.visitArgumentDefinition
+OpenPulseNodeVisitor.visitArrayType = QASMNodeVisitor.visitArrayType
+OpenPulseNodeVisitor.visitAssignmentStatement = QASMNodeVisitor.visitAssignmentStatement
+OpenPulseNodeVisitor.visitBarrierStatement = QASMNodeVisitor.visitBarrierStatement
+OpenPulseNodeVisitor.visitBitshiftExpression = QASMNodeVisitor.visitBitshiftExpression
+OpenPulseNodeVisitor.visitBitwiseAndExpression = QASMNodeVisitor.visitBitwiseAndExpression
+OpenPulseNodeVisitor.visitBitwiseOrExpression = QASMNodeVisitor.visitBitwiseOrExpression
+OpenPulseNodeVisitor.visitBitwiseXorExpression = QASMNodeVisitor.visitBitwiseXorExpression
+OpenPulseNodeVisitor.visitBoxStatement = QASMNodeVisitor.visitBoxStatement
+OpenPulseNodeVisitor.visitBreakStatement = QASMNodeVisitor.visitBreakStatement
+OpenPulseNodeVisitor.visitCallExpression = QASMNodeVisitor.visitCallExpression
+OpenPulseNodeVisitor.visitCastExpression = QASMNodeVisitor.visitCastExpression
+OpenPulseNodeVisitor.visitClassicalDeclarationStatement = (
+    QASMNodeVisitor.visitClassicalDeclarationStatement
+)
+OpenPulseNodeVisitor.visitComparisonExpression = QASMNodeVisitor.visitComparisonExpression
+OpenPulseNodeVisitor.visitConstDeclarationStatement = QASMNodeVisitor.visitConstDeclarationStatement
+OpenPulseNodeVisitor.visitContinueStatement = QASMNodeVisitor.visitContinueStatement
+OpenPulseNodeVisitor.visitDeclarationExpression = QASMNodeVisitor.visitDeclarationExpression
+OpenPulseNodeVisitor.visitDefStatement = QASMNodeVisitor.visitDefStatement
+OpenPulseNodeVisitor.visitDefcalArgumentDefinition = QASMNodeVisitor.visitDefcalArgumentDefinition
+OpenPulseNodeVisitor.visitDefcalOperand = QASMNodeVisitor.visitDefcalOperand
+OpenPulseNodeVisitor.visitDefcalTarget = QASMNodeVisitor.visitDefcalTarget
+OpenPulseNodeVisitor.visitDelayStatement = QASMNodeVisitor.visitDelayStatement
+OpenPulseNodeVisitor.visitDesignator = QASMNodeVisitor.visitDesignator
+OpenPulseNodeVisitor.visitDurationofExpression = QASMNodeVisitor.visitDurationofExpression
+OpenPulseNodeVisitor.visitEndStatement = QASMNodeVisitor.visitEndStatement
+OpenPulseNodeVisitor.visitEqualityExpression = QASMNodeVisitor.visitEqualityExpression
+OpenPulseNodeVisitor.visitExpressionStatement = QASMNodeVisitor.visitExpressionStatement
+OpenPulseNodeVisitor.visitExternArgument = QASMNodeVisitor.visitExternArgument
+OpenPulseNodeVisitor.visitExternStatement = QASMNodeVisitor.visitExternStatement
+OpenPulseNodeVisitor.visitForStatement = QASMNodeVisitor.visitForStatement
+OpenPulseNodeVisitor.visitGateCallStatement = QASMNodeVisitor.visitGateCallStatement
+OpenPulseNodeVisitor.visitGateModifier = QASMNodeVisitor.visitGateModifier
+OpenPulseNodeVisitor.visitGateOperand = QASMNodeVisitor.visitGateOperand
+OpenPulseNodeVisitor.visitGateStatement = QASMNodeVisitor.visitGateStatement
+OpenPulseNodeVisitor.visitIfStatement = QASMNodeVisitor.visitIfStatement
+OpenPulseNodeVisitor.visitIncludeStatement = QASMNodeVisitor.visitIncludeStatement
+OpenPulseNodeVisitor.visitIndexExpression = QASMNodeVisitor.visitIndexExpression
+OpenPulseNodeVisitor.visitIndexedIdentifier = QASMNodeVisitor.visitIndexedIdentifier
+OpenPulseNodeVisitor.visitIoDeclarationStatement = QASMNodeVisitor.visitIoDeclarationStatement
+OpenPulseNodeVisitor.visitLiteralExpression = QASMNodeVisitor.visitLiteralExpression
+OpenPulseNodeVisitor.visitLogicalAndExpression = QASMNodeVisitor.visitLogicalAndExpression
+OpenPulseNodeVisitor.visitLogicalOrExpression = QASMNodeVisitor.visitLogicalOrExpression
+OpenPulseNodeVisitor.visitMeasureArrowAssignmentStatement = (
+    QASMNodeVisitor.visitMeasureArrowAssignmentStatement
+)
+OpenPulseNodeVisitor.visitMeasureExpression = QASMNodeVisitor.visitMeasureExpression
+OpenPulseNodeVisitor.visitMultiplicativeExpression = QASMNodeVisitor.visitMultiplicativeExpression
+OpenPulseNodeVisitor.visitOldStyleDeclarationStatement = (
+    QASMNodeVisitor.visitOldStyleDeclarationStatement
+)
+OpenPulseNodeVisitor.visitParenthesisExpression = QASMNodeVisitor.visitParenthesisExpression
+OpenPulseNodeVisitor.visitPowerExpression = QASMNodeVisitor.visitPowerExpression
+OpenPulseNodeVisitor.visitPragma = QASMNodeVisitor.visitPragma
+OpenPulseNodeVisitor.visitProgram = QASMNodeVisitor.visitProgram
+OpenPulseNodeVisitor.visitQuantumDeclarationStatement = (
+    QASMNodeVisitor.visitQuantumDeclarationStatement
+)
+OpenPulseNodeVisitor.visitResetStatement = QASMNodeVisitor.visitResetStatement
+OpenPulseNodeVisitor.visitScope = QASMNodeVisitor.visitScope
+OpenPulseNodeVisitor.visitSetExpression = QASMNodeVisitor.visitSetExpression
+OpenPulseNodeVisitor.visitStatement = QASMNodeVisitor.visitStatement
+OpenPulseNodeVisitor.visitStatementOrScope = QASMNodeVisitor.visitStatementOrScope
+OpenPulseNodeVisitor.visitUnaryExpression = QASMNodeVisitor.visitUnaryExpression
+OpenPulseNodeVisitor.visitWhileStatement = QASMNodeVisitor.visitWhileStatement
