@@ -1,6 +1,7 @@
 .. role:: raw-latex(raw)
    :format: latex
-..
+
+.. _pulse-gates:
 
 Pulse-level descriptions of gates and measurement
 =================================================
