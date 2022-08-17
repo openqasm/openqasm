@@ -54,6 +54,7 @@ BIT: 'bit';
 INT: 'int';
 UINT: 'uint';
 FLOAT: 'float';
+VOID: 'void';
 ANGLE: 'angle';
 COMPLEX: 'complex';
 ARRAY: 'array';

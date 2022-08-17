@@ -308,7 +308,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             else []
         )
         return_type = (
-            self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
+            self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() and not ctx.returnSignature().VOID() else None
         )
         with self._push_context(ctx):
             body = self.visit(ctx.scope())
