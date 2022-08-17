@@ -180,6 +180,20 @@ types for the purposes of casting.
    // Declare a machine-precision float.
    float my_machine_float = 2.3;
 
+.. _void-type:
+
+Void type
+~~~~~~~~~
+
+Subroutines and externs that do not need to return a value may be declared to
+return ``void``. The ``void`` type is unrealizable and uninstantiable, and thus
+cannot be attached to an identifer.
+
+.. code-block::
+
+   extern updateMetadata(bit[10]) -> void;
+   def modifyArray(mutable array[int[8], 10] arr_arg) -> void { ... }
+
 .. _angle-type:
 
 Angles
