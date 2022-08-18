@@ -507,64 +507,65 @@ inputs of these functions.
 
    .. table:: Built-in mathematical functions in OpenQASM3.
 
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | Function | Input Range/Type, [...]           | Output Range/Type                    | Notes                                  |
-      +==========+===================================+======================================+========================================+
-      | arccos   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[0, \pi]`        | Inverse cosine.                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | arcsin   | ``float`` on :math:`[-1, 1]`      | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse sine.                          |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | arctan   | ``float``                         | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse tangent.                       |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | ceiling  | ``float``                         | ``float``                            | Round to the nearest representable     |
-      |          |                                   |                                      | integer equal or greater in value.     |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | cos      | (``float`` or ``angle``)          | ``float``                            | Cosine.                                |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | exp      | ``float``                         | ``float``                            | Exponential :math:`e^x`.               |
-      |          |                                   |                                      |                                        |
-      |          | ``complex``                       | ``complex``                          |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | floor    | ``float``                         | ``float``                            | Round to the nearest representable     |
-      |          |                                   |                                      | integer equal or lesser in value.      |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | log      | ``float``                         | ``float``                            | Logarithm base :math:`e`.              |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | mod      | ``int``, ``int``                  | ``int``                              | Modulus.  The remainder from the       |
-      |          |                                   |                                      | integer division of the first argument |
-      |          | ``float``, ``float``              | ``float``                            | by the second argument.                |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | popcount | ``bit[_]``                        | ``uint``                             | Number of set (1) bits.                |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | pow      | ``int``, ``uint``                 | ``int``                              | :math:`\texttt{pow(a, b)} = a^b`.      |
-      |          |                                   |                                      |                                        |
-      |          | ``float``, ``float``              | ``float``                            | For floating-point and complex values, |
-      |          |                                   |                                      | the principal value is returned.       |
-      |          | ``complex``, ``complex``          | ``complex``                          |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotl     | ``bit[n]``, ``uint``              | ``bit[n]``                           | Rotate the bits in the representation  |
-      |          |                                   |                                      | ``n`` to the left (towards higher      |
-      |          |                                   |                                      | indices).  This is similar to a bit    |
-      |          |                                   |                                      | shift operation, except the vacated    |
-      |          |                                   |                                      | bits are filled from the overflow,     |
-      |          |                                   |                                      | rather than being set to zero.  The    |
-      |          |                                   |                                      | width of the output is set equal to    |
-      |          |                                   |                                      | the width of the input.                |
-      |          |                                   |                                      |                                        |
-      |          |                                   |                                      | ``rotl(a, n) == rotr(a, -n)``.         |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | rotr     | ``bit[n]``, ``uint``              | ``bit[n]``                           | Rotate the bits in the representation  |
-      |          |                                   |                                      | ``n`` to the right (towards lower      |
-      |          |                                   |                                      | indices).                              |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | sin      | (``float`` or ``angle``)          | ``float``                            | Sine.                                  |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | sqrt     | ``float``                         | ``float``                            | Square root.  This always returns the  |
-      |          |                                   |                                      | principal root.                        |
-      |          | ``complex``                       | ``complex``                          |                                        |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
-      | tan      | (``float`` or ``angle``)          | ``float``                            | Tangent.                               |
-      +----------+-----------------------------------+--------------------------------------+----------------------------------------+
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | Function | Input Range/Type, [...]             | Output Range/Type                    | Notes                                  |
+      +==========+=====================================+======================================+========================================+
+      | arccos   | ``float`` on :math:`[-1, 1]`        | ``float`` on :math:`[0, \pi]`        | Inverse cosine.                        |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | arcsin   | ``float`` on :math:`[-1, 1]`        | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse sine.                          |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | arctan   | ``float``                           | ``float`` on :math:`[-\pi/2, \pi/2]` | Inverse tangent.                       |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | ceiling  | ``float``                           | ``float``                            | Round to the nearest representable     |
+      |          |                                     |                                      | integer equal or greater in value.     |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | cos      | (``float`` or ``angle``)            | ``float``                            | Cosine.                                |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | exp      | ``float``                           | ``float``                            | Exponential :math:`e^x`.               |
+      |          |                                     |                                      |                                        |
+      |          | ``complex``                         | ``complex``                          |                                        |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | floor    | ``float``                           | ``float``                            | Round to the nearest representable     |
+      |          |                                     |                                      | integer equal or lesser in value.      |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | log      | ``float``                           | ``float``                            | Logarithm base :math:`e`.              |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | mod      | ``int``, ``int``                    | ``int``                              | Modulus.  The remainder from the       |
+      |          |                                     |                                      | integer division of the first argument |
+      |          | ``float``, ``float``                | ``float``                            | by the second argument.                |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | popcount | ``bit[_]``                          | ``uint``                             | Number of set (1) bits.                |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | pow      | ``int``, ``uint``                   | ``int``                              | :math:`\texttt{pow(a, b)} = a^b`.      |
+      |          |                                     |                                      |                                        |
+      |          | ``float``, ``float``                | ``float``                            | For floating-point and complex values, |
+      |          |                                     |                                      | the principal value is returned.       |
+      |          | ``complex``, ``complex``            | ``complex``                          |                                        |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | rotl     | ``bit[n] value``, ``int distance``  | ``bit[n]``                           | Rotate the bits in the representation  |
+      |          |                                     |                                      | of ``value`` by ``distance`` places    |
+      |          | ``uint[n] value``, ``int distance`` | ``uint[n]``                          | to the left (towards higher            |
+      |          |                                     |                                      | indices).  This is similar to a bit    |
+      |          |                                     |                                      | shift operation, except the vacated    |
+      |          |                                     |                                      | bits are filled from the overflow,     |
+      |          |                                     |                                      | rather than being set to zero.  The    |
+      |          |                                     |                                      | width of the output is set equal to    |
+      |          |                                     |                                      | the width of the input.                |
+      |          |                                     |                                      |                                        |
+      |          |                                     |                                      | ``rotl(a, n) == rotr(a, -n)``.         |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | rotr     | ``bit[n] value``, ``int distance``  | ``bit[n]``                           | Rotate the bits in the representation  |
+      |          |                                     |                                      | of ``value`` by ``distance`` places to |
+      |          | ``uint[n] value``, ``int distance`` | ``uint[n]``                          | the right (towards lower indices).     |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | sin      | (``float`` or ``angle``)            | ``float``                            | Sine.                                  |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | sqrt     | ``float``                           | ``float``                            | Square root.  This always returns the  |
+      |          |                                     |                                      | principal root.                        |
+      |          | ``complex``                         | ``complex``                          |                                        |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
+      | tan      | (``float`` or ``angle``)            | ``float``                            | Tangent.                               |
+      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
 
 For each built-in function, the chosen overload is the first one to appear in
 the list above where all given operands can be implicitly cast to the valid
@@ -600,7 +601,7 @@ is an error if there is no valid overload for a given sequence of operands.
    // is not attempted, because it has lower priority.
 
    const bit[8] b2 = rotl(b1, 3);
-   // Value "0101_0001", expression has type `const bit[8]` (the 
+   // Value "0101_0001", expression has type `const bit[8]`.
 
 
    // Invalid statements.
