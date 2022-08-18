@@ -25,6 +25,8 @@ or may be declared to return the :ref:`void type <void-type>`::
 
     def name(parameters) -> void { body }
 
+These two forms of subroutine definition are exactly equivalent.
+
 Qubit declarations are not allowed within subroutines as those declarations are global.
 
 A subroutine is invoked with the syntax ``name(parameters)`` and may be assigned

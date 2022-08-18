@@ -185,9 +185,9 @@ types for the purposes of casting.
 Void type
 ~~~~~~~~~
 
-Subroutines and externs that do not need to return a value may be declared to
+Subroutines and externs that do not return a value may be declared to
 return ``void``. The ``void`` type is unrealizable and uninstantiable, and thus
-cannot be attached to an identifer.
+cannot be attached to an identifer or used as a cast operator.
 
 .. code-block::
 
