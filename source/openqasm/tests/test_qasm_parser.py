@@ -43,6 +43,7 @@ from openqasm3.ast import (
     IODeclaration,
     IOKeyword,
     Identifier,
+    ImaginaryLiteral,
     Include,
     IndexExpression,
     IndexedIdentifier,
@@ -260,6 +261,11 @@ def test_complex_declaration():
     complex[float[64]] a;
     complex[float] fq;
     complex implicit;
+    complex[float[64]] imag = 1im;
+    complex[float[64]] c64 = 2+9.2im;
+    complex[float] a_float = 2.1+0im;
+    complex c = 0-9 im ;
+    complex rl = 2.1im - 0.2;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -278,6 +284,57 @@ def test_complex_declaration():
                 ComplexType(base_type=None),
                 Identifier("implicit"),
                 None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("imag"),
+                ImaginaryLiteral(1.0),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("c64"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    IntegerLiteral(2),
+                    ImaginaryLiteral(9.2),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=None),
+                ),
+                Identifier("a_float"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    FloatLiteral(2.1),
+                    ImaginaryLiteral(0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("c"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    IntegerLiteral(0),
+                    ImaginaryLiteral(9.0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("rl"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    ImaginaryLiteral(2.1),
+                    FloatLiteral(0.2),
+                ),
             ),
         ]
     )

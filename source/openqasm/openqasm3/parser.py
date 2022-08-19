@@ -610,6 +610,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.IntegerLiteral(value=int(ctx.HexIntegerLiteral().getText(), 16))
         if ctx.FloatLiteral():
             return ast.FloatLiteral(value=float(ctx.FloatLiteral().getText()))
+        if ctx.ImaginaryLiteral():
+            return ast.ImaginaryLiteral(value=float(ctx.ImaginaryLiteral().getText()[:-2]))
         if ctx.BooleanLiteral():
             return ast.BooleanLiteral(value=ctx.BooleanLiteral().getText() == "true")
         if ctx.BitstringLiteral():

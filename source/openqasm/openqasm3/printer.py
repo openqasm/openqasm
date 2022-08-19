@@ -339,6 +339,9 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_FloatLiteral(self, node: ast.FloatLiteral, context: PrinterState) -> None:
         self.stream.write(str(node.value))
 
+    def visit_ImaginaryLiteral(self, node: ast.ImaginaryLiteral, context: PrinterState) -> None:
+        self.stream.write(str(node.value) + "im")
+
     def visit_BooleanLiteral(self, node: ast.BooleanLiteral, context: PrinterState) -> None:
         self.stream.write("true" if node.value else "false")
 

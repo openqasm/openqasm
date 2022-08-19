@@ -19,6 +19,7 @@ _PRECEDENCE_TABLE = {
     ast.BooleanLiteral: 14,
     ast.DurationLiteral: 14,
     ast.FloatLiteral: 14,
+    ast.ImaginaryLiteral: 14,
     ast.IntegerLiteral: 14,
     ast.ArrayLiteral: 14,
 }
