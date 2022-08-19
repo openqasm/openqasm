@@ -61,6 +61,7 @@ __all__ = [
     "IODeclaration",
     "IOKeyword",
     "Identifier",
+    "ImaginaryLiteral",
     "Include",
     "IndexExpression",
     "IndexedIdentifier",
@@ -306,6 +307,20 @@ class FloatLiteral(Expression):
     Example::
 
         1.1
+
+    """
+
+    value: float
+
+
+@dataclass
+class ImaginaryLiteral(Expression):
+    """
+    An real number literal
+
+    Example::
+
+        1.1im
 
     """
 
