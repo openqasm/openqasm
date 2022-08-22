@@ -179,7 +179,7 @@ indexedIdentifier: Identifier indexOperator*;
 /* End expression definitions. */
 /* Start type definitions. */
 
-returnSignature: ARROW ( scalarType | VOID );
+returnSignature: ARROW scalarType;
 gateModifier: (
     INV
     | POW LPAREN expression RPAREN

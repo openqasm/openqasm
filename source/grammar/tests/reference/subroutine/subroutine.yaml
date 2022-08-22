@@ -13,9 +13,6 @@ source: |
   def returns_a_measure(qubit q) {
     return measure q;
   }
-  def empty() -> void {
-    return;
-  }
 reference: |
   program
     statement
@@ -202,22 +199,6 @@ reference: |
                 gateOperand
                   indexedIdentifier
                     q
-              ;
-          }
-    statement
-      defStatement
-        def
-        empty
-        (
-        )
-        returnSignature
-          ->
-          void
-        scope
-          {
-          statement
-            returnStatement
-              return
               ;
           }
     <EOF>

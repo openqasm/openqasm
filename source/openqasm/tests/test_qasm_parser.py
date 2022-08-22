@@ -1086,7 +1086,6 @@ def test_subroutine_definition():
 def test_subroutine_signatures():
     p = """
     def a(int[8] b) {}
-    def a() -> void {}
     def a(complex[float[32]] b, qubit c) -> int[32] {}
     def a(bit[5] b, qubit[2] c) -> complex[float[64]] {}
     def a(qubit b, const array[uint[8], 2, 3] c) {}
@@ -1100,12 +1099,6 @@ def test_subroutine_signatures():
             SubroutineDefinition(
                 name=a,
                 arguments=[ClassicalArgument(IntType(IntegerLiteral(8)), b)],
-                return_type=None,
-                body=[],
-            ),
-            SubroutineDefinition(
-                name=a,
-                arguments=[],
                 return_type=None,
                 body=[],
             ),
