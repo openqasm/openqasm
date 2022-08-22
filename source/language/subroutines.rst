@@ -16,16 +16,11 @@ defines a quantum bit argument named ``ancilla``.
 
 Subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return value, the empty ``return``
-keyword may be used to immediately exit from the subroutine. Subroutines that
-do not return a value may be declared with no output signifiers::
+keyword may be used to immediately exit from the subroutine, which implicitly
+returns the :ref:`void type <void-type>`. Subroutines that
+do not return a value must be declared with no output signature::
 
     def name(parameters) { body }
-
-or may be declared to return the :ref:`void type <void-type>`::
-
-    def name(parameters) -> void { body }
-
-These two forms of subroutine definition are exactly equivalent.
 
 Qubit declarations are not allowed within subroutines as those declarations are global.
 
