@@ -132,7 +132,15 @@ From a physical perspective, the gates :math:`e^{i\gamma}U` and :math:`U` are eq
 phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
 that is applied when the control qubit is one. To capture the programmer's intent, a built-in global phase gate
 allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` adds a global phase
-of :math:`e^{i\gamma}` to the scope containing the instruction. For example
+of :math:`e^{i\gamma}` to the gate, subroutine, or global scope which containing the instruction. This is equivalent to 
+adding an n-qubits global phase gate 
+
+.. math::
+
+   \text{gphase(γ)} := e^{i\gamma} I_{2^n}
+
+, where :math:`I_{2^n}` is an identity matrix with size :math:`2^n`, and n is the number of qubits declared in the scope.
+For example
 
 .. code-block::
 
