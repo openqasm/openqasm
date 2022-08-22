@@ -94,7 +94,7 @@ def copy_3_bytes(const array[uint[8], 3] in_array, mutable array[uint[8], 3] out
 // the sizes of the dimensions are not given explicitly, only the number of
 // dimensions.  This is where the ``sizeof`` operator is most useful.  In these
 // cases, `sizeof` is _not_ a compile-time constant.
-def multi_dimensional_input(const array[int[32], #dim=3] my_array) -> void {
+def multi_dimensional_input(const array[int[32], #dim=3] my_array) {
     uint[32] dimension_0 = sizeof(my_array, 0);
     uint[32] dimension_1 = sizeof(my_array, 1);
     uint[32] dimension_2 = sizeof(my_array, 2);
