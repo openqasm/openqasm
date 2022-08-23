@@ -67,8 +67,12 @@ jobs:
         run: black --check --diff openpulse tests
 
       - name: Check openpulse style
-        working-directory: source/openpulse
-        run: pylint openpulse tests
+        working-directory: source/openpulse/openpulse
+        run: pylint .
+
+      - name: Check openpulse tests style
+        working-directory: source/openpulse/tests
+        run: pylint .
 
       - name: Run openpulse tests
         working-directory: source/openpulse
