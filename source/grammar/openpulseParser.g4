@@ -31,39 +31,3 @@ scalarType:
     | PORT
     | FRAME
     ;
-
-// we extend the statement with the calStatement
-statement:
-    pragma
-    // All the actual statements of the language.
-    | annotation* (
-        aliasDeclarationStatement
-        | assignmentStatement
-        | barrierStatement
-        | boxStatement
-        | breakStatement
-        | calibrationGrammarStatement
-        | classicalDeclarationStatement
-        | constDeclarationStatement
-        | continueStatement
-        | defStatement
-        | defcalStatement
-        | delayStatement
-        | endStatement
-        | expressionStatement
-        | externStatement
-        | forStatement
-        | gateCallStatement
-        | gateStatement
-        | ifStatement
-        | includeStatement
-        | ioDeclarationStatement
-        | measureArrowAssignmentStatement
-        | oldStyleDeclarationStatement
-        | quantumDeclarationStatement
-        | resetStatement
-        | returnStatement
-        | whileStatement
-        | calStatement
-    )
-;
