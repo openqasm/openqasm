@@ -502,6 +502,7 @@ delay[2 * SIZE] q;
 delay[2 * SIZE] $0;
 delay[2 * SIZE] q[0];
 delay[2 * SIZE] q[1:3];
+delay[100.0ns];
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
