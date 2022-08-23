@@ -61,6 +61,7 @@ __all__ = [
     "IODeclaration",
     "IOKeyword",
     "Identifier",
+    "ImaginaryLiteral",
     "Include",
     "IndexExpression",
     "IndexedIdentifier",
@@ -94,7 +95,7 @@ __all__ = [
     "WhileLoop",
 ]
 
-AccessControl = Enum("AccessControl", "const mutable")
+AccessControl = Enum("AccessControl", "readonly mutable")
 AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
 BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
 GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")
@@ -306,6 +307,20 @@ class FloatLiteral(Expression):
     Example::
 
         1.1
+
+    """
+
+    value: float
+
+
+@dataclass
+class ImaginaryLiteral(Expression):
+    """
+    An real number literal
+
+    Example::
+
+        1.1im
 
     """
 

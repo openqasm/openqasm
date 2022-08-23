@@ -89,8 +89,8 @@ Arrays in subroutines
 
 Arrays may be passed as parameters to subroutines and externs. All array
 parameters are passed as references and must include a type modifier specifying
-if the parameter is ``const`` or ``mutable``. The number of dimensions for all
-array parameters must be specified using the ``#dim = literal/const identifier``
+if the parameter is ``readonly`` or ``mutable``. The number of dimensions for all
+array parameters must be specified using the ``#dim = const expression``
 syntax below, or specific lengths for each dimension must be provided.
 The unspecified-length version is provided because the lengths of
 the dimensions of array parameters (in the case of strided access) may not be
@@ -101,8 +101,8 @@ about the order that updates are made in.
 
 .. code-block::
 
-   def specified_sub(const array[int[8], 2, 10] arr_arg) { /* ... */ }
-   def arr_subroutine(const array[int[8], #dim = 1] arr_arg) { /* ... */ }
+   def specified_sub(readonly array[int[8], 2, 10] arr_arg) { /* ... */ }
+   def arr_subroutine(readonly array[int[8], #dim = 1] arr_arg) { /* ... */ }
    def mut_subroutine(mutable array[int[8], #dim = 1] arr_arg) {
      arr_arg[2] = 10; // allowed
      // ...
@@ -131,7 +131,7 @@ subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
 
 .. code-block::
 
-   def arr_subroutine(const array[int[8], #dim = 2] twoD_arg) {
+   def arr_subroutine(readonly array[int[8], #dim = 2] twoD_arg) {
      uint[32] firstDim  = sizeof(twoD_arg, 0);
      uint[32] secondDim = sizeof(twoD_arg, 1);
      int[32] sum = 0;

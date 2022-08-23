@@ -141,7 +141,7 @@ def f(int[SIZE] a) {
 }
 def f(qubit q1, qubit[SIZE] q2) {
 }
-def f(const array[int[32], 2] a, mutable array[uint, #dim=2] b) {
+def f(readonly array[int[32], 2] a, mutable array[uint, #dim=2] b) {
 }
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
@@ -214,6 +214,7 @@ a[0][1:2];
         input_ = """
 1;
 2.0;
+1.0im;
 true;
 false;
 "1010";

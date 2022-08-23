@@ -35,6 +35,7 @@ Included files
 
 The statement ``include "filename";`` continues parsing ``filename`` as if the
 contents of the file were inserted at the location of the ``include`` statement.
+This statement can only be used at the global scope.
 
 .. code-block::
 

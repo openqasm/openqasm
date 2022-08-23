@@ -43,6 +43,7 @@ AnnotationKeyword: '@' Identifier ->  pushMode(EAT_TO_LINE_END);
 INPUT: 'input';
 OUTPUT: 'output';
 CONST: 'const';
+READONLY: 'readonly';
 MUTABLE: 'mutable';
 
 QREG: 'qreg';

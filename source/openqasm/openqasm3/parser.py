@@ -610,6 +610,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.IntegerLiteral(value=int(ctx.HexIntegerLiteral().getText(), 16))
         if ctx.FloatLiteral():
             return ast.FloatLiteral(value=float(ctx.FloatLiteral().getText()))
+        if ctx.ImaginaryLiteral():
+            return ast.ImaginaryLiteral(value=float(ctx.ImaginaryLiteral().getText()[:-2]))
         if ctx.BooleanLiteral():
             return ast.BooleanLiteral(value=ctx.BooleanLiteral().getText() == "true")
         if ctx.BitstringLiteral():
@@ -811,7 +813,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             )
         elif ctx.arrayReferenceType():
             array_ctx = ctx.arrayReferenceType()
-            access = ast.AccessControl.const if array_ctx.CONST() else ast.AccessControl.mutable
+            access = (
+                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+            )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())
@@ -839,7 +843,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             type_ = self.visit(ctx.scalarType())
         else:
             array_ctx = ctx.arrayReferenceType()
-            access = ast.AccessControl.const if array_ctx.CONST() else ast.AccessControl.mutable
+            access = (
+                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+            )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())

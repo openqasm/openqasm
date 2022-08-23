@@ -43,6 +43,7 @@ from openqasm3.ast import (
     IODeclaration,
     IOKeyword,
     Identifier,
+    ImaginaryLiteral,
     Include,
     IndexExpression,
     IndexedIdentifier,
@@ -260,6 +261,11 @@ def test_complex_declaration():
     complex[float[64]] a;
     complex[float] fq;
     complex implicit;
+    complex[float[64]] imag = 1im;
+    complex[float[64]] c64 = 2+9.2im;
+    complex[float] a_float = 2.1+0im;
+    complex c = 0-9 im ;
+    complex rl = 2.1im - 0.2;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -278,6 +284,57 @@ def test_complex_declaration():
                 ComplexType(base_type=None),
                 Identifier("implicit"),
                 None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("imag"),
+                ImaginaryLiteral(1.0),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("c64"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    IntegerLiteral(2),
+                    ImaginaryLiteral(9.2),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=None),
+                ),
+                Identifier("a_float"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    FloatLiteral(2.1),
+                    ImaginaryLiteral(0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("c"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    IntegerLiteral(0),
+                    ImaginaryLiteral(9.0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("rl"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    ImaginaryLiteral(2.1),
+                    FloatLiteral(0.2),
+                ),
             ),
         ]
     )
@@ -1088,8 +1145,8 @@ def test_subroutine_signatures():
     def a(int[8] b) {}
     def a(complex[float[32]] b, qubit c) -> int[32] {}
     def a(bit[5] b, qubit[2] c) -> complex[float[64]] {}
-    def a(qubit b, const array[uint[8], 2, 3] c) {}
-    def a(mutable array[uint[8], #dim=5] b, const array[uint[8], 5] c) {}
+    def a(qubit b, readonly array[uint[8], 2, 3] c) {}
+    def a(mutable array[uint[8], #dim=5] b, readonly array[uint[8], 5] c) {}
     """.strip()
     program = parse(p)
     a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
@@ -1136,7 +1193,7 @@ def test_subroutine_signatures():
                             dimensions=[IntegerLiteral(2), IntegerLiteral(3)],
                         ),
                         name=c,
-                        access=AccessControl.const,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,
@@ -1164,7 +1221,7 @@ def test_subroutine_signatures():
                             dimensions=[IntegerLiteral(5)],
                         ),
                         name=c,
-                        access=AccessControl.const,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,

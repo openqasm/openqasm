@@ -339,6 +339,9 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_FloatLiteral(self, node: ast.FloatLiteral, context: PrinterState) -> None:
         self.stream.write(str(node.value))
 
+    def visit_ImaginaryLiteral(self, node: ast.ImaginaryLiteral, context: PrinterState) -> None:
+        self.stream.write(str(node.value) + "im")
+
     def visit_BooleanLiteral(self, node: ast.BooleanLiteral, context: PrinterState) -> None:
         self.stream.write("true" if node.value else "false")
 
@@ -487,14 +490,18 @@ class Printer(QASMVisitor[PrinterState]):
 
     def visit_ClassicalArgument(self, node: ast.ClassicalArgument, context: PrinterState) -> None:
         if node.access is not None:
-            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
+            self.stream.write(
+                "readonly " if node.access == ast.AccessControl.readonly else "mutable "
+            )
         self.visit(node.type, context)
         self.stream.write(" ")
         self.visit(node.name, context)
 
     def visit_ExternArgument(self, node: ast.ExternArgument, context: PrinterState) -> None:
         if node.access is not None:
-            self.stream.write("const " if node.access == ast.AccessControl.const else "mutable ")
+            self.stream.write(
+                "readonly " if node.access == ast.AccessControl.readonly else "mutable "
+            )
         self.visit(node.type, context)
 
     @_maybe_annotated
