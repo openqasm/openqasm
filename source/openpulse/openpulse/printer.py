@@ -78,15 +78,3 @@ class Printer(QASMPrinter):
         self._start_line(context)
         self.stream.write("}")
         self._end_line(context)
-
-    # TODO: Remove once the bug is fixed in openqasm3
-    @_maybe_annotated
-    def visit_DelayInstruction(self, node: ast.DelayInstruction, context: PrinterState) -> None:
-        self._start_line(context)
-        self.stream.write("delay[")
-        self.visit(node.duration, context)
-        self.stream.write("]")
-        if node.qubits:
-            self.stream.write(" ")
-            self._visit_sequence(node.qubits, context, separator=", ")
-        self._end_statement(context)
