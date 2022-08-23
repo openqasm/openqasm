@@ -4,7 +4,7 @@ OpenPulse Python reference package
 ===================================
 
 This package contains the reference abstract syntax tree (AST) for representing
-OpenPulse 3 programs, tools to parse text into this AST, and tools to manipulate
+OpenPulse programs, tools to parse text into this AST, and tools to manipulate
 the AST.
 
 The AST itself is in the :obj:`.ast` module.  There is a reference parser in the
