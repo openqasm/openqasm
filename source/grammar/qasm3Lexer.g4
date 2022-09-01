@@ -58,6 +58,7 @@ FLOAT: 'float';
 ANGLE: 'angle';
 COMPLEX: 'complex';
 ARRAY: 'array';
+VOID: 'void';
 
 DURATION:  'duration';
 STRETCH: 'stretch';
