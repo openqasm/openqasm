@@ -14,7 +14,7 @@ With the ``[parser]`` extra installed, the simplest interface to the parser is
 the :obj:`~parser.parse` function.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from . import ast, visitor, properties
 
