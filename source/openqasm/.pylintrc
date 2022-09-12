@@ -31,10 +31,13 @@ enable=
     unnecessary-semicolon,
     unused-variable,
     wrong-import-order,
-    wrong-import-position,
 
 # Ignore long lines containing urls or pylint directives.
 ignore-long-lines=^(.*#\w*pylint: disable.*|\s*(# )?<?https?://\S+>?)$
 
 # Ignore the ANTLR-generated files
-ignore-paths=^openqasm3/antlr/.*$
+ignore-paths=^openqasm3/_antlr/_4.*$
+
+# Ignore errors caused by pylint being unable to statically resolve imports in
+# the `_antlr` module, which dynamically dispatches to a versioned subpackage.
+ignored-modules=_antlr
