@@ -467,8 +467,10 @@ class Printer(QASMVisitor[PrinterState]):
     @_maybe_annotated
     def visit_QuantumBarrier(self, node: ast.QuantumBarrier, context: PrinterState) -> None:
         self._start_line(context)
-        self.stream.write("barrier ")
-        self._visit_sequence(node.qubits, context, separator=", ")
+        self.stream.write("barrier")
+        if node.qubits:
+            self.stream.write(" ")
+            self._visit_sequence(node.qubits, context, separator=", ")
         self._end_statement(context)
 
     @_maybe_annotated

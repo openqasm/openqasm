@@ -488,6 +488,7 @@ barrier q;
 barrier $0;
 barrier q[0];
 barrier q[1:3];
+barrier;
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
