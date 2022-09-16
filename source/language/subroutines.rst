@@ -14,7 +14,7 @@ the subroutine by reference or name, while classical types are passed in by valu
 All arguments are declared together with their type. For example, ``qubit ancilla``
 defines a quantum bit argument named ``ancilla``.
 
-A given qubit can passed at most once in any subroutine call.  Different
+A given qubit can be passed at most once in any subroutine call.  Different
 ``qubit`` arguments (whether single bits or registers) cannot refer to the same
 underlying qubit in a call.
 
