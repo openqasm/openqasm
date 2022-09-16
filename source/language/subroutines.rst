@@ -14,6 +14,10 @@ the subroutine by reference or name, while classical types are passed in by valu
 All arguments are declared together with their type. For example, ``qubit ancilla``
 defines a quantum bit argument named ``ancilla``.
 
+A given qubit can passed at most once in any subroutine call.  Different
+``qubit`` arguments (whether single bits or registers) cannot refer to the same
+underlying qubit in a call.
+
 Subroutines return up to one value of classical type, signified by the
 ``return`` keyword. If there is no return value, the empty ``return``
 keyword may be used to immediately exit from the subroutine, which implicitly
