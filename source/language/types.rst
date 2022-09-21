@@ -162,7 +162,7 @@ bit is on the right.
 
    // Declare a register of 20 bits
    bit[20] bit_array;
-   // Declare and assign a rgister of bits with decimal value of 15
+   // Declare and assign a register of bits with decimal value of 15
    bit[8] name = "00001111";
 
 Integers
