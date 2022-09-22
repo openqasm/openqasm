@@ -450,6 +450,13 @@ In our computational model, ``extern`` functions may run concurrently with other
 quantum computations. That is, invoking an ``extern`` function will  *schedule* a classical
 computation, but does not wait for that computation to terminate.
 
+
+Further reserved keywords
+-------------------------
+
+The keywords ``switch``, ``case`` and ``default`` are reserved for future
+expansion of the language.  These words are not valid identifiers.
+
 .. [1]
    ``popcount`` computes the Hamming weight of the input register.
 
