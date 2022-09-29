@@ -53,7 +53,7 @@ Parameterized gates
 ~~~~~~~~~~~~~~~~~~~
 
 As well as gates that each represent a fixed unitary, OpenQASM also supports gates that represent *families* of unitaries, parameterized
-by angle variables.  Todistinguish the (optional) angle parameters from the (required) quantum arguments, if any angle parameters are
+by angle variables. To distinguish the (optional) angle parameters from the (required) quantum arguments, if any angle parameters are
 present they must appear before any quantum arguments, and be delimited by parentheses. For example
 
 .. code-block:: text
@@ -97,7 +97,7 @@ the user and/or compiler, given information about the instructions supported by 
 A minimal compiler implementation might simply expand ``gate`` definitions repeatedly until reaching
 definitions for which :ref:`defcal blocks <pulse-gates>` are known. A more sophisticated implementation
 might use the `gate` definitions of the gates with associated ``defcal`` blocks to
-to build a gate library, and use methods based on KAK decompositions to rewrite into this hardware library.
+build a gate library, and use methods based on KAK decompositions to rewrite into this hardware library.
 
 The ``gate`` statement also allows defining parameterized families of unitaries. For example, a CPHASE
 operation is shown schematically in :numref:`fig_gate`
