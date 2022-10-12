@@ -825,7 +825,7 @@ variables whose values may only be known at run time.
    let last = concatenated[-1];
    // Qubits zero, three and five
    let qubit_selection = two[{0, 3, 5}];
-   // First six qubits in aliased qubit array
+   // First seven qubits in aliased qubit array
    let sliced = concatenated[0:6];
    // Every second qubit
    let every_second = concatenated[0:2:12];
