@@ -69,7 +69,7 @@ jobs:
           # Replace version requirements in setup.cfg.
           python tools/update_antlr_version_requirements.py setup.cfg ANTLR_VERSIONS.txt
 
-      - name: Install Python build dependences
+      - name: Install Python build dependencies
         run: pip install --upgrade build
 
       - name: Build package
