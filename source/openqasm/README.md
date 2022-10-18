@@ -45,19 +45,21 @@ To work on development, you will need to have a complete [ANTLR](https://www.ant
 
 You can most likely get a copy of ANTLR using your system package manager if you are on Linux, or from [Homebrew](https://brew.sh) (`brew`) on macOS.
 Otherwise, you can follow [these instructions](https://github.com/antlr/antlr4/blob/master/doc/getting-started.md).
-Make a note of the exact version of ANTLR you have installed, because you will need to ensure your version of `antlr4-python3-runtime` matches exactly.
-The package in its current form expects ANTLR 4.9.2.
+Make a note of the version of ANTLR you have installed, because you will need to ensure your version of `antlr4-python3-runtime` matches up to the minor version.
 
-Once you have ANTLR installed, change to the directory where the `qasm3.g4` file is located (for example, `openqasm/source/grammar`), and run
+Once you have ANTLR installed, change to the directory where the `qasm3*.g4` files are located (for example, `repo_root/source/grammar`), and run
 ```bash
-<antlr command> -o /path/to/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
+<antlr command> -o <path to here>/openqasm3/_antlr/_<major>_<minor> -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
 ```
 
-For example, if this repository is cloned to `~/openqasm` and the command to run ANTLR is `antlr4`, then you should run
+For example, if this repository is cloned to `~/openqasm` and the command to run ANTLR 4.11.1 is `antlr4`, then you should run
 ```bash
 cd ~/openqasm/source/grammar
-antlr4 -o ~/openqasm/source/openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
+antlr4 -o ~/openqasm/source/openqasm/openqasm3/_antlr/_4_11 -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
 ```
+
+You can install more than one version of the ANTLR files at once, provided you put them in the correct version directories.
+The package will dynamically choose the correct version based on the installed version of `antlr4_python3_runtime` when it is imported.
 
 ### Developer tools
 

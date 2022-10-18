@@ -20,9 +20,12 @@ from . import ast, visitor, properties
 
 from .printer import dump, dumps
 
+# Try to initialise the 'parsing' extra components.
 try:
+    import antlr4
+except ModuleNotFoundError:
+    pass
+else:
+    # Any import errors in section are of interest to the user, and should be propagated.
     from . import parser
     from .parser import parse
-except ImportError:
-    # Installed without the parsing extra.
-    pass

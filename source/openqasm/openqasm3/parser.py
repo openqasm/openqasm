@@ -46,9 +46,9 @@ except ImportError as exc:
         " such as by 'pip install openqasm3[parser]'."
     ) from exc
 
-from .antlr.qasm3Lexer import qasm3Lexer
-from .antlr.qasm3Parser import qasm3Parser
-from .antlr.qasm3ParserVisitor import qasm3ParserVisitor
+from ._antlr.qasm3Lexer import qasm3Lexer
+from ._antlr.qasm3Parser import qasm3Parser
+from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor
 from . import ast
 
 _TYPE_NODE_INIT = {
