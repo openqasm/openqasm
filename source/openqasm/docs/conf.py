@@ -4,7 +4,7 @@
 project = 'OpenQASM 3 Reference AST'
 copyright = '2021, OpenQASM 3 Team and Contributors'
 author = 'OpenQASM 3 Team and Contributors'
-release = '0.1.0'
+release = '0.4.0'
 
 extensions = [
     # Allow auto-generation of class and method documentation, as long as you
