@@ -27,8 +27,11 @@ instruction sequence on *physical* qubits, e.g.
 
    defcal rz(angle[20] theta) $0 { ... }
    defcal measure $0 -> bit { ... }
+   defcal delay[time] $0 { ... }
    defcal measure_iq q -> complex[float[32]] { ... }
 
+defcals may be defined for the qubit ``measure``, ``reset``, ``delay`` operators as
+well as for arbitrarily named gates.
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
 defined earlier. Furthermore, the return value type does not need to return a
