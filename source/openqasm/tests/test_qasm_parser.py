@@ -1056,6 +1056,7 @@ def test_calibration_definition():
     defcal measure $0 -> bit {Outer {nested} outer again.}
     defcal rx(pi / 2) $1 {Untokenisable: *$£()"*}
     defcal cx $0, $1 {}
+    defcal delay[time] q { delay[time] frame_1; delay[time] frame_2; }
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1099,6 +1100,14 @@ def test_calibration_definition():
                 return_type=None,
                 body="",
             ),
+            CalibrationDefinition(
+                name=Identifier("delay"),
+                arguments=[ClassicalArgument(DurationType(), Identifier("time"))],
+                qubits=[Identifier("q")],
+                return_type=None,
+                body=" delay[time] frame_1; delay[time] frame_2; "
+
+            )
         ]
     )
     SpanGuard().visit(program)

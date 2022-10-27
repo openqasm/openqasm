@@ -331,6 +331,20 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
         )
 
+        defcal_target: qasm3Parser.DefcalTargetContext = ctx.defcalTarget()
+        if defcal_target.DELAY():
+            duration_ident = defcal_target.Identifier()
+            span = get_span(duration_ident)
+            arguments.append(
+                add_span(
+                    ast.ClassicalArgument(
+                        type=add_span(ast.DurationType(), span=span),
+                        name=add_span(ast.Identifier(duration_ident.getText()), span=span)
+                    ),
+                    span=span,
+                )
+            )
+
         return ast.CalibrationDefinition(
             name=self.visit(ctx.defcalTarget()),
             arguments=arguments,
@@ -793,6 +807,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitDefcalTarget(self, ctx: qasm3Parser.DefcalTargetContext):
+        if ctx.DELAY():
+            return ast.Identifier(name="delay")
         return ast.Identifier(name=ctx.getText())
 
     @span

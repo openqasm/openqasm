@@ -3,6 +3,7 @@ source: |
   defcal measure $0 -> bit {Outer {nested} outer}
   defcal rz(angle[20] theta) q {£$&£*(")}
   defcal rz(pi / 2) q {Symbolic expression.}
+  defcal delay[time] q {delay[time] frame_1; delay[time] frame_2;}
 reference: |
   program
     statement
@@ -74,5 +75,19 @@ reference: |
             q
         {
         Symbolic expression.
+        }
+    statement
+      defcalStatement
+        defcal
+        defcalTarget
+          delay
+          [
+          time
+          ]
+        defcalOperandList
+          defcalOperand
+            q
+        {
+        delay[time] frame_1; delay[time] frame_2;
         }
     <EOF>

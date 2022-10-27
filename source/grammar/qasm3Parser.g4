@@ -203,7 +203,7 @@ arrayReferenceType: (READONLY | MUTABLE) ARRAY LBRACKET scalarType COMMA (expres
 
 designator: LBRACKET expression RBRACKET;
 
-defcalTarget: MEASURE | RESET | DELAY | Identifier;
+defcalTarget: MEASURE | RESET | DELAY LBRACKET Identifier RBRACKET | Identifier;
 defcalArgumentDefinition: expression | argumentDefinition;
 defcalOperand: HardwareQubit | Identifier;
 gateOperand: indexedIdentifier | HardwareQubit;
