@@ -3,7 +3,6 @@
  * specify design intent on gate alignment, without
  * being tied to physical qubits and gates.
 */
-OPENQASM 3.0;
 include "stdgates.inc";
 
 stretch g;

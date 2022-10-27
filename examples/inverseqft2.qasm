@@ -1,5 +1,4 @@
 // QFT and measure, version 2
-OPENQASM 3;
 include "stdgates.inc";
 
 qubit[4] q;

@@ -1,7 +1,6 @@
 /* Measuring the relaxation time of a qubit
  * This example demonstrates the repeated use of fixed delays.
 */
-OPENQASM 3.0;
 include "stdgates.inc";
 
 duration stride = 1us;            // time resolution of points taken
