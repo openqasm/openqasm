@@ -1,7 +1,6 @@
 /*
  * Iterative phase estimation
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 const int[32] n = 10;          // number of iterations

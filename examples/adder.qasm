@@ -2,7 +2,6 @@
  * quantum ripple-carry adder
  * Cuccaro et al, quant-ph/0410184
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 gate majority a, b, c {

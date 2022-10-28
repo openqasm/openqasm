@@ -1,4 +1,3 @@
-OPENQASM 3;
 include "stdgates.inc";
 
 gate pre q { }   // pre-rotation

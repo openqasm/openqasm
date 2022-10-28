@@ -4,7 +4,6 @@
  * Estimate the failure probability as a function
  * of parameters at the top of the file.
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 const int[32] d = 3;         // code distance

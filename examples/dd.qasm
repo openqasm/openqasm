@@ -2,7 +2,6 @@
  * This example demonstrates the use of referential delays
  * and time alignment.
 */
-OPENQASM 3.0;
 include "stdgates.inc";
 
 stretch a;

@@ -1,7 +1,6 @@
 /*
  * Magic state distillation and computation
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 const int[32] buffer_size = 6;  // size of magic state buffer

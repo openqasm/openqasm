@@ -5,7 +5,6 @@
  * The parameters are updated outside of this program and a new
  * OpenQASM circuit is generated for the next iteration.
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 const int[32] n = 10;         // number of qubits

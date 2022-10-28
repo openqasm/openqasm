@@ -1,4 +1,4 @@
-OPENQASM 3.0;
+OPENQASM 3.0;  // Version statement is optional
 
 // ==================
 // Array declarations

@@ -2,7 +2,6 @@
  * Prepare a parameterized number of Bell pairs
  * and teleport a qubit using them.
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 const int[32] n_pairs = 10;  // number of teleportations to do

@@ -1,5 +1,5 @@
 // quantum teleportation example
-OPENQASM 3;
+OPENQASM 3; // Version statement is optional
 include "stdgates.inc";
 qubit[3] q;
 bit c0;
