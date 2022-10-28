@@ -9,6 +9,16 @@ This repo contains the OpenQASM specification, examples, and tools for the OpenQ
 
 OpenQASM is a [Qiskit project](https://qiskit.org).
 
+## :bangbang: Call for TSC Applicants! :bangbang:
+
+We are currently looking for applications to join the [Technical Steering Committee](https://github.com/openqasm/openqasm/blob/main/governance.md#structures).
+If you are interested in standing in the election, please contact Jake Lishman, the current Secretary, at [jake.lishman@ibm.com](mailto:jake.lishman@ibm.com) before the 4th of November.
+
+Please familiarize yourself with the expectation of the role before sending an email about your candidacy.
+You must already be a [Contributor](https://github.com/openqasm/openqasm/blob/main/governance.md#structures) to the project, or have previously secured the nomination of one of the current TSC members.
+
+The election will be held in the OpenQASM TSC meeting (open to all Contributors) on Friday the 11th of November.
+
 ## Current version: **3.0**
 
 Live doc: [**version 3.0**](https://openqasm.github.io/)
