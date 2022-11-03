@@ -25,7 +25,7 @@ The live [language documentation](https://openqasm.github.io/) specification.
 
 ### Examples
 
-OpenQASM 3.0 source code looks like the following. Several more examples of OpenQASM source code may be found in the [examples folder](examples).
+An example of OpenQASM 3.0 source code is given below. Several more examples of OpenQASM source code may be found in the [examples folder](examples).
 ```text
 /*
  * Repeat-until-success circuit for Rz(theta),
