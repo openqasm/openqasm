@@ -410,25 +410,55 @@ def test_array_declaration():
 
 def test_extern_declarations():
     p = """
-    extern constant(duration, float[64]) -> float[64];
-    extern set_readout(int);
+    extern f();
+    extern f() -> bool;
+    extern f(bool);
+    extern f(int[32], uint[32]);
+    extern f(mutable array[complex[float[64]], N_ELEMENTS]) -> int[2 * INT_SIZE];
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
             ExternDeclaration(
-                name=Identifier(name="constant"),
-                arguments=[
-                    ExternArgument(type=DurationType()),
-                    ExternArgument(type=FloatType(IntegerLiteral(64))),
-                ],
-                return_type=FloatType(IntegerLiteral(64)),
+                name=Identifier(name="f"),
+                arguments=[],
             ),
             ExternDeclaration(
-                name=Identifier(name="set_readout"),
+                name=Identifier(name="f"),
+                arguments=[],
+                return_type=BoolType(),
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
                 arguments=[
-                    ExternArgument(type=IntType()),
+                    ExternArgument(type=BoolType()),
                 ],
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[
+                    ExternArgument(type=IntType(IntegerLiteral(32))),
+                    ExternArgument(type=UintType(IntegerLiteral(32))),
+                ],
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[
+                    ExternArgument(
+                        type=ArrayReferenceType(
+                            base_type=ComplexType(FloatType(IntegerLiteral(64))),
+                            dimensions=[Identifier(name="N_ELEMENTS")],
+                        ),
+                        access=AccessControl["mutable"],
+                    ),
+                ],
+                return_type=IntType(
+                    size=BinaryExpression(
+                        op=BinaryOperator["*"],
+                        lhs=IntegerLiteral(2),
+                        rhs=Identifier(name="INT_SIZE"),
+                    )
+                ),
             ),
         ]
     )
