@@ -35,6 +35,8 @@ from openqasm3.ast import (
     DurationType,
     EndStatement,
     ExpressionStatement,
+    ExternArgument,
+    ExternDeclaration,
     FloatLiteral,
     FloatType,
     ForInLoop,
@@ -404,6 +406,33 @@ def test_array_declaration():
             ),
         ],
     )
+
+
+def test_extern_declarations():
+    p = """
+    extern constant(duration, float[64]) -> float[64];
+    extern set_readout(int);
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            ExternDeclaration(
+                name=Identifier(name="constant"),
+                arguments=[
+                    ExternArgument(type=DurationType()),
+                    ExternArgument(type=FloatType(IntegerLiteral(64))),
+                ],
+                return_type=FloatType(IntegerLiteral(64)),
+            ),
+            ExternDeclaration(
+                name=Identifier(name="set_readout"),
+                arguments=[
+                    ExternArgument(type=IntType()),
+                ],
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
 
 
 def test_single_gatecall():
