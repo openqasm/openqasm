@@ -52,6 +52,7 @@ __all__ = [
     "EndStatement",
     "Expression",
     "ExpressionStatement",
+    "ExternArgument",
     "ExternDeclaration",
     "FloatLiteral",
     "FloatType",
