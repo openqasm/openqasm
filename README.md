@@ -12,12 +12,13 @@ OpenQASM is a [Qiskit project](https://qiskit.org).
 ## :bangbang: Call for TSC Applicants! :bangbang:
 
 We are currently looking for applications to join the [Technical Steering Committee](https://github.com/openqasm/openqasm/blob/main/governance.md#structures).
-If you are interested in standing in the election, please contact Jake Lishman, the current Secretary, at [jake.lishman@ibm.com](mailto:jake.lishman@ibm.com) before the 4th of November.
+If you are interested in standing in the election, please contact Jake Lishman, the current Secretary, at [jake.lishman@ibm.com](mailto:jake.lishman@ibm.com) before the 25th of November.
 
 Please familiarize yourself with the expectation of the role before sending an email about your candidacy.
 You must already be a [Contributor](https://github.com/openqasm/openqasm/blob/main/governance.md#structures) to the project, or have previously secured the nomination of one of the current TSC members.
 
-The election will be held in the OpenQASM TSC meeting (open to all Contributors) on Friday the 11th of November.
+The election will be held in a OpenQASM TSC meeting (open to all Contributors) at a later date, to be announced.
+Watch this space, or the [\#open-qasm channel on the Qiskit Slack server](https://qiskit.slack.com/archives/CG8JSE0UB) ([invitation link](https://ibm.co/joinqiskitslack)) for further details.
 
 ## Current version: **3.0**
 
