@@ -23,7 +23,7 @@ We will form a **Technical Steering Committee**. The TSC shall be composed of 6 
 * Lev S Bishop (IBM Quantum)
 * Blake Johnson (IBM Quantum)
 * Steven Heidel (AWS)
-* Bettina Heim (Microsoft)
+* Bettina Heim (Nvidia)
 * Philipp Schindler (Innsbruck)
 
 TSC meetings shall be open to all **Contributors**. The TSC may invite additional guests at its discretion. The TSC will make decisions by simple majority vote of its members. TSC meetings shall require a quorum of 66% of voting members present to make a decision by vote (ie, 4 members for the initial TSC). If a TSC meeting does not have quorum, it may still discuss and record minutes. The TSC may make decisions outside of meetings (e.g. on a pull request) so long as voting/approval in that forum meets the quorum requirement. Upon request from any TSC member, any decision must be deferred until the next TSC meeting, to enable live discussion.
