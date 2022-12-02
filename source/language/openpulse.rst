@@ -236,36 +236,45 @@ Manipulating frames based on the state of other frames is also permitted:
 Waveforms
 ---------
 
-Waveforms are of type ``waveform`` and can either be:
+OpenPulse introduces a new type, ``waveform``. Within the language itself, waveforms are
+somewhat opaque object. They may be constructed and used as arguments for operators
+which accept waveforms (e.g. the ``play`` instruction below).
 
-- An array of complex samples (note this syntax is still under [active development](https://github.com/Qiskit/openqasm/pull/301) and is subject to change.) which define the points for the waveform envelope
-- An abstract mathematical function representing a waveform. This will later be
-  materialized into a list of complex samples, either by the compiler or the
-  hardware using the parameters provided to the ``extern`` declared waveform template.
+Ultimately, waveforms are realized as a sequence of samples which define the points of
+the waveform envelope. We adopt a uniform convention that waveforms are defined via
+waveform constructors, which are ``extern`` functions of two varieties:
+- Parametric waveform constructors take a fixed number of arguments and represent an
+  abstract mathematical function, such as a ``gaussian``.
+- Arbitrary waveform constructors take a variable number of arguments, representing
+  explicit sample values. Note that while OpenQASM does not currently allow for
+  user-defined variadic functions, implementors may explicitly handle arbitrary waveform
+  constructors in a compiler.
 
-A value of type ``waveform`` may be defined either by explicitly constructing the complex samples
-or by calling one of the waveform template functions provided by the target device.
-Note that each of these extern functions takes a type ``duration`` as an argument,
-since waveforms must have a definite duration.
-Using the hardware dependent ``dt`` unit is recommended for this duration,
-since otherwise the compiler may need to down-sample a higher precision
-waveform to physically realize it.
+The precise set of waveform constructors, including the details of their naming and
+arguments, is implementation-specific. Note that parametric waveform constructors
+typically take a type ``duration`` as an argument, since waveforms must have a definite
+duration. Using the hardware dependent ``dt`` unit is recommended for this duration,
+since otherwise the compiler may need to down-sample a higher precision waveform to
+physically realize it. For arbitrary waveform constructors, implementors may wish to
+allow for complex sample values. This syntax is still under [active
+development](https://github.com/Qiskit/openqasm/pull/301) and is subject to change. The
+duration of an arbitrary waveform may depend on implementation-specific details, in
+addition to the explicit arguments provided.
 
-Like other extern functions, ``extern waveform`` functions will be compiled.
-But for static waveforms, the optimizing compiler should decide to execute this
-at compile time and load the waveform into memory once.
-For dynamic waveforms, the compiler just compiles and links this, to be executed at runtime.
-We provide the ``waveform`` type in addition to the complex list of samples to
-provide more context to compilers and hardware. For example, some hardware pulse
-generators may have optimized implementations of common pulse shapes like gaussians.
-Providing structured gaussian parameters instead of the materialized list of complex
-samples provides optimization opportunities that wouldn't be available otherwise.
+
+Like other extern functions, ``extern waveform`` functions will be compiled.  For static
+waveforms, an optimizing compiler may decide to execute this at compile time and load
+the waveform into memory once. For dynamic waveforms, a compiler may compile and link
+the call, to be executed at runtime. Some hardware pulse generators may have optimized
+implementations of common pulse shapes like gaussians. Providing structured gaussian
+parameters instead of the materialized list of complex samples provides optimization
+opportunities that wouldn't be available otherwise.
 
 .. code-block:: openpulse
    :force:
 
-   // arbitrary complex samples
-   waveform arb_waveform = [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im];
+   // arbitrary complex samples using the arb constructor
+   waveform arb_waveform = arb(1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im);
 
    // amp is waveform amplitude at center
    // d is the overall duration of the waveform
@@ -299,7 +308,7 @@ samples provides optimization opportunities that wouldn't be available otherwise
    // phase is the phase of the waveform
    extern sine(complex[float[size]] amp, duration  d, float[size] frequency, angle[size] phase) -> waveform;
 
-We can manipulate the ``waveform`` types using the following signal processing functions to produce
+We can manipulate ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
 
 .. code-block:: openpulse
@@ -342,7 +351,7 @@ For example,
 
   defcal play_my_pulses $0 {
     // Play a 3 sample pulse on the tx0 port
-    play(driveframe, [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im]);
+    play(driveframe, arb(1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im));
 
     // Play a gaussian pulse on the tx1 port
     frame f1 = newframe(tx1, q1_freq, 0.0);
