@@ -351,7 +351,7 @@ Relation of the built-in gates to hardware-native gates
 
 For *non-parameterized gates*, the choice of ``U`` and ``gphase`` as the built-in gates, along with one
 two-qubit entangling gate CNOT as defined gives a universal gate set that can represent general n-qubit
-unitary with an :math:`O(2^n)` size description :cite:`barenco95`. This basis is not an enforced compilation
+unitaries with an :math:`O(2^n)` size description :cite:`barenco95`. This basis is not an enforced compilation
 target but a mechanism to define other gates. For many gates of
 practical interest, there is a circuit representation with a polynomial
 number of one- and two-qubit gates, giving a more compact representation
