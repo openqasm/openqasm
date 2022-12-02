@@ -237,7 +237,7 @@ Waveforms
 ---------
 
 OpenPulse introduces a new type, ``waveform``. Within the language itself, waveforms are
-somewhat opaque object. They may be constructed and used as arguments for operators
+somewhat opaque objects. They may be constructed and used as arguments for operators
 which accept waveforms (e.g. the ``play`` instruction below).
 
 Ultimately, waveforms are realized as a sequence of samples which define the points of
