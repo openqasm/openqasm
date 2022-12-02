@@ -34,7 +34,7 @@ Prasahnt Sivarajah
 Salvadore de la Puente
 Thomas Alexander
 Travis Scholten
-Yunong Shikj
+Yunong Shi
 Zachary Schoenfeld
 @vasilenkoalexy
 
