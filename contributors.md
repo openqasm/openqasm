@@ -41,18 +41,21 @@ Zachary Schoenfeld
 
 # Contributors via GH interaction / WG participation
 
-Matthew Amy
-Phil Reinhold
-Dor Israeli
-Niel de Beaudrap
-Derek Bolt
-Peter Karalekas
-Lauren Capelluto
-BẢO Bach Gia
-Jialin Dou
-Erik Davis
-Vincent Pascuzzi
+Alex McCaskey
 Bill Ticehurst
+BẢO Bach Gia
+Derek Bolt
+Dor Israeli
+Erik Davis
+Jialin Dou
+Lauren Capelluto
+Marius Hillenbrand
+Matthew Amy
+Niel de Beaudrap
+Peter Karalekas
+Phil Reinhold
+Stefan Teleman
+Vincent Pascuzzi
 
 
 # Additional invitees
