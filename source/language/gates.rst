@@ -43,11 +43,12 @@ has a second-to-last line that is equivalent to
    g4 qr0[0], qr1[1], qr2[0], qr3[1];
    g4 qr0[0], qr1[2], qr2[0], qr3[2];
 
-In case that the expanded set of gates is not mutually-commuting, then its important to note that the broadcasting is defined
-in increasing qubit index order ``qr[0]``, ``qr[1]``, ....
-
-//FIXME: Is that what we really want? Maybe we could use attributes to mark which arguments are safe (commuting) to broadcast over
-and error in the case of non-commuting broadcasting?
+Use of this syntax constitutes a promise to the compiler that the expanded set of broadcasted gates
+is mutually commuting and thus the compiler can take advantage of the opportunity to reorder the
+gates freely for optimization purposes. In certain cases a compiler might be able to detect a
+non-commutativity and raise a warning, but it is not required to do so in all cases. If the gates do
+not commute and a specific order is required by the programmer, than a ``for`` loop may be used to
+set that order.
 
 Parameterized gates
 ~~~~~~~~~~~~~~~~~~~
@@ -147,8 +148,7 @@ at a fixed angle size, for example corresponding to the size of angle parameters
 ``defcal`` definitions.
 
 The qubit arguments are identifiers. If there are no
-variable parameters, the parentheses are optional. At least one qubit
-argument is required. The arguments in ``qargs`` cannot be indexed within the body
+variable parameters, the parentheses are optional. The arguments in ``qargs`` cannot be indexed within the body
 of the gate definition.
 
 .. code-block::
@@ -196,7 +196,7 @@ If the control bit is 1, :math:`U` acts on the target bit. Mathematically, the c
 gate is defined as :math:`C_U = I \otimes U^c`, where :math:`c` is the integer value of the control
 bit and :math:`C_U` is the controlled-:math:`U` gate. The new quantum argument is prepended to the
 argument list for the controlled-:math:`U` gate. The quantum argument can be a register, and in this
-case controlled gate broadcast over it (as for all gates //FIXME). The modified
+case controlled gate broadcast over it (as for all gates). The modified
 gate does not use any additional scratch space and may require compilation to be executed.
 
 As a limiting case, the controlled *global* phase gate
@@ -319,7 +319,19 @@ From a physical perspective, the unitaries :math:`e^{i\gamma}V` and :math:`V` ar
 phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
 that is applied when the control qubit is one. A built-in global phase gate
 allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` accumulates a global phase
-of :math:`e^{i\gamma}`. For example
+of :math:`e^{i\gamma}`.
+
+Just as every n-qubit gate can be thought of as generating a tensor product with the suitable
+identity matrix to cover all other qubits in the gate, subroutine, or global scope containing the
+instruction, similarly ``gphase`` behaves as a 0-qubit gate and when applied in a context with
+`m` qubits in scope, behaves as applying the unitary
+
+.. math::
+   \operatorname{gphase}(\gamma) := e^{i\gamma} I_m,
+
+where :math:`I_m` denotes the identity matrix with size :math:`2^m`
+
+For example
 
 .. code-block::
 
@@ -362,4 +374,6 @@ However, if other forms of run-time parameterization become important, it may be
 to give meaning to those gates, for example by adding new basis gates or additional ``gate`` definition syntax.
 
 .. [#uphase] This definition of ``U`` has a different global phase from previous versions of the OpenQASM spec.
-   Unfortunately the original definitions were not 2π periodic in the θ parameter.
+   Unfortunately the original definitions were 4π rather than 2π periodic in the θ parameter. A gate
+   ``U_old(0, ϕ, θ) q;`` under the previous definition corresponds to ``U(0, ϕ, θ) q; gphase(-0/2);`` with the present
+   definition.
