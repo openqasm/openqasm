@@ -11,10 +11,11 @@ Applying gates
 --------------
 
 Every gate applies to a fixed number of qubits.
-Assuming ``g1``, ``g2``, ... are gates defined on 1, 2, ... qubits then they can be applied as
+Assuming ``g0``, ``g1``, ``g2``, ... are gates defined on 0, 1, 2, ... qubits then they can be applied as
 
 .. code-block::
 
+   g0;
    g1 q1;
    g2 q1, q2;
    g3 q1, q2, q3;
