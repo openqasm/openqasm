@@ -144,7 +144,7 @@ parameters, and the argument list ``qargs`` is a comma-separated list of qubit
 arguments. The parameters are identifiers that behave as ``angle`` type with unknown
 size. A compiler might recognize certain constructs and replace them with mathematically-
 equivalent versions that would be true for arbitrary precision, or it might do calculations
-at a fixed angle size, for example corresponding to the size of angle parameters to the corresponding
+at a fixed ``angle`` size, for example corresponding to the size of ``angle`` parameters to the corresponding
 ``defcal`` definitions.
 
 The qubit arguments are identifiers. If there are no
