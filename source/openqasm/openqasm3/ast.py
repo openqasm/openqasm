@@ -52,6 +52,7 @@ __all__ = [
     "EndStatement",
     "Expression",
     "ExpressionStatement",
+    "ExternArgument",
     "ExternDeclaration",
     "FloatLiteral",
     "FloatType",
@@ -231,7 +232,7 @@ class ExternDeclaration(Statement):
 
     name: Identifier
     arguments: List[ExternArgument]
-    return_type: Optional[ExternArgument] = None
+    return_type: Optional[ClassicalType] = None
 
 
 class Expression(QASMNode):
