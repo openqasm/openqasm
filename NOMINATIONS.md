@@ -14,7 +14,15 @@ In alphabetical order, the candidates are:
 
 ## Blake Johnson (IBM)
 
-**Blake to add**
+Blake is the Quantum Engine Lead at IBM Quantum, where one of his principal responsibilities is
+technical evolution of what is executable on IBM Quantum systems. Blake has sought to ensure that
+OpenQASM lives up to its name of being an open project, by soliciting feedback on early drafts of
+the OpenQASM 3 proposal, and eventually forming the OpenQASM Technical Steering committee. If
+elected for another term, Blake will strive to continue to expand the OpenQASM community and create
+an ecosystem of people and code that work together across a variety of contexts (e.g. academic and
+industry, qubit modality, etc.) while also pushing for a language that can exercise increasingly
+powerful capabilities in quantum computing systems.
+
 
 ## Dor Israeli (Quantum Machines)
 
