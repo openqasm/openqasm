@@ -36,6 +36,6 @@ Kartik is a soon-to-graduate PhD candidate in programming languages at UChicago.
 
 **Lev to add**
 
-## To-be-named (Quantinuum)
+## Seyon Sivarajah (Quantinuum)
 
-**Name required.**
+**Seyon to add**
