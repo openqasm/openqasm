@@ -775,6 +775,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 ast.UintType,
                 ast.FloatType,
                 ast.AngleType,
+                ast.DurationType,
                 ast.BoolType,
                 ast.ComplexType,
             ),
