@@ -37,5 +37,10 @@ Kartik is a soon-to-graduate PhD candidate in programming languages at UChicago.
 **Lev to add**
 
 ## Seyon Sivarajah (Quantinuum)
-
-**Seyon to add**
+Seyon is technical lead in the Quantinuum systems software team, and is one of the primary developers of the
+open source quantum compilation tool TKET. He also works on cloud orchestration tooling at Quantinuum.
+Having worked on TKET's front-end support for OpenQASM2.0, and been the maintainer of TKET's Qiskit integration, 
+Seyon is well positioned to provide compiler-level feedback to the OpenQASM 3.x Technical Steering Committee,
+as well as providing input from the wider quantum software ecosystem. Seyon is also working on the
+next generation of TKET, the design of which is motivated by many of the factors that motivate OpenQASM 3's
+design (e.g. dynamic circuits, real-time classical logic) and so is interested in co-development of language and compiler.
