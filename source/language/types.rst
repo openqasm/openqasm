@@ -119,13 +119,24 @@ the quantum memory.
 Physical Qubits
 ~~~~~~~~~~~~~~~
 
-While program qubits can be named, hardware qubits are referenced only
+During quantum compilation it is critical to understand if an operation is being applied
+to an "virtual qubit" (a qubit pre-assignment) or a "physical" hardware qubit
+within a device. In most hardware implementations no two physical qubits are alike
+and reassigning physical qubits will change the impact of the quantum program on the
+system. For this reason OpenQASM specially identifies "physical qubits".
+
+
+Physical qubits are referenced only
 by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
 references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
 used in lower parts of the compilation stack when emitting physical
-circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
+circuits. For representation purposes physical qubits may be declared, eg.,
+``qubit $0;``. Implementations may also choose to represent available physical
+qubits implicitly.
 
 .. code-block::
+   // Declare physical qubit 0
+   qubit $0;
 
    // Declare a qubit
    qubit gamma;
@@ -134,6 +145,7 @@ circuits. Physical qubits must not be declared and they are, as all the qubits, 
    // Declare a qubit register with 20 qubits
    qubit[20] qubit_array;
    // CNOT gate between physical qubits 0 and 1
+   // physical qubit $1 is implicitly declared
    CX $0, $1;
 
 Classical scalar types
@@ -361,10 +373,10 @@ type).  All scalar literals are ``const`` types.
 .. code-block::
 
    // Valid statements
-   
+
    const uint SIZE = 32;  // Declares a compile-time unsigned integer.
 
-   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`. 
+   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`.
    int[SIZE] i1;    // Declares a signed integer called `i1` with 32 bits.
 
 
