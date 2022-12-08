@@ -26,7 +26,9 @@ powerful capabilities in quantum computing systems.
 
 ## Dor Israeli (Quantum Machines)
 
-**Dor to add**
+Dor is the Director of Software Strategy at Quantum Machines, one of the leading quantum control companies, and has vast experience in research, development, and managing complex projects with many partners. At Quantum Machines, Dor worked on their pulse-level programming language QUA, its compiler and algorithms, and its support for OpenQASM3. Moreover, he is the head of technology at the Israeli Quantum Computing Center. He is interested in the academic aspect of languages and their practical assimilation to the community stack (e.g., toolchains, compiler, HPC stack, and more). Dor has an M.Sc. in computer science (TAU) and B.Sc. in computer science and physics (HUJI).
+
+In the last year, Dor has contributed to the OQ3 TSC on several issues and led and took part in a few working groups. His contributions rely on his expertise and insights from working on the physical, lower level of the stack, i.e., control of QM's customers' variety of physical qubits. QM has leading dynamic capabilities and performances (e.g., real-time variables, advanced arithmetic, control flow, and communication). Thus, Dor can help distill and define what will push the community forward and the implications on control vendors, as he presented at major conferences (e.g., APS22 presentation, QBE22 presentation, SQA22 abstract, and more).
 
 ## Kartik Singhal (University of Chicago)
 
