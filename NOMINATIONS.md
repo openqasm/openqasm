@@ -30,6 +30,19 @@ Dor is the Director of Software Strategy at Quantum Machines, one of the leading
 
 In the last year, Dor has contributed to the OQ3 TSC on several issues and led and took part in a few working groups. His contributions rely on his expertise and insights from working on the physical, lower level of the stack, i.e., control of QM's customers' variety of physical qubits. QM has leading dynamic capabilities and performances (e.g., real-time variables, advanced arithmetic, control flow, and communication). Thus, Dor can help distill and define what will push the community forward and the implications on control vendors, as he presented at major conferences (e.g., APS22 presentation, QBE22 presentation, SQA22 abstract, and more).
 
+## Florian Preis (Quantum Brilliance)
+
+Florian is the Head of Software and Applications at Quantum Brilliance (QB).
+QB is the leading company building room-temperature Quantum Accelerators based on nitrogen-vacancy centers in diamond.
+Small room-temperature Quantum Accelerators offer the unique opportunity for massive parallelization or quantum computing at the edge.
+
+Florian's team develops software that aims to support that vision by incorporating MPI, threading and GPU offload into the hybrid quantum-classical programming model.
+The QB Software Development Kit (SDK) currently supports OpenQASM 2.0 and is looking forward to adopting OpenQASM 3.0.
+Room-temperature Quantum Accelerators allow a close and therefore tight coupling to classical computers.
+Thus, Florian will contribute to the OpenQASM community in pushing the OpenQASM 3 language forward to take full advantage of the real-time interaction between these two domains.
+With Florian an additional quantum hardware platform will be represented on the TSC.
+
+
 ## Kartik Singhal (University of Chicago)
 
 Kartik is a soon-to-graduate PhD candidate in programming languages at UChicago. He focuses on the design & semantics of quantum programming languages and the verification of quantum programs. He wrote and still maintains an [OCaml-based parser](https://opam.ocaml.org/packages/openQASM/) for OpenQASM 2.0 and worked on [translating it](https://ks.cs.uchicago.edu/publication/verified-translation/) to sQIR (a small quantum IR). In more recent work, he provided [formal semantics for Q#](https://ks.cs.uchicago.edu/publication/q-algol/) and suggested ways to improve its type system so that quantum programs do not fail at run time. Subtle design issues, such as uncontrolled aliasing, are not specific to Q# but also affect OpenQASM 3.x and other quantum languages lacking linear typing. His expertise in type systems and programming languages could help evolve OpenQASM into a safer common interface for current and future quantum hardware. Homepage: [ks.cs.uchicago.edu](https://ks.cs.uchicago.edu)
