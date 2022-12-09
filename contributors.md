@@ -32,6 +32,7 @@ Noah Wood
 Pranav Gokhale
 Prasahnt Sivarajah
 Salvadore de la Puente
+Simon Kissane
 Thomas Alexander
 Travis Scholten
 Yunong Shi
@@ -43,7 +44,6 @@ Zachary Schoenfeld
 
 Alex McCaskey
 Bill Ticehurst
-BẢO Bach Gia
 Derek Bolt
 Dor Israeli
 Erik Davis
@@ -60,5 +60,6 @@ Vincent Pascuzzi
 
 # Additional invitees
 
+Jon Best
 Kartik Singhal
-Ross Duncan +1 from Quantinuum?
+Seyon Sivarajah
