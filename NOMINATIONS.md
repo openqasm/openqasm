@@ -2,7 +2,7 @@
 
 This document contains the nomination statements for each of the candidates for the TSC term of 2023/24.
 
-**Jake to do**: add link to electoral roll once finalised.
+[The electoral roll for this election](https://github.com/openqasm/openqasm/blob/tsc-election/2022-12-09/contributors.md) can be found in the previous link, or in the `contributors.md` file in the root of the repository as of the `tsc-election/2022-12-09` tag.
 
 The election will take place online using the [Belenios online voting platform](https://www.belenios.org/).
 Three people will be elected, to join Steven Heidel (Amazon), Bettina Heim (Nvidia) and Philipp Schindler (University of Innsbruck) whose seats are not up for re-election this cycle.
