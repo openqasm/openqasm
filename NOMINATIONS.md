@@ -8,7 +8,7 @@ The election will take place online using the [Belenios online voting platform](
 Three people will be elected, to join Steven Heidel (Amazon), Bettina Heim (Nvidia) and Philipp Schindler (University of Innsbruck) whose seats are not up for re-election this cycle.
 Votes will be counted using the [Condorcet/Schulze method](https://en.wikipedia.org/wiki/Schulze_method) to produce a ranked list of the candidates.
 The top three candidates will be elected to the TSC.
-The election will close on Friday the 6th of January, 2023 at 12:00 UTC.
+The election will close on Friday the 13th of January, 2023 at 12:00 UTC.
 
 In alphabetical order, the candidates are:
 
