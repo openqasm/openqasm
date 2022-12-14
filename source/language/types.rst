@@ -11,7 +11,7 @@ Identifiers
 -----------
 
 Identifiers must begin with a letter [A-Za-z], an underscore or an element from
-the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
+the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`wikipediaUnicode`.
 The set of permissible continuation characters consists of all members of the
 aforementioned character sets with the addition of decimal numerals [0-9].
 Identifiers may not override a reserved identifier.
