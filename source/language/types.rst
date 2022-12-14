@@ -660,7 +660,7 @@ exponent.
    float f5 = 2e+1; // scientific with positive signed exponent
    float f6 = 2.0E-1; // uppercase scientific with signed exponent
 
-The two boolean literals are the lowercase strings ``true`` and ``false``.
+The two boolean literals are ``true`` and ``false``.
 
 Bit string literals are denoted by double quotes ``"`` surrounding a number of
 zero and one digits, and may include non-consecutive underscores to improve
