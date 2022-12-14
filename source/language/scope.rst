@@ -29,7 +29,7 @@ is up to individual implementations to define their allocation strategies within
 nested scopes.
 
 In order to be a valid OpenQASM 3.0 program, symbols must be defined before they
-are used; in particular, there is no forward definition of functions and gates,
+are used; in particular, there is no forward declaration of functions and gates,
 and there can be no mutual recursion.
 
 Most regular identifiers of variables can be shadowed in inner scopes, so that
