@@ -45,3 +45,13 @@ This statement can only be used at the global scope.
    include "stdgates.qasm";
 
    // Rest of QASM program
+
+The ``filename`` can be either a bit string or a regular string literal token.
+Therefore, all of the following statements are valid syntax.
+
+.. code-block::
+
+	include "";
+	include 'hello';
+	include "101";
+	include "0_0";

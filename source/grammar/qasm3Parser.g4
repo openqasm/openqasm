@@ -57,7 +57,7 @@ statementOrScope: statement | scope;
 
 // Inclusion statements.
 calibrationGrammarStatement: DEFCALGRAMMAR StringLiteral SEMICOLON;
-includeStatement: INCLUDE StringLiteral SEMICOLON;
+includeStatement: INCLUDE (StringLiteral | BitstringLiteral) SEMICOLON;
 
 // Control-flow statements.
 breakStatement: BREAK SEMICOLON;
