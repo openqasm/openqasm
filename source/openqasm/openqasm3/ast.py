@@ -461,7 +461,7 @@ class IndexExpression(Expression):
 
 
 @dataclass
-class IndexedIdentifier(QASMNode):
+class IndexedIdentifier(Expression):
     """An indentifier with index operators, such that it can be used as an
     lvalue.  The list of indices is subsequent index brackets, so in::
 
