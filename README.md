@@ -1,8 +1,8 @@
 # OpenQASM
 
 
-OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model,
+OpenQASM is an imperative programming language for describing quantum circuits. It is capable of
+describing universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
 This repo contains the OpenQASM specification, examples, and tools for the OpenQASM intermediate representation.
@@ -22,13 +22,13 @@ Watch this space, or the [\#open-qasm channel on the Qiskit Slack server](https:
 
 ## Current version: **3.0**
 
-Live doc: [**version 3.0**](https://openqasm.github.io/)
+* Live language specification [**version 3.0**](https://openqasm.github.io/)
 
-For previous version see: [2.0](https://github.com/openqasm/openqasm/tree/OpenQASM2.x)
+* The branch of this repository for the previous version: [OpenQASM 2.0](https://github.com/openqasm/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
-On this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
+In this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
 
 ### Language specs
 
@@ -36,10 +36,7 @@ The live [language documentation](https://openqasm.github.io/) specification.
 
 ### Examples
 
-The examples can be found under the [examples](examples) folder.
-
-They are OpenQASM files, i.e.:
-
+An example of OpenQASM 3.0 source code is given below. Several more examples may be found in the [examples folder](examples).
 ```text
 /*
  * Repeat-until-success circuit for Rz(theta),
