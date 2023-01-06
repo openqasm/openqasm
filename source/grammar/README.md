@@ -1,6 +1,8 @@
 # OpenQASM 3.0 Grammar Reference
 
-The file [qasm3.g4](./qasm3.g4) is the reference grammar, written in [ANTLR](https://www.antlr.org/).
+The reference grammar is written in [ANTLR](https://www.antlr.org/).
+The lexer rules are in the file [qasm3Lexer.g4](./qasm3Lexer.g4), and
+the parser rules are in the file [qasm3Parser.g4](./qasm3Parser.g4).
 
 This directory also contains a very basic Python parser, which is simply built from the reference grammar and used to test against the examples.
 
