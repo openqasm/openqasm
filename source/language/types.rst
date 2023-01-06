@@ -220,7 +220,7 @@ Void type
 
 Subroutines and externs that do not return a value implicitly return ``void``.
 The ``void`` type is unrealizable and uninstantiable, and thus cannot be
-attached to an identifer or used as a cast operator. The keyword ``void`` is
+attached to an identifier or used as a cast operator. The keyword ``void`` is
 reserved for potential future use.
 
 .. _angle-type:
