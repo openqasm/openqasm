@@ -18,8 +18,9 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 ## Structures
 
-We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The initial TSC will include:
-* Ali Javadi (IBM Quantum)
+We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The current TSC is:
+
+* Dor Israeli (Quantum Machines)
 * Lev S Bishop (IBM Quantum)
 * Blake Johnson (IBM Quantum)
 * Steven Heidel (AWS)
@@ -43,6 +44,20 @@ The responsibility of the TSC **Secretary** include:
 The TSC will, from time to time, elect to create **Working Groups** to study issues. The TSC will appoint a **Contributor** as chair for each WG. These WGs should come back to the TSC with a proposal in the form of a language RFC or pull request to the OpenQASM specification. A WG will be automatically disbanded upon acceptance or (final) rejection of an RFC.
 
 **TSC Members** will serve a 2-year term, with the exception of the founding TSC which will have staggered terms to avoid an election of an entire TSC all at once. New **TSC Members** will be selected by nomination of the TSC, followed by a vote which is open to all **Contributors**. Outgoing **TSC Members** participate in the nomination process which selects their successors. Note that **TSC Members** may be re-elected to serve additional 2-year terms. The same process will be used in the event that a **TSC Member** resigns prior to the end of their term.
+
+
+### Past TSCs
+
+* The initial TSC, finishing on 2023-01-13 was:
+
+  - Ali Javadi (IBM Quantum)
+  - Lev S Bishop (IBM Quantum)
+  - Blake Johnson (IBM Quantum)
+  - Steven Heidel (AWS)
+  - Bettina Heim (Nvidia)
+  - Philipp Schindler (Innsbruck)
+
+  This TSC was completed by an election ending on 2023-01-13 to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
 
 ## Open Questions
 
