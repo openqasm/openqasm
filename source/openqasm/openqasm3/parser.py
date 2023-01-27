@@ -129,6 +129,11 @@ def _visit_identifier(identifier: TerminalNode):
     return add_span(ast.Identifier(identifier.getText()), get_span(identifier))
 
 
+def _visit_hardware_qubit_identifier(hardware_qubit_identifier: TerminalNode):
+    return add_span(ast.HardwareQubitIdentifier(hardware_qubit_identifier.getText()),
+                    get_span(hardware_qubit_identifier))
+
+
 def _raise_from_context(ctx: ParserRuleContext, message: str):
     raise QASM3ParsingError(f"L{ctx.start.line}:C{ctx.start.column}: {message}")
 
@@ -632,7 +637,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 unit = ast.TimeUnit["dt"]
             return ast.DurationLiteral(value=float(value), unit=unit)
         if ctx.HardwareQubit():
-            return ast.Identifier(ctx.HardwareQubit().getText())
+            return ast.HardwareQubitIdentifier(ctx.HardwareQubit().getText())
         raise _raise_from_context(ctx, "unknown literal type")
 
     @span
@@ -788,7 +793,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitGateOperand(self, ctx: qasm3Parser.GateOperandContext):
         if ctx.HardwareQubit():
-            return ast.Identifier(name=ctx.getText())
+            return ast.HardwareQubitIdentifier(name=ctx.getText())
         return self.visit(ctx.indexedIdentifier())
 
     @span
@@ -861,7 +866,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitDefcalOperand(self, ctx: qasm3Parser.DefcalOperandContext):
         if ctx.HardwareQubit():
-            return ast.Identifier(ctx.HardwareQubit().getText())
+            return ast.HardwareQubitIdentifier(ctx.HardwareQubit().getText())
         return _visit_identifier(ctx.Identifier())
 
     def visitStatementOrScope(

@@ -15,6 +15,7 @@ _PRECEDENCE_TABLE = {
     # Identifiers/literals are the top, since you never need to put brackets
     # around a single literal or identifier.
     ast.Identifier: 14,
+    ast.HardwareQubitIdentifier: 14,
     ast.BitstringLiteral: 14,
     ast.BooleanLiteral: 14,
     ast.DurationLiteral: 14,

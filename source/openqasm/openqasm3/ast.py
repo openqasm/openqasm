@@ -59,6 +59,7 @@ __all__ = [
     "ForInLoop",
     "FunctionCall",
     "GateModifierName",
+    "HardwareQubitIdentifier",
     "IODeclaration",
     "IOKeyword",
     "Identifier",
@@ -247,6 +248,20 @@ class Identifier(Expression):
     Example::
 
         q1
+
+    """
+
+    name: str
+
+
+@dataclass
+class HardwareQubitIdentifier(Expression):
+    """
+    An identifier referencing a hardware (physical) qubit.
+
+    Example::
+
+        $0
 
     """
 
@@ -510,7 +525,7 @@ class QuantumGate(QuantumStatement):
     modifiers: List[QuantumGateModifier]
     name: Identifier
     arguments: List[Expression]
-    qubits: List[Union[IndexedIdentifier, Identifier]]
+    qubits: List[Union[IndexedIdentifier, Identifier, HardwareQubitIdentifier]]
     duration: Optional[Expression] = None
 
 
@@ -551,7 +566,7 @@ class QuantumPhase(QuantumStatement):
 
     modifiers: List[QuantumGateModifier]
     argument: Expression
-    qubits: List[Union[IndexedIdentifier, Identifier]]
+    qubits: List[Union[IndexedIdentifier, Identifier, HardwareQubitIdentifier]]
 
 
 # Not a full expression because it can only be used in limited contexts.
@@ -565,7 +580,7 @@ class QuantumMeasurement(QASMNode):
         measure q;
     """
 
-    qubit: Union[IndexedIdentifier, Identifier]
+    qubit: Union[IndexedIdentifier, Identifier, HardwareQubitIdentifier]
 
 
 # Note that this is not a QuantumStatement because it involves access to
@@ -604,7 +619,7 @@ class QuantumReset(QuantumStatement):
         reset q;
     """
 
-    qubits: Union[IndexedIdentifier, Identifier]
+    qubits: Union[IndexedIdentifier, Identifier, HardwareQubitIdentifier]
 
 
 @dataclass
@@ -1003,7 +1018,7 @@ class DelayInstruction(QuantumStatement):
     """
 
     duration: Expression
-    qubits: List[Union[IndexedIdentifier, Identifier]]
+    qubits: List[Union[IndexedIdentifier, Identifier, HardwareQubitIdentifier]]
 
 
 @dataclass
@@ -1056,7 +1071,7 @@ class AliasStatement(Statement):
     """
 
     target: Identifier
-    value: Union[Identifier, Concatenation]
+    value: Union[Identifier, Concatenation, HardwareQubitIdentifier]
 
 
 @dataclass

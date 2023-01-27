@@ -301,6 +301,9 @@ class Printer(QASMVisitor[PrinterState]):
     def visit_Identifier(self, node: ast.Identifier, context: PrinterState) -> None:
         self.stream.write(node.name)
 
+    def visit_HardwareQubitIdentifier(self, node: ast.HardwareQubitIdentifier, context: PrinterState) -> None:
+        self.stream.write(node.name)
+
     def visit_UnaryExpression(self, node: ast.UnaryExpression, context: PrinterState) -> None:
         self.stream.write(node.op.name)
         if properties.precedence(node) >= properties.precedence(node.expression):
