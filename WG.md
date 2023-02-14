@@ -44,8 +44,8 @@ This working group will have completed its efforts when:
 - At least one profile has been defined
 - The release version of OpenQASM 3.0, and associated infrastructure, is merged
 
-Chair: Steven Heidel (AWS Quantum)
-Members: 2-3 other AWS Quantum members TBD, Dor Israeli, Bettina Heim, (your name here?)
+Chair: Michael Healy (IBM Quantum)
+Members: Ali Javadi, Bettina Heim, Blake Johnson, Dor Israeli, Jeff Heckey, Jon Best, Lev Bishop, Luciano Bello, Niel de Beaudrap, Philipp Schindler, Steven Heidel, Thomas Alexander, Yunong Shi
 
 ## Past Working Groups
 
