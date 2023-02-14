@@ -72,7 +72,7 @@ Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto
 Chair: Michael Healy (IBM Quantum)
 Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman, Bettina Heim
 
-### Dynamic Deference & Allocation
+### Dynamic Dereference & Allocation
 
 **Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/Qiskit/openqasm/issues/307)
  * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
@@ -81,7 +81,7 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
  * Capture implicit assumptions that would make it hard to introduce this in future.
 
 **Questions**:
- * Do dynamically deferenced qubits break hidden assumptions in the current spec?
+ * Do dynamically dereferenced qubits break hidden assumptions in the current spec?
     * Gates may have different implementations for each dynamic qubit
     * Multiple qubit gates require connectivity or swaps
     * Index out of bounds in runtime?
