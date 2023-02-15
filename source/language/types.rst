@@ -704,6 +704,12 @@ can be accessed, using the following general syntax:
    multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
+The first argument to the ``array`` type constructor is the base type
+of the array. The supported classical types include various sizes of ``bit``,
+``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as
+``bool`` and ``duration``. Note that ``stretch`` is not a valid array
+base type.
+
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
 Indexing of arrays is n-based *i.e.*, negative indices are allowed.
