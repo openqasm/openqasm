@@ -145,7 +145,7 @@ parameters, and the argument list ``qargs`` is a comma-separated list of qubit
 arguments. The parameters are identifiers that behave as ``angle`` type with unknown
 size. A compiler might recognize certain constructs and replace them with mathematically-
 equivalent versions that would be true for arbitrary precision, or it might do calculations
-at a fixed ``angle`` size, for example corresponding to the size of ``angle`` parameters to the corresponding
+at a fixed ``angle`` size, for example corresponding to the size of ``angle`` parameters in the corresponding
 ``defcal`` definitions.
 
 The qubit arguments are identifiers. If there are no
@@ -370,7 +370,7 @@ For many current platforms the qubits are defined relative to a
 rotating frame and the rotating wave approximation (RWA) holds. This is the domain covered by the OpenPulse
 specification. For this case, the only supported form of run-time parameterization
 will likely be via a ``rz(ϕ)`` implemented by specialized frame-tracking hardware.
-This gate is covered by the built-in ``U`` as a special case ``U(0, ϕ, θ)``
+This gate is covered by the built-in ``U`` as a special case ``U(0, 0, ϕ)``
 However, if other forms of run-time parameterization become important, it may be necessary to revise OpenQASM,
 to give meaning to those gates, for example by adding new basis gates or additional ``gate`` definition syntax.
 
