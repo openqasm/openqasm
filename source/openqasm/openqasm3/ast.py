@@ -779,7 +779,9 @@ class ArrayType(ClassicalType):
     arrays declared by being arguments to subroutines.
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType]
+    base_type: Union[
+        IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType
+    ]
     dimensions: List[Expression]
 
 
@@ -801,7 +803,9 @@ class ArrayReferenceType(ClassicalType):
         def f(const array[uint[8], #dim=3] b) {}
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType]
+    base_type: Union[
+        IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType
+    ]
     dimensions: Union[Expression, List[Expression]]
 
 

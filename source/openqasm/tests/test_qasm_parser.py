@@ -1833,8 +1833,7 @@ class TestFailurePaths:
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"complex[{scalar}] f;")
 
-    @pytest.mark.parametrize("scalar", ("duration", "stretch"))
-    def test_array_with_bad_scalar_type(self, scalar):
+    def test_array_with_bad_scalar_type(self):
         message = "invalid scalar type for array"
         with pytest.raises(QASM3ParsingError, match=message):
-            parse(f"array[{scalar}, 4] arr;")
+            parse(f"array[stretch, 4] arr;")
