@@ -704,11 +704,50 @@ can be accessed, using the following general syntax:
    multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
-The first argument to the ``array`` type constructor is the base type
+The first argument to the ``array`` declaration is the base type
 of the array. The supported classical types include various sizes of ``bit``,
 ``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as
 ``bool`` and ``duration``. Note that ``stretch`` is not a valid array
 base type.
+
+Arrays cannot be resized or reshaped. Arrays are statically typed, and cannot
+implicitly convert to or from any other type.
+
+The size of an array is constant and immutable, and is recorded once, at
+declaration time.
+
+Arrays allocate a contiguous block of memory of suitable size and alignment to
+accommodate the storage of its elements.
+
+If the array declaration is direct-initialized via initializer list, its elements
+are initialized to the values provided by the initializer list.  Otherwise, the
+memory allocated is not initialized, and that memory's content is undefined.
+
+Partial initialization via initializer list is allowed - i.e. the initializer
+list is incomplete, and does not provide values for all the elements of the array.
+In this case, the elements that are not initialized via initializer list are not
+initialized, and their values are undefined.
+
+As a special case, a direct initializer list declaration of the form:
+
+ ``array[<type>, <size>] <identifier> = { <X> };``
+
+will initialize all the elements of the array to <X>, where <X> is of a type
+suitable for initializing an element of the array, and if and only if the array
+element type supports direct initialization from such a type.
+
+It is unspecified whether the memory allocation of an array is of static storage
+duration, or it is obtained via dynamic allocation. This property is implementation
+dependent.
+
+If the array memory is obtained via dynamic allocation, the implementation is
+responsible for reclaiming the memory when the array object goes out of scope
+(garbage collection).
+
+Arrays may be passed as parameters or arguments to functions.
+
+When passed as argument to a function, an array shall not cause a copy spill on
+the stack.
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
