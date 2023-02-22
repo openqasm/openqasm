@@ -29,5 +29,5 @@ jobs:
         with:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: mbhealy/mbhealy.github.io
-          branch: main
+          branch: mbh-versioning
           folder: build/html
