@@ -2,7 +2,7 @@ name: Publish Live Version
 
 on:
   push:
-    branches: [ mbh-versioning ]
+    branches: [ 'stable/**' ]
 
 jobs:
   build:
@@ -31,4 +31,4 @@ jobs:
           repository-name: mbhealy/mbhealy.github.io
           branch: mbh-versioning
           folder: build/html
-          target-folder: versions/live
+          target-folder: versions/${GITHUB_REF##*/}
