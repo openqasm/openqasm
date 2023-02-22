@@ -2,7 +2,7 @@ name: Publish Live Version
 
 on:
   push:
-    branches: [ main ]
+    branches: [ mbh-versioning ]
 
 jobs:
   build:
@@ -28,6 +28,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
-          repository-name: openqasm/openqasm.github.io
+          repository-name: mbhealy/mbhealy.github.io
           branch: main
           folder: build/html
