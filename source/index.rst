@@ -1,6 +1,8 @@
 OpenQASM 3.x Live Specification
 ===============================
 
+Michael Healy Version
+
 .. toctree::
   :maxdepth: 3
 
