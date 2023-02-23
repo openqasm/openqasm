@@ -1,4 +1,4 @@
-name: Publish Live Version
+name: Publish Stable Version
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate HTML
-        run: make html
+        run: VERSION=${GITHUB_REF##*/} make html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3

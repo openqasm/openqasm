@@ -17,7 +17,9 @@ sys.path.insert(0, os.path.abspath('_extensions'))
 # -- Project information -----------------------------------------------------
 from typing import List
 
-project = 'OpenQASM Live Specification'
+version = os.getenv('VERSION','Live')
+
+project = f'OpenQASM {version} Specification'
 copyright = '2017-2020, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 author = 'Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 
