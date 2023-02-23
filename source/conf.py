@@ -78,3 +78,10 @@ html_css_files = ['colors.css']
 numfig = True
 # Necessary setting for sphinxcontrib-bibtex >= 2.0.0
 bibtex_bibfiles = ['bibliography.bib']
+
+variables_to_export = [
+    "version"
+]
+frozen_locals = dict(locals())
+rst_epilog = '\n'.join(map(lambda x: f".. |{x}| replace:: {frozen_locals[x]}", variables_to_export))
+del frozen_locals
