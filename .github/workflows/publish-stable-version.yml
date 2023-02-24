@@ -31,7 +31,7 @@ jobs:
           repository-name: mbhealy/mbhealy.github.io
           branch: mbh-versioning
           folder: build/html
-          target-folder: versions/${GITHUB_REF##*/}
+          target-folder: versions/${{ GITHUB_REF##*/ }}
           clean: false
 
       - name: Generate version index files
