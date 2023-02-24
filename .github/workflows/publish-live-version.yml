@@ -32,3 +32,15 @@ jobs:
           branch: mbh-versioning
           folder: build/html
           target-folder: versions/live
+
+      - name: Generate version index files
+        working-directory: ./source/versionIndex
+        run: make html
+
+      - name: Deploy 🚀 version index to root
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
+          repository-name: mbhealy/mbhealy.github.io
+          branch: mbh-versioning
+          folder: ./source/versionIndex/_build/html
