@@ -33,6 +33,7 @@ extensions = [
   'sphinx.ext.mathjax',
   'sphinx.ext.githubpages',
   'sphinxcontrib.bibtex',
+  'sphinx_toolbox.sidebar_links',
   'reno.sphinxext',
   'multifigure'
 ]
@@ -45,6 +46,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns: List[str] = [
     "openqasm/docs",
+    "versionIndex"
 ]
 
 # Sets the default code-highlighting language.  `.. code-block::` directives
