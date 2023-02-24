@@ -36,7 +36,9 @@ jobs:
 
       - name: Generate version index files
         working-directory: ./source/versionIndex
-        run: make html
+        run: |
+          export VERSION_LINKS=$(./getStableBranchList.sh)
+          make html
 
       - name: Deploy 🚀 version index to root
         uses: JamesIves/github-pages-deploy-action@v4.3.3
