@@ -20,7 +20,7 @@ from typing import List
 version = os.getenv('VERSION','Live')
 
 project = f'OpenQASM {version} Specification'
-copyright = '2017-2020, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
+copyright = '2017-2023, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 author = 'Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 
 
@@ -80,7 +80,7 @@ numfig = True
 bibtex_bibfiles = ['bibliography.bib']
 
 variables_to_export = [
-    "version"
+    "version",
 ]
 frozen_locals = dict(locals())
 rst_epilog = '\n'.join(map(lambda x: f".. |{x}| replace:: {frozen_locals[x]}", variables_to_export))
