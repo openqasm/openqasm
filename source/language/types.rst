@@ -737,8 +737,11 @@ suitable for initializing an element of the array, and if and only if the array
 element type supports direct initialization from such a type.
 
 It is unspecified whether the memory allocation of an array is of static storage
-duration, or it is obtained via dynamic allocation. This property is implementation
-dependent.
+duration, (meaning the allocation is alive for as long as the object is in scope and
+gets automatically reclaimed by the operating system when the object goes out of scope)
+or it is obtained via dynamic allocation (meaning the allocation persists through the lifetime
+of the program, unless the program itself releases it back to the operating system).
+This property is implementation dependent.
 
 If the array memory is obtained via dynamic allocation, the implementation is
 responsible for reclaiming the memory when the array object goes out of scope
