@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 liveBranch=${1:-main}
-baseUrl="https://openqasm.github.io"
+baseUrl=${2:-"https://openqasm.github.io"}
 
 echo "Live branch is ${liveBranch}"
 echo "BaseURL is ${baseUrl}"
