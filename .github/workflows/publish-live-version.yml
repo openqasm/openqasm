@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -22,7 +22,7 @@ jobs:
 
       - name: Generate HTML
         run: |
-          git branch
+          git branch -a
           ./buildPublishable.sh mbh-versioning
 
       - name: Deploy 🚀
