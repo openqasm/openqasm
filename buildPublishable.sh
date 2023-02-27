@@ -40,7 +40,7 @@ for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs
 done
 
 echo "Getting live branch ${liveBranch}"
-git checkout ${liveBranch}
+git checkout origin/${liveBranch}
 
 echo "Updating with correct VersionList"
 awk -i inplace -v VersionList="${linkList}" '{gsub(/%%VersionList/,VersionList)}1' source/index.rst
