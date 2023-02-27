@@ -12,7 +12,8 @@ OpenQASM |version| Specification
 .. sidebar-links::
   :caption: All Versions
 
-  Version Index <https://openqasm.github.io/index.html>
+  Live <https://openqasm.github.io/index.html>
+%%VersionList
 
 Bibliography
 ============
