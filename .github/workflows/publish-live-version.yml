@@ -22,7 +22,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate HTML
-        run: ./buildPublishable.sh mbh-versioning
+        run: |
+          git branch
+          ./buildPublishable.sh mbh-versioning
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
