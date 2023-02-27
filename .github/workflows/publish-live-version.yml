@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate HTML
-        run: make html
+        run: ./buildPublishable.sh
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
@@ -30,21 +30,4 @@ jobs:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: mbhealy/mbhealy.github.io
           branch: mbh-versioning
-          folder: build/html
-          target-folder: versions/live
-          clean: false
-
-      - name: Generate version index files
-        working-directory: ./source/versionIndex
-        run: |
-          export VERSION_LINKS=$(./getStableBranchList.sh)
-          make html
-
-      - name: Deploy 🚀 version index to root
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
-        with:
-          token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
-          repository-name: mbhealy/mbhealy.github.io
-          branch: mbh-versioning
-          folder: ./source/versionIndex/_build/html
-          clean: false
+          folder: publish_build/
