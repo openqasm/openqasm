@@ -11,8 +11,8 @@ mkdir -p ./publish_build/versions
 
 # Build the version links
 unset linkList
-for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/heads/stable/`; do
-  versionNum=${branch/stable\//}
+for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
+  versionNum=${branch/*stable\//}
   linkList="${linkList}  ${versionNum} <${baseUrl}/versions/${versionNum}/index.html>"$'\n'
 done
 
@@ -22,8 +22,8 @@ linkList=${linkList::-1}
 # Now substitute the links in index.rst
 echo "Substituting %%VersionList with"
 echo "${linkList}"
-for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/heads/stable/`; do
-  versionNum=${branch/stable\//}
+for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
+  versionNum=${branch/*stable\//}
 
   echo "Checkout stable branch ${branch}"
   git checkout ${branch}
