@@ -738,7 +738,7 @@ element type supports direct initialization from such a type.
 
 It is unspecified whether the memory allocation of an array is of static storage
 duration, (meaning the allocation is alive for as long as the object is in scope and
-gets automatically reclaimed by the operating system when the object goes out of scope)
+gets automatically reclaimed by the runtime when the object goes out of scope)
 or it is obtained via dynamic allocation (meaning the allocation persists through the lifetime
 of the program, unless the program itself releases it back to the operating system).
 This property is implementation dependent.
