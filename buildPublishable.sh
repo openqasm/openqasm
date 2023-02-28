@@ -2,12 +2,13 @@
 
 liveBranch=${1:-main}
 baseUrl=${2:-"https://openqasm.github.io"}
+destDir=${3:-"./publish_build"}
 
 echo "Live branch is ${liveBranch}"
 echo "BaseURL is ${baseUrl}"
 
 # initialize the destination folder
-mkdir -p ./publish_build/versions
+mkdir -p ${destDir}/versions
 
 # Build the version links
 unset linkList
@@ -33,8 +34,8 @@ for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs
   # build
   VERSION=${versionNum} make html
 
-  echo "Copy to publish dir ./publish_build/versions/${versionNum}"
-  cp -r build/html ./publish_build/versions/${versionNum}
+  echo "Copy to publish dir ${destDir}/versions/${versionNum}"
+  cp -r build/html ${destDir}/versions/${versionNum}
 
   git restore source/index.rst
 done
@@ -49,7 +50,7 @@ awk -i inplace -v VersionList="${linkList}" '{gsub(/%%VersionList/,VersionList)}
 make html
 
 echo "Copy to publish dir"
-cp -r build/html/* ./publish_build
+cp -r build/html/* ${destDir}
 
 echo "Returning repo to default state"
 git restore source/index.rst
