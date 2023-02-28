@@ -9,12 +9,6 @@ OpenQASM |version| Specification
   grammar/index
   release_notes
 
-.. sidebar-links::
-  :caption: All Versions
-
-  Live <https://openqasm.github.io/index.html>
-%%VersionList
-
 Bibliography
 ============
 .. bibliography:: bibliography.bib

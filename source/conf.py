@@ -33,7 +33,6 @@ extensions = [
   'sphinx.ext.mathjax',
   'sphinx.ext.githubpages',
   'sphinxcontrib.bibtex',
-  'sphinx_toolbox.sidebar_links',
   'reno.sphinxext',
   'multifigure'
 ]
@@ -61,6 +60,21 @@ highlight_language = "qasm3"
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+
+version_list_var = os.getenv('VERSION_LIST')
+extra_nav_links = {'Live': '/index.html'} # default link to Live version
+
+if version_list_var is not None:
+    version_list = version_list_var.split(',')
+    for ver in version_list:
+        extra_nav_links[f'Version {ver}'] = f'/versions/{ver}/index.html'
+
+print(extra_nav_links)
+
+# Theme specific options
+html_theme_options = {
+  'extra_nav_links': extra_nav_links
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
