@@ -26,7 +26,7 @@ echo "VersionList is ${versionList}"
 for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
   versionNum=${branch/*stable\//}
   
-  echo "Checkout stable branch ${branch}"
+  echo "Checkout stable branch ${branch} with version number ${versionNum}"
   git checkout ${branch}
 
   # build
