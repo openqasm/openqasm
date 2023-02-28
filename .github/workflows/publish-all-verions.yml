@@ -1,8 +1,8 @@
-name: Publish Live Version
+name: Publish All Versions
 
 on:
   push:
-    branches: [ mbh-versioning ]
+    branches: [ mbh-versioning, 'stable/**' ]
 
 jobs:
   build:
