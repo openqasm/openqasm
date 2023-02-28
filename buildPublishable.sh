@@ -24,11 +24,13 @@ done
 # Now substitute the links in index.rst
 echo "VersionList is ${versionList}"
 for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
+  versionNum=${branch/*stable\//}
+  
   echo "Checkout stable branch ${branch}"
   git checkout ${branch}
 
   # build
-  VERSION_LIST=${versionList} make html
+  VERSION=${versionNum} VERSION_LIST=${versionList} make html
 
   echo "Copy to publish dir ${destDir}/versions/${versionNum}"
   cp -r build/html ${destDir}/versions/${versionNum}

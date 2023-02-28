@@ -62,7 +62,7 @@ highlight_language = "qasm3"
 html_theme = 'alabaster'
 
 version_list_var = os.getenv('VERSION_LIST')
-extra_nav_links = {'Live': '/index.html'} # default link to Live version
+extra_nav_links = {'Live Version': '/index.html'} # default link to Live version
 
 if version_list_var is not None:
     version_list = version_list_var.split(',')
