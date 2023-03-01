@@ -4,14 +4,14 @@
 gate p(λ) a { ctrl @ gphase(λ) a; }
 
 // Pauli gate: bit-flip or NOT gate
-gate x a { U(π, 0, π) a; }
+gate x a { U(π, 0, π) a; gphase(-π/2);}
 // Pauli gate: bit and phase flip
-gate y a { U(π, π/2, π/2) a; }
+gate y a { U(π, π/2, π/2) a; gphase(-π/2);}
  // Pauli gate: phase flip
 gate z a { p(π) a; }
 
 // Clifford gate: Hadamard
-gate h a { U(π/2, 0, π) a; }
+gate h a { U(π/2, 0, π) a; gphase(-π/4);}
 // Clifford gate: sqrt(Z) or S gate
 gate s a { pow(1/2) @ z a; }
 // Clifford gate: inverse of sqrt(Z)
@@ -26,9 +26,9 @@ gate tdg a { inv @ pow(1/2) @ s a; }
 gate sx a { pow(1/2) @ x a; }
 
 // Rotation around X-axis
-gate rx(θ) a { U(θ, -π/2, π/2) a; }
+gate rx(θ) a { U(θ, -π/2, π/2) a; gphase(-θ/2);}
 // rotation around Y-axis
-gate ry(θ) a { U(θ, 0, 0) a; }
+gate ry(θ) a { U(θ, 0, 0) a; gphase(-θ/2);}
 // rotation around Z axis
 gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
 
@@ -58,7 +58,7 @@ gate ccx a, b, c { ctrl @ ctrl @ x a, b, c; }
 gate cswap a, b, c { ctrl @ swap a, b, c; }
 
 // four parameter controlled-U gate with relative phase γ
-gate cu(θ, φ, λ, γ) a, b { p(γ) a; ctrl @ U(θ, φ, λ) a, b; }
+gate cu(θ, φ, λ, γ) a, b { p(γ-θ/2) a; ctrl @ U(θ, φ, λ) a, b; }
 
 // Gates for OpenQASM 2 backwards compatibility
 // CNOT
@@ -71,5 +71,5 @@ gate cphase(λ) a, b { ctrl @ phase(λ) a, b; }
 gate id a { U(0, 0, 0) a; }
 // IBM Quantum experience gates
 gate u1(λ) q { U(0, 0, λ) q; }
-gate u2(φ, λ) q { gphase(-(φ+λ)/2); U(π/2, φ, λ) q; }
-gate u3(θ, φ, λ) q { gphase(-(φ+λ)/2); U(θ, φ, λ) q; }
+gate u2(φ, λ) q { gphase(-(φ+λ+π/2)/2); U(π/2, φ, λ) q; }
+gate u3(θ, φ, λ) q { gphase(-(φ+λ+θ)/2); U(θ, φ, λ) q; }

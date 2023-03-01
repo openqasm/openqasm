@@ -11,7 +11,7 @@ Identifiers
 -----------
 
 Identifiers must begin with a letter [A-Za-z], an underscore or an element from
-the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`noauthorUnicodeNodate`.
+the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`wikipediaUnicode`.
 The set of permissible continuation characters consists of all members of the
 aforementioned character sets with the addition of decimal numerals [0-9].
 Identifiers may not override a reserved identifier.
@@ -220,7 +220,7 @@ Void type
 
 Subroutines and externs that do not return a value implicitly return ``void``.
 The ``void`` type is unrealizable and uninstantiable, and thus cannot be
-attached to an identifer or used as a cast operator. The keyword ``void`` is
+attached to an identifier or used as a cast operator. The keyword ``void`` is
 reserved for potential future use.
 
 .. _angle-type:
@@ -660,7 +660,7 @@ exponent.
    float f5 = 2e+1; // scientific with positive signed exponent
    float f6 = 2.0E-1; // uppercase scientific with signed exponent
 
-The two boolean literals are the lowercase strings ``true`` and ``false``.
+The two boolean literals are ``true`` and ``false``.
 
 Bit string literals are denoted by double quotes ``"`` surrounding a number of
 zero and one digits, and may include non-consecutive underscores to improve
@@ -703,6 +703,12 @@ can be accessed, using the following general syntax:
    myArray[4] = 10; // myArray == {0, 1, 2, 3, 10}
    multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
+
+The first argument to the ``array`` type constructor is the base type
+of the array. The supported classical types include various sizes of ``bit``,
+``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as
+``bool`` and ``duration``. Note that ``stretch`` is not a valid array
+base type.
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
