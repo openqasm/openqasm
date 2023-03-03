@@ -6,7 +6,9 @@ destDir=${2:-"./publish_build"}
 echo "Live branch is ${liveBranch}"
 echo "Destination dir is ${destDir}"
 
-echo "Checking if the current branch is clean"
+origBranch=$(git symbolic-ref --short HEAD)
+
+echo "Checking if the current branch ${origBranch} is clean"
 if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then 
   # Uncommitted changes in tracked files
   echo "  ERROR: Some files that have been changed are not committed!"
@@ -54,3 +56,6 @@ VERSION_LIST=${versionList} make html
 
 echo "Copy to publish dir"
 cp -r build/html/* ${destDir}
+
+echo "Restoring to ${origBranch}"
+git checkout ${origBranch}
