@@ -34,8 +34,6 @@ for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs
 
   echo "Copy to publish dir ${destDir}/versions/${versionNum}"
   cp -r build/html ${destDir}/versions/${versionNum}
-
-  git restore source/index.rst
 done
 
 echo "Getting live branch ${liveBranch}"
@@ -46,6 +44,3 @@ VERSION_LIST=${versionList} make html
 
 echo "Copy to publish dir"
 cp -r build/html/* ${destDir}
-
-echo "Returning repo to default state"
-git restore source/index.rst
