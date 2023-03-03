@@ -4,11 +4,12 @@ liveBranch=${1:-main}
 destDir=${2:-"./publish_build"}
 
 echo "Live branch is ${liveBranch}"
+echo "Destination dir is ${destDir}"
 
 # initialize the destination folder
 mkdir -p ${destDir}/versions
 
-# Build the version links
+# Build the stable version list
 unset versionList
 for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
   versionNum=${branch/*stable\//}
@@ -21,7 +22,7 @@ for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs
   fi
 done
 
-# Now substitute the links in index.rst
+# Now build each stable version and copy to destination folder
 echo "VersionList is ${versionList}"
 for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
   versionNum=${branch/*stable\//}
