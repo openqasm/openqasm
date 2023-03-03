@@ -6,6 +6,15 @@ destDir=${2:-"./publish_build"}
 echo "Live branch is ${liveBranch}"
 echo "Destination dir is ${destDir}"
 
+echo "Checking if the current branch is clean"
+if [ ! -z "$(git status --untracked-files=no --porcelain)" ]; then 
+  # Uncommitted changes in tracked files
+  echo "  ERROR: Some files that have been changed are not committed!"
+  echo "  This script will fail to generate a publishable build until everything has been committed"
+  git status
+  exit -1
+fi
+
 # initialize the destination folder
 mkdir -p ${destDir}/versions
 
