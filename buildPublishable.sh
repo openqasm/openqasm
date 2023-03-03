@@ -1,10 +1,17 @@
 #!/usr/bin/bash
 
+## This script builds the publishable version of the specification including
+## all stable branches. Each is built successively in the normal way after
+## a `git checkout` of the found stable branches. Each built stable version is
+## placed into the `versions` folder of the top-level final build
+
 liveBranch=${1:-main}
 destDir=${2:-"./publish_build"}
+repoPath=${3-"heads"} # only remotes/origin will work in CI
 
 echo "Live branch is ${liveBranch}"
 echo "Destination dir is ${destDir}"
+echo "Searching for stable branches with repo path refs/${repoPath}/stable/"
 
 origBranch=$(git symbolic-ref --short HEAD)
 
@@ -22,7 +29,7 @@ mkdir -p ${destDir}/versions
 
 # Build the stable version list
 unset versionList
-for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
+for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/${repoPath}/stable/`; do
   versionNum=${branch/*stable\//}
 
   if [ -z "${versionList}" ]
@@ -35,7 +42,7 @@ done
 
 # Now build each stable version and copy to destination folder
 echo "VersionList is ${versionList}"
-for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/remotes/origin/stable/`; do
+for branch in `git for-each-ref --format='%(refname:short)' --sort=-refname refs/${repoPath}/stable/`; do
   versionNum=${branch/*stable\//}
   
   echo "Checkout stable branch ${branch} with version number ${versionNum}"

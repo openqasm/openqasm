@@ -22,7 +22,7 @@ jobs:
 
       - name: Generate HTML
         run: |
-          ./buildPublishable.sh mbh-versioning ./publish_build
+          ./buildPublishable.sh mbh-versioning ./publish_build remotes/origin
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
