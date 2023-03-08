@@ -32,8 +32,8 @@ The examples that cannot necessarily be executed on any existing hardware. You c
 
 Examples of invalid code:
 
-- 'invalid_missing_semicolon.qasm'
-- 'invalid_gate_no_found.qasm'
+- `invalid_missing_semicolon.qasm`
+- `invalid_gate_no_found.qasm`
 
 ## Citation format
 
