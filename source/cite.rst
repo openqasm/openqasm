@@ -1,0 +1,3 @@
+Bibliography
+============
+.. bibliography:: bibliography.bib
