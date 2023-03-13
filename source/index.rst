@@ -9,4 +9,6 @@ OpenQASM |version| Specification
   grammar/index
   release_notes
 
-.. include:: cite.rst
+Bibliography
+============
+.. bibliography:: bibliography.bib
