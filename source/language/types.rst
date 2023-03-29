@@ -749,8 +749,7 @@ responsible for reclaiming the memory when the array object goes out of scope
 
 Arrays may be passed as parameters or arguments to functions.
 
-When passed as argument to a function, an array shall not cause a copy spill on
-the stack.
+When an array, or slice of an array, is passed as argument to a function, the underlying array storage is accessed directly rather than copied.
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
