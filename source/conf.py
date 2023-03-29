@@ -94,6 +94,11 @@ numfig = True
 # Necessary setting for sphinxcontrib-bibtex >= 2.0.0
 bibtex_bibfiles = ['bibliography.bib']
 
+# This is the list of local variables to export into sphinx by using the
+# rst_epilogue below. Using this mechanism we can export the local 'version'
+# variable, which can be defined by an environment variable, into the sphinx
+# build system for changing the text to specify which specific version of the
+# specification is being built
 variables_to_export = [
     "version",
 ]
