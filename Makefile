@@ -23,7 +23,7 @@ BUILDDIR      = build
 .PHONY: help Makefile install lint test
 
 install:
-	pip install -r requirements.txt
+	pip install -c constraints.txt -r requirements.txt
 
 # Put it first so that "make" without argument is like "make help".
 help:

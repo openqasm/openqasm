@@ -105,3 +105,19 @@ variables_to_export = [
 frozen_locals = dict(locals())
 rst_epilog = '\n'.join(map(lambda x: f".. |{x}| replace:: {frozen_locals[x]}", variables_to_export))
 del frozen_locals
+
+# Monkey-patch docutils 0.19.0 with a fix to `Node.previous_sibling` that is the
+# root cause of incorrect HTML output for bibliograhy files (see gh-455).
+# docutils is pinned in `constraints.txt` to a version that is known to work
+# with this patch.  If docutils releases a new version, this monkeypatching and
+# the constraint may be able to be dropped.
+import docutils.nodes
+
+# This method is taken from docutils revision r9126, which is to a file
+# explicitly placed in the public domain; there is no licence clause.
+def previous_sibling(self):
+    if not self.parent:
+        return None
+    index = self.parent.index(self)
+    return self.parent[index - 1] if index > 0 else None
+docutils.nodes.Node.previous_sibling = previous_sibling
