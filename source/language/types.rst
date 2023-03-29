@@ -716,7 +716,7 @@ implicitly convert to or from any other type.
 The size of an array is constant and immutable, and is recorded once, at
 declaration time.
 
-Arrays allocate a contiguous block of memory of suitable size and alignment to
+Array declarations allocate memory of suitable size and alignment to
 accommodate the storage of its elements.
 
 If the array declaration is direct-initialized via initializer list, its elements
