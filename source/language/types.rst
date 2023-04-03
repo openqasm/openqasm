@@ -909,7 +909,9 @@ should be explicitly declared and assigned the concatenation.
    subroutine_call(first ++ third) // forbidden
    subroutine_call(selfConcat) // allowed
 
-Arrays can be sliced just like quantum registers using index sets. Slicing uses
+Arrays can be sliced just like quantum registers using a range ``a:b:c`` 
+and can be indexed using an integer but cannot be indexed by a a comma-separated 
+list of integers contained in braces ``{a,b,c,…}``. Slicing uses
 the subscript operator ``[]``, but produces an array (or reference in the case
 of assignment) with the same number of dimensions as the given identifier.
 Array slicing is syntactic sugar for concisely expressing for loops over
