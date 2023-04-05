@@ -92,4 +92,4 @@ If you'd like to help please take a look to our [contribution guidelines](CONTRI
 
 ## Release Notes
 
-See the section on Release Notes [contribution guidelines](CONTRIBUTIING.md#release-notes)
+See the section on Release Notes [contribution guidelines](CONTRIBUTING.md#release-notes).
