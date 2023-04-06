@@ -386,7 +386,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             block = self.visit(ctx.body)
         return ast.ForInLoop(
             type=self.visit(ctx.scalarType()),
-            identifier=_visit_identifier(ctx.Identifier(0)),
+            identifier=_visit_identifier(ctx.Identifier()),
             set_declaration=set_declaration,
             block=block,
         )
