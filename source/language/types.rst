@@ -743,8 +743,6 @@ the shape and type of the assigned value must match that of the reference.
 Arrays may be passed to subroutines and externs. For more details, see
 :any:`arrays-in-subroutines`.
 
-OpenQASM arrays shall be represented in Row Major order.
-
 Types related to timing
 -----------------------
 
