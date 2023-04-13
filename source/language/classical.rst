@@ -431,7 +431,7 @@ it is called from.
 The Switch statement
 --------------------
 
-A ``switch`` statement is a form of flow control that provides for a predicated selection of statement(s) to be executed based on a discriminating controlling value. The discriminating controlling value can be either *explicit* - as it is the case for ``case`` statements - or *none of the above* - which is the case for ``default`` statements.
+A ``switch`` statement is a form of flow control that provides for a predicated selection of zero, one or more statements to be executed based on a discriminating controlling value. The discriminating controlling value can be either *explicit* - as it is the case for ``case`` statements - or *none of the above* - which is the case for ``default`` statements.
 
 A ``switch`` statement is not a loop. It does not iterate over a sequence of values.
 
@@ -452,19 +452,19 @@ An OpenQASM3 ``switch`` statement shall be the following grammar:
 
 - The ``switch`` keyword.
    
-- A right paren '(' literal.
+- A right paren ``(`` literal.
    
 - A ``controlling expression``.
    
-- A left paren ')' literal.
+- A left paren ``)`` literal.
    
-- A left brace '{' literal.
+- A left brace ``{`` literal.
    
 - A sequence of one or more ``case`` statements (defined below).
    
 - Either zero or one ``default`` statement(s) (defined below).
    
-- A right brace '}' literal.
+- A right brace ``}`` literal.
    
 
 The ``controlling expression`` of a ``switch`` statement shall be of integer type. Implicit conversions to an integer type are not allowed.
@@ -473,34 +473,34 @@ A ``case`` statement shall be the following grammar:
 
 - The ``case`` keyword.
 - An ``integer-constant-expression`` controlling label.
-- One semicolon literal (':').
-- An optional left-brace literal: '{'.
+- One semicolon literal (``:``).
+- An optional left-brace literal: ``{``.
 - A sequence of zero, one or more OpenQASM3 statements.
-- An optional right-brace literal: '}'.
-- An optional ``break`` statement followed by a semicolon literal.
+- An optional right-brace literal: ``}``.
+- An optional ``break`` statement followed by a semicolon (``;``) literal.
 
 A ``default`` statement shall be the following grammar:
 
 - The ``default`` keyword.
-- One semicolon literal (':').
-- An optional left-brace literal: '{'.
+- One semicolon literal (``:``).
+- An optional left-brace literal: ``{``.
 - A sequence of zero, one or more OpenQASM3 statements.
-- An optional right-brace literal: '}'.
-- An optional ``break`` statement followed by a semicolon literal.
+- An optional right-brace literal: ``}``.
+- An optional ``break`` statement followed by a semicolon (``;``) literal.
 
 A ``switch`` statement shall be in scope only within the scope where it is defined.
 
 The left and right braces of a ``switch`` statement shall not create brace-enclosed scope.
 
-Declarations or statements within a ``switch`` statement scope but outside of a ``case`` or ``default`` statement are ill-formed. The compiler shall raise an error diagnostic for such cases.
+Declarations or statements at ``switch`` statement scope but outside of a ``case`` or ``default`` statement are ill-formed. The compiler shall raise an error diagnostic for such cases.
 
-A ``case`` or ``default`` statement may create brace-enclosed scope, if such statements use the optional left and right brace literals.
+A ``case`` or ``default`` statement may create brace-enclosed scope, if and only if such statements use the optional left and right brace literals.
 
 ``case`` statements may create scope by using both left and right braces, or shall not use braces at all, in which case no scope is created.
 
 ``default`` statements may create scope by using both left and right braces, or shall not use braces at all, in which case no scope is created.
 
-A ``break`` statement shall be followed by a semicolon literal (;). ``break`` statements not followed by a semicolon literal shall raise an error diagnostic.
+A ``break`` statement shall be followed by a semicolon literal (``;``). ``break`` statements not followed by a semicolon literal shall raise an error diagnostic.
 
 A ``break`` statement followed by a semicolon terminates the ``case`` or ``default`` statement it belongs to.
 
@@ -522,7 +522,7 @@ The compiler shall issue a warning diagnostic for all fall-through ``case`` or `
 
 A ``switch`` statement shall contain at least one ``case`` statement. A ``switch`` statement with no ``case`` statements shall raise an error diagnostic.
 
-A ``switch`` statement is not required to contain a ``default`` statement. In this case, the compiler shall issue a warning diagnostic.
+A ``switch`` statement is not required to contain a ``default`` statement. If a ``default`` statement is absent, the compiler shall issue a warning diagnostic.
 
 Examples:
 
