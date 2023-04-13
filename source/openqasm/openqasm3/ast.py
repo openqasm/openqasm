@@ -992,7 +992,7 @@ class ForInLoop(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    set_declaration: Union[RangeDefinition, DiscreteSet, Identifier]
+    set_declaration: Union[RangeDefinition, DiscreteSet, Expression]
     block: List[Statement]
 
 

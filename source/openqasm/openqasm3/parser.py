@@ -381,12 +381,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         elif ctx.rangeExpression():
             set_declaration = self.visit(ctx.rangeExpression())
         else:
-            set_declaration = _visit_identifier(ctx.Identifier(1))
+            set_declaration = self.visit(ctx.expression())
         with self._push_scope(ctx):
             block = self.visit(ctx.body)
         return ast.ForInLoop(
             type=self.visit(ctx.scalarType()),
-            identifier=_visit_identifier(ctx.Identifier(0)),
+            identifier=_visit_identifier(ctx.Identifier()),
             set_declaration=set_declaration,
             block=block,
         )
