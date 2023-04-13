@@ -431,110 +431,102 @@ it is called from.
 The Switch statement
 --------------------
 
+A ``switch`` statement is a form of flow control that provides for a predicated selection of statement(s) to be executed based on a discriminating controlling value. The discriminating controlling value can be either *explicit* - as it is the case for ``case`` statements - or *none of the above* - which is the case for ``default`` statements.
+
+A ``switch`` statement is not a loop. It does not iterate over a sequence of values.
+
+``switch`` statements may appear anywhere in a program where statements are allowed.
+
 An OpenQASM3 ``switch`` statement shall use the following keywords:
-    - ``switch``
-    - ``case``
-    - ``default``
-    - ``break``
+
+- ``switch``
+
+- ``case``
+
+- ``default``
+
+- ``break``
+
 
 An OpenQASM3 ``switch`` statement shall be the following grammar:
 
-      - the ``switch`` keyword
-      - a right paren '(' literal
-      - a ``controlling expression``
-      - a left paren ')' literal
-      - a left brace '{' literal
-      - a sequence of one or more ``case`` statements (defined below).
-      - either zero or one ``default`` statement(s) (defined below).
-      - a right brace '}' literal
+- The ``switch`` keyword.
+   
+- A right paren '(' literal.
+   
+- A ``controlling expression``.
+   
+- A left paren ')' literal.
+   
+- A left brace '{' literal.
+   
+- A sequence of one or more ``case`` statements (defined below).
+   
+- Either zero or one ``default`` statement(s) (defined below).
+   
+- A right brace '}' literal.
+   
 
-	  The ``controlling expression`` of a ``switch`` statement shall be of
-      integer type. Implicit conversions to an integer type are not allowed.
+The ``controlling expression`` of a ``switch`` statement shall be of integer type. Implicit conversions to an integer type are not allowed.
 
-	  A ``case`` statement shall be the following grammar:
-      - the ``case`` keyword.
-      - an ``integer-constant-expression`` controlling label.
-      - one semicolon literal (':').
-      - an optional left-brace literal: '{'.
-      - a sequence of zero, one or more OpenQASM3 statements.
-      - an optional right-brace literal: '}'.
-      - an optional ``break`` statement followed by a semicolon literal.
+A ``case`` statement shall be the following grammar:
 
-	  A ``default`` statement shall be the following grammar:
-      - the ``default`` keyword.
-      - one semicolon literal (':').
-      - an optional left-brace literal: '{'.
-      - a sequence of zero, one or more OpenQASM3 statements.
-      - an optional right-brace literal: '}'.
-      - an optional ``break`` statement followed by a semicolon literal.
+- The ``case`` keyword.
+- An ``integer-constant-expression`` controlling label.
+- One semicolon literal (':').
+- An optional left-brace literal: '{'.
+- A sequence of zero, one or more OpenQASM3 statements.
+- An optional right-brace literal: '}'.
+- An optional ``break`` statement followed by a semicolon literal.
 
-	  A ``switch`` statement shall be in scope only within the scope where
-      it is defined.
+A ``default`` statement shall be the following grammar:
 
-	  The left and right braces of a ``switch`` statement shall not create
-      brace-enclosed scope.  Declarations within a switch statement but
-      outside of a ``case`` or ``default`` statement are ill-formed.
+- The ``default`` keyword.
+- One semicolon literal (':').
+- An optional left-brace literal: '{'.
+- A sequence of zero, one or more OpenQASM3 statements.
+- An optional right-brace literal: '}'.
+- An optional ``break`` statement followed by a semicolon literal.
 
-	  A ``case`` or ``default`` statement may create brace-enclosed scope,
-	  if such statements use the optional left and right brace literals.
+A ``switch`` statement shall be in scope only within the scope where it is defined.
 
-	  ``case`` statements may create scope by using both left and
-      right braces, or shall not use braces at all, in which case no
-      scope is created.
+The left and right braces of a ``switch`` statement shall not create brace-enclosed scope.
 
-	  ``default`` statements may create scope by using both left and
-      right braces, or shall not use braces at all, in which case no
-      scope is created.
+Declarations or statements within a ``switch`` statement scope but outside of a ``case`` or ``default`` statement are ill-formed. The compiler shall raise an error diagnostic for such cases.
 
-	  A ``break`` statement shall be followed by a semicolon literal (;).
-      ``break`` statements not followed by a semicolon literal shall raise
-      an error diagnostic.
+A ``case`` or ``default`` statement may create brace-enclosed scope, if such statements use the optional left and right brace literals.
 
-	  A ``break`` statement followed by a semicolon terminates the ``case``
-      or ``default`` statement it belongs to.
+``case`` statements may create scope by using both left and right braces, or shall not use braces at all, in which case no scope is created.
 
-	  Declarations at brace-enclosed ``case`` or ``default`` scope shall
-      be in scope only within the scope of their brace enclosing ``case``
-      or ``default`` statements, regardless of whether the enclosing
-      statement contains a terminating ``break`` statement or not.
+``default`` statements may create scope by using both left and right braces, or shall not use braces at all, in which case no scope is created.
 
-	  Declarations of types that automatically acquire global scope in
-      OpenQASM3 - such as gates, qubits and defcals - are not allowed
-      at ``case`` or ``default`` ``switch`` statement scope. Use of such
-	  declarations is ill-formed and requires a compiler diagnostic.
+A ``break`` statement shall be followed by a semicolon literal (;). ``break`` statements not followed by a semicolon literal shall raise an error diagnostic.
 
-	  Duplicate values for ``case`` statements controlling labels are not
-      allowed. The compiler shall issue an error diagnostic in such cases.
+A ``break`` statement followed by a semicolon terminates the ``case`` or ``default`` statement it belongs to.
 
-	  A ``case`` or ``default`` statement ending with a ``break`` statement
-      followed by a semicolon terminates the execution of the ``switch``
-      statement. After executing all the statements of the ``case`` or
-      ``default`` statement, control flow is then transferred to the first
-      statement following the closing right brace of the enclosing
-      ``switch`` statement.
+Declarations at brace-enclosed ``case`` or ``default`` scope shall be in scope only within the scope of their brace enclosing ``case`` or ``default`` statements, regardless of whether the enclosing statement contains a terminating ``break`` statement or not.
 
-	  A ``case`` statement that does not contain a terminating ``break``
-      statement followed by a semicolon transfers control to the
-      statement immediately following it.
+Declarations of types that automatically acquire global scope in OpenQASM3 - such as gates, functions, arrays, qubits and defcals - are not allowed at ``case`` or ``default`` ``switch`` statement scope. Use of such declarations is ill-formed and requires a compiler diagnostic.
 
-	  A ``default`` statement that does not contain a terminating ``break``
-      statement followed by a semicolon transfers control outside the
-      enclosing ``switch`` statement, to the first statement immediately
-      following.
+Duplicate values for ``case`` statements controlling labels are not allowed. The compiler shall issue an error diagnostic in such cases.
 
-      This is sometimes referred to as "fall-through".
+A ``case`` or ``default`` statement ending with a ``break`` statement followed by a semicolon terminates the execution of the ``switch`` statement. After executing all the statements of the ``case`` or ``default`` statement, control is then transferred to the first statement following the closing right brace of the enclosing ``switch`` statement.
 
-      The compiler shall issue a warning diagnostic for all fall-through
-      ``case`` or ``default`` ``switch`` statements.
+A ``case`` statement that does not contain a terminating ``break`` statement followed by a semicolon transfers control to the statement immediately following it.
 
-	  A ``switch`` statement shall contain at least one ``case`` statement.
-      A ``switch`` statement with no ``case`` statements shall raise an
-      error diagnostic.
+A ``default`` statement that does not contain a terminating ``break`` statement followed by a semicolon transfers control outside the enclosing ``switch`` statement, to the first statement immediately following.
 
-	  A ``switch`` statement is not required to contain a ``default`` statement.
-      In this case, the compiler shall issue a warning diagnostic.
+This is sometimes referred to as "fall-through".
 
-  Examples:
+The compiler shall issue a warning diagnostic for all fall-through ``case`` or ``default`` ``switch`` statements.
+
+A ``switch`` statement shall contain at least one ``case`` statement. A ``switch`` statement with no ``case`` statements shall raise an error diagnostic.
+
+A ``switch`` statement is not required to contain a ``default`` statement. In this case, the compiler shall issue a warning diagnostic.
+
+Examples:
+
+1. A simple ``switch`` statement with ``case`` and ``default`` statements:
 
 .. code-block::
 
@@ -568,6 +560,9 @@ An OpenQASM3 ``switch`` statement shall be the following grammar:
 	}
 	  break;
 	}
+	
+	
+2. A ``switch`` statement containing declarations at ``case`` statement scope, and a function call, also at ``case`` statement scope:
 
 
 .. code-block::
@@ -604,6 +599,9 @@ An OpenQASM3 ``switch`` statement shall be the following grammar:
 	}
 	  break;
 	}
+	
+	
+3. A ``switch`` statement containing fall-through ``case`` statements.
 
 
 .. code-block::
@@ -641,6 +639,9 @@ An OpenQASM3 ``switch`` statement shall be the following grammar:
 	default:
 	  break;
 	}
+	
+	
+4. A ``switch`` statement containing a nested ``switch`` statement.
 
 .. code-block::
 
