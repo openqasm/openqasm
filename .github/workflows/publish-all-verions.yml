@@ -1,17 +1,16 @@
-name: Publish Live Version
+name: Publish All Versions
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'stable/**' ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          persist-credentials: false
           fetch-depth: 0
 
       - uses: actions/setup-python@v2
@@ -22,7 +21,8 @@ jobs:
           pip install -c constraints.txt -r requirements.txt
 
       - name: Generate HTML
-        run: make html
+        run: |
+          ./buildPublishable.sh main ./publish_build remotes/origin
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
@@ -30,4 +30,4 @@ jobs:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: openqasm/openqasm.github.io
           branch: main
-          folder: build/html
+          folder: publish_build/

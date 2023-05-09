@@ -1,5 +1,5 @@
-OpenQASM 3.x Live Specification
-===============================
+OpenQASM |version| Specification
+================================
 
 .. toctree::
   :maxdepth: 3

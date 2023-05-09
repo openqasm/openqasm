@@ -17,8 +17,10 @@ sys.path.insert(0, os.path.abspath('_extensions'))
 # -- Project information -----------------------------------------------------
 from typing import List
 
-project = 'OpenQASM Live Specification'
-copyright = '2017-2020, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
+version = os.getenv('VERSION','Live')
+
+project = f'OpenQASM {version} Specification'
+copyright = '2017-2023, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 author = 'Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
 
 
@@ -59,6 +61,21 @@ highlight_language = "qasm3"
 #
 html_theme = 'alabaster'
 
+version_list_var = os.getenv('VERSION_LIST')
+extra_nav_links = {'Live Version': '/index.html'} # default link to Live version
+
+if version_list_var is not None:
+    version_list = version_list_var.split(',')
+    for ver in version_list:
+        extra_nav_links[f'Version {ver}'] = f'/versions/{ver}/index.html'
+
+print(extra_nav_links)
+
+# Theme specific options
+html_theme_options = {
+  'extra_nav_links': extra_nav_links
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -76,6 +93,18 @@ html_css_files = ['colors.css']
 numfig = True
 # Necessary setting for sphinxcontrib-bibtex >= 2.0.0
 bibtex_bibfiles = ['bibliography.bib']
+
+# This is the list of local variables to export into sphinx by using the
+# rst_epilogue below. Using this mechanism we can export the local 'version'
+# variable, which can be defined by an environment variable, into the sphinx
+# build system for changing the text to specify which specific version of the
+# specification is being built
+variables_to_export = [
+    "version",
+]
+frozen_locals = dict(locals())
+rst_epilog = '\n'.join(map(lambda x: f".. |{x}| replace:: {frozen_locals[x]}", variables_to_export))
+del frozen_locals
 
 # Monkey-patch docutils 0.19.0 with a fix to `Node.previous_sibling` that is the
 # root cause of incorrect HTML output for bibliograhy files (see gh-455).
