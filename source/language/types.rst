@@ -58,7 +58,7 @@ Quantum types
 
 Qubits
 ~~~~~~
-physical-qubits
+
 There is a quantum bit (``qubit``) type that is interpreted as a reference to a
 two-level subsystem of a quantum state. The statement ``qubit name;``
 declares a reference to a quantum bit. These qubits are referred
