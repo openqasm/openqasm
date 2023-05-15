@@ -925,3 +925,15 @@ if (i) {
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ", chain_else_if=True).strip()
         assert output == input_
+
+    def test_annotations(self):
+        input_ = """
+@ann_1
+int[32] i = 0;
+if (i == 0) {
+  @ann_2
+  i += 1;
+}
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
+        assert output == input_

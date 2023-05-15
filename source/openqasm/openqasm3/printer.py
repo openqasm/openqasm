@@ -117,7 +117,7 @@ def _maybe_annotated(method):
     @functools.wraps(method)
     def annotated(self: "Printer", node: ast.Statement, context: PrinterState) -> None:
         for annotation in node.annotations:
-            self.visit(annotation)
+            self.visit(annotation, context)
         return method(self, node, context)
 
     return annotated
