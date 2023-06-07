@@ -147,7 +147,7 @@ FloatLiteral:
     // 123.456, 123. or 145.32e+1_00
     | DecimalIntegerLiteral DOT DecimalIntegerLiteral? FloatLiteralExponent?;
 
-fragment TimeUnit: 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's';
+fragment TimeUnit: 'dt' | 'ns' | 'us' | '\u{00B5}s' | '\u{03BC}s' | 'ms' | 's';
 // represents explicit time value in SI or backend units
 TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) TimeUnit;
 
