@@ -16,7 +16,7 @@ jobs:
       matrix:
         # Just using minimum and maximum to avoid exploding the matrix.
         python-version: ['3.7', '3.10']
-        antlr-version: ['4.7', '4.12']
+        antlr-version: ['4.7', '4.13']
     defaults:
       run:
         working-directory: source/openqasm
