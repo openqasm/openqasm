@@ -21,8 +21,8 @@ source: |
   float[32] f = .1e+3;
   duration dur = 1000dt;
   duration dur2 = dur + 200ns;
-  duration dur3a = 1µs;  # unicode MICRO SIGN
-  duration dur3b = 1μs;  # unicode MU
+  duration dur3a = 1µs;  // unicode MICRO SIGN
+  duration dur3b = 1μs;  // unicode MU
   duration dur3c = 1us;
   stretch s;
 reference: |
@@ -301,7 +301,7 @@ reference: |
         =
         declarationExpression
           expression
-            1μs
+            1µs
         ;
     statement
       classicalDeclarationStatement

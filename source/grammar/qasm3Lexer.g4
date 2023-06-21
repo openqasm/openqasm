@@ -130,12 +130,11 @@ OctalIntegerLiteral: '0o' ([0-7] '_'?)* [0-7];
 DecimalIntegerLiteral: ([0-9] '_'?)* [0-9];
 HexIntegerLiteral: ('0x' | '0X') ([0-9a-fA-F] '_'?)* [0-9a-fA-F];
 
-fragment ValidUnicode: [\p{Lu}\p{Ll}\p{Lt}\p{Lm}\p{Lo}\p{Nl}]; // valid unicode chars
-fragment Letter: [A-Za-z];
-fragment FirstIdCharacter: '_' | ValidUnicode | Letter;
-fragment GeneralIdCharacter: FirstIdCharacter | [0-9];
-
+// Identifiers comply with UAX31-R1-2
+fragment FirstIdCharacter: [\p{XID_Start}_];
+fragment GeneralIdCharacter: [\p{XID_Continue}];
 Identifier: FirstIdCharacter GeneralIdCharacter*;
+
 HardwareQubit: '$' [0-9]+;
 
 fragment FloatLiteralExponent: [eE] (PLUS | MINUS)? DecimalIntegerLiteral;
@@ -155,14 +154,23 @@ TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) TimeUnit;
 BitstringLiteral: '"' ([01] '_'?)* [01] '"';
 // allow ``"str"`` and ``'str'``
 StringLiteral
-    : '"' ~["\r\t\n]+? '"'
-    | '\'' ~['\r\t\n]+? '\''
+    : '"' NotUAX31NewlineDoubleQuote+? '"'
+    | '\'' NotUAX31NewlineSingleQuote+? '\''
     ;
 
+// UAX31 Whitespace handling
+fragment UAX31Newline: [\u000A\u000B\u000C\u000D\u0085\u2028\u2029];
+fragment NotUAX31Newline: ~[\u000A\u000B\u000C\u000D\u0085\u2028\u2029];
+fragment NotUAX31NewlineSingleQuote: ~['\u000A\u000B\u000C\u000D\u0085\u2028\u2029];
+fragment NotUAX31NewlineDoubleQuote: ~["\u000A\u000B\u000C\u000D\u0085\u2028\u2029];
+fragment UAX31HorizontalSpace: [ \t\u200E\u200F]; // Pattern_White_Space minus newlines
+fragment NotUAX31WhiteSpace: ~[\p{Pattern_White_Space}];
+fragment UAX31IgnorableSpace: [\u200E\u200F];  // Pattern_White_Space AND Default_Ignorable_Code_Point
+
 // Ignore whitespace between tokens, and define C++-style comments.
-Whitespace: [ \t]+ -> skip ;
-Newline: [\r\n]+ -> skip ;
-LineComment : '//' ~[\r\n]* -> skip;
+HorizontalSpace: UAX31HorizontalSpace+ -> skip;
+Newline: UAX31Newline+ -> skip;
+LineComment : '//' NotUAX31Newline* -> skip;
 BlockComment : '/*' .*? '*/' -> skip;
 
 
@@ -170,7 +178,7 @@ BlockComment : '/*' .*? '*/' -> skip;
 // integer/floating-point literals, so we use a special mode to ensure it's
 // lexed correctly.
 mode VERSION_IDENTIFIER;
-    VERSION_IDENTIFER_WHITESPACE: [ \t\r\n]+ -> skip;
+    VERSION_IDENTIFER_WHITESPACE: (UAX31HorizontalSpace|UAX31Newline)+ -> skip;
     VersionSpecifier: [0-9]+ ('.' [0-9]+)? -> popMode;
 
 
@@ -178,14 +186,14 @@ mode VERSION_IDENTIFIER;
 // rather than the default arbitrary-whitespace-based tokenisation.  This is
 // used by the annotation and pragma rules.
 mode EAT_TO_LINE_END;
-    EAT_INITIAL_SPACE: [ \t]+ -> skip;
-    EAT_LINE_END: [\r\n] -> popMode, skip;
+    EAT_INITIAL_SPACE: UAX31HorizontalSpace+ -> skip;
+    EAT_LINE_END: UAX31Newline -> popMode, skip;
 
     // The line content must be a non-empty token to satisfy ANTLR (otherwise it
     // would be able to produce an infinite number of tokens).  We could include
     // the line ending to guarantee that this is always non-empty, but that just
     // puts an annoying burden on consumers to remove it again.
-    RemainingLineContent: ~[ \t\r\n] ~[\r\n]*;
+    RemainingLineContent: NotUAX31WhiteSpace NotUAX31Newline*;
 
 
 // We need to do a little context-aware lexing when we hit a `cal` or `defcal`
@@ -195,12 +203,12 @@ mode EAT_TO_LINE_END;
 // manage the state of the lexer, so instead we need to do a little duplication
 // of the tokens, because ANTLR doesn't allow us to inherit rules directly.
 mode CAL_PRELUDE;
-    CAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
+    CAL_PRELUDE_WHITESPACE: (UAX31HorizontalSpace|UAX31Newline)+ -> skip;
     CAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
     CAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
 
 mode DEFCAL_PRELUDE;
-    DEFCAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
+    DEFCAL_PRELUDE_WHITESPACE: (UAX31HorizontalSpace|UAX31Newline)+ -> skip;
     DEFCAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
     DEFCAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
 

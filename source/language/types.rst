@@ -15,10 +15,10 @@ A precise statement of the Unicode compatibility is:
 
 - `UAX31-C1 <https://www.unicode.org/reports/tr31/tr31-37.html#C1>`_: The OpenQASM language conforms to version 37 of the Unicode® Standard Annex #⁠31
 - `UAX31-C2 <https://www.unicode.org/reports/tr31/tr31-37.html#C2>`_: It observes the following requirements:
-   - `UAX31-R1-2 <https://www.unicode.org/reports/tr31/tr31-37.html#R1-2>`_: Default Identifiers: To determine whether a string is an identifier it uses UAX31-D1 with the following profile:
-      - Start := ``[[:XID_Start:]_]``
-      - Continue := ``[:XID_Continue:]``
-      - Medial := ``[]``
+   - `UAX31-R1-2 <https://www.unicode.org/reports/tr31/tr31-37.html#R1-2>`_: Default Identifiers: To determine whether a string is an identifier it uses `UAX31-D1 <https://www.unicode.org/reports/tr31/tr31-37.html#D1>`_ with the following profile:
+      - ``Start := [[:XID_Start:]_]``
+      - ``Continue := [:XID_Continue:]``
+      - ``Medial := []``
    - `UAX31-R1b <https://www.unicode.org/reports/tr31/tr31-37.html#R1b>`_ Stable Identifiers: Once a string qualifies as an identifier, it does so in all future versions.
    - `UAX31-R4 <https://www.unicode.org/reports/tr31/tr31-37.html#R4>`_. Equivalent Normalized Identifiers using normalization form C (NFC).
 
