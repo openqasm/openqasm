@@ -21,6 +21,9 @@ source: |
   float[32] f = .1e+3;
   duration dur = 1000dt;
   duration dur2 = dur + 200ns;
+  duration dur3a = 1µs;  // unicode MICRO SIGN
+  duration dur3b = 1μs;  // unicode MU
+  duration dur3c = 1us;
   stretch s;
 reference: |
   program
@@ -289,6 +292,36 @@ reference: |
             +
             expression
               200ns
+        ;
+    statement
+      classicalDeclarationStatement
+        scalarType
+          duration
+        dur3a
+        =
+        declarationExpression
+          expression
+            1µs
+        ;
+    statement
+      classicalDeclarationStatement
+        scalarType
+          duration
+        dur3b
+        =
+        declarationExpression
+          expression
+            1μs
+        ;
+    statement
+      classicalDeclarationStatement
+        scalarType
+          duration
+        dur3c
+        =
+        declarationExpression
+          expression
+            1us
         ;
     statement
       classicalDeclarationStatement

@@ -10,10 +10,33 @@ Types and Casting
 Identifiers
 -----------
 
-Identifiers must begin with a letter [A-Za-z], an underscore or an element from
-the Unicode character categories Lu/Ll/Lt/Lm/Lo/Nl :cite:`wikipediaUnicode`.
-The set of permissible continuation characters consists of all members of the
-aforementioned character sets with the addition of decimal numerals [0-9].
+Roughly, OpenQASM identifiers start with an alphabetic character or underscore and continue with alphanumeric and underscore.
+A precise statement of the Unicode compatibility is:
+
+- `UAX31-C1 <https://www.unicode.org/reports/tr31/tr31-37.html#C1>`_: The OpenQASM language conforms to version 37 of the Unicode® Standard Annex #⁠31
+- `UAX31-C2 <https://www.unicode.org/reports/tr31/tr31-37.html#C2>`_: It observes the following requirements:
+   - `UAX31-R1-2 <https://www.unicode.org/reports/tr31/tr31-37.html#R1-2>`_: Default Identifiers: To determine whether a string is an identifier it uses `UAX31-D1 <https://www.unicode.org/reports/tr31/tr31-37.html#D1>`_ with the following profile:
+      - ``Start := [[:XID_Start:]_]``
+      - ``Continue := [:XID_Continue:]``
+      - ``Medial := []``
+   - `UAX31-R1b <https://www.unicode.org/reports/tr31/tr31-37.html#R1b>`_ Stable Identifiers: Once a string qualifies as an identifier, it does so in all future versions.
+   - `UAX31-R4 <https://www.unicode.org/reports/tr31/tr31-37.html#R4>`_. Equivalent Normalized Identifiers using normalization form C (NFC).
+
+Additionally, to avoid line-break spoofing, we comply with the proposed
+
+- `UAX31-R3a-1`. Use ``Pattern_White_Space`` characters as all and only those the set of characters interpreted as whitespace in parsing., as follows:
+   - A sequence of one or more of any of the following characters shall be interpreted as a sequence of one or more end of line:
+      -  ``U+000A`` (line feed)
+      -  ``U+000B`` (vertical tabulation)
+      -  ``U+000C`` (form feed)
+      -  ``U+000D`` (carriage return)
+      -  ``U+0085`` (next line)
+      -  ``U+2028`` LINE SEPARATOR
+      -  ``U+2029`` PARAGRAPH SEPARATOR
+   - The ``Pattern_White_Space`` characters with the property ``Default_Ignorable_Code_Point`` shall be treated as ignorable format controls
+   - All other characters in ``Pattern_White_Space`` shall be interpreted as horizontal space.
+
+
 Identifiers may not override a reserved identifier.
 
 .. _variables:
@@ -361,10 +384,10 @@ type).  All scalar literals are ``const`` types.
 .. code-block::
 
    // Valid statements
-   
+
    const uint SIZE = 32;  // Declares a compile-time unsigned integer.
 
-   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`. 
+   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`.
    int[SIZE] i1;    // Declares a signed integer called `i1` with 32 bits.
 
 
@@ -487,15 +510,16 @@ single-Unicode-character identifier.
 
    .. table:: [tab:real-constants] Built-in real constants in OpenQASM3 of type ``float[64]``.
 
-      +-------------------------------+--------+--------------+---------------------+
-      | Constant                      | ASCII  | Unicode      | Approximate Base 10 |
-      +===============================+========+==============+=====================+
-      | :math:`\pi`                   | pi     | π            | 3.1415926535...     |
-      +-------------------------------+--------+--------------+---------------------+
-      | :math:`\tau = 2\pi`           | tau    | τ            | 6.283185...         |
-      +-------------------------------+--------+--------------+---------------------+
-      | Euler’s number :math:`e`      | euler  | ℇ            | 2.7182818284...     |
-      +-------------------------------+--------+--------------+---------------------+
+      +-------------------------------+--------+----------------------------------+---------------------+
+      | Constant                      | ASCII  | Unicode                          | Approximate Base 10 |
+      +===============================+========+==================================+=====================+
+      | :math:`\pi`                   | pi     | - µ U+00B5 MICRO SIGN            | 3.1415926535...     |
+      |                               |        | - μ U+03BC GREEK SMALL LETTER MU |                     |
+      +-------------------------------+--------+----------------------------------+---------------------+
+      | :math:`\tau = 2\pi`           | tau    | - τ U+03C4 GREEK SMALL LETTER TAU| 6.283185...         |
+      +-------------------------------+--------+----------------------------------+---------------------+
+      | Euler’s number :math:`e`      | euler  | - ℇ U+2107 EULER CONSTANT        | 2.7182818284...     |
+      +-------------------------------+--------+----------------------------------+---------------------+
 
 
 .. _const-expression-functions:
@@ -909,8 +933,8 @@ should be explicitly declared and assigned the concatenation.
    subroutine_call(first ++ third) // forbidden
    subroutine_call(selfConcat) // allowed
 
-Arrays can be sliced just like quantum registers using a range ``a:b:c`` 
-and can be indexed using an integer but cannot be indexed by a a comma-separated 
+Arrays can be sliced just like quantum registers using a range ``a:b:c``
+and can be indexed using an integer but cannot be indexed by a a comma-separated
 list of integers contained in braces ``{a,b,c,…}``. Slicing uses
 the subscript operator ``[]``, but produces an array (or reference in the case
 of assignment) with the same number of dimensions as the given identifier.
