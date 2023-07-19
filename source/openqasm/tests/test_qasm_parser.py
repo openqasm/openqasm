@@ -1080,14 +1080,13 @@ def test_measurement():
     SpanGuard().visit(program)
 
 
-def test_calibration_grammar_declaration():
-    p = """
-    defcalgrammar "openpulse";
+@pytest.mark.parametrize("name", ['"openpulse"', "'openpulse'", '"001"'])
+def test_calibration_grammar_declaration(name):
+    p = f"""
+    defcalgrammar {name};
     """.strip()
     program = parse(p)
-    assert _remove_spans(program) == Program(
-        statements=[CalibrationGrammarDeclaration("openpulse")]
-    )
+    assert _remove_spans(program) == Program(statements=[CalibrationGrammarDeclaration(name[1:-1])])
     SpanGuard().visit(program)
 
 
@@ -1560,6 +1559,7 @@ def test_header():
     p = """
     OPENQASM 3.1;
     include "qelib1.inc";
+    include "001";
     input angle[16] variable1;
     output angle[16] variable2;
     """.strip()
@@ -1568,6 +1568,7 @@ def test_header():
         version="3.1",
         statements=[
             Include("qelib1.inc"),
+            Include("001"),
             IODeclaration(
                 io_identifier=IOKeyword["input"],
                 type=AngleType(size=IntegerLiteral(value=16)),

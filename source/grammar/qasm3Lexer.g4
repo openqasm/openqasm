@@ -14,8 +14,8 @@ lexer grammar qasm3Lexer;
 /* Language keywords. */
 
 OPENQASM: 'OPENQASM' -> pushMode(VERSION_IDENTIFIER);
-INCLUDE: 'include';
-DEFCALGRAMMAR: 'defcalgrammar';
+INCLUDE: 'include' -> pushMode(ARBITRARY_STRING);
+DEFCALGRAMMAR: 'defcalgrammar' -> pushMode(ARBITRARY_STRING);
 DEF: 'def';
 CAL: 'cal' -> mode(CAL_PRELUDE);
 DEFCAL: 'defcal' -> mode(DEFCAL_PRELUDE);
@@ -151,13 +151,7 @@ fragment TimeUnit: 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's';
 // represents explicit time value in SI or backend units
 TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) TimeUnit;
 
-
 BitstringLiteral: '"' ([01] '_'?)* [01] '"';
-// allow ``"str"`` and ``'str'``
-StringLiteral
-    : '"' ~["\r\t\n]+? '"'
-    | '\'' ~['\r\t\n]+? '\''
-    ;
 
 // Ignore whitespace between tokens, and define C++-style comments.
 Whitespace: [ \t]+ -> skip ;
@@ -172,6 +166,13 @@ BlockComment : '/*' .*? '*/' -> skip;
 mode VERSION_IDENTIFIER;
     VERSION_IDENTIFER_WHITESPACE: [ \t\r\n]+ -> skip;
     VersionSpecifier: [0-9]+ ('.' [0-9]+)? -> popMode;
+
+// An include statement's path or defcalgrammar target is potentially ambiguous
+// with `BitstringLiteral`.
+mode ARBITRARY_STRING;
+    ARBITRARY_STRING_WHITESPACE: [ \t\r\n]+ -> skip;
+    // allow ``"str"`` and ``'str'``;
+    StringLiteral: ('"' ~["\r\t\n]+? '"' | '\'' ~['\r\t\n]+? '\'') -> popMode;
 
 
 // A different lexer mode to swap to when we need handle tokens on a line basis

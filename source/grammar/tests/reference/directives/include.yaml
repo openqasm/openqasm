@@ -1,0 +1,22 @@
+source: |
+  include 'foo2';
+  include "foo";
+  include "001";
+reference: |
+  program
+    statement
+      includeStatement
+        include
+        'foo2'
+        ;
+    statement
+      includeStatement
+        include
+        "foo"
+        ;
+    statement
+      includeStatement
+        include
+        "001"
+        ;
+    <EOF>
