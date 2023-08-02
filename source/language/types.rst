@@ -723,33 +723,9 @@ If the array declaration is direct-initialized via initializer list, its element
 are initialized to the values provided by the initializer list.  Otherwise, the
 memory allocated is not initialized, and that memory's content is undefined.
 
-Partial initialization via initializer list is allowed - i.e. the initializer
-list is incomplete, and does not provide values for all the elements of the array.
-In this case, the elements that are not initialized via initializer list are not
-initialized, and their values are undefined.
-
-As a special case, a direct initializer list declaration of the form:
-
- ``array[<type>, <size>] <identifier> = { <X> };``
-
-will initialize all the elements of the array to <X>, where <X> is of a type
-suitable for initializing an element of the array, and if and only if the array
-element type supports direct initialization from such a type.
-
-It is unspecified whether the memory allocation of an array is of static storage
-duration, (meaning the allocation is alive for as long as the object is in scope and
-gets automatically reclaimed by the runtime when the object goes out of scope)
-or it is obtained via dynamic allocation (meaning the allocation persists through the lifetime
-of the program, unless the program itself releases it back to the operating system).
-This property is implementation dependent.
-
-If the array memory is obtained via dynamic allocation, the implementation is
-responsible for reclaiming the memory when the array object goes out of scope
-(garbage collection).
-
 Arrays may be passed as parameters or arguments to functions.
 
-When an array, or slice of an array, is passed as argument to a function, the underlying array storage is accessed directly rather than copied.
+When an array, or slice of an array, is passed as argument to a function, the behavior accords to that described in :any:`arrays-in-subroutines`.
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
