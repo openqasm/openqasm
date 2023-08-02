@@ -116,6 +116,8 @@ significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
 the quantum memory.
 
+.. _physical-qubits:
+
 Physical Qubits
 ~~~~~~~~~~~~~~~
 
@@ -777,7 +779,7 @@ intent.
 Aliasing
 --------
 
-The ``let`` keyword allows quantum bits and registers to be referred to by
+The ``let`` keyword allows declared quantum bits and registers to be referred to by
 another name as long as the alias is in scope.
 
 .. code-block::
@@ -785,6 +787,8 @@ another name as long as the alias is in scope.
   qubit[5] q;
   // myreg[0] refers to the qubit q[1]
   let myreg = q[1:4];
+
+Note that :ref:`physical qubits <physical-qubits>` are not declared and so cannot be aliased.
 
 Index sets and slicing
 ----------------------
