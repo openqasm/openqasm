@@ -706,11 +706,28 @@ can be accessed, using the following general syntax:
    multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
-The first argument to the ``array`` type constructor is the base type
+The first argument to the ``array`` declaration is the base type
 of the array. The supported classical types include various sizes of ``bit``,
 ``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as
 ``bool`` and ``duration``. Note that ``stretch`` is not a valid array
 base type.
+
+Arrays cannot be resized or reshaped. Arrays are statically typed, and cannot
+implicitly convert to or from any other type.
+
+The size of an array is constant and immutable, and is recorded once, at
+declaration time.
+
+Array declarations allocate memory of suitable size and alignment to
+accommodate the storage of its elements.
+
+If the array declaration is direct-initialized via initializer list, its elements
+are initialized to the values provided by the initializer list.  Otherwise, the
+memory allocated is not initialized, and that memory's content is undefined.
+
+Arrays may be passed as parameters or arguments to functions.
+
+When an array, or slice of an array, is passed as argument to a function, the behavior accords to that described in :any:`arrays-in-subroutines`.
 
 Arrays *cannot* be declared inside the body of a function or gate. All arrays
 *must* be declared within the global scope of the program.
