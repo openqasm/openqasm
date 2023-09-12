@@ -30,6 +30,7 @@ Qubit declarations are not allowed within subroutines as those declarations are 
 
 A subroutine is invoked with the syntax ``name(parameters)`` and may be assigned
 to an ``output`` as needed via an assignment operator (``=``, ``+=``, etc).
+There must be no whitespace between ``name`` and the opening parenthesis.
 
 Using subroutines, we can define an X-basis measurement with the program::
 
