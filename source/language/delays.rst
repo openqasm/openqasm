@@ -22,7 +22,7 @@ or “implement this gate as late as possible".
 Duration and stretch types
 ---------------------------
 
-The ``duration`` type is used denote increments of time. Durations are positive real numbers
+The ``duration`` type is used denote increments of time. Durations are real numbers
 that are manipulated at compile time. Durations must be followed by time units which can be
 any of the following:
 
