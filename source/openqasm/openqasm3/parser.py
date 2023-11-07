@@ -179,8 +179,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     def _parse_scoped_statements(
-            self,
-            node: Union[qasm3Parser.ScopeContext, qasm3Parser.StatementOrScopeContext]
+        self, node: Union[qasm3Parser.ScopeContext, qasm3Parser.StatementOrScopeContext]
     ) -> list[ast.Statement]:
         with self._push_scope(node.parentCtx):
             block = self.visit(node)
@@ -209,7 +208,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
-        return ast.CompoundStatement(statements=[self.visit(statement) for statement in ctx.statementOrScope()])
+        return ast.CompoundStatement(
+            statements=[self.visit(statement) for statement in ctx.statementOrScope()]
+        )
 
     @span
     def visitPragma(self, ctx: qasm3Parser.PragmaContext):
@@ -868,7 +869,5 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.Identifier(ctx.HardwareQubit().getText())
         return _visit_identifier(ctx.Identifier())
 
-    def visitStatementOrScope(
-        self, ctx: qasm3Parser.StatementOrScopeContext
-    ) -> ast.Statement:
+    def visitStatementOrScope(self, ctx: qasm3Parser.StatementOrScopeContext) -> ast.Statement:
         return self.visit(ctx.scope()) if ctx.scope() else self.visit(ctx.statement())
