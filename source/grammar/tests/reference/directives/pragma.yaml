@@ -4,12 +4,14 @@ source: |
   #pragma  __directive_info__ 0
 reference: |
   program
-    statement
-      pragma
+    statementOrScope
+      statement
         pragma
-        IO_BIND[2:3]
-    statement
-      pragma
-        #pragma
-        __directive_info__ 0
+          pragma
+          IO_BIND[2:3]
+    statementOrScope
+      statement
+        pragma
+          #pragma
+          __directive_info__ 0
     <EOF>

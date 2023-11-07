@@ -87,6 +87,7 @@ __all__ = [
     "SizeOf",
     "Span",
     "Statement",
+    "CompoundStatement",
     "StretchType",
     "SubroutineDefinition",
     "TimeUnit",
@@ -153,6 +154,13 @@ class Statement(QASMNode):
     """A statement: anything that can appear on its own line"""
 
     annotations: List[Annotation] = field(init=False, default_factory=list)
+
+
+@dataclass
+class CompoundStatement(Statement):
+    """A sequence of statements enclosed within an anonymous scope block"""
+
+    statements: List[Statement]
 
 
 @dataclass

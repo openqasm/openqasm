@@ -5,67 +5,70 @@ source: |
   ambiguous_call(pi);
 reference: |
   program
-    statement
-      classicalDeclarationStatement
-        scalarType
-          bit
-        x
-        =
-        declarationExpression
-          expression
-            sub_call
-            (
-            expressionList
-              expression
-                10
-              ,
-              expression
-                "01"
-              ,
-              expression
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            bit
+          x
+          =
+          declarationExpression
+            expression
+              sub_call
+              (
+              expressionList
                 expression
-                  q1
-                indexOperator
-                  [
+                  10
+                ,
+                expression
+                  "01"
+                ,
+                expression
                   expression
-                    0
-                  ]
-              ,
+                    q1
+                  indexOperator
+                    [
+                    expression
+                      0
+                    ]
+                ,
+                expression
+                  q2
+              )
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            int
+            designator
+              [
               expression
-                q2
-            )
-        ;
-    statement
-      classicalDeclarationStatement
-        scalarType
-          int
-          designator
-            [
+                2
+              ]
+          y
+          =
+          declarationExpression
             expression
-              2
-            ]
-        y
-        =
-        declarationExpression
+              extern_call
+              (
+              expressionList
+                expression
+                  0.5
+                ,
+                expression
+                  10dt
+              )
+          ;
+    statementOrScope
+      statement
+        expressionStatement
           expression
-            extern_call
+            ambiguous_call
             (
             expressionList
               expression
-                0.5
-              ,
-              expression
-                10dt
+                pi
             )
-        ;
-    statement
-      expressionStatement
-        expression
-          ambiguous_call
-          (
-          expressionList
-            expression
-              pi
-          )
-        ;
+          ;
     <EOF>

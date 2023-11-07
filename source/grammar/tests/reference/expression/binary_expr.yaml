@@ -5,31 +5,34 @@ source: |
   x << y;
 reference: |
   program
-    statement
-      expressionStatement
-        expression
+    statementOrScope
+      statement
+        expressionStatement
           expression
-            2
-          +
+            expression
+              2
+            +
+            expression
+              2
+          ;
+    statementOrScope
+      statement
+        expressionStatement
           expression
-            2
-        ;
-    statement
-      expressionStatement
-        expression
+            expression
+              2
+            **
+            expression
+              2
+          ;
+    statementOrScope
+      statement
+        expressionStatement
           expression
-            2
-          **
-          expression
-            2
-        ;
-    statement
-      expressionStatement
-        expression
-          expression
-            x
-          <<
-          expression
-            y
-        ;
+            expression
+              x
+            <<
+            expression
+              y
+          ;
     <EOF>

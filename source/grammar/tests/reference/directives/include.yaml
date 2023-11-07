@@ -4,19 +4,22 @@ source: |
   include "001";
 reference: |
   program
-    statement
-      includeStatement
-        include
-        'foo2'
-        ;
-    statement
-      includeStatement
-        include
-        "foo"
-        ;
-    statement
-      includeStatement
-        include
-        "001"
-        ;
+    statementOrScope
+      statement
+        includeStatement
+          include
+          'foo2'
+          ;
+    statementOrScope
+      statement
+        includeStatement
+          include
+          "foo"
+          ;
+    statementOrScope
+      statement
+        includeStatement
+          include
+          "001"
+          ;
     <EOF>
