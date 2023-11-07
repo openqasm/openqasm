@@ -180,7 +180,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     def _parse_scoped_statements(
         self, node: Union[qasm3Parser.ScopeContext, qasm3Parser.StatementOrScopeContext]
-    ) -> list[ast.Statement]:
+    ) -> List[ast.Statement]:
         with self._push_scope(node.parentCtx):
             block = self.visit(node)
             return block.statements if isinstance(block, ast.CompoundStatement) else [block]
