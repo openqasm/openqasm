@@ -13,7 +13,8 @@ symbols can differ slightly between these.  The types of scope are:
   body of ``gate`` and ``def`` definitions.
 
 * :ref:`Local block scope <scope-block>`, which becomes active on entry to a
-  non-gate and non-subroutine control-flow block, such as ``if`` or ``for``.
+  non-gate and non-subroutine block, such as those associated with ``if`` or 
+  ``for`` statements or introduced via anonymous scope syntax.
 
 * Calibration scopes, which are the shared calibration state contained in
   ``cal`` and ``defcal`` blocks.  The precise rules for these may vary depending
@@ -244,15 +245,21 @@ For example:
 Block scope
 -----------
 
-Certain control-flow operations introduce their own local scope.  These
-operations are:
+In addition to the scopes explicitly defined above, local scope blocks may be 
+introduced with curly brackets ``{`` and ``}`` wherever a statement is expected.
+These are sometimes referred to as "anonymous" scope blocks, because they are not
+directly associated with a named entity such as a gate or subroutine, or the global
+scope.
+
+Certain control-flow operations rely on the introduction of local scope blocks.
+These operations are
 
 * ``for`` loops,
 * ``while`` loops,
 * ``if`` and ``else`` blocks,
 * ``box`` statements.
 
-These scopes inherit *all* variables that are in scope in the immediately
+Local scope blocks inherit *all* variables that are in scope in the immediately
 containing scope.  Unlike subroutines and gate scopes, this includes variables
 that are not ``const``.  This is broadly similar how these constructs behave in
 other procedural languages, such as C.
@@ -281,7 +288,8 @@ Some further examples:
    qubit[5] q;           // 'q' is declared in the global scope.
    let some_q = q[0:2];  // alias 'some_q' is declared in the global scope.
 
-   if (true) {
+   // This is an anonymous scope block
+   {
      ii *= 2;    // This is the global 'ii', which now has the value 200.
 
      // A local variable 'ii' is declared, which shadows the global definition.
@@ -291,9 +299,15 @@ Some further examples:
      ii *= 2;
    }
 
-   // The local 'ii' went out of scope at the conclusion of the 'if' block, and
+   // The local 'ii' went out of scope at the conclusion of the above block, and
    // the previous 'ii' defined on line 3 is accessible again.
-   ii *= 2;  // global 'ii' is now 400.
+   ii *= 2;  // global 'ii' is now 400.   
+
+   if (true) {
+     // As before, a local variable 'ii' is declared and shadows the global definition.
+     // This is also distinct from the 'ii' introduced in the anonymous scope block above. 
+     int ii = 1;
+   }
 
    uint sum = 0;
    for uint ii in [1:4] {
