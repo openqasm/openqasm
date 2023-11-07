@@ -1,0 +1,23 @@
+# indent w/ 2 spaces
+source: |
+  {
+    int ii = 32;
+  }
+reference: |
+  program
+    statementOrScope
+      scope
+        {
+        statementOrScope
+          statement
+            classicalDeclarationStatement
+              scalarType
+                int
+              ii
+              =
+              declarationExpression
+                expression
+                  32
+              ;
+        }
+    <EOF>

@@ -207,6 +207,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None,
         )
 
+    @span
     def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
         return ast.CompoundStatement(
             statements=[self.visit(statement) for statement in ctx.statementOrScope()]
