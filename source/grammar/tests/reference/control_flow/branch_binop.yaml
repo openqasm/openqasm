@@ -5,56 +5,58 @@ source: |
   }
 reference: |
   program
-    statement
-      ifStatement
-        if
-        (
-        expression
+    statementOrScope
+      statement
+        ifStatement
+          if
+          (
           expression
             expression
               expression
-                spec
-              indexOperator
-                [
                 expression
-                  i
-                ]
-            ==
-            expression
-              0
-          &&
-          expression
-            expression
-              expression
-                spec
-              indexOperator
-                [
-                expression
-                  expression
-                    n
-                  +
+                  spec
+                indexOperator
+                  [
                   expression
                     i
-                ]
-            ==
+                  ]
+              ==
+              expression
+                0
+            &&
             expression
-              1
-        )
-        statementOrScope
-          scope
-            {
-            statement
-              gateCallStatement
-                x
-                gateOperandList
-                  gateOperand
-                    indexedIdentifier
-                      q
-                      indexOperator
-                        [
-                        expression
-                          i
-                        ]
-                ;
-            }
+              expression
+                expression
+                  spec
+                indexOperator
+                  [
+                  expression
+                    expression
+                      n
+                    +
+                    expression
+                      i
+                  ]
+              ==
+              expression
+                1
+          )
+          statementOrScope
+            scope
+              {
+              statementOrScope
+                statement
+                  gateCallStatement
+                    x
+                    gateOperandList
+                      gateOperand
+                        indexedIdentifier
+                          q
+                          indexOperator
+                            [
+                            expression
+                              i
+                            ]
+                    ;
+              }
     <EOF>

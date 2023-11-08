@@ -1,4 +1,5 @@
 import dataclasses
+import textwrap
 import pytest
 
 from openqasm3.ast import (
@@ -26,6 +27,7 @@ from openqasm3.ast import (
     ClassicalAssignment,
     ClassicalDeclaration,
     ComplexType,
+    CompoundStatement,
     Concatenation,
     ContinueStatement,
     DelayInstruction,
@@ -704,6 +706,36 @@ def test_alias_statement():
     assert alias_statement.span == Span(1, 0, 1, 9)
     assert alias_statement.target.span == Span(1, 4, 1, 4)
     assert alias_statement.value.span == Span(1, 8, 1, 8)
+
+
+def test_anonymous_scope():
+    p = textwrap.dedent(
+        """
+    {
+      int i = 1;
+      i = 2;
+    }
+    """
+    ).strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CompoundStatement(
+                statements=[
+                    ClassicalDeclaration(
+                        type=IntType(),
+                        identifier=Identifier("i"),
+                        init_expression=IntegerLiteral(1),
+                    ),
+                    ClassicalAssignment(
+                        lvalue=Identifier("i"), op=AssignmentOperator["="], rvalue=IntegerLiteral(2)
+                    ),
+                ]
+            )
+        ]
+    )
+    compound_statement = program.statements[0]
+    assert compound_statement.span == Span(1, 0, 4, 0)
 
 
 def test_primary_expression():

@@ -12,78 +12,44 @@ source: |
   b = a == 0;
 reference: |
   program
-    statement
-      classicalDeclarationStatement
-        scalarType
-          bit
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            bit
+            designator
+              [
+              expression
+                2
+              ]
+          a
+          ;
+    statementOrScope
+      statement
+        oldStyleDeclarationStatement
+          creg
+          b
           designator
             [
             expression
               2
             ]
-        a
-        ;
-    statement
-      oldStyleDeclarationStatement
-        creg
-        b
-        designator
-          [
-          expression
-            2
-          ]
-        ;
-    statement
-      quantumDeclarationStatement
-        qubitType
-          qubit
-          designator
-            [
-            expression
-              3
-            ]
-        q
-        ;
-    statement
-      classicalDeclarationStatement
-        scalarType
-          int
-          designator
-            [
-            expression
-              10
-            ]
-        x
-        =
-        declarationExpression
-          expression
-            12
-        ;
-    statement
-      assignmentStatement
-        indexedIdentifier
-          a
-          indexOperator
-            [
-            expression
-              0
-            ]
-        =
-        expression
-          expression
-            b
-          indexOperator
-            [
-            expression
-              1
-            ]
-        ;
-    statement
-      assignmentStatement
-        indexedIdentifier
-          x
-        +=
-        expression
+          ;
+    statementOrScope
+      statement
+        quantumDeclarationStatement
+          qubitType
+            qubit
+            designator
+              [
+              expression
+                3
+              ]
+          q
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
           scalarType
             int
             designator
@@ -91,81 +57,125 @@ reference: |
               expression
                 10
               ]
-          (
+          x
+          =
+          declarationExpression
+            expression
+              12
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
+          indexedIdentifier
+            a
+            indexOperator
+              [
+              expression
+                0
+              ]
+          =
           expression
             expression
-              a
+              b
             indexOperator
               [
               expression
                 1
               ]
-          )
-        ;
-    statement
-      measureArrowAssignmentStatement
-        measureExpression
-          measure
-          gateOperand
-            indexedIdentifier
-              q
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
+          indexedIdentifier
+            x
+          +=
+          expression
+            scalarType
+              int
+              designator
+                [
+                expression
+                  10
+                ]
+            (
+            expression
+              expression
+                a
               indexOperator
                 [
                 expression
                   1
                 ]
-        ->
-        indexedIdentifier
-          a
-          indexOperator
-            [
-            expression
-              0
-            ]
-        ;
-    statement
-      assignmentStatement
-        indexedIdentifier
-          a
-        =
-        measureExpression
-          measure
-          gateOperand
-            indexedIdentifier
-              q
-              indexOperator
-                [
-                rangeExpression
+            )
+          ;
+    statementOrScope
+      statement
+        measureArrowAssignmentStatement
+          measureExpression
+            measure
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
                   expression
                     1
-                  :
-                  expression
-                    2
-                ]
-        ;
-    statement
-      measureArrowAssignmentStatement
-        measureExpression
-          measure
-          gateOperand
-            indexedIdentifier
-              q
-              indexOperator
-                [
-                expression
-                  0
-                ]
-        ;
-    statement
-      assignmentStatement
-        indexedIdentifier
-          b
-        =
-        expression
-          expression
+                  ]
+          ->
+          indexedIdentifier
             a
-          ==
+            indexOperator
+              [
+              expression
+                0
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
+          indexedIdentifier
+            a
+          =
+          measureExpression
+            measure
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  rangeExpression
+                    expression
+                      1
+                    :
+                    expression
+                      2
+                  ]
+          ;
+    statementOrScope
+      statement
+        measureArrowAssignmentStatement
+          measureExpression
+            measure
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
+          indexedIdentifier
+            b
+          =
           expression
-            0
-        ;
+            expression
+              a
+            ==
+            expression
+              0
+          ;
     <EOF>

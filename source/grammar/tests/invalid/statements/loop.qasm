@@ -11,5 +11,3 @@ while true { x $0; }
 while (true) (true) { x $0; }
 while x in { 1, 2, 3 } { x $0; }
 while (true);
-// Anonymous scopes are forbidden.
-{ x $0; z $1; }

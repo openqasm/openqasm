@@ -3,11 +3,12 @@ source: |
   !my_var;
 reference: |
   program
-    statement
-      expressionStatement
-        expression
-          !
+    statementOrScope
+      statement
+        expressionStatement
           expression
-            my_var
-        ;
+            !
+            expression
+              my_var
+          ;
     <EOF>

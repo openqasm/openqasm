@@ -4,7 +4,7 @@ options {
     tokenVocab = qasm3Lexer;
 }
 
-program: version? statement* EOF;
+program: version? statementOrScope* EOF;
 version: OPENQASM VersionSpecifier SEMICOLON;
 
 // A statement is any valid single statement of an OpenQASM 3 program, with the
@@ -47,7 +47,7 @@ statement:
     )
 ;
 annotation: AnnotationKeyword RemainingLineContent?;
-scope: LBRACE statement* RBRACE;
+scope: LBRACE statementOrScope* RBRACE;
 pragma: PRAGMA RemainingLineContent;
 
 statementOrScope: statement | scope;
