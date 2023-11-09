@@ -1740,6 +1740,9 @@ def test_pragma():
     pragma command arg1 arg2
     #pragma otherwise_invalid_token 1a2%&
     pragma otherwise_invalid_token 1a2%&
+    {
+      pragma another_command
+    }
     """  # No strip because all line endings are important for pragmas.
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1750,6 +1753,7 @@ def test_pragma():
             Pragma(command="command arg1 arg2"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
+            CompoundStatement([Pragma("another_command")]),
         ]
     )
     SpanGuard().visit(program)
@@ -1810,7 +1814,6 @@ class TestFailurePaths:
             ("qubit q;", "qubit declarations must be global"),
             ("qreg q;", "qubit declarations must be global"),
             ("qreg q[5];", "qubit declarations must be global"),
-            ("\npragma command\n", "pragmas must be global"),
         ),
     )
     def test_global_statement_in_nonglobal_context(self, statement, message):
