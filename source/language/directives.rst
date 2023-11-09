@@ -15,9 +15,10 @@ Pragma directives start with ``pragma`` and continue to the end of line. The
 text after ``pragma`` is a single string, and parsing is left to the specific
 implementation. Implementations may optionally choose to support the older ``#pragma``
 keyword as a custom extension.
-Pragmas should be processed as soon as they are encountered; if a
-pragma is not supported by a compiler pass it should be ignored and preserved
-intact for future passes.  Pragmas should avoid stateful or positional
+
+Pragmas may appear anywhere in the program. Pragmas should be processed as soon as they 
+are encountered; if a pragma is not supported by a compiler pass it should be ignored 
+and preserved intact for future passes.  Pragmas should avoid stateful or positional
 interactions to avoid unexpected behaviors between included source files. If the
 position is relevant to a pragma, an annotation should be used instead.
 
