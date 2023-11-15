@@ -1,0 +1,36 @@
+name: 🌻 Spec Proposal
+description: Propose a change to the OpenQASM specification
+title: "[]:"
+labels: ["proposal"]
+body:
+  - type: markdown
+    id: description
+    attributes:
+      label: "Description"
+      placeholder: |
+        Describe the proposed specification change here.
+
+  - type: markdown
+    id: motivation
+    attributes:
+      label: "Motivation"
+      placeholder: |
+        Motivate the proposed change here.
+
+  - type: markdown
+    id: authors
+    attributes:
+      label: "Authors"
+      placeholder: |
+        A list with the names, and optionally the Github handles, of the
+        people involved in the proposal.
+
+  - type: markdown
+    id: examples
+    attributes:
+      label: "Examples"
+      placeholder: |
+        ```text
+        // One or more examples of how to use this proposal in an OpenQASM
+        // program.
+        ```
