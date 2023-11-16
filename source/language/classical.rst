@@ -449,19 +449,12 @@ An OpenQASM3 ``switch`` statement shall use the following keywords:
 An OpenQASM3 ``switch`` statement shall be the following grammar:
 
 - The ``switch`` keyword.
-   
 - A right paren ``(`` literal.
-   
 - A ``controlling expression``.
-   
 - A left paren ``)`` literal.
-   
 - A left brace ``{`` literal.
-   
 - A sequence of one or more ``case`` statements (defined below).
-   
 - Either zero or one ``default`` statement(s) (defined below).
-   
 - A right brace ``}`` literal.
    
 
