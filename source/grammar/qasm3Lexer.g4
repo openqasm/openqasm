@@ -33,6 +33,9 @@ RETURN: 'return';
 FOR: 'for';
 WHILE: 'while';
 IN: 'in';
+SWITCH: 'switch';
+CASE: 'case';
+DEFAULT: 'default';
 
 PRAGMA: '#'? 'pragma' -> pushMode(EAT_TO_LINE_END);
 AnnotationKeyword: '@' Identifier ->  pushMode(EAT_TO_LINE_END);

@@ -43,6 +43,7 @@ statement:
         | quantumDeclarationStatement
         | resetStatement
         | returnStatement
+        | switchStatement
         | whileStatement
     )
 ;
@@ -67,6 +68,11 @@ forStatement: FOR scalarType Identifier IN (setExpression | LBRACKET rangeExpres
 ifStatement: IF LPAREN expression RPAREN if_body=statementOrScope (ELSE else_body=statementOrScope)?;
 returnStatement: RETURN (expression | measureExpression)? SEMICOLON;
 whileStatement: WHILE LPAREN expression RPAREN body=statementOrScope;
+switchStatement: SWITCH LPAREN expression RPAREN LBRACE switchCaseItem* RBRACE;
+switchCaseItem:
+    CASE expressionList scope
+    | DEFAULT scope
+;
 
 // Quantum directive statements.
 barrierStatement: BARRIER gateOperandList? SEMICOLON;

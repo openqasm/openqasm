@@ -527,6 +527,35 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.ReturnStatement(expression=expression)
 
     @span
+    def visitSwitchStatement(self, ctx: qasm3Parser.SwitchStatementContext):
+        target = self.visit(ctx.expression())
+        seen = set()
+        cases = {}
+        default = None
+        for case in ctx.switchCaseItem():
+            if case.CASE():
+                if default is not None:
+                    _raise_from_context(case, "'case' statement after 'default'")
+                values = []
+                for expr in case.expressionList().expression():
+                    value = self.visit(expr)
+                    if not isinstance(value, ast.IntegerLiteral):
+                        _raise_from_context(
+                            expr, f"only integer literals are valid 'case's, not '{type(value)}'"
+                        )
+                    if value.value in seen:
+                        _raise_from_context(
+                            expr, f"duplicate 'case' target for 'switch': '{value.value}'"
+                        )
+                    seen.add(value.value)
+                    values.append(value.value)
+                cases[tuple(values)] = self.visit(case.scope())
+            else:
+                # Default.
+                default = self.visit(case.scope())
+        return ast.SwitchStatement(target=target, cases=cases, default=default)
+
+    @span
     def visitWhileStatement(self, ctx: qasm3Parser.WhileStatementContext):
         block = self._parse_scoped_statements(ctx.body)
         return ast.WhileLoop(while_condition=self.visit(ctx.expression()), block=block)

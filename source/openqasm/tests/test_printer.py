@@ -427,6 +427,35 @@ if (i == 0) {
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
         assert output == input_
 
+    def test_switch_case(self):
+        input_ = """
+switch (i) {
+  case 0 {
+    x $0;
+  }
+  case 1, 2 {
+  }
+  default {
+    z $0;
+  }
+}
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
+        assert output == input_
+
+    def test_switch_no_default(self):
+        input_ = """
+switch (i + 1) {
+  case 0 {
+    x $0;
+  }
+  case 1, 2 {
+  }
+}
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
+        assert output == input_
+
     def test_jumps(self):
         input_ = """
 while (true) {

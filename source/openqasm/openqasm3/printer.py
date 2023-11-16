@@ -774,6 +774,40 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_line(context)
 
     @_maybe_annotated
+    def visit_SwitchStatement(self, node: ast.SwitchStatement, context: PrinterState) -> None:
+        self._start_line(context)
+        self.stream.write("switch (")
+        self.visit(node.target, context)
+        self.stream.write(") {")
+        self._end_line(context)
+        with context.increase_scope():
+            for values, block in node.cases.items():
+                self._start_line(context)
+                self.stream.write("case ")
+                self.stream.write(", ".join(str(x) for x in values))
+                self.stream.write(" {")
+                self._end_line(context)
+                with context.increase_scope():
+                    for statement in block.statements:
+                        self.visit(statement, context)
+                self._start_line(context)
+                self.stream.write("}")
+                self._end_line(context)
+            if node.default is not None:
+                self._start_line(context)
+                self.stream.write("default {")
+                self._end_line(context)
+                with context.increase_scope():
+                    for statement in node.default.statements:
+                        self.visit(statement, context)
+                self._start_line(context)
+                self.stream.write("}")
+                self._end_line(context)
+        self._start_line(context)
+        self.stream.write("}")
+        self._end_line(context)
+
+    @_maybe_annotated
     def visit_DelayInstruction(self, node: ast.DelayInstruction, context: PrinterState) -> None:
         self._start_line(context)
         self.stream.write("delay[")

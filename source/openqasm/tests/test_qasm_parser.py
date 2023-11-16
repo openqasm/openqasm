@@ -70,6 +70,7 @@ from openqasm3.ast import (
     Span,
     StretchType,
     SubroutineDefinition,
+    SwitchStatement,
     TimeUnit,
     UintType,
     UnaryExpression,
@@ -1425,6 +1426,111 @@ def test_for_in_loop():
         ]
     )
     SpanGuard().visit(program)
+
+
+def test_switch_simple_cases():
+    program = parse("switch (x) { case 0 {} case 1, 2 { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=Identifier("x"),
+                cases={
+                    (0,): CompoundStatement(statements=[]),
+                    (1, 2): CompoundStatement(
+                        statements=[
+                            QuantumGate(
+                                modifiers=[],
+                                name=Identifier("z"),
+                                arguments=[],
+                                qubits=[Identifier("$0")],
+                            )
+                        ]
+                    ),
+                },
+                default=None,
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_default_case():
+    program = parse("switch (x + 1) { case 0b00 {} default { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=BinaryExpression(
+                    op=BinaryOperator["+"], lhs=Identifier("x"), rhs=IntegerLiteral(1)
+                ),
+                cases={
+                    (0,): CompoundStatement(statements=[]),
+                },
+                default=CompoundStatement(
+                    statements=[
+                        QuantumGate(
+                            modifiers=[],
+                            name=Identifier("z"),
+                            arguments=[],
+                            qubits=[Identifier("$0")],
+                        )
+                    ]
+                ),
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_cases_order():
+    program = parse("switch (i) { case 0 {} case 3, 2 {} case 1, 5 {} case 4, 8 {} case 7, 6 {}}")
+    expected = [(0,), (3, 2), (1, 5), (4, 8), (7, 6)]
+    switch = program.statements[0]
+    # Test that the iteration order maintains the definition order from the program.
+    assert list(switch.cases.keys()) == expected
+
+
+def test_switch_no_cases():
+    program = parse("switch (x) {}")
+    assert _remove_spans(program) == Program(
+        statements=[SwitchStatement(target=Identifier("x"), cases={}, default=None)]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_rejects_nonint():
+    program = "switch (x) { case 1.0 {} }"
+    with pytest.raises(QASM3ParsingError, match="only integer literals"):
+        parse(program)
+    program = "switch (x) { case 1 + 2 {} }"
+    with pytest.raises(QASM3ParsingError, match="only integer literals"):
+        parse(program)
+
+
+def test_switch_rejects_duplicates():
+    program = "switch (x) { case 0 {} case 0 {} }"
+    with pytest.raises(QASM3ParsingError, match="duplicate"):
+        parse(program)
+    program = "switch (x) { case 0, 0 {} }"
+    with pytest.raises(QASM3ParsingError, match="duplicate"):
+        parse(program)
+    program = "switch (x) { case 0, 1 {} case 0 {} }"
+    with pytest.raises(QASM3ParsingError, match="duplicate"):
+        parse(program)
+
+
+def test_switch_rejects_case_after_default():
+    program = """
+switch (5) {
+    case 0 {
+    }
+    default {
+    }
+    case 1 {
+    }
+}
+"""
+    with pytest.raises(QASM3ParsingError, match="'case' statement after 'default'"):
+        parse(program)
 
 
 def test_delay_instruction():
