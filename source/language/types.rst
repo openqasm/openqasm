@@ -116,17 +116,6 @@ significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
 the quantum memory.
 
-.. _physical-qubits:
-
-Physical Qubits
-~~~~~~~~~~~~~~~
-
-While program qubits can be named, hardware qubits are referenced only
-by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
-references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
-used in lower parts of the compilation stack when emitting physical
-circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
-
 .. code-block::
 
    // Declare a qubit
@@ -135,8 +124,63 @@ circuits. Physical qubits must not be declared and they are, as all the qubits, 
    qubit γ;
    // Declare a qubit register with 20 qubits
    qubit[20] qubit_array;
+
+.. _physical-qubits:
+
+Physical Qubits
+~~~~~~~~~~~~~~~
+
+Physical qubits refer to particular hardware qubits. Therefore, they are only fully defined with
+respect to a target device that has a published device topology. The hardware provider determines
+the integer-labels associated with each qubit within the device's topology.
+
+While virtual qubits can be named, hardware qubits are referenced by the syntax ``$[NUM]``, where
+``NUM`` is a non-negative integer. Any integer included in the published device topology is a valid
+physical qubit identifier. Note that this implies that physical qubit identifier indices may be
+non-consecutive, depending on the device.
+
+Like virtual qubits, physical qubits are global variables, but unlike virtual qubits, they must
+not be declared.
+
+These qubit types are often used for ``defcal``s because calibrations are typically valid only
+for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
+
+.. TODO: Where is a better place for physical circuit discussion?
+.. TODO: Should we introduce executable circuit as another term for physical circuit?
+
+Physical qubits are also used in lower parts of the compilation stack when emitting physical
+circuits. A physical circuit is one which only references physical qubits, and every operation
+used in the circuit has an associated ``defcal``, which we can call hardware-native gates or
+measurements. A physical circuit can be directly executed on the target hardware.
+
+.. code-block::
+
    // CNOT gate between physical qubits 0 and 1
    CX $0, $1;
+   // Define the pulse-level instruction sequence for ``h`` on physical qubit 0
+   defcal h $0 { ... }
+
+Physical qubit constraints
+..........................
+.. TODO: Can physical qubits be used in a ``defgate``? My answer would be no.
+
+Physical qubits, by definition, reference particular hardware qubits. Circuit equivalence does not
+hold over permutations of physical qubit labels. Thus, physical qubits cannot be remapped by a
+compiler or hardware provider without opt-in from the programmer.
+
+Note that while physical circuits require physical qubits, the converse need not be true. A circuit
+that would require routing or gate decomposition to run (i.e., does not have a ``defcal`` for every
+operation in the circuit) would by definition not be a physical circuit. However, physical qubits
+can still be used in such circuits.
+
+For example, a program defines the ``H`` gate with the ``gate`` statement. ``H`` is therefore a
+supported gate, but not a hardware-native gate. The compiler can decompose the statement ``H $0;``
+to hardware-native gates, while still respecting strict qubit mapping.
+
+It is possible to write a partially-constrained program with both physical and virtual qubits.
+Such programs are also non-physical circuits, and may or may not be supported by compilers or
+hardware providers.
+
 
 Classical scalar types
 ----------------------
