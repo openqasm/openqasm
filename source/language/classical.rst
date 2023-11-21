@@ -249,10 +249,10 @@ OpenQASM evaluates expressions from left to right.
 
 
 Looping and branching
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 If-else statements
-..................
+~~~~~~~~~~~~~~~~~~
 
 The statement ``if ( bool ) <true-body>`` branches to program if the Boolean evaluates to true and
 may optionally be followed by ``else <false-body>``.  Both ``true-body`` and
@@ -274,7 +274,7 @@ block of several statements ``{ stmt1; stmt2; }``.
    }
 
 For loops
-.........
+~~~~~~~~~
 
 The statement ``for <type> <name> in <values> <body>`` loops over the
 items in ``values``, assigning each value to the variable ``name`` in subsequent
@@ -350,7 +350,7 @@ accessible after the loop.
 
 
 While loops
-...........
+~~~~~~~~~~~
 
 The statement ``while ( bool ) <body>`` executes program until the Boolean evaluates to
 false [3]_. Variables in the loop condition statement may be modified
@@ -375,7 +375,7 @@ statements:
    }
 
 Breaking and continuing loops
-.............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The statement ``break;`` moves control to the statement immediately following
 the closest containing ``for`` or ``while`` loop.
@@ -420,9 +420,8 @@ such as at the top level of the main circuit or of a subroutine.
       continue; // Invalid: no containing loop.
    }
 
-
 Terminating the program early
-.............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The statement ``end;`` immediately terminates the program, no matter what scope
 it is called from.
