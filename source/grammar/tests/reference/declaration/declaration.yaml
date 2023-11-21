@@ -1,4 +1,5 @@
 # indent w/ 2 spaces
+# beware the tab character in dur4 = 8 ns below
 source: |
   int[10] x;
   int[10] y;
@@ -21,6 +22,9 @@ source: |
   float[32] f = .1e+3;
   duration dur = 1000dt;
   duration dur2 = dur + 200ns;
+  duration dur3 = 10 ms;
+  duration dur4 = 8	us;
+  duration dur5 = 1s;
   stretch s;
 reference: |
   program
@@ -310,6 +314,39 @@ reference: |
               +
               expression
                 200ns
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            duration
+          dur3
+          =
+          declarationExpression
+            expression
+              10 ms
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            duration
+          dur4
+          =
+          declarationExpression
+            expression
+              8	us
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            duration
+          dur5
+          =
+          declarationExpression
+            expression
+              1s
           ;
     statementOrScope
       statement

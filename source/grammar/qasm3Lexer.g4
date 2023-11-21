@@ -149,7 +149,7 @@ FloatLiteral:
 
 fragment TimeUnit: 'dt' | 'ns' | 'us' | 'µs' | 'ms' | 's';
 // represents explicit time value in SI or backend units
-TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) TimeUnit;
+TimingLiteral: (DecimalIntegerLiteral | FloatLiteral) [ \t]* TimeUnit;
 
 BitstringLiteral: '"' ([01] '_'?)* [01] '"';
 
