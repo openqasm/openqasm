@@ -123,7 +123,7 @@ ComparisonOperator: '>' | '<' | '>=' | '<=';
 BitshiftOperator: '>>' | '<<';
 
 IMAG: 'im';
-ImaginaryLiteral: (DecimalIntegerLiteral | FloatLiteral) ' '* IMAG;
+ImaginaryLiteral: (DecimalIntegerLiteral | FloatLiteral) [ \t]* IMAG;
 
 BinaryIntegerLiteral: ('0b' | '0B') ([01] '_'?)* [01];
 OctalIntegerLiteral: '0o' ([0-7] '_'?)* [0-7];

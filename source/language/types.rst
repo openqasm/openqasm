@@ -297,9 +297,9 @@ designator ``[size]`` can be omitted to use the default hardware ``float``, and
 ``complex`` with no arguments is a synonym for ``complex[float]``.
 
 Imaginary literals are written as a decimal-integer or floating-point literal
-followed by the letters ``im``.  There may be zero or more spaces between the
-numeric component and the ``im`` component.  The type of this token is
-``complex`` (its value has zero real component), and the component type is as
+followed by the letters ``im``.  There may be zero or more spaces or tabs
+between the numeric component and the ``im`` component.  The type of this token
+is ``complex`` (its value has zero real component), and the component type is as
 normal given the floating-point literal, or the machine-size ``float`` if the
 numeric component is an integer.
 

@@ -1,9 +1,12 @@
 # indent w/ 2 spaces
+# beware the tab character in f = 1 im below
 source: |
   complex[float] a;
   complex[float] b = 4 - 5.5im;
   complex[float[64]] d = a + 3 im;
   complex[float[32]] c = a ** b;
+  complex[float] e = 1im;
+  complex[float] f = 1	im;
   complex z;
 reference: |
   program
@@ -84,6 +87,36 @@ reference: |
               **
               expression
                 b
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            complex
+            [
+            scalarType
+              float
+            ]
+          e
+          =
+          declarationExpression
+            expression
+              1im
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            complex
+            [
+            scalarType
+              float
+            ]
+          f
+          =
+          declarationExpression
+            expression
+              1	im
           ;
     statementOrScope
       statement
