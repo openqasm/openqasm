@@ -66,7 +66,7 @@ Please follow the next rules for the commit messages:
 
 - Draft: Backlog items with different levels of abstraction. Anybody can add an issue in the [main repo](https://github.com/openqasm/openqasm). Please label it as `draft`.
 - Proposal: An idea with the correct form:
-  - Add an issue in the [main repo](https://github.com/openqasm/openqasm) labeled as `proposal` using the spec proposal template.
+  - Add an issue in the [main repo](https://github.com/openqasm/openqasm) labeled as `proposal` using [the spec proposal template](https://github.com/openqasm/openqasm/issues/new?template=spec_proposal.yaml)
 - Candidate: During each monthly meeting the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting on the issue to guide the owner into the next steps, including:
   - Fork [the main repo](https://github.com/openqasm/openqasm).
   - Add the content of the proposal, note that conformance tests are mandatory at this point.
