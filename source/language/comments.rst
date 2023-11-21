@@ -21,7 +21,7 @@ Version string
 The first non-comment line of an OpenQASM program may optionally be
 ``OPENQASM`` *M.m* ``;`` indicating a major version *M* and minor version *m*.
 More details on versioning and the release cycle for OpenQASM may be found
-`here <https://github.com/Qiskit/openqasm/blob/main/CONTRIBUTING.md>`_.
+`here <https://github.com/openqasm/openqasm/blob/main/CONTRIBUTING.md>`_.
 
 The minor version number, expressed as a decimal point after the major version
 number followed by a number, is optional. If not present, the minor version

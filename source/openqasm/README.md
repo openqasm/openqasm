@@ -1,6 +1,6 @@
 # OpenQASM 3 Python Reference
 
-[![License](https://img.shields.io/github/license/Qiskit/openqasm.svg)](https://opensource.org/licenses/Apache-2.0)<!-- long-description-skip-begin -->[![Release](https://img.shields.io/pypi/v/openqasm3)](https://pypi.org/project/openqasm3)<!-- long-description-skip-end -->
+[![License](https://img.shields.io/github/license/openqasm/openqasm.svg)](https://opensource.org/licenses/Apache-2.0)<!-- long-description-skip-begin -->[![Release](https://img.shields.io/pypi/v/openqasm3)](https://pypi.org/project/openqasm3)<!-- long-description-skip-end -->
 
 The `openqasm3` package contains the reference abstract syntax tree (AST) for representing OpenQASM 3 programs, tools to parse text into this AST, and tools to manipulate the AST.
 
@@ -39,7 +39,7 @@ All extras can be installed with the target `openqasm3[all]`.
 
 ## Development Environment
 
-To work on development, you will need to have a complete [ANTLR](https://www.antlr.org/) installation (not just the runtime), and the ANTLR grammar files from the [main OpenQASM repository](https://github.com/Qiskit/openqasm).
+To work on development, you will need to have a complete [ANTLR](https://www.antlr.org/) installation (not just the runtime), and the ANTLR grammar files from the [main OpenQASM repository](https://github.com/openqasm/openqasm).
 
 ### Setting up ANTLR
 
