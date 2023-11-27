@@ -1,8 +1,7 @@
 import dataclasses
 
-import pytest
-
 import openqasm3
+import pytest
 from openqasm3 import ast
 
 
@@ -937,3 +936,27 @@ if (i == 0) {
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
         assert output == input_
+
+
+def test_CompoundStatement():
+    # This test can be replaced with a round trip test once something that
+    # parses to a CompoundStatement is implemented (e.g. jakelishman's implementation
+    # of the switch statement #492
+    program = ast.Program(
+        statements=[
+            ast.CompoundStatement(
+                statements=[
+                    ast.ExpressionStatement(ast.IntegerLiteral(value=1)),
+                    ast.ExpressionStatement(ast.IntegerLiteral(value=2)),
+                ]
+            )
+        ]
+    )
+    expected = """
+{
+  1;
+  2;
+}
+    """.strip()
+    output = openqasm3.dumps(program).strip()
+    assert output == expected
