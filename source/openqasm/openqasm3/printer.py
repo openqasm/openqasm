@@ -219,10 +219,9 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_statement(context)
 
     def _visit_statement_list(
-        self, nodes: list[ast.Statement], context: PrinterState, starts_with_space: bool = True
+        self, nodes: list[ast.Statement], context: PrinterState, prefix: str = " "
     ) -> None:
-        if starts_with_space:
-            self.stream.write(" ")
+        self.stream.write(prefix)
         self.stream.write("{")
         self._end_line(context)
         with context.increase_scope():
@@ -256,6 +255,7 @@ class Printer(QASMVisitor[PrinterState]):
         for statement in node.statements:
             self.visit(statement, context)
 
+    @_maybe_annotated
     def visit_CompoundStatement(self, node: ast.CompoundStatement, context: PrinterState) -> None:
         self._start_line(context)
         self._visit_statement_list(node.statements, context)
@@ -726,7 +726,7 @@ class Printer(QASMVisitor[PrinterState]):
                 self.visit(node.else_block[0], context)
                 # Don't end the line, because the outer-most `if` block will.
             else:
-                self._visit_statement_list(node.else_block, context, starts_with_space=False)
+                self._visit_statement_list(node.else_block, context, prefix="")
                 self._end_line(context)
         else:
             self._end_line(context)
@@ -784,7 +784,7 @@ class Printer(QASMVisitor[PrinterState]):
         if isinstance(node.target, ast.QASMNode):
             self.visit(node.target, context)
         else:
-            self._visit_statement_list(node.target, context, starts_with_space=False)
+            self._visit_statement_list(node.target, context, prefix="")
         self.stream.write(")")
 
     def visit_SizeOf(self, node: ast.SizeOf, context: PrinterState) -> None:

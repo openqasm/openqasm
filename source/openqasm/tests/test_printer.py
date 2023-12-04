@@ -942,18 +942,18 @@ def test_CompoundStatement():
     # This test can be replaced with a round trip test once something that
     # parses to a CompoundStatement is implemented (e.g. jakelishman's implementation
     # of the switch statement #492
-    program = ast.Program(
+    cmpnd_stmt = ast.CompoundStatement(
         statements=[
-            ast.CompoundStatement(
-                statements=[
-                    ast.ExpressionStatement(ast.IntegerLiteral(value=1)),
-                    ast.ExpressionStatement(ast.IntegerLiteral(value=2)),
-                ]
-            )
+            ast.ExpressionStatement(ast.IntegerLiteral(value=1)),
+            ast.ExpressionStatement(ast.IntegerLiteral(value=2)),
         ]
     )
+    cmpnd_stmt.annotations = [ast.Annotation(keyword="test_annotation")]
+    program = ast.Program(statements=[cmpnd_stmt])
+
     expected = """
-{
+@test_annotation
+ {
   1;
   2;
 }
