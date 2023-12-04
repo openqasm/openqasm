@@ -142,8 +142,8 @@ non-consecutive, depending on the device.
 Like virtual qubits, physical qubits are global variables, but unlike virtual qubits, they must
 not be declared.
 
-These qubit types are often used for ``defcal``s because calibrations are typically valid only
-for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
+These qubit types are often used for ``defcal`` blocks because calibrations are typically valid
+only for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
 
 .. TODO: Where is a better place for physical circuit discussion?
 .. TODO: Should we introduce executable circuit as another term for physical circuit?
