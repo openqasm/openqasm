@@ -953,7 +953,7 @@ def test_CompoundStatement():
 
     expected = """
 @test_annotation
- {
+{
   1;
   2;
 }
