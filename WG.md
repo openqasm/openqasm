@@ -74,7 +74,7 @@ Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bell
 
 ### Dynamic Dereference & Allocation
 
-**Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/Qiskit/openqasm/issues/307)
+**Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/openqasm/openqasm/issues/307)
  * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
  * If in scope, provide rough solutions.
  * Keep in mind the difference between dynamic dereference and dynamic allocation.

@@ -238,7 +238,7 @@ Waveforms
 
 Waveforms are of type ``waveform`` and can either be:
 
-- An array of complex samples (note this syntax is still under [active development](https://github.com/Qiskit/openqasm/pull/301) and is subject to change.) which define the points for the waveform envelope
+- An array of complex samples which define the points for the waveform envelope
 - An abstract mathematical function representing a waveform. This will later be
   materialized into a list of complex samples, either by the compiler or the
   hardware using the parameters provided to the ``extern`` declared waveform template.

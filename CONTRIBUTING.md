@@ -27,7 +27,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues).
+:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/openqasm/openqasm/issues).
 
 ## Doubts solving
 
@@ -56,19 +56,19 @@ Please follow the next rules for the commit messages:
 ### Pull requests
 
 - We use [GitHub pull requests](https://help.github.com/articles/about-pull-requests) to accept the contributions.
-- Except for proposals (see next point), please, use [pull requests](https://github.com/Qiskit/openqasm/pulls) as is to submit a new one :smile:.
+- Except for proposals (see next point), please, use [pull requests](https://github.com/openqasm/openqasm/pulls) as is to submit a new one :smile:.
 - Review the parts of the documentation regarding the new changes and update it if it's needed.
 - New features often imply changes in the existent tests or new ones are needed. Once they're updated/added please be sure they keep passing.
 
 ## Spec proposals
 
-:bulb: All new ideas go through the next stages to become a new feature of the language.
+:bulb: All new ideas go through the following stages to become a new feature of the language:
 
-- Draft: Backlog items with different levels of abstraction. Anybody can add one issue in the [main repo](https://github.com/Qiskit/openqasm). Please label it as `draft`.
+- Draft: Backlog items with different levels of abstraction. Anybody can add an issue in the [main repo](https://github.com/openqasm/openqasm). Please label it as `draft`.
 - Proposal: An idea with the correct form:
-  - Add one issue in the [main repo](https://github.com/Qiskit/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
+  - Add an issue in the [main repo](https://github.com/openqasm/openqasm) labeled as `proposal` using [the spec proposal template](https://github.com/openqasm/openqasm/issues/new?template=spec_proposal.yaml)
 - Candidate: During each monthly meeting the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting on the issue to guide the owner into the next steps, including:
-  - Fork [the main repo](https://github.com/Qiskit/openqasm).
+  - Fork [the main repo](https://github.com/openqasm/openqasm).
   - Add the content of the proposal, note that conformance tests are mandatory at this point.
   - Make a pull request.
   - The core dev can ask for changes before reaching the next stage.
@@ -78,7 +78,7 @@ Please follow the next rules for the commit messages:
 
 The development cycle for OpenQASM is managed in the open using Github for project management.
 TODO: When preparing a new release changes for the released version should be identified
-in the release notes (See [issue #328](https://github.com/Qiskit/openqasm/issues/328)).
+in the release notes (See [issue #328](https://github.com/openqasm/openqasm/issues/328)).
 
 ### Semantic Versioning
 The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
