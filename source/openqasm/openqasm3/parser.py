@@ -541,8 +541,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                     # only distinct integers are encountered; we leave that to a later step.
                     values.append(self.visit(expr))
                 cases.append((values, self.visit(case.scope())))
+            elif default is not None:
+                _raise_from_context(case, "multiple 'default' cases")
             else:
-                # Default.
                 default = self.visit(case.scope())
         return ast.SwitchStatement(target=target, cases=cases, default=default)
 
