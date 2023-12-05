@@ -1,7 +1,8 @@
 import dataclasses
 
-import openqasm3
 import pytest
+
+import openqasm3
 from openqasm3 import ast
 
 
