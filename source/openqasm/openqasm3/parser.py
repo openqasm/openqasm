@@ -529,8 +529,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitSwitchStatement(self, ctx: qasm3Parser.SwitchStatementContext):
         target = self.visit(ctx.expression())
-        seen = set()
-        cases = {}
+        cases = []
         default = None
         for case in ctx.switchCaseItem():
             if case.CASE():
@@ -538,18 +537,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                     _raise_from_context(case, "'case' statement after 'default'")
                 values = []
                 for expr in case.expressionList().expression():
-                    value = self.visit(expr)
-                    if not isinstance(value, ast.IntegerLiteral):
-                        _raise_from_context(
-                            expr, f"only integer literals are valid 'case's, not '{type(value)}'"
-                        )
-                    if value.value in seen:
-                        _raise_from_context(
-                            expr, f"duplicate 'case' target for 'switch': '{value.value}'"
-                        )
-                    seen.add(value.value)
-                    values.append(value.value)
-                cases[tuple(values)] = self.visit(case.scope())
+                    # This AST-generation step does not perform constant folding to validate that
+                    # only distinct integers are encountered; we leave that to a later step.
+                    values.append(self.visit(expr))
+                cases.append((values, self.visit(case.scope())))
             else:
                 # Default.
                 default = self.visit(case.scope())

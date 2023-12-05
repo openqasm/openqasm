@@ -1018,7 +1018,7 @@ class SwitchStatement(Statement):
     """
 
     target: Expression
-    cases: Dict[Tuple[int, ...], CompoundStatement]
+    cases: List[Tuple[List[Expression], CompoundStatement]]
     # Note that `None` is quite different to `[]` in this case; the latter is
     # an explicitly empty body, whereas the absence of a default might mean
     # that the switch is inexhaustive, and a linter might want to complain.

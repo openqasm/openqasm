@@ -781,10 +781,10 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write(") {")
         self._end_line(context)
         with context.increase_scope():
-            for values, block in node.cases.items():
+            for values, block in node.cases:
                 self._start_line(context)
                 self.stream.write("case ")
-                self.stream.write(", ".join(str(x) for x in values))
+                self._visit_sequence(values, context, separator=", ")
                 self.stream.write(" {")
                 self._end_line(context)
                 with context.increase_scope():
