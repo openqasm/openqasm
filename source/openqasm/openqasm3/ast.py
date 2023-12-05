@@ -11,7 +11,7 @@ The reference abstract syntax tree (AST) for OpenQASM 3 programs.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Union, Dict, Tuple
+from typing import List, Optional, Union, Tuple
 from enum import Enum
 
 __all__ = [
