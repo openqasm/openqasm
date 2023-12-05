@@ -58,7 +58,7 @@ import dataclasses
 import io
 import functools
 
-from typing import Sequence, Optional
+from typing import List, Optional, Sequence
 
 from . import ast, properties
 from .visitor import QASMVisitor
@@ -219,7 +219,7 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_statement(context)
 
     def _visit_statement_list(
-        self, nodes: list[ast.Statement], context: PrinterState, prefix: str = ""
+        self, nodes: List[ast.Statement], context: PrinterState, prefix: str = ""
     ) -> None:
         self.stream.write(prefix)
         self.stream.write("{")
