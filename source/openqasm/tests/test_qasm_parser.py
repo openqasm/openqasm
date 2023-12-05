@@ -1555,6 +1555,7 @@ switch (5) {
     with pytest.raises(QASM3ParsingError, match="'case' statement after 'default'"):
         parse(program)
 
+
 def test_switch_rejects_multiple_default():
     program = """
 switch (5) {
