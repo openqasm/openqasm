@@ -937,3 +937,27 @@ if (i == 0) {
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()
         assert output == input_
+
+
+def test_CompoundStatement():
+    # This test can be replaced with a round trip test once something that
+    # parses to a CompoundStatement is implemented (e.g. jakelishman's implementation
+    # of the switch statement #492
+    cmpnd_stmt = ast.CompoundStatement(
+        statements=[
+            ast.ExpressionStatement(ast.IntegerLiteral(value=1)),
+            ast.ExpressionStatement(ast.IntegerLiteral(value=2)),
+        ]
+    )
+    cmpnd_stmt.annotations = [ast.Annotation(keyword="test_annotation")]
+    program = ast.Program(statements=[cmpnd_stmt])
+
+    expected = """
+@test_annotation
+{
+  1;
+  2;
+}
+    """.strip()
+    output = openqasm3.dumps(program).strip()
+    assert output == expected
