@@ -142,16 +142,16 @@ non-consecutive, depending on the device.
 Like virtual qubits, physical qubits are global variables, but unlike virtual qubits, they must
 not be declared.
 
-These qubit types are often used for ``defcal`` blocks because calibrations are typically valid
-only for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
+These qubit types are always used for ``defcal`` blocks. Calibrations are valid only for a
+particular set of physical qubits. See also :ref:`pulse gates <pulse-gates>`.
 
-.. TODO: Where is a better place for physical circuit discussion?
-.. TODO: Should we introduce executable circuit as another term for physical circuit?
+Physical qubits cannot be used in ``gate`` statements. See also
+:ref:`gate definitions <gate-statement>`.
 
 Physical qubits are also used in lower parts of the compilation stack when emitting physical
 circuits. A physical circuit is one which only references physical qubits, and every operation
-used in the circuit has an associated ``defcal``, which we can call hardware-native gates or
-measurements. A physical circuit can be directly executed on the target hardware.
+used in the circuit has an associated ``defcal``, which we refer to as hardware-native gates and
+measurements.
 
 .. code-block::
 
@@ -162,7 +162,6 @@ measurements. A physical circuit can be directly executed on the target hardware
 
 Physical qubit constraints
 ..........................
-.. TODO: Can physical qubits be used in a ``defgate``? My answer would be no.
 
 Physical qubits, by definition, reference particular hardware qubits. Circuit equivalence does not
 hold over permutations of physical qubit labels. Thus, physical qubits cannot be remapped by a
@@ -173,9 +172,10 @@ that would require routing or gate decomposition to run (i.e., does not have a `
 operation in the circuit) would by definition not be a physical circuit. However, physical qubits
 can still be used in such circuits.
 
-For example, a program defines the ``H`` gate with the ``gate`` statement. ``H`` is therefore a
-supported gate, but not a hardware-native gate. The compiler can decompose the statement ``H $0;``
-to hardware-native gates, while still respecting strict qubit mapping.
+For example, a program defines the ``H`` gate with the ``gate`` statement, without a corresponding
+``defcal`` of ``H``. ``H`` is therefore a supported gate, but not a hardware-native gate. The
+compiler can decompose the statement ``H $0;`` to hardware-native gates, while still respecting
+strict qubit mapping.
 
 It is possible to write a partially-constrained program with both physical and virtual qubits.
 Such programs are also non-physical circuits, and may or may not be supported by compilers or
