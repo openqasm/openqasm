@@ -75,6 +75,8 @@ There are 3 mechanisms to construct new gates:
 
 The next subsections go through these cases.
 
+.. _gate-statement:
+
 Hierarchical gates definitions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
