@@ -411,7 +411,7 @@ It is an error to have a ``break;`` or ``continue;`` statement outside a loop,
 such as at the top level of the main circuit or of a subroutine.
 
 .. code-block::
-   
+
    OPENQASM 3.0;
 
    break;  // Invalid: no containing loop.
@@ -425,6 +425,190 @@ Terminating the program early
 
 The statement ``end;`` immediately terminates the program, no matter what scope
 it is called from.
+
+
+The Switch statement
+--------------------
+
+A ``switch`` statement is a form of flow control that provides for a predicated selection of zero, one or more statements to be executed based on a discriminating controlling value. The discriminating controlling value can be either *explicit* - as it is the case for ``case`` statements - or *none of the above* - which is the case for ``default`` statements.
+
+A ``switch`` statement is not a loop. It does not iterate over a sequence of values.
+
+``switch`` statements may appear anywhere in a program where statements are allowed.
+
+An OpenQASM3 ``switch`` statement shall use the following keywords:
+
+- ``switch``
+
+- ``case``
+
+- ``default``
+
+
+An OpenQASM3 ``switch`` statement shall be the following grammar:
+
+- The ``switch`` keyword.
+- A right paren ``(`` literal.
+- A ``controlling expression``.
+- A left paren ``)`` literal.
+- A left brace ``{`` literal.
+- A sequence of one or more ``case`` statements (defined below).
+- Either zero or one ``default`` statement(s) (defined below).
+- A right brace ``}`` literal.
+   
+
+The ``controlling expression`` of a ``switch`` statement shall be of integer type. Implicit conversions to an integer type are not allowed.
+
+A ``case`` statement shall be the following grammar:
+
+- The ``case`` keyword.
+- An ``integer-constant-list-expression`` controlling label.
+- A left-brace literal: ``{``.
+- A sequence of zero, one or more OpenQASM3 statements.
+- A right-brace literal: ``}``.
+
+The ``integer-constant-list-expression`` is a sequence of one or more integer `const` expressions separated by comma ``,`` literals.
+
+A ``default`` statement shall be the following grammar:
+
+- The ``default`` keyword.
+- A left-brace literal: ``{``.
+- A sequence of zero, one or more OpenQASM3 statements.
+- A right-brace literal: ``}``.
+
+A ``switch`` statement shall be in scope only within the scope where it is defined.
+
+The left and right braces of a ``switch`` statement shall not create brace-enclosed scope.
+
+Declarations or statements at ``switch`` statement scope but outside of a ``case`` or ``default`` statement are ill-formed. The compiler shall raise an error diagnostic for such cases.
+
+A ``case`` or ``default`` statement creates brace-enclosed scope.
+
+Declarations of types that automatically acquire global scope in OpenQASM3 - such as gates, functions, arrays, qubits and defcals - are not allowed at ``case`` or ``default`` ``switch`` statement scope. Use of such declarations is ill-formed and requires a compiler diagnostic.
+
+Duplicate values within any ``integer-constant-list-expression`` for controlling labels of ``case`` statements are not allowed. The compiler shall issue an error diagnostic in such cases.
+
+A ``case`` or ``default`` statement ending with a right-brace ``}`` terminates the execution of the ``switch`` statement. After executing all the statements of the ``case`` or ``default`` statement, control is then transferred to the first statement following the closing right brace of the enclosing ``switch`` statement.
+
+A ``switch`` statement shall contain at least one ``case`` statement. A ``switch`` statement with no ``case`` statements shall raise an error diagnostic.
+
+A ``switch`` statement is not required to contain a ``default`` statement. If a ``switch`` statement does not contain a ``default`` statement and a runtime value is provided to the controlling expression that does not match any case, then the ``switch`` becomes effectively a no-op.
+
+Examples:
+
+1. A simple ``switch`` statement with ``case`` and ``default`` statements:
+
+.. code-block::
+
+	OPENQASM 3.0;
+
+	int i = 15;
+
+	switch (i) {
+	case 1, 3, 5 {
+	  // OpenQASM3 statement(s)
+	}
+	case 2, 4, 6 {
+	  // OpenQASM3 statement(s)
+	}
+	case -1 {
+	  // OpenQASM3 statement(s)
+	}
+	default {
+	  // OpenQASM3 statement(s)
+	}
+	}
+	
+
+2. A switch statement with binary literals in the ``case`` statements:
+
+.. code-block::
+
+	OPENQASM 3.0;
+
+	bit[2] b;
+	switch (int(b)) {
+	case 0b00 {
+	  // OpenQASM3 statement(s)
+	}
+	case 0b01 {
+	  // OpenQASM3 statement(s)
+	}
+	case 0b10 {
+	  // OpenQASM3 statement(s)
+	}
+	case 0b11 {
+	  // OpenQASM3 statement(s)
+	}
+	}```
+3. A ``switch`` statement containing declarations at ``case`` statement scope, and a function call, also at ``case`` statement scope:
+
+
+.. code-block::
+
+	OPENQASM 3.0;
+
+	def foo(int i, qubit[8] d) -> bit {
+	  return measure d[i];
+	}
+
+	int i = 15;
+
+	int j = 1;
+	int k = 2;
+
+	bit c1;
+
+	qubit[8] q0;
+
+	switch (i) {
+	case 1 {
+	  j = k + foo(k, q0);
+	}
+	case 2 {
+	  float[64] d = j / k;
+	}
+	case 3 {
+	}
+	default {
+	}
+	}
+	
+	
+4. A ``switch`` statement containing a nested ``switch`` statement.
+
+.. code-block::
+
+	OPENQASM 3.0;
+
+	def foo(qubit[8] q) -> int {
+	  int r = 0;
+	  bit k;
+
+	  for int i in [0 : 7] {
+		k = measure q[i];
+		r += k;
+	  }
+
+	  return r;
+	}
+
+	qubit[8] q;
+
+	int j = 30;
+	int i = foo(q);
+
+	switch (i) {
+	case 1, 2, 5, 12 {
+	}
+	case 3 {
+	  switch (j) {
+	  case 10, 15, 20 {
+	    h q;	  
+	  }
+	}
+	}
+
 
 Extern function calls
 ---------------------
