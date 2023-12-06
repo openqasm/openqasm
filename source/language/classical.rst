@@ -468,7 +468,7 @@ A ``case`` statement shall be the following grammar:
 - A sequence of zero, one or more OpenQASM3 statements.
 - A right-brace literal: ``}``.
 
-The ``integer-constant-list-expression`` is a sequence of one or more integer constants separated by comma ``,`` literals.
+The ``integer-constant-list-expression`` is a sequence of one or more integer `const` expressions separated by comma ``,`` literals.
 
 A ``default`` statement shall be the following grammar:
 
@@ -493,7 +493,7 @@ A ``case`` or ``default`` statement ending with a right-brace ``}`` terminates t
 
 A ``switch`` statement shall contain at least one ``case`` statement. A ``switch`` statement with no ``case`` statements shall raise an error diagnostic.
 
-A ``switch`` statement is not required to contain a ``default`` statement.
+A ``switch`` statement is not required to contain a ``default`` statement. If a ``switch`` statement does not contain a ``default`` statement and a runtime value is provided to the controlling expression that does not match any case, then the ``switch`` becomes effectively a no-op.
 
 Examples:
 
