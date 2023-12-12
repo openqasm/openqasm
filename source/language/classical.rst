@@ -467,7 +467,7 @@ A ``case`` statement shall be the following grammar:
 - A sequence of zero, one or more OpenQASM3 statements.
 - A right-brace literal: ``}``.
 
-The ``integer-constant-list-expression`` is a sequence of one or more integer `const` expressions separated by comma ``,`` literals.
+The ``integer-constant-list-expression`` is a sequence of one or more integer ``const`` expressions separated by comma ``,`` literals.
 
 A ``default`` statement shall be the following grammar:
 
