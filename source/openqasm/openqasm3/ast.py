@@ -143,7 +143,7 @@ class Program(QASMNode):
 
 @dataclass
 class Annotation(QASMNode):
-    """An annotation applied to a statment."""
+    """An annotation applied to a statement."""
 
     keyword: str
     command: Optional[str] = None
