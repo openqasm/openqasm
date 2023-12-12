@@ -164,7 +164,7 @@ Physical qubit constraints
 ..........................
 
 Physical qubits, by definition, reference particular hardware qubits. Circuit equivalence does not
-hold over permutations of physical qubit labels. Thus, physical qubits cannot be remapped by a
+hold over permutations of physical qubit labels. Thus, physical qubits should not be remapped by a
 compiler or hardware provider without opt-in from the programmer.
 
 Note that while physical circuits require physical qubits, the converse need not be true. A circuit
