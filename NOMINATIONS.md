@@ -94,14 +94,15 @@ Simon has a long history of contributing to the Python open source ecosystem,
 and a PSF Community Service Award. He hopes to bring this experience to OpenQASM
 and, in this way, continue being of service into the future.
 
-## Yunong Shi (Amazon)
+## Yunong Shi (AWS)
 
 Yunong is a senior scientist driving the compilation effort at Amazon Braket. He helped introduce
 OpenQASM3 into Braket, establishing it as the language specification for all gate-based
-workloads. As one of the top contributors in the OpenQASM repository, he implemented the official
+workloads. As one of the top [contributors](https://github.com/openqasm/openqasm/graphs/contributors)
+in the OpenQASM repository, he implemented the official
 Python AST and has been an active participant in several working groups. Yunong’s research interests
-mostly focus on breaking abstraction layers in the quantum software stack for better efficiency and
-using formal methods to verify the correctness of quantum programs. With his research background,
+mostly focus on [breaking abstraction layers in the quantum software stack](https://ieeexplore.ieee.org/ielaam/5/9143211/9116963-aam.pdf)
+for better efficiency and using formal methods to verify the correctness of quantum programs. With his research background,
 Yunong has also made contributions to many open-source quantum compilers, including Qiskit, ScaffCC,
 and a formally verified compiler, Giallar. If elected, Yunong aims to leverage his research
 experience, his understanding of practical user demands for OpenQASM and his hands-on experience
