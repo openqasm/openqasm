@@ -15,18 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         # Just using minimum and maximum to avoid exploding the matrix.
-        python-version: ['3.7', '3.10']
+        python-version: ['3.7', '3.12']
         antlr-version: ['4.7', '4.13']
     defaults:
       run:
         working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -43,12 +43,6 @@ jobs:
           pip install 'antlr4_python3_runtime==${{ matrix.antlr-version }}'
           pip install "$(echo openqasm3-*.whl)[all]"
 
-      - name: Check format
-        run: black --check --diff openqasm3 tests
-
-      - name: Check style
-        run: pylint openqasm3 tests
-
       - name: Run tests
         run: |
           # Swap into the testing directory so the imported `openqasm3` is the
@@ -58,8 +52,35 @@ jobs:
           cd tests
           pytest -vv --color=yes --import-mode=importlib .
 
+  style:
+    name: Check AST style
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source/openqasm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prepare environment
+        run: |
+          set -e
+          python -m pip install --upgrade pip wheel
+          python -m pip install -r requirements-dev.txt
+
+      - name: Check formatting
+        run: black --check --diff openqasm3 tests
+
+      - name: Check lint
+        run: pylint openqasm3 tests
+
   docs:
-    name: Documentation build
+    name: AST documentation build
     needs: build
     runs-on: ubuntu-latest
     defaults:
@@ -67,9 +88,9 @@ jobs:
         working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 

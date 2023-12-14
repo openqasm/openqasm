@@ -1,5 +1,8 @@
 pytest>=6.0
 pyyaml
 pylint>=2.9
-black>=20.8b0
 Sphinx>=4.0
+
+# Black uses calver majors for changes to the default style;
+# we can allow updates within a given year.
+black~=23.1
