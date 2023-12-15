@@ -61,7 +61,6 @@
 - Stefan Teleman
 - Steven Heidel
 - Thomas Alexander
-- Travis Scholten
 - Vasilenko Alexey
 - Yunong Shi
 - Zachary Schoenfeld
