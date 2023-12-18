@@ -11,7 +11,7 @@ OpenQASM is a [Qiskit project](https://qiskit.org).
 
 
 
-## Technical Steering Committe Election December 2023
+## Technical Steering Committee Election December 2023
 
 Find information on the nominees and the election in [NOMINATIONS.md](./NOMINATIONS.md).
 The list of eligible voters is in [contributors.md](./contributors.md).
