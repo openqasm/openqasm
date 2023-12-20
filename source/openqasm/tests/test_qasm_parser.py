@@ -70,6 +70,7 @@ from openqasm3.ast import (
     Span,
     StretchType,
     SubroutineDefinition,
+    SwitchStatement,
     TimeUnit,
     UintType,
     UnaryExpression,
@@ -1425,6 +1426,149 @@ def test_for_in_loop():
         ]
     )
     SpanGuard().visit(program)
+
+
+def test_switch_simple_cases():
+    program = parse("switch (x) { case 0 {} case 1, 2 { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=Identifier("x"),
+                cases=[
+                    ([IntegerLiteral(0)], CompoundStatement(statements=[])),
+                    (
+                        [IntegerLiteral(1), IntegerLiteral(2)],
+                        CompoundStatement(
+                            statements=[
+                                QuantumGate(
+                                    modifiers=[],
+                                    name=Identifier("z"),
+                                    arguments=[],
+                                    qubits=[Identifier("$0")],
+                                )
+                            ]
+                        ),
+                    ),
+                ],
+                default=None,
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_default_case():
+    program = parse("switch (x + 1) { case 0b00 {} default { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=BinaryExpression(
+                    op=BinaryOperator["+"], lhs=Identifier("x"), rhs=IntegerLiteral(1)
+                ),
+                cases=[
+                    ([IntegerLiteral(0)], CompoundStatement(statements=[])),
+                ],
+                default=CompoundStatement(
+                    statements=[
+                        QuantumGate(
+                            modifiers=[],
+                            name=Identifier("z"),
+                            arguments=[],
+                            qubits=[Identifier("$0")],
+                        )
+                    ]
+                ),
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_cases_order():
+    program = parse("switch (i) { case 0 {} case 3, 2 {} case 1, 5 {} case 4, 8 {} case 7, 6 {}}")
+    expected = [
+        [IntegerLiteral(0)],
+        [IntegerLiteral(3), IntegerLiteral(2)],
+        [IntegerLiteral(1), IntegerLiteral(5)],
+        [IntegerLiteral(4), IntegerLiteral(8)],
+        [IntegerLiteral(7), IntegerLiteral(6)],
+    ]
+    switch = program.statements[0]
+    # Test that the iteration order maintains the definition order from the program.
+    assert [values for values, _ in switch.cases] == expected
+
+
+def test_switch_no_cases():
+    program = parse("switch (x) {}")
+    assert _remove_spans(program) == Program(
+        statements=[SwitchStatement(target=Identifier("x"), cases=[], default=None)]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_expression_cases():
+    program = parse(
+        """
+switch (i) {
+    case n {}
+    case 1 + 1, n - 2 {}
+    default {}
+}
+"""
+    )
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=Identifier("i"),
+                cases=[
+                    ([Identifier("n")], CompoundStatement(statements=[])),
+                    (
+                        [
+                            BinaryExpression(
+                                op=BinaryOperator["+"], lhs=IntegerLiteral(1), rhs=IntegerLiteral(1)
+                            ),
+                            BinaryExpression(
+                                op=BinaryOperator["-"], lhs=Identifier("n"), rhs=IntegerLiteral(2)
+                            ),
+                        ],
+                        CompoundStatement(statements=[]),
+                    ),
+                ],
+                default=CompoundStatement(statements=[]),
+            )
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_rejects_case_after_default():
+    program = """
+switch (5) {
+    case 0 {
+    }
+    default {
+    }
+    case 1 {
+    }
+}
+"""
+    with pytest.raises(QASM3ParsingError, match="'case' statement after 'default'"):
+        parse(program)
+
+
+def test_switch_rejects_multiple_default():
+    program = """
+switch (5) {
+    case 0 {
+    }
+    default {
+    }
+    default {
+    }
+}
+"""
+    with pytest.raises(QASM3ParsingError, match="multiple 'default' cases"):
+        parse(program)
 
 
 def test_delay_instruction():

@@ -11,7 +11,7 @@ The reference abstract syntax tree (AST) for OpenQASM 3 programs.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 from enum import Enum
 
 __all__ = [
@@ -87,6 +87,7 @@ __all__ = [
     "SizeOf",
     "Span",
     "Statement",
+    "SwitchStatement",
     "CompoundStatement",
     "StretchType",
     "SubroutineDefinition",
@@ -1002,6 +1003,26 @@ class ForInLoop(Statement):
     identifier: Identifier
     set_declaration: Union[RangeDefinition, DiscreteSet, Expression]
     block: List[Statement]
+
+
+@dataclass
+class SwitchStatement(Statement):
+    """A switch-case statement.
+
+    The literal cases are stored in the `cases` dictionary, in declaration
+    order.  Python's `dict` guarantees (for all supported versions of Python)
+    that the iteration order will be insertion order, so this field *is*
+    ordered.
+
+    The default case, if any, is in the `default` attribute.
+    """
+
+    target: Expression
+    cases: List[Tuple[List[Expression], CompoundStatement]]
+    # Note that `None` is quite different to `[]` in this case; the latter is
+    # an explicitly empty body, whereas the absence of a default might mean
+    # that the switch is inexhaustive, and a linter might want to complain.
+    default: Optional[CompoundStatement]
 
 
 @dataclass

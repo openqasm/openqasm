@@ -527,6 +527,27 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.ReturnStatement(expression=expression)
 
     @span
+    def visitSwitchStatement(self, ctx: qasm3Parser.SwitchStatementContext):
+        target = self.visit(ctx.expression())
+        cases = []
+        default = None
+        for case in ctx.switchCaseItem():
+            if case.CASE():
+                if default is not None:
+                    _raise_from_context(case, "'case' statement after 'default'")
+                values = []
+                for expr in case.expressionList().expression():
+                    # This AST-generation step does not perform constant folding to validate that
+                    # only distinct integers are encountered; we leave that to a later step.
+                    values.append(self.visit(expr))
+                cases.append((values, self.visit(case.scope())))
+            elif default is not None:
+                _raise_from_context(case, "multiple 'default' cases")
+            else:
+                default = self.visit(case.scope())
+        return ast.SwitchStatement(target=target, cases=cases, default=default)
+
+    @span
     def visitWhileStatement(self, ctx: qasm3Parser.WhileStatementContext):
         block = self._parse_scoped_statements(ctx.body)
         return ast.WhileLoop(while_condition=self.visit(ctx.expression()), block=block)
