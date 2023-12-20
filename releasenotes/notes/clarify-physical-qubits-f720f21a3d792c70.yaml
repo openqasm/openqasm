@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Improve physical qubit documentation. Define what constitutes a valid
+    physical identifier, define physical circuits, and answer several questions
+    about what a compiler may do with physical qubits.
