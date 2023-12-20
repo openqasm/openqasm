@@ -467,7 +467,7 @@ A ``case`` statement shall be the following grammar:
 - A sequence of zero, one or more OpenQASM3 statements.
 - A right-brace literal: ``}``.
 
-The ``integer-constant-list-expression`` is a sequence of one or more integer `const` expressions separated by comma ``,`` literals.
+The ``integer-constant-list-expression`` is a sequence of one or more integer ``const`` expressions separated by comma ``,`` literals.
 
 A ``default`` statement shall be the following grammar:
 
@@ -518,9 +518,35 @@ Examples:
 	  // OpenQASM3 statement(s)
 	}
 	}
+
+
+2. A ``switch`` where the cases are ``const`` expressions:
+
+.. code-block::
+
+	OPENQASM 3.0;
+
+	const int A = 0;
+	const int B = 1;
+	int i = 15;
+
+	switch (i) {
+	case A {
+	  // OpenQASM3 statement(s)
+	}
+	case B {
+	  // OpenQASM3 statement(s)
+	}
+	case B+1 {
+	  // OpenQASM3 statement(s)
+	}
+	default {
+	  // OpenQASM3 statement(s)
+	}
+	}
 	
 
-2. A switch statement with binary literals in the ``case`` statements:
+3. A switch statement with binary literals in the ``case`` statements:
 
 .. code-block::
 
@@ -540,8 +566,9 @@ Examples:
 	case 0b11 {
 	  // OpenQASM3 statement(s)
 	}
-	}```
-3. A ``switch`` statement containing declarations at ``case`` statement scope, and a function call, also at ``case`` statement scope:
+	}
+	
+4. A ``switch`` statement containing declarations at ``case`` statement scope, and a function call, also at ``case`` statement scope:
 
 
 .. code-block::
@@ -575,7 +602,7 @@ Examples:
 	}
 	
 	
-4. A ``switch`` statement containing a nested ``switch`` statement.
+5. A ``switch`` statement containing a nested ``switch`` statement.
 
 .. code-block::
 
