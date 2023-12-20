@@ -142,8 +142,8 @@ non-consecutive, depending on the device.
 Like virtual qubits, physical qubits are global variables, but unlike virtual qubits, they must
 not be declared.
 
-These qubit types are always used for ``defcal`` blocks. Calibrations are valid only for a
-particular set of physical qubits. See also :ref:`pulse gates <pulse-gates>`.
+Qubit parameters in a ``defcal`` declaration must be physical qubits. Calibrations are valid only
+for a particular set of physical qubits. See also :ref:`pulse gates <pulse-gates>`.
 
 Physical qubits cannot be used in ``gate`` statements. See also
 :ref:`gate definitions <gate-statement>`.
