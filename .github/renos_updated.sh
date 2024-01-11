@@ -3,8 +3,8 @@
 
 #reno lint
 
-
-CHANGED_FILES=$(git diff --name-only HEAD $GITHUB_SHA)
+git fetch origin main
+CHANGED_FILES=$(git diff --name-only origin/main $GITHUB_SHA)
 
 echo Changed files
 echo $CHANGED_FILES
