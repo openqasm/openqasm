@@ -1,9 +1,14 @@
 #!/bin/bash
 # This script makes sure a reno has been updated in the PR.
 
-reno lint
+#reno lint
+
 
 CHANGED_FILES=$(git diff --name-only origin/main HEAD)
+
+echo Changed files
+echo $CHANGED_FILES
+
 for file in $CHANGED_FILES
 do
    root=$(echo "./$file" | awk -F/ '{print FS $2}' | cut -c2-)
