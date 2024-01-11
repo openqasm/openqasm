@@ -4,7 +4,7 @@
 #reno lint
 
 
-CHANGED_FILES=$(git diff --name-only origin/main HEAD)
+CHANGED_FILES=$(git diff --name-only HEAD $GITHUB_SHA)
 
 echo Changed files
 echo $CHANGED_FILES
