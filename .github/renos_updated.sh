@@ -12,7 +12,7 @@ echo $CHANGED_FILES
 for file in $CHANGED_FILES
 do
    root=$(echo "./$file" | awk -F/ '{print FS $2}' | cut -c2-)
-   if [ "$root" = "releasenotes/notes" ]; then
+   if [ "$root" = "releasenotes" ]; then
        echo "Reno added or updated: $root"
        exit 0;
    fi
