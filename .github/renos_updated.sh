@@ -10,6 +10,9 @@ do
    fi
 done
 
+echo Changed files
+echo $CHANGED_FILES
+
 # Place after the diff as reno linting can change the files
 reno lint
 
