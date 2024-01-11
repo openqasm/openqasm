@@ -1,8 +1,6 @@
 #!/bin/bash
 # This script makes sure a reno has been updated in the PR.
 
-reno lint
-
 CHANGED_FILES=$(git diff --name-only origin/main $GITHUB_SHA)
 for file in $CHANGED_FILES
 do
@@ -11,6 +9,9 @@ do
        exit 0;
    fi
 done
+
+# Place after the diff as reno linting can change the files
+reno lint
 
 echo Please add or update a release note in ./releasenotes >&2
 exit 1
