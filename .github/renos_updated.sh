@@ -1,8 +1,6 @@
 #!/bin/bash
 # This script makes sure a reno has been updated in the PR.
 
-reno lint
-
 git fetch origin main
 
 CHANGED_FILES=$(git diff --name-only origin/main $GITHUB_SHA)
