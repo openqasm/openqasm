@@ -80,9 +80,27 @@ The development cycle for OpenQASM is managed in the open using Github for proje
 TODO: When preparing a new release changes for the released version should be identified
 in the release notes (See [issue #328](https://github.com/openqasm/openqasm/issues/328)).
 
-### Semantic Versioning
-The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
-All official releases are identified by a valid semver (See [Tags](#tags)).
+### Versioning
+
+The OpenQASM language specification and packages use [semantic versioning (semver)](https://semver.org/).
+
+The language specification version is defined by the major and minor version numbers.
+For example, versions `3.0.X` are all the same language. Patch numbers are used for
+errata and clarifications.
+
+All official package releases are identified by a valid semver, and marked with a
+Git tag (See [Tags](#tags)).
+
+The GitHub release, PyPI release, Git tag and OpenQASM language version should all
+match. For example, Git tag `3.0.1` would corresepond to PyPI release `3.0.1`, and
+OpenQASM language version `3.0`.
+
+Package patch releases may contain non-breaking improvements and changes, but must
+still correspond to the same language specification (as described above).
+
+Package releases with version `0.X` predate this policy and all correspond to language
+version `3.0`.
+
 The latest development branch (See [Branches](#branches)) is always identified
 by the semver `<next_major>.<next_minor>.0-dev` where `next_<major/minor>` are
 the target major/minor versions of the next release.
@@ -96,14 +114,15 @@ branch, the language specification can and will change (possible breaking)
 as new language features are introduced and refined.
 All efforts should be made to ensure that the development branch is maintained in
 a self-consistent state that is passing continuous integration (CI).
-Changes should not be merged unless they are verified by CI. TODO: The latest
-development specification of the language should be automatically published by CI
-to a fixed URL for easy access to the current development HEAD.
+Changes should not be merged unless they are verified by CI.
+TODO: The latest development specification of the language should be automatically
+published by CI to a fixed URL for easy access to the current development HEAD.
+
 * `stable/<major.minor>` branches:
 Branches under `stable/<major.minor>` are used to maintain released versions of the OpenQASM
 specification. They contain the version of the specification corresponding to the
 release as identified by its [semantic version](https://semver.org/). For example,
-stable/3.2 would be the specification version for major version 3
+`stable/3.2` would be the specification version for major version 3
 (corresponding to OpenQASM3) and minor version 2. On these branches, the language specification
 is considered stable. The only changes that may be merged to a stable branch are
 patches/bugfixes. When a patch is required when possible the fix should
@@ -116,20 +135,21 @@ The new stable branch `HEAD` should be tagged (see [Tags](#tags)) with a new
 
 ### Release Notes
 
-When making any end user facing changes in a contribution we have to make sure
-we document that when we release a new version of OpenQASM. The expectation
-is that if your code contribution has user facing changes that you will write
-the release documentation for these changes. This documentation must explain
-what was changed, why it was changed, and how users can either use or adapt
-to the change. The idea behind release documentation is that when a naive
-user with limited internal knowledge of the project is upgrading from the
-previous release to the new one, they should be able to read the release notes,
-understand if they need to update their project which uses OpenQASM, and how they
-would go about doing that. It ideally should explain why they need to make
-this change too, to provide the necessary context.
+When making any end user facing changes in a contribution we need to document them so
+that we can inform users when we release a new version of OpenQASM.
 
-To make sure we don't forget a release note or if the details of user facing
-changes over a release cycle we require that all user facing changes include
+The expectation is that if your code contribution has user facing changes that you will
+write the release documentation for these changes. This documentation must explain what
+was changed, why it was changed, and how users can either use or adapt to the change.
+
+The idea behind release documentation is that when a naive user with limited internal
+knowledge of the project is upgrading from the previous release to the new one, they
+should be able to read the release notes, understand if they need to update their
+project which uses OpenQASM, and how they would go about doing that. It ideally should
+explain why they need to make this change too, to provide the necessary context.
+
+To ensure we don't forget a release note or the details of a user facing
+change over a release cycle, we require that all user facing changes include
 documentation at the same time as the code. To accomplish this we use the
 [reno](https://docs.openstack.org/reno/latest/) tool which enables a Git-based
 workflow for writing and compiling release notes.
@@ -149,17 +169,21 @@ your local repository checkout's root::
 where short-description-string is a brief string (with no spaces) that describes
 what's in the release note. This will become the prefix for the release note
 file. Once that is run it will create a new yaml file in releasenotes/notes.
-Then open that yaml file in a text editor and write the release note. The basic
-structure of a release note is restructured text in yaml lists under category
+
+Open that yaml file in a text editor and write the release note.
+
+The basic structure of a release note is restructured text in yaml lists under category
 keys. You add individual items under each category and they will be grouped
-automatically by release when the release notes are compiled. A single file
-can have as many entries in it as needed, but to avoid potential conflicts
-you'll want to create a new file for each pull request that has user facing
-changes. When you open the newly created file it will be a full template of
-the different categories with a description of a category as a single entry
-in each category. You'll want to delete all the sections you aren't using and
-update the contents for those you are. For example, the end result should
-look something like::
+automatically by release when the release notes are compiled. A single file can have as
+many entries in it as needed, but to avoid potential conflicts you'll want to create a
+new file for each pull request that has user facing changes.
+
+When you open the newly created file it will be a full template of the different
+categories with a description of a category as a single entry in each category. You'll
+want to delete all the sections you aren't using and update the contents for those you
+are.
+
+For example, the end result should look something like::
 
 ```yaml
 features:
@@ -194,13 +218,18 @@ file to your commit with `git add` and commit them to your PR branch to make
 sure they're included with the code in your PR.
 
 ### Tags
+
 Git tags are used to tag the specific commit associated with a versioned release.
-Tags must take the form of `<major>.<minor>.<patch>-<labels>`. For example the semver
-`3.2.1` would point to the language specification with major version 3 (OpenQASM 3),
-minor version 2, and, patch version 1. The current development version would therefore be
-`3.3.0-dev`. All official releases when tagged must always point to the current HEAD
-of a stable branch. TODO: Tags are used to trigger CI to deploy and publish new releases
-of the language specification.
+
+Tags must take the form `<major>.<minor>.<patch>-<labels>`. For example, the semver
+`3.2.1` would point to the release with major version 3 (OpenQASM 3),
+minor version 2, and, patch version 1.
+
+All official releases when tagged must always point to the current HEAD of a stable
+branch.
+
+TODO: Tags are used to trigger CI to deploy and publish new releases of the language
+specification.
 
 ### Release cycle
 
