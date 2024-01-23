@@ -1,1 +1,1 @@
-.. release-notes:: Release Notes (modified)
+.. release-notes:: Release Notes
