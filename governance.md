@@ -48,6 +48,14 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
 
 ### Past TSCs
 
+* On 15 January, 2024 voting in the TSC election closed, resulting in the following changes in the composition of the TSC.
+    * Incoming members
+        * Jialin Dou (Quantinuum)
+        * Simon Cross (Zurich Instruments)
+    * Outgoing members
+        * Bettina Heim
+        * Philipp Schindler
+
 * On 2023-06-13, Steven Heidel resigned and the TSC appointed Erik Davis (AWS) to serve the remainder of Steven's term.
 
 * The initial TSC, finishing on 2023-01-13 was:
