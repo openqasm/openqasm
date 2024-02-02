@@ -18,14 +18,14 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 ## Structures
 
-We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The current TSC is:
+We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The current TSC (as of January 16, 2024) is:
 
-* Dor Israeli (Quantum Machines)
-* Lev S Bishop (IBM Quantum)
 * Blake Johnson (IBM Quantum)
+* Dor Israeli (Quantum Machines)
 * Erik Davis (AWS)
-* Bettina Heim (Nvidia)
-* Philipp Schindler (Innsbruck)
+* Jialin Dou (Quantinuum)
+* Lev S Bishop (IBM Quantum)
+* Simon Cross (Zurich Instruments)
 
 TSC meetings shall be open to all **Contributors**. The TSC may invite additional guests at its discretion. The TSC will make decisions by simple majority vote of its members. TSC meetings shall require a quorum of 66% of voting members present to make a decision by vote (ie, 4 members for the initial TSC). If a TSC meeting does not have quorum, it may still discuss and record minutes. The TSC may make decisions outside of meetings (e.g. on a pull request) so long as voting/approval in that forum meets the quorum requirement. Upon request from any TSC member, any decision must be deferred until the next TSC meeting, to enable live discussion.
 
@@ -47,6 +47,14 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
 
 
 ### Past TSCs
+
+* On 15 January, 2024 voting in the TSC election closed, resulting in the following changes in the composition of the TSC.
+    * Incoming members
+        * Jialin Dou (Quantinuum)
+        * Simon Cross (Zurich Instruments)
+    * Outgoing members
+        * Bettina Heim
+        * Philipp Schindler
 
 * On 2023-06-13, Steven Heidel resigned and the TSC appointed Erik Davis (AWS) to serve the remainder of Steven's term.
 

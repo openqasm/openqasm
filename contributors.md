@@ -1,11 +1,11 @@
 # TSC
 
-- Bettina Heim
 - Blake Johnson
 - Dor Israeli
 - Erik Davis
+- Jialin Dou
 - Lev Bishop
-- Philipp Schindler
+- Simon Cross
 
 # Contributors by commit
 
@@ -15,7 +15,7 @@
 - Adrien Suau
 - Ali Javadi-Abhari
 - Andrew Cross
-- Antonio Córcoles 
+- Antonio Córcoles
 - Brandur Thorgrimsson
 - Bruno Schmitt
 - Carter Snook
@@ -56,7 +56,6 @@
 - Rolf Huisman
 - Salvador de la Puente González
 - Shaohan Hu
-- Simon Cross
 - Simon Kissane
 - Stefan Teleman
 - Steven Heidel
@@ -69,15 +68,16 @@
 # Contributors via GH interaction / WG participation
 
 - Alex McCaskey
+- Bettina Heim
 - Bill Ticehurst
 - Derek Bolt
 - Dor Israeli
-- Jialin Dou
 - Lauren Capelluto
 - Marius Hillenbrand
 - Matthew Amy
 - Niel de Beaudrap
 - Peter Karalekas
+- Philipp Schindler
 - Vincent Pascuzzi
 
 # Additional invitees
