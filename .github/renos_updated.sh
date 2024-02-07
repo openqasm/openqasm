@@ -11,7 +11,8 @@ if [ -z $CHANGED_SOURCE_FILES ]; then
     exit 0;
 fi;
 
-for file in $CHANGED_SOURCE_FILES
+CHANGED_RELEASE_NOTES=$(git diff --name-only origin/main $GITHUB_SHA -- releasenotes)
+for file in $CHANGED_RELEASE_NOTES
 do
    root=$(echo "./$file" | cut -d / -f 3 )
    if [ "$root" = "notes" ]; then
