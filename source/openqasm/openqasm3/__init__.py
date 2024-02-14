@@ -18,6 +18,7 @@ __all__ = [
     "ast",
     "visitor",
     "properties",
+    "spec",
     "dump",
     "dumps",
     "parser",
@@ -26,7 +27,7 @@ __all__ = [
 
 __version__ = "0.5.0"
 
-from . import ast, visitor, properties
+from . import ast, visitor, properties, spec
 
 from .printer import dump, dumps
 
