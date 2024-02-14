@@ -6,8 +6,9 @@ Supported Specification Metadata (``openqasm3.spec``)
 .. currentmodule:: openqasm3.spec
 
 Metadata on the specifications supported by this package.
-"""
 
+.. autodata:: supported_versions
+"""
 
 __all__ = ["supported_versions"]
 
