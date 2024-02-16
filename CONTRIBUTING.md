@@ -77,8 +77,8 @@ Please follow the next rules for the commit messages:
 ## Development Cycle
 
 The development cycle for OpenQASM is managed in the open using Github for project management.
-TODO: When preparing a new release changes for the released version should be identified
-in the release notes (See [issue #328](https://github.com/openqasm/openqasm/issues/328)).
+Release notes are collected separately for the specification and reference parser in
+the `releasenotes` directory.
 
 ### Semantic Versioning
 The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
@@ -96,9 +96,9 @@ branch, the language specification can and will change (possible breaking)
 as new language features are introduced and refined.
 All efforts should be made to ensure that the development branch is maintained in
 a self-consistent state that is passing continuous integration (CI).
-Changes should not be merged unless they are verified by CI. TODO: The latest
-development specification of the language should be automatically published by CI
-to a fixed URL for easy access to the current development HEAD.
+Changes should not be merged unless they are verified by CI. The latest
+development specification of the language (called the live spec) is automatically
+[published by CI](https://openqasm.github.io/) for easy access to the current development HEAD.
 * `stable/<major.minor>` branches:
 Branches under `stable/<major.minor>` are used to maintain released versions of the OpenQASM
 specification. They contain the version of the specification corresponding to the
