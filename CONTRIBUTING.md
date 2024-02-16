@@ -85,7 +85,17 @@ The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
 All official releases are identified by a valid semver (See [Tags](#tags)).
 The latest development branch (See [Branches](#branches)) is always identified
 by the semver `<next_major>.<next_minor>.0-dev` where `next_<major/minor>` are
-the target major/minor versions of the next release.
+the target major/minor versions of the next release. Specification changes that
+require backwards incompatible changes to most parsers generally will warrant
+a major version increase, while less drastic changes only warrant a minor
+version increase.
+
+### Timing of Releases
+
+The OpenQASM Technical Steering Committee is the final arbiter on when a new
+semantic version of the specification and reference parser is warranted. The TSC
+expects the cadence of releases to be dicated by the contributions provided by
+the community, and not by a time-based schedule.
 
 ### Branches
 
