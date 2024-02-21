@@ -14,9 +14,20 @@ With the ``[parser]`` extra installed, the simplest interface to the parser is
 the :obj:`~parser.parse` function.
 """
 
+__all__ = [
+    "ast",
+    "visitor",
+    "properties",
+    "spec",
+    "dump",
+    "dumps",
+    "parser",
+    "parse",
+]
+
 __version__ = "0.5.0"
 
-from . import ast, visitor, properties
+from . import ast, visitor, properties, spec
 
 from .printer import dump, dumps
 
@@ -27,5 +38,6 @@ except ModuleNotFoundError:
     pass
 else:
     # Any import errors in section are of interest to the user, and should be propagated.
+    del antlr4
     from . import parser
     from .parser import parse
