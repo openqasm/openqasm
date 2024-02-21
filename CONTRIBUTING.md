@@ -77,15 +77,25 @@ Please follow the next rules for the commit messages:
 ## Development Cycle
 
 The development cycle for OpenQASM is managed in the open using Github for project management.
-TODO: When preparing a new release changes for the released version should be identified
-in the release notes (See [issue #328](https://github.com/openqasm/openqasm/issues/328)).
+Release notes are collected separately for the specification and reference parser in
+the `releasenotes` directory.
 
 ### Semantic Versioning
 The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
 All official releases are identified by a valid semver (See [Tags](#tags)).
 The latest development branch (See [Branches](#branches)) is always identified
 by the semver `<next_major>.<next_minor>.0-dev` where `next_<major/minor>` are
-the target major/minor versions of the next release.
+the target major/minor versions of the next release. Specification changes that
+require backwards incompatible changes to most parsers generally will warrant
+a major version increase, while less drastic changes only warrant a minor
+version increase.
+
+### Timing of Releases
+
+The OpenQASM Technical Steering Committee is the final arbiter on when a new
+semantic version of the specification and reference parser is warranted. The TSC
+expects the cadence of releases to be dicated by the contributions provided by
+the community, and not by a time-based schedule.
 
 ### Branches
 
@@ -96,9 +106,9 @@ branch, the language specification can and will change (possible breaking)
 as new language features are introduced and refined.
 All efforts should be made to ensure that the development branch is maintained in
 a self-consistent state that is passing continuous integration (CI).
-Changes should not be merged unless they are verified by CI. TODO: The latest
-development specification of the language should be automatically published by CI
-to a fixed URL for easy access to the current development HEAD.
+Changes should not be merged unless they are verified by CI. The latest
+development specification of the language (called the live spec) is automatically
+[published by CI](https://openqasm.github.io/) for easy access to the current development HEAD.
 * `stable/<major.minor>` branches:
 Branches under `stable/<major.minor>` are used to maintain released versions of the OpenQASM
 specification. They contain the version of the specification corresponding to the
