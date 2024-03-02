@@ -12,18 +12,18 @@ jobs:
     name: Build wheels
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         # This is pure Python, so it shouldn't matter what version we use to
         # build the sdist and wheel.
 
       - name: Update pip
         run: pip install --upgrade pip
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
           java-version: '15'
           distribution: 'adopt'
@@ -75,13 +75,13 @@ jobs:
       - name: Build package
         run: python -m build --wheel --sdist .
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/dist/*.whl
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: openqasm3-python-sdist
           path: ./source/openqasm/dist/*.tar.gz
