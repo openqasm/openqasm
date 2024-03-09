@@ -9,11 +9,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
 
       - name: Install dependencies
         run: |
@@ -25,7 +25,7 @@ jobs:
           ./buildPublishable.sh main ./publish_build remotes/origin
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: openqasm/openqasm.github.io

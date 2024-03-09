@@ -20,16 +20,16 @@ jobs:
       # ensure that the pre-built wheel works, and its version matches what we
       # expect from the tag.
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         with:
           # The version checker uses 'importlib.metadata' which is Python 3.10+.
           python-version: '3.10'
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openqasm3-python-wheel
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openqasm3-python-sdist
 
