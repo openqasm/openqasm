@@ -27,6 +27,7 @@ semantics.
    subroutines
    scope
    directives
+   standard_library
    delays
    pulses
    openpulse

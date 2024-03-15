@@ -15,6 +15,9 @@ A comment block begins with ``/*`` and ends with ``*/``:
    A comment block
    */
 
+
+.. _version-string:
+
 Version string
 ==============
 
