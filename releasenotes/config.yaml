@@ -4,3 +4,115 @@ default_branch: main
 collapse_pre_releases: true
 branch_name_prefix: release/
 branch_name_re: release/.+
+sections:
+  # The prelude section is implicitly included.
+  # top-level section for spec release notes
+  - [specification_changes, Specification, 1]
+  - [spec_features, New Features, 2]
+  - [spec_issues, Known Issues, 2]
+  - [spec_upgrade, Upgrade Notes, 2]
+  - [spec_deprecations, Deprecations, 2]
+  - [spec_fixes, Bug Fixes, 2]
+  - [spec_other, Other, 2]
+  # top-level section for grammar and ast release notes
+  - [ast_changes, Grammar and AST, 1]
+  - [ast_features, New Features, 2]
+  - [ast_issues, Known Issues, 2]
+  - [ast_upgrade, Upgrade Notes, 2]
+  - [ast_deprecations, Deprecations, 2]
+  - [ast_fixes, Bug Fixes, 2]
+  - [ast_other, Other, 2]
+template: |+
+  ---
+  prelude: >
+      Replace this text with content to appear at the top of the section for this
+      release. All of the prelude content is merged together and then rendered
+      separately from the items listed in other parts of the file, so the text
+      needs to be worded so that both the prelude and the other items make sense
+      when read independently. This may mean repeating some details. Not every
+      release note requires a prelude. Usually only notes describing major
+      features or adding release theme details should have a prelude.
+  spec_features:
+    - |
+      List new features here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  spec_issues:
+    - |
+      List known issues here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  spec_upgrade:
+    - |
+      List upgrade notes here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  spec_deprecations:
+    - |
+      List deprecations notes here, or remove this section.  All of the list
+      items in this section are combined when the release notes are rendered, so
+      the text needs to be worded so that it does not depend on any information
+      only available in another section, such as the prelude. This may mean
+      repeating some details.
+  spec_fixes:
+    - |
+      Add normal bug fixes here, or remove this section.  All of the list items
+      in this section are combined when the release notes are rendered, so the
+      text needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  spec_other:
+    - |
+      Add other notes here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  ast_features:
+    - |
+      List new features here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  ast_issues:
+    - |
+      List known issues here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  ast_upgrade:
+    - |
+      List upgrade notes here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  ast_deprecations:
+    - |
+      List deprecations notes here, or remove this section.  All of the list
+      items in this section are combined when the release notes are rendered, so
+      the text needs to be worded so that it does not depend on any information
+      only available in another section, such as the prelude. This may mean
+      repeating some details.
+  ast_fixes:
+    - |
+      Add normal bug fixes here, or remove this section.  All of the list items
+      in this section are combined when the release notes are rendered, so the
+      text needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
+  ast_other:
+    - |
+      Add other notes here, or remove this section.  All of the list items in
+      this section are combined when the release notes are rendered, so the text
+      needs to be worded so that it does not depend on any information only
+      available in another section, such as the prelude. This may mean repeating
+      some details.
