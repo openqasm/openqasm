@@ -11,7 +11,8 @@ if [ -z $CHANGED_SOURCE_FILES ]; then
     exit 0;
 fi;
 
-CHANGED_RELEASE_NOTES=$(git diff --name-only origin/main $GITHUB_SHA -- releasenotes)
+CHANGED_RELEASE_NOTES=$(git diff --name-only origin/main $GITHUB_SHA -- spec_releasenotes)
+CHANGED_RELEASE_NOTES+=$(git diff --name-only origin/main $GITHUB_SHA -- ast_releasenotes)
 for file in $CHANGED_RELEASE_NOTES
 do
    root=$(echo "./$file" | cut -d / -f 3 )
@@ -21,5 +22,5 @@ do
    fi
 done
 
-echo Please add or update a release note in ./releasenotes >&2
+echo Please add or update a release note in ./spec_releasenotes or ./ ast_releasenotes >&2
 exit 1
