@@ -1,5 +1,5 @@
 ---
-other:
+spec_other:
   - |
     The keywords ``switch``, ``case``, and ``default`` are no longer reserved
     by the spec for future expansion of the language.
