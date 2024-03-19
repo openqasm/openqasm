@@ -22,7 +22,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Lint releasenotes
-        run: reno lint
+        run: |
+          reno --rel-notes-dir spec_releasenotes lint
+          reno --rel-notes-dir ast_releasenotes lint
       - name: Check releasenotes updated
         if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-reno')
         run: ./.github/renos_updated.sh
