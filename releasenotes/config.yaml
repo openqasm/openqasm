@@ -22,6 +22,9 @@ sections:
   - [ast_deprecations, Deprecations, 2]
   - [ast_fixes, Bug Fixes, 2]
   - [ast_other, Other, 2]
+semver_major: spec_upgrade
+semver_minor: spec_features
+semver_patch: spec_fixes
 template: |+
   ---
   prelude: >
