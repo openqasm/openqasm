@@ -2,7 +2,7 @@ Sphinx>=4.0
 sphinxcontrib-bibtex
 openqasm_pygments~=0.1.0
 pylint
-reno
+reno>=4.1.0
 
 # `sphinxcontrib-bibtex` uses `pkg_resources` from `setuptools` but fails
 # to specify it as an actual runtime dependency, so we do it for them.

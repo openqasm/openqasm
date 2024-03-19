@@ -1,5 +1,5 @@
 ---
-upgrade:
+spec_upgrade:
   - |
     The "wildcard" identifiers in pulse grammars are now regular OpenQASM 3
     identifiers, without the leading dollar sign (``$``), *e.g.* what was ``$q``

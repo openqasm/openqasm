@@ -1,7 +1,11 @@
 ---
-features:
+spec_features:
   - |
     Added CI support for ensuring contributions include a release note.
     If this is not desired for a PR the tag "no-reno" may be added to the
     PR.
-
+ast_features:
+  - |
+    Added CI support for ensuring contributions include a release note.
+    If this is not desired for a PR the tag "no-reno" may be added to the
+    PR.

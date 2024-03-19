@@ -1,5 +1,5 @@
 ---
-features:
+ast_features:
   - |
     Added `openqasm3.spec.supported_versions` which lists the OpenQASM specification
     versions supported by the `openqasm3` package. Currently the supported versions
