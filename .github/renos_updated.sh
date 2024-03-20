@@ -22,5 +22,5 @@ do
    fi
 done
 
-echo Please add or update a release note in ./spec_releasenotes or ./ ast_releasenotes >&2
+echo Please add or update a release note in ./spec_releasenotes or ./ast_releasenotes >&2
 exit 1
