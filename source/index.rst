@@ -8,6 +8,7 @@ OpenQASM |version| Specification
   language/index
   grammar/index
   release_notes
+  GitHub <https://github.com/openqasm/openqasm/>
 
 Bibliography
 ============
