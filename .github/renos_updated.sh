@@ -13,10 +13,9 @@ fi;
 
 CHANGED_RELEASE_NOTES=$(git diff --name-only origin/main $GITHUB_SHA -- spec_releasenotes)
 CHANGED_RELEASE_NOTES+=$(git diff --name-only origin/main $GITHUB_SHA -- ast_releasenotes)
-echo CHANGED_RELEASE_NOTES $CHANGED_RELEASE_NOTES
 for file in $CHANGED_RELEASE_NOTES
 do
-   root=$(echo "./$file" | cut -d / -f 3 )
+   root=$(echo "./$file" | cut -d / -f 4 )
    if [ "$root" = "notes" ]; then
        echo "Reno added or updated: $file"
        exit 0;
