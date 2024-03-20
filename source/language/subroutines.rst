@@ -50,7 +50,7 @@ subroutine that takes qubits and registers::
 
    def xcheck(qubit[4] d, qubit a) -> bit {
      reset a;
-     for i in [0: 3] cx d[i], a;
+     for int i in [0: 3] cx d[i], a;
      return measure a;
    }
 
@@ -61,7 +61,7 @@ instructions, like::
    const n = /* some size, known at compile time */;
    def parity(bit[n] cin) -> bit {
      bit c;
-     for i in [0: n - 1] {
+     for int i in [0: n - 1] {
        c ^= cin[i];
      }
      return c;
@@ -143,8 +143,8 @@ subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
      uint[32] firstDim  = sizeof(twoD_arg, 0);
      uint[32] secondDim = sizeof(twoD_arg, 1);
      int[32] sum = 0;
-     for ii in [0:firstDim-1] {
-       for jj in [0:secondDim-1] {
+     for int ii in [0:firstDim-1] {
+       for int jj in [0:secondDim-1] {
          sum += int[32](twoD_arg[ii][jj]);
        }
      }

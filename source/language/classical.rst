@@ -344,9 +344,9 @@ accessible after the loop.
 
    // Loop over a register of bits.
    bit[5] register;
-   for b in register {}
+   for bit b in register {}
    let alias = register[1:3];
-   for b in alias {}
+   for bit b in alias {}
 
 
 While loops
