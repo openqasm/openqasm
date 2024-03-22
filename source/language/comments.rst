@@ -42,6 +42,6 @@ This statement can only be used at the global scope.
    // First non-comment is a version string
    OPENQASM 3.0;
 
-   include "stdgates.qasm";
+   include "stdgates.inc";
 
    // Rest of QASM program
