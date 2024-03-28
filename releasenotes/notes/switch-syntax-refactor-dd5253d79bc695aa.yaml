@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Added support for switch statements, allowing for compact description of multi-way
+    branches that depend on a common control expression.
