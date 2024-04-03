@@ -691,7 +691,7 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
       set_frequency(driveframe, frequency_start);
   }
 
-  for i in [1:frequency_num_steps] {
+  for int i in [1:frequency_num_steps] {
       // step into a `cal` block to adjust the pulse frequency via the frame frequency
       cal {
           shift_frequency(driveframe, frequency_step);
@@ -875,7 +875,7 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
   }
 
   // Ramsey sequence on qubit 1 and 3, Hahn echo on qubit 2
-  for τ in [0:10us:1ms] {
+  for duration τ in [0:10us:1ms] {
 
     // First π/2 pulse
     rx(π/2) $0, $1, $2;
@@ -886,7 +886,7 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     }
 
     // Hahn echo π pulse composed of two π/2 pulses
-    for ct in [0:1]:
+    for int ct in [0:1]:
       rx(π/2) $2;
 
     cal {
