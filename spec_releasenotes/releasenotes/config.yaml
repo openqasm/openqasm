@@ -4,3 +4,4 @@ default_branch: main
 collapse_pre_releases: true
 branch_name_prefix: release/
 branch_name_re: release/.+
+release_tag_re: (spec\/(?:v?[\d.ab]|rc)+)  # digits, a, b, and rc cover regular and pre-releases
