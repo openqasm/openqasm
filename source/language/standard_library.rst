@@ -31,7 +31,7 @@ exactly the set of gates defined in the standard library for the language versio
 present, the implementation should make available the gates from the language version it is parsing
 the rest of the program under.
 
-Implementations must not define gates that are not present in chosen OpenQASM 3 version, where
+Implementations must not define gates that are not present in the chosen OpenQASM 3 version, where
 doing so could cause a user program to be ill formed (for example due to a user attempting to define
 their own gate with a clashing name).
 
