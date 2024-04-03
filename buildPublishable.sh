@@ -55,6 +55,7 @@ for branch in $(git for-each-ref --format='%(refname:short)' --sort=-refname "re
 
   echo "Copy to publish dir ${destDir}/versions/${versionNum}"
   mv build/html "${destDir}/versions/${versionNum}"
+  rm -rf build
 done
 
 echo "Getting live branch ${liveBranch}"
