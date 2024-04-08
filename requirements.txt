@@ -1,6 +1,7 @@
 Sphinx>=4.0
 sphinxcontrib-bibtex
 openqasm_pygments~=0.1.0
+openqasm_sphinx~=0.0.1
 pylint
 reno
 

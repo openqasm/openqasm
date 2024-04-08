@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath('_extensions'))
 
 # -- Project information -----------------------------------------------------
 from typing import List
@@ -34,13 +34,11 @@ extensions = [
   'sphinx.ext.githubpages',
   'sphinxcontrib.bibtex',
   'reno.sphinxext',
-  # These two are our custom stuff.
-  '_extensions.multifigure',
-  '_extensions.oq_domain',
+  'openqasm_sphinx',
+  'multifigure',
 ]
 
-# Set the default object-documentation domain to the custom 'oq' domain we defined in
-# `_extensions.oq_domain`.
+# Set the default object-documentation domain to the 'oq' domain of `openqasm_sphinx`.
 primary_domain = "oq"
 
 # Add any paths that contain templates here, relative to this directory.
