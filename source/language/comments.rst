@@ -48,3 +48,5 @@ This statement can only be used at the global scope.
    include "stdgates.qasm";
 
    // Rest of QASM program
+
+The file ``stdgates.inc`` itself is :ref:`the standard library of OpenQASM 3 <standard-library>`.

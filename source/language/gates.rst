@@ -73,6 +73,8 @@ There are 3 mechanisms to construct new gates:
 3. The **built-in gates** comprising the one-qubit gate ``U(θ, ϕ, λ)`` and the zero-qubit gate ``gphase(γ)``.
    The definitions of these gates is part of the language specification.
 
+The :ref:`built-in standard library of OpenQASM 3 <standard-library>` includes several gate definitions for convenience.
+
 The next subsections go through these cases.
 
 .. _gate-statement:
@@ -299,60 +301,60 @@ repetitions of ``inv @ U`` for :math:`k < 0`.
 Built-in gates
 ~~~~~~~~~~~~~~
 
-Built-in single-qubit gate ``U``
-++++++++++++++++++++++++++++++++
+.. gate:: U(θ, ϕ, λ) a
 
-The built-in single-qubit gate ``U(θ, ϕ, λ)`` represents the unitary matrix
+   The built-in single-qubit gate :gate:`U` represents the unitary matrix
 
-.. math::
+   .. math::
 
-   U(\theta,\phi,\lambda) := \frac{1}{2}\left(\begin{array}{cc}
-      1+e^{i\theta} & -ie^{i\lambda}(1-e^{i\theta}) \\
-      ie^{i\phi}(1-e^{i\theta}) & e^{i(\phi+\lambda)}(1+e^{i\theta}) \end{array}\right).
+      U(\theta,\phi,\lambda) := \frac{1}{2}\left(\begin{array}{cc}
+         1+e^{i\theta} & -ie^{i\lambda}(1-e^{i\theta}) \\
+         ie^{i\phi}(1-e^{i\theta}) & e^{i(\phi+\lambda)}(1+e^{i\theta}) \end{array}\right).
 
-This definition is :math:`2\pi`-periodic in each of the parameters θ, ϕ, λ and
-specifies any element of :math:`U(2)` up to a
-global phase [#uphase]_ . For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``
-(up to a non-standard global phase).
+   This definition is :math:`2\pi`-periodic in each of the parameters θ, ϕ, λ and
+   specifies any element of :math:`U(2)` up to a
+   global phase [#uphase]_ . For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``
+   (up to a non-standard global phase).
 
-Global phase gate ``gphase``
-++++++++++++++++++++++++++++
+.. gate:: gphase(γ)
 
-From a physical perspective, the unitaries :math:`e^{i\gamma}V` and :math:`V` are equivalent although they differ by a global
-phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
-that is applied when the control qubit is one. A built-in global phase gate
-allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` accumulates a global phase
-of :math:`e^{i\gamma}`.
+   The global phase gate.
 
-Just as every n-qubit gate can be thought of as generating a tensor product with the suitable
-identity matrix to cover all other qubits in the gate, subroutine, or global scope containing the
-instruction, similarly ``gphase`` behaves as a 0-qubit gate and when applied in a context with
-`m` qubits in scope, behaves as applying the unitary
+   From a physical perspective, the unitaries :math:`e^{i\gamma}V` and :math:`V` are equivalent although they differ by a global
+   phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
+   that is applied when the control qubit is one. A built-in global phase gate
+   allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` accumulates a global phase
+   of :math:`e^{i\gamma}`.
 
-.. math::
-   \operatorname{gphase}(\gamma) := e^{i\gamma} I_m,
+   Just as every n-qubit gate can be thought of as generating a tensor product with the suitable
+   identity matrix to cover all other qubits in the gate, subroutine, or global scope containing the
+   instruction, similarly ``gphase`` behaves as a 0-qubit gate and when applied in a context with
+   `m` qubits in scope, behaves as applying the unitary
 
-where :math:`I_m` denotes the identity matrix with size :math:`2^m`
+   .. math::
+      \operatorname{gphase}(\gamma) := e^{i\gamma} I_m,
 
-For example
+   where :math:`I_m` denotes the identity matrix with size :math:`2^m`
 
-.. code-block::
+   For example
 
-   gate X q {
-      U(π, 0, π) q;
-      gphase -π/2;
-   }
+   .. code-block::
 
-   gate CX c, t {
-      ctrl @ X c, t;
-   }
+      gate X q {
+         U(π, 0, π) q;
+         gphase -π/2;
+      }
 
-defines ``CX`` as the standard CNOT gate.
+      gate CX c, t {
+         ctrl @ X c, t;
+      }
+
+   defines ``CX`` as the standard CNOT gate.
 
 Relation of the built-in gates to hardware-native gates
-----------------------------
+-------------------------------------------------------
 
-For *non-parameterized gates*, the choice of ``U`` and ``gphase`` as the built-in gates, along with one
+For *non-parameterized gates*, the choice of :gate:`U` and :gate:`gphase` as the built-in gates, along with one
 two-qubit entangling gate CNOT as defined gives a universal gate set that can represent general n-qubit
 unitaries with an :math:`O(2^n)` size description :cite:`barenco95`. This basis is not an enforced compilation
 target but a mechanism to define other gates. For many gates of
@@ -371,8 +373,8 @@ expressions, nor to evaluate at runtime for cases where the parameters depend on
 For many current platforms the qubits are defined relative to a
 rotating frame and the rotating wave approximation (RWA) holds. This is the domain covered by the OpenPulse
 specification. For this case, the only supported form of run-time parameterization
-will likely be via a ``rz(ϕ)`` implemented by specialized frame-tracking hardware.
-This gate is covered by the built-in ``U`` as a special case ``U(0, 0, ϕ)``
+will likely be via a :gate:`rz` implemented by specialized frame-tracking hardware.
+This gate is covered by the built-in :gate:`U` as a special case ``U(0, 0, ϕ)``
 However, if other forms of run-time parameterization become important, it may be necessary to revise OpenQASM,
 to give meaning to those gates, for example by adding new basis gates or additional ``gate`` definition syntax.
 

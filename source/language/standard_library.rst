@@ -1,3 +1,5 @@
+.. _standard-library:
+
 Standard library
 ================
 
@@ -57,7 +59,7 @@ Single-qubit gates
    The phase gate.  Defined by the mapping :math:`\lvert0\rangle \to \lvert0\rangle` and
    :math:`\lvert1\rangle \to e^{i\lambda}\lvert1\rangle`.
 
-   Equivalent to ``ctrl @ gphase(λ) a``.
+   Equivalent to ``ctrl @ gphase(λ) a`` (see :gate:`gphase`).
 
    .. seealso::
 
@@ -281,6 +283,13 @@ convenience only by ``stdgates.inc``, since the ``ctrl`` modifier made it unnece
 
    A convenience alias for :gate:`cx`.
 
+   .. versionadded:: 2.0
+
+   .. versionchanged:: 3.0
+
+      In OpenQASM 2.0, :gate:`CX` was a built-in gate, so was automatically defined.
+      From OpenQASM 3.0 onwards, it is part of the :ref:`standard library <standard-library>`.
+
 While OpenQASM 2.0 had no formal standard library, the content of the original IBM Quantum
 Experience include file ``qelib1.inc`` was described in the paper, and this became an informal, *de
 facto* standard library of the language.
@@ -310,20 +319,20 @@ These are reproduced in ``stdgates.inc`` to ease the transition.
 
 .. gate:: u1(λ) a
 
-   Single-argument form of the OpenQASM 2.0 ``U`` gate.  Equivalent to :gate:`p`.
+   Single-argument form of the OpenQASM 2.0 :gate:`U` gate.  Equivalent to :gate:`p`.
 
    .. versionadded:: 3.0
 
 .. gate:: u2(φ, λ) a
 
-   Two-argument form of the OpenQASM 2.0 ``U`` gate.  Equivalent to ``u3(π/2, φ, λ)`` (see
+   Two-argument form of the OpenQASM 2.0 :gate:`U` gate.  Equivalent to ``u3(π/2, φ, λ)`` (see
    :gate:`u3`).
 
    .. versionadded:: 3.0
 
 .. gate:: u3(θ, φ, λ) a
 
-   Three-argument form of the OpenQASM 2.0 ``U`` gate.  Note that this differs from the OpenQASM 3
-   definition of ``U`` by an additional factor of :math:`e^{-i(\theta + \phi + \lambda)/2)}`.
+   Three-argument form of the OpenQASM 2.0 :gate:`U` gate.  Note that this differs from the OpenQASM 3
+   definition of :gate:`U` by an additional factor of :math:`e^{-i(\theta + \phi + \lambda)/2)}`.
 
    .. versionadded:: 3.0
