@@ -1,6 +1,6 @@
 ---
 features:
   - |
-    The standard-library file ``stdgates.inc`` is now formally documented in the specification.
+    The standard-library file ``stdgates.inc`` is now :ref:`formally documented in the specification <standard-library>`.
     Its effects match how it was described in the initial paper, and it was always intended to
     be part of the formal specification.
