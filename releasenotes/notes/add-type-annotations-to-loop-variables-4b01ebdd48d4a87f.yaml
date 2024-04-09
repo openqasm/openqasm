@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    The language specification requires that the type of a loop variable in a
+    `for` loop be declared. However a few examples of `for` loops lacked these
+    declarations.  These examples have been fixed to include type declarations
+    on these loop variables.

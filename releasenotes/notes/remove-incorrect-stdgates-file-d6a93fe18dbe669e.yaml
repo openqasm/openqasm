@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Remove `include "stdgates.qasm";` from an example in the specification. This
+    file name has no special significance. This line could easily be confused
+    with `include "stdgates.inc";`, which is the only specified method of
+    including gate definitions from the standard library.
