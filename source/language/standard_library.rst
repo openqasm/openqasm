@@ -40,9 +40,9 @@ their own gate with a clashing name).
 An implementation is not required to supply a literal ``stdgates.inc`` file to the user.
 
 An implementation must make all the gates available as if they were defined with ``gate``
-statements with contents that match the mathematical descriptions given here, but it is explicitly
-permissible for implementations to internally treat the ``stdgates.inc`` include as a series of
-``defcal`` statements for all qubits used in the program.
+statements with contents that match the mathematical descriptions given here.
+In addition, it is permissible for implementations to also provide implementations of the gates
+equivalent to a series of ``defcal`` statements for all qubits used in the program.
 
 
 API Documentation
