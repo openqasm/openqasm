@@ -25,6 +25,7 @@ semantics.
    insts
    classical
    subroutines
+   scope
    directives
    delays
    pulses

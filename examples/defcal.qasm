@@ -8,8 +8,8 @@ defcal x $1 {
   play drive($1), gaussian(...);
 }
 
-defcal rz(angle[20]:theta) $q {
-  shift_phase drive($q), -theta;
+defcal rz(angle[20] theta) q {
+  shift_phase drive(q), -theta;
 }
 
 defcal measure $0 -> bit {

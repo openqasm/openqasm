@@ -1,0 +1,170 @@
+source: |
+  switch (i) {
+    case 0 {
+      x $0;
+    }
+    case 1, 2 {
+      x $0;
+      z $1;
+    }
+    case 3, {
+    }
+    default {
+      cx $0, $1;
+    }
+  }
+  switch (i + j) {
+    default {
+      switch (2 * k) {
+        case 0 {
+          x $0;
+        }
+        default {
+          z $0;
+        }
+      }
+    }
+  }
+reference: |
+  program
+    statementOrScope
+      statement
+        switchStatement
+          switch
+          (
+          expression
+            i
+          )
+          {
+          switchCaseItem
+            case
+            expressionList
+              expression
+                0
+            scope
+              {
+              statementOrScope
+                statement
+                  gateCallStatement
+                    x
+                    gateOperandList
+                      gateOperand
+                        $0
+                    ;
+              }
+          switchCaseItem
+            case
+            expressionList
+              expression
+                1
+              ,
+              expression
+                2
+            scope
+              {
+              statementOrScope
+                statement
+                  gateCallStatement
+                    x
+                    gateOperandList
+                      gateOperand
+                        $0
+                    ;
+              statementOrScope
+                statement
+                  gateCallStatement
+                    z
+                    gateOperandList
+                      gateOperand
+                        $1
+                    ;
+              }
+          switchCaseItem
+            case
+            expressionList
+              expression
+                3
+              ,
+            scope
+              {
+              }
+          switchCaseItem
+            default
+            scope
+              {
+              statementOrScope
+                statement
+                  gateCallStatement
+                    cx
+                    gateOperandList
+                      gateOperand
+                        $0
+                      ,
+                      gateOperand
+                        $1
+                    ;
+              }
+          }
+    statementOrScope
+      statement
+        switchStatement
+          switch
+          (
+          expression
+            expression
+              i
+            +
+            expression
+              j
+          )
+          {
+          switchCaseItem
+            default
+            scope
+              {
+              statementOrScope
+                statement
+                  switchStatement
+                    switch
+                    (
+                    expression
+                      expression
+                        2
+                      *
+                      expression
+                        k
+                    )
+                    {
+                    switchCaseItem
+                      case
+                      expressionList
+                        expression
+                          0
+                      scope
+                        {
+                        statementOrScope
+                          statement
+                            gateCallStatement
+                              x
+                              gateOperandList
+                                gateOperand
+                                  $0
+                              ;
+                        }
+                    switchCaseItem
+                      default
+                      scope
+                        {
+                        statementOrScope
+                          statement
+                            gateCallStatement
+                              z
+                              gateOperandList
+                                gateOperand
+                                  $0
+                              ;
+                        }
+                    }
+              }
+          }
+    <EOF>

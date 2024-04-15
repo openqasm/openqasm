@@ -22,7 +22,7 @@ or “implement this gate as late as possible".
 Duration and stretch types
 ---------------------------
 
-The ``duration`` type is used denote increments of time. Durations are positive real numbers
+The ``duration`` type is used denote increments of time. Durations are real numbers
 that are manipulated at compile time. Durations must be followed by time units which can be
 any of the following:
 
@@ -44,7 +44,7 @@ type of referential timing.
 
 Below are some examples of values of type ``duration``.
 
-.. code-block:: c
+.. code-block::
 
        // fixed duration, in standard units
        duration a = 300ns;
@@ -82,7 +82,7 @@ For example, in order to ensure a sequence of gates between two barriers
 will be left-aligned (:numref:`fig_alignment`\a),
 whatever their actual durations may be, we can do the following:
 
-.. code-block:: c
+.. code-block::
 
        qubit[5] q;
        barrier q;
@@ -100,7 +100,7 @@ whatever their actual durations may be, we can do the following:
 We can further control the exact alignment by giving relative weights to
 the stretchy delays (:numref:`fig_alignment`\b):
 
-.. code-block:: c
+.. code-block::
 
        qubit[5] q;
        stretch g;
@@ -134,7 +134,7 @@ passing a negative duration to a ``gate[duration]`` or ``box[duration]`` express
 All operations on durations happen at compile time since ultimately all
 durations, including stretches, will be resolved to constants.
 
-.. code-block:: c
+.. code-block::
 
        duration a = 300ns;
        duration b = durationof({x $0;});
@@ -214,7 +214,7 @@ are explicitly defined as such. They can be called by passing a valid ``duration
 their duration. Consider for example a rotation called ``rotary`` that is applied
 for the entire duration of some other gate.
 
-.. code-block:: c
+.. code-block::
 
        const amp = /* number */;
        stretch a;
@@ -226,7 +226,7 @@ A multi-qubit ``delay`` instruction is *not* equivalent to multiple single-qubit
 point on the qubits, where the delay begins from the latest non-idle
 time across all qubits, and ends simultaneously across all qubits.
 
-.. code-block:: c
+.. code-block::
 
        cx q[0], q[1];
        cx q[2], q[3];
@@ -242,7 +242,7 @@ where the \*centers\* of pulses are equidistant from each other. We
 specify correct durations for the delays by using backtracking operations
 to properly take into account the finite duration of each gate.
 
-.. code-block:: c
+.. code-block::
 
    stretch a;
    stretch b;
@@ -272,7 +272,7 @@ Boxed expressions
 
 We introduce a ``box`` statement for scoping the timing of a particular part of the circuit.
 A boxed subcircuit is different from a ``gate`` or ``def`` subroutine, in that it is merely 
-an enclosure to a piece of code within the larger scope which constains it. This can be used to
+an enclosure to a piece of code within the larger scope which constrains it. This can be used to
 signal permissible logical-level optimizations to the compiler: optimizing operations within
 a ``box`` definition is permitted, and optimizations that move operations from one side to
 the other side of a box are permitted, but moving operations either into or out of the box as
@@ -280,7 +280,7 @@ part of an optimization is forbidden. The compiler can also infer a description 
 operation which a ``box`` definition is meant to realise, allowing it to re-order gates around
 the box. For example, consider a dynamical decoupling sequence inserted in a part of the circuit:
 
-.. code-block:: c
+.. code-block::
 
     rx(2*π/12) q;
     box {
@@ -295,7 +295,7 @@ the box. For example, consider a dynamical decoupling sequence inserted in a par
 By boxing the sequence, we create a box that implements the identity. The compiler is now free
 to commute a gate past the box by knowing the unitary implemented by the box:
 
-.. code-block:: c
+.. code-block::
 
     rx(5*π/12) q;
     box {
@@ -318,7 +318,7 @@ of the parameterized gates ``mygate1(a, b), mygate2(a, b)`` depend on values of 
 ``a`` and ``b`` in a complex way, but an offline calculation has shown that the total will never
 require more than 150ns for all valid combinations:
 
-.. code-block:: c
+.. code-block::
 
     // some complicated circuit that gives runtime values to a, b
     box [150ns] {
@@ -336,7 +336,7 @@ The ``barrier`` instruction of OpenQASM 2 prevents commutation and gate reorderi
 on a set of qubits across its source line. The syntax is ``barrier qregs|qubits;`` and can be seen
 in the following example
 
-.. code-block:: c
+.. code-block::
 
    cx r[0], r[1];
    h q[0];

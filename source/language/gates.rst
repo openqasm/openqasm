@@ -5,54 +5,103 @@
 Gates
 =====
 
-In OpenQASM, we refer to unitary quantum instructions as gates.
+In OpenQASM, we refer to unitary quantum instructions as *gates*.
 
-Built-in gates
+Applying gates
 --------------
 
-We define a mechanism for parameterizing unitary matrices to define new
-quantum gates. The parameterization uses a built-in universal gate set
-of single-qubit gates and a two-qubit entangling gate (CNOT)
-:cite:`barenco95`. This basis is not an enforced compilation
-target but a mechanism to define other gates. For many gates of
-practical interest, there is a circuit representation with a polynomial
-number of one- and two-qubit gates, giving a more compact representation
-than requiring the programmer to express the full :math:`2^n \times 2^n`
-matrix. However, a general :math:`n`-qubit gate can be defined using an
-exponential number of these gates.
+Every gate applies to a fixed number of qubits.
+Assuming ``g0``, ``g1``, ``g2``, ... are gates defined on 0, 1, 2, ... qubits then they can be applied as
 
-We now describe this built-in gate set.
-All of the single-qubit unitary gates are built-in and
-parameterized as
+.. code-block::
 
-.. math::
+   g0;
+   g1 q1;
+   g2 q1, q2;
+   g3 q1, q2, q3;
 
-   U(\theta,\phi,\lambda) := \left(\begin{array}{cc}
-       \cos(\theta/2) & -e^{i\lambda}\sin(\theta/2) \\
-   e^{i\phi}\sin(\theta/2) & e^{i(\phi+\lambda)}\cos(\theta/2) \end{array}\right).
+Broadcasting
+~~~~~~~~~~~~
 
-When ``a`` is a quantum
-register, the statement ``U(θ, ϕ, λ) a;`` means apply ``U(θ, ϕ, λ) a[j];`` for each index ``j`` into register ``a``. The
-values :math:`\theta\in [0,2\pi)`, :math:`\phi\in [0,2\pi)`, and
-:math:`\lambda\in
-[0,2\pi)` in this base gate are angles whose precision is implementation
-dependent [1]_. This specifies any element of :math:`U(2)` up to a
-global phase. For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``.
+If any arguments of a gate are quantum registers instead of qubits, then all such registers must be **of the same length** and
+this syntax is a convenient shorthand for broadcasting over the qubits of the register. For example, the circuit
 
-New gates are associated to a unitary transformation by defining them as a sequence of built-in or
-previously defined gates. For example the ``gate`` block
+.. code-block::
 
-.. code-block:: c
-   :force:
+   qubit qr0[1];
+   qubit qr1[3];
+   qubit qr2[2];
+   qubit qr3[3];
+
+   g4 qr0[0], qr1, qr2[0], qr3; // ok
+   g4 qr0[0], qr2, qr1[0], qr3; // error! qr2 and qr3 differ in size
+
+has a second-to-last line that is equivalent to
+
+.. code-block:: text
+
+   g4 qr0[0], qr1[0], qr2[0], qr3[0];
+   g4 qr0[0], qr1[1], qr2[0], qr3[1];
+   g4 qr0[0], qr1[2], qr2[0], qr3[2];
+
+Use of this syntax constitutes a promise to the compiler that the expanded set of broadcasted gates
+is mutually commuting and thus the compiler can take advantage of the opportunity to reorder the
+gates freely for optimization purposes. In certain cases a compiler might be able to detect a
+non-commutativity and raise a warning, but it is not required to do so in all cases. If the gates do
+not commute and a specific order is required by the programmer, than a ``for`` loop may be used to
+set that order.
+
+Parameterized gates
+~~~~~~~~~~~~~~~~~~~
+
+As well as gates that each represent a fixed unitary, OpenQASM also supports gates that represent *families* of unitaries, parameterized
+by angle variables. To distinguish the (optional) angle parameters from the (required) quantum arguments, if any angle parameters are
+present they must appear before any quantum arguments, and be delimited by parentheses. For example
+
+.. code-block:: text
+
+   fsim(θ, ϕ) q[0], q[1];
+
+
+Defining gates
+--------------
+
+There are 3 mechanisms to construct new gates:
+
+1. A new named gate can be introduced by a  **hierarchical definition** from a sequence of existing gates;
+2. Anonymous new gates may be defined by applying **gate modifiers** to existing gates;
+3. The **built-in gates** comprising the one-qubit gate ``U(θ, ϕ, λ)`` and the zero-qubit gate ``gphase(γ)``.
+   The definitions of these gates is part of the language specification.
+
+The next subsections go through these cases.
+
+.. _gate-statement:
+
+Hierarchical gates definitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``gate`` statement associates an identifier with a corresponding unitary matrix (or parameterized family)
+transformation by a sequence of other (built-in or previously-defined) gates.
+
+For example the ``gate`` block
+
+.. code-block::
 
    gate h q {
       U(π/2, 0, π) q;
+      gphase -π/4;
    }
 
 defines a new gate called ``h`` and associates it to the unitary matrix of the Hadamard gate. Once we have
-defined ``h``, we can use it in later ``gate`` blocks. The definition does not imply that ``h`` is
+defined ``h``, we can use it in later ``gate`` blocks.
+
+The definition does not imply that ``h`` is
 implemented by an instruction ``U(π/2, 0, π)`` on the quantum computer. The implementation is up to
 the user and/or compiler, given information about the instructions supported by a particular target.
+A minimal compiler implementation might simply expand ``gate`` definitions repeatedly until reaching
+definitions for which :ref:`defcal blocks <pulse-gates>` are known. A more sophisticated implementation
+might use the `gate` definitions of the gates with associated ``defcal`` blocks to
+build a gate library, and use methods based on KAK decompositions to rewrite into this hardware library.
 
 Controlled gates can be constructed by adding a control modifier to an existing gate. For example,
 the NOT gate is given by ``X = U(π, 0, π)`` and the block
@@ -175,8 +224,7 @@ gates, possibly through some program logic (such as `if` statements) or invocati
 of other user-defined gates. For example, a CPHASE operation is shown schematically
 in :numref:`fig_gate` corresponding OpenQASM code is
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    gate cphase(θ) a, b
    {
@@ -191,13 +239,13 @@ in :numref:`fig_gate` corresponding OpenQASM code is
 .. _fig_gate:
 .. figure:: ../qpics/gate.svg
 
-New gates are defined from gates that have been defined previously in the source files.
+New gates are defined from previously defined gates.
 The gates are applied using the statement ``name(params) qargs;`` just like the built-in gates.
 The parentheses are optional if there are no parameters. The gate :math:`{cphase}(\theta)`
 corresponds to the unitary matrix :math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
 
-Note that this definition does not imply that ``cphase`` must be implemented with
-this series of gates. Rather, we have specified the unitary
+Again, this definition does not imply that ``cphase`` must be implemented with
+this particular series of gates. Rather, we have specified the unitary
 transformation that corresponds to the symbol ``cphase``. The particular
 implementation is up to the compiler, given information about the basis
 gate set supported by a particular target.
@@ -206,9 +254,8 @@ In general, new gates may be declared in two different ways: a 'short'
 declaration syntax, and a more versatile 'general' declaration syntax.
 'Short' gate declarations are statements of the form
 
-.. code-block:: c
+.. code-block::
 
-   // comment
    gate name(params) qargs
    {
      body
@@ -216,14 +263,17 @@ declaration syntax, and a more versatile 'general' declaration syntax.
 
 where the optional parameter list ``params`` is a comma-separated list of variable
 parameters, and the argument list ``qargs`` is a comma-separated list of qubit
-arguments. The parameters are identifiers with the type ``angle``.
-The qubit arguments are identifiers. If there are no
-variable parameters, the parentheses are optional. At least one qubit
-argument is required. 
-The arguments in ``qargs`` cannot be indexed within the body
-of the gate definition, as they in principle represent only individual qubits.
+arguments. The parameters are identifiers that behave as ``angle`` type with unknown
+size. A compiler might recognize certain constructs and replace them with mathematically-
+equivalent versions that would be true for arbitrary precision, or it might do calculations
+at a fixed ``angle`` size, for example corresponding to the size of ``angle`` parameters in the corresponding
+``defcal`` definitions.
 
-.. code-block:: c
+The qubit arguments are identifiers. If there are no
+variable parameters, the parentheses are optional. The arguments in ``qargs`` cannot be indexed within the body
+of the gate definition.
+
+.. code-block::
 
    // this is ok:
    gate g a
@@ -369,12 +419,15 @@ are provided with arguments of the corresponding type.
 
 
 Quantum gate modifiers
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 A gate modifier is a keyword that applies to a gate. A modifier
 :math:`m` transforms a gate :math:`U` to a new gate :math:`m(U)` acting
 on the same or larger Hilbert space. We include modifiers in OpenQASM
 both for programming convenience and compiler analysis.
+
+Control modifiers
++++++++++++++++++
 
 The modifier ``ctrl @`` replaces its gate argument :math:`U` by a
 controlled-:math:`U` gate. If the control bit is 0, nothing happens to the target bit.
@@ -382,14 +435,13 @@ If the control bit is 1, :math:`U` acts on the target bit. Mathematically, the c
 gate is defined as :math:`C_U = I \otimes U^c`, where :math:`c` is the integer value of the control
 bit and :math:`C_U` is the controlled-:math:`U` gate. The new quantum argument is prepended to the
 argument list for the controlled-:math:`U` gate. The quantum argument can be a register, and in this
-case controlled gate broadcast over it (as it shown in examples above for CNOT gate). The modified
+case controlled gate broadcast over it (as for all gates). The modified
 gate does not use any additional scratch space and may require compilation to be executed.
 
-We define a special case, the controlled *global* phase gate, as
-:math:`ctrl @ gphase(a) = U(0, 0, a)`. This is a single qubit gate.
+As a limiting case, the controlled *global* phase gate
+``ctrl @ gphase(a)`` is equivalent to the single-qubit gate ``U(0, 0, a)``.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Define a controlled Rz operation using the ctrl gate modifier.
    // q1 is control, q2 is target
@@ -402,8 +454,7 @@ controlled value of 0 rather than 1. Mathematically, the negative controlled-:ma
 given by :math:`N_U = I \otimes U^{1-c}`, where :math:`c` is the integer value of the control bit
 and :math:`N_U` is the negative controlled-:math:`U` gate.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // Define a negative controlled X operation using the negctrl gate modifier.
    // q1 is control, q2 is target
@@ -425,8 +476,7 @@ where :math:`c_1`, :math:`c_2`, ..., :math:`c_n` are the integer values of the c
 :math:`C^n_U` are the n-bit controlled-:math:`U` and n-bit negative controlled-:math:`U` gates,
 respectively.
 
-.. code-block:: c
-   :force:
+.. code-block::
 
    // A reversible boolean function
    // Demonstrates use of ``ctrl(n) @`` and ``negctrl(n) @``
@@ -439,18 +489,23 @@ respectively.
    negctrl @ ctrl(2) @ negctrl @ x a[0], b[0], a[2], a[1], f;
    negctrl(2) @ ctrl @ x b[1], a, b[0], f;
 
-The modifier ``inv @`` replaces its gate argument :math:`U` with its inverse
+Inverse modifier
+++++++++++++++++
+
+The modifier ``inv @ U`` replaces its gate argument :math:`U` with its inverse
 :math:`U^\dagger`. This can be computed from gate :math:`U` via the following rules
 
 - The inverse of any gate :math:`U=U_m U_{m-1} ... U_1` can be defined recursively by reversing the
-order of the gates in its definition and replacing each of those with their inverse
-:math:`U^\dagger = U_1^\dagger U_2^\dagger ... U_m^\dagger`.
-- The inverse of a controlled operation is defined by inverting the control unitary. That is,
-``inv @ ctrl @ U = ctrl @ inv @ U``.
-- The base case is given by replacing ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)`` and
-``inv @ gphase(a)`` by ``gphase(-a)``.
+  order of the gates in its definition and replacing each of those with their inverse
+  :math:`U^\dagger = U_1^\dagger U_2^\dagger ... U_m^\dagger`.
 
-.. code-block:: c
+- The inverse of a controlled operation is defined by inverting the control unitary. That is,
+  ``inv @ ctrl @ U = ctrl @ inv @ U``.
+
+- The base case is given by replacing ``inv @ U(θ, ϕ, λ)`` by ``U(-θ, -λ, -ϕ)``
+  and ``inv @ gphase(a)`` by ``gphase(-a)``.
+
+.. code-block::
 
    // Define a negative z rotation and the inverse of a positive z rotation
    gate rzm(θ) q1 {
@@ -468,20 +523,103 @@ order of the gates in its definition and replacing each of those with their inve
       ctrl @ inv @ qutritX c[1], t;
     }
 
+Power modifier
+++++++++++++++
+
 The modifier ``pow(k) @`` replaces its gate argument :math:`U` by its :math:`k`\ th
 power :math:`U^k` for some positive integer or floating point number :math:`k` (not necessarily
 constant). In the case that :math:`k` is an integer, the gate can be implemented (albeit
 inefficiently) by :math:`k` repetitions of :math:`U` for :math:`k > 0` and :math:`k`
 repetitions of ``inv @ U`` for :math:`k < 0`.
 
-.. code-block:: c
+.. code-block::
 
    // define x as the square of sqrt(x) ``sx`` gate
    gate x q1 {
        pow(2) @ sx q1;
    }
 
-.. [1]
-   The intention is that the accuracy of these built-in gates is
-   sufficient for the accuracy of the derived gates to not be limited by
-   that of the built-in gates.
+Built-in gates
+~~~~~~~~~~~~~~
+
+Built-in single-qubit gate ``U``
+++++++++++++++++++++++++++++++++
+
+The built-in single-qubit gate ``U(θ, ϕ, λ)`` represents the unitary matrix
+
+.. math::
+
+   U(\theta,\phi,\lambda) := \frac{1}{2}\left(\begin{array}{cc}
+      1+e^{i\theta} & -ie^{i\lambda}(1-e^{i\theta}) \\
+      ie^{i\phi}(1-e^{i\theta}) & e^{i(\phi+\lambda)}(1+e^{i\theta}) \end{array}\right).
+
+This definition is :math:`2\pi`-periodic in each of the parameters θ, ϕ, λ and
+specifies any element of :math:`U(2)` up to a
+global phase [#uphase]_ . For example ``U(π/2, 0, π) q[0];``, applies a Hadamard gate to qubit ``q[0]``
+(up to a non-standard global phase).
+
+Global phase gate ``gphase``
+++++++++++++++++++++++++++++
+
+From a physical perspective, the unitaries :math:`e^{i\gamma}V` and :math:`V` are equivalent although they differ by a global
+phase :math:`e^{i\gamma}`. When we add a control to these gates, however, the global phase becomes a relative phase
+that is applied when the control qubit is one. A built-in global phase gate
+allows the inclusion of arbitrary global phases on circuits. The instruction ``gphase(γ);`` accumulates a global phase
+of :math:`e^{i\gamma}`.
+
+Just as every n-qubit gate can be thought of as generating a tensor product with the suitable
+identity matrix to cover all other qubits in the gate, subroutine, or global scope containing the
+instruction, similarly ``gphase`` behaves as a 0-qubit gate and when applied in a context with
+`m` qubits in scope, behaves as applying the unitary
+
+.. math::
+   \operatorname{gphase}(\gamma) := e^{i\gamma} I_m,
+
+where :math:`I_m` denotes the identity matrix with size :math:`2^m`
+
+For example
+
+.. code-block::
+
+   gate X q {
+      U(π, 0, π) q;
+      gphase -π/2;
+   }
+
+   gate CX c, t {
+      ctrl @ X c, t;
+   }
+
+defines ``CX`` as the standard CNOT gate.
+
+Relation of the built-in gates to hardware-native gates
+----------------------------
+
+For *non-parameterized gates*, the choice of ``U`` and ``gphase`` as the built-in gates, along with one
+two-qubit entangling gate CNOT as defined gives a universal gate set that can represent general n-qubit
+unitaries with an :math:`O(2^n)` size description :cite:`barenco95`. This basis is not an enforced compilation
+target but a mechanism to define other gates. For many gates of
+practical interest, there is a circuit representation with a polynomial
+number of one- and two-qubit gates, giving a more compact representation
+than requiring the programmer to express the full :math:`2^n \times 2^n`
+matrix. However, a general :math:`n`-qubit gate can be defined using an
+exponential number of these gates. Thus there is no particular privilege incurred by hardware implementations
+that natively support the built-in gates.
+
+For *parameterized gates*, the choice of built-in gates *does* constrain which hardware-native gates are well-
+supported, because conversion between parameterized basis sets in general can be involved, requiring careful
+selection of branch cuts and other logic that would not likely be feasible to specify as compact mathematical
+expressions, nor to evaluate at runtime for cases where the parameters depend on quantum measurements.
+
+For many current platforms the qubits are defined relative to a
+rotating frame and the rotating wave approximation (RWA) holds. This is the domain covered by the OpenPulse
+specification. For this case, the only supported form of run-time parameterization
+will likely be via a ``rz(ϕ)`` implemented by specialized frame-tracking hardware.
+This gate is covered by the built-in ``U`` as a special case ``U(0, 0, ϕ)``
+However, if other forms of run-time parameterization become important, it may be necessary to revise OpenQASM,
+to give meaning to those gates, for example by adding new basis gates or additional ``gate`` definition syntax.
+
+.. [#uphase] This definition of ``U`` has a different global phase from previous versions of the OpenQASM spec.
+   Unfortunately the original definitions were 4π rather than 2π periodic in the θ parameter. A gate
+   ``U_old(0, ϕ, θ) q;`` under the previous definition corresponds to ``U(0, ϕ, θ) q; gphase(-0/2);`` with the present
+   definition.

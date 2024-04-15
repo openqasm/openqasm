@@ -8,209 +8,174 @@ source: |
   x += int[10](a[1]);
   measure q[1] -> a[0];
   a = measure q[1:2];
+  measure q[0];
   b = a == 0;
 reference: |
   program
-    header
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          bitDeclaration
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
             bit
             designator
               [
               expression
-                expressionTerminator
-                  2
+                2
               ]
-            a
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          bitDeclaration
-            creg
-            b
-            designator
-              [
-              expression
-                expressionTerminator
-                  2
-              ]
-        ;
-    globalStatement
-      quantumDeclarationStatement
-        quantumDeclaration
-          qubit
+          a
+          ;
+    statementOrScope
+      statement
+        oldStyleDeclarationStatement
+          creg
+          b
           designator
             [
             expression
-              expressionTerminator
-                3
+              2
             ]
-          q
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          singleDesignatorDeclaration
-            singleDesignatorType
-              int
+          ;
+    statementOrScope
+      statement
+        quantumDeclarationStatement
+          qubitType
+            qubit
             designator
               [
               expression
-                expressionTerminator
-                  10
+                3
               ]
-            x
-            equalsExpression
-              =
+          q
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            int
+            designator
+              [
               expression
-                expressionTerminator
-                  12
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+                10
+              ]
+          x
+          =
+          declarationExpression
+            expression
+              12
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    expressionTerminator
-                      b
-                  indexOperator
-                    [
-                    expression
-                      expressionTerminator
-                        1
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              b
+            indexOperator
+              [
+              expression
+                1
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             x
-          assignmentOperator
-            +=
+          +=
           expression
-            expressionTerminator
-              builtInCall
-                castOperator
-                  classicalType
-                    nonArrayType
-                      singleDesignatorType
-                        int
-                      designator
-                        [
-                        expression
-                          expressionTerminator
-                            10
-                        ]
-                (
-                expressionList
-                  expression
-                    unaryExpression
-                      powerExpression
-                        indexExpression
-                          indexExpression
-                            expressionTerminator
-                              a
-                          indexOperator
-                            [
-                            expression
-                              expressionTerminator
-                                1
-                            ]
-                )
-        ;
-    statement
-      assignmentStatement
-        quantumMeasurementAssignment
-          quantumMeasurement
-            measure
-            indexedIdentifier
-              q
+            scalarType
+              int
+              designator
+                [
+                expression
+                  10
+                ]
+            (
+            expression
+              expression
+                a
               indexOperator
                 [
                 expression
-                  expressionTerminator
-                    1
+                  1
                 ]
+            )
+          ;
+    statementOrScope
+      statement
+        measureArrowAssignmentStatement
+          measureExpression
+            measure
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    1
+                  ]
           ->
           indexedIdentifier
             a
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
-        ;
-    statement
-      assignmentStatement
-        quantumMeasurementAssignment
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
           =
-          quantumMeasurement
+          measureExpression
             measure
-            indexedIdentifier
-              q
-              indexOperator
-                [
-                rangeDefinition
-                  expression
-                    expressionTerminator
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  rangeExpression
+                    expression
                       1
-                  :
-                  expression
-                    expressionTerminator
+                    :
+                    expression
                       2
-                ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+                  ]
+          ;
+    statementOrScope
+      statement
+        measureArrowAssignmentStatement
+          measureExpression
+            measure
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             b
-          assignmentOperator
-            =
+          =
           expression
-            logicalAndExpression
-              bitOrExpression
-                xOrExpression
-                  bitAndExpression
-                    equalityExpression
-                      equalityExpression
-                        comparisonExpression
-                          bitShiftExpression
-                            additiveExpression
-                              multiplicativeExpression
-                                unaryExpression
-                                  powerExpression
-                                    indexExpression
-                                      expressionTerminator
-                                        a
-                      equalityOperator
-                        ==
-                      comparisonExpression
-                        bitShiftExpression
-                          additiveExpression
-                            multiplicativeExpression
-                              unaryExpression
-                                powerExpression
-                                  indexExpression
-                                    expressionTerminator
-                                      0
-        ;
+            expression
+              a
+            ==
+            expression
+              0
+          ;
+    <EOF>

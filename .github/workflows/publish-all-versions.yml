@@ -1,0 +1,33 @@
+name: Publish All Versions
+
+on:
+  push:
+    branches: [ main, 'stable/**' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -c constraints.txt -r requirements.txt
+
+      - name: Generate HTML
+        run: |
+          ./buildPublishable.sh main ./publish_build remotes/origin
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        with:
+          token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
+          repository-name: openqasm/openqasm.github.io
+          branch: main
+          folder: publish_build/

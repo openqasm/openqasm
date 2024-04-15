@@ -11,17 +11,22 @@ The reference abstract syntax tree (AST) for OpenQASM 3 programs.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Union
-from enum import Enum, auto
-
+from typing import List, Optional, Union, Tuple
+from enum import Enum
 
 __all__ = [
+    "AccessControl",
     "AliasStatement",
     "AngleType",
+    "Annotation",
+    "ArrayLiteral",
+    "ArrayReferenceType",
+    "ArrayType",
     "AssignmentOperator",
     "BinaryExpression",
     "BinaryOperator",
     "BitType",
+    "BitstringLiteral",
     "BoolType",
     "BooleanLiteral",
     "Box",
@@ -29,6 +34,7 @@ __all__ = [
     "BreakStatement",
     "CalibrationDefinition",
     "CalibrationGrammarDeclaration",
+    "CalibrationStatement",
     "Cast",
     "ClassicalArgument",
     "ClassicalAssignment",
@@ -36,19 +42,19 @@ __all__ = [
     "ClassicalType",
     "ComplexType",
     "Concatenation",
-    "Constant",
     "ConstantDeclaration",
-    "ConstantName",
     "ContinueStatement",
-    "ControlDirectiveStatement",
     "DelayInstruction",
+    "DiscreteSet",
     "DurationLiteral",
     "DurationOf",
     "DurationType",
     "EndStatement",
     "Expression",
     "ExpressionStatement",
+    "ExternArgument",
     "ExternDeclaration",
+    "FloatLiteral",
     "FloatType",
     "ForInLoop",
     "FunctionCall",
@@ -56,41 +62,49 @@ __all__ = [
     "IODeclaration",
     "IOKeyword",
     "Identifier",
+    "ImaginaryLiteral",
     "Include",
     "IndexExpression",
+    "IndexedIdentifier",
     "IntType",
     "IntegerLiteral",
+    "Pragma",
     "Program",
     "QASMNode",
     "QuantumArgument",
     "QuantumBarrier",
-    "QuantumForInLoop",
     "QuantumGate",
     "QuantumGateDefinition",
     "QuantumGateModifier",
-    "QuantumInstruction",
     "QuantumMeasurement",
-    "QuantumMeasurementAssignment",
+    "QuantumMeasurementStatement",
     "QuantumPhase",
     "QuantumReset",
     "QuantumStatement",
-    "QuantumWhileLoop",
     "QubitDeclaration",
     "RangeDefinition",
-    "RealLiteral",
     "ReturnStatement",
+    "SizeOf",
     "Span",
     "Statement",
+    "SwitchStatement",
+    "CompoundStatement",
     "StretchType",
-    "StringLiteral",
     "SubroutineDefinition",
     "TimeUnit",
-    "TimingStatement",
     "UintType",
     "UnaryExpression",
     "UnaryOperator",
     "WhileLoop",
 ]
+
+AccessControl = Enum("AccessControl", "readonly mutable")
+AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
+BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
+GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")
+IOKeyword = Enum("IOKeyword", "input output")
+TimeUnit = Enum("TimeUnit", "dt ns us ms s")
+UnaryOperator = Enum("UnaryOperator", "~ ! -")
 
 
 @dataclass
@@ -125,22 +139,38 @@ class Program(QASMNode):
     """
 
     statements: List[Statement]
-    version: str = field(init=False, default="")
-    includes: List[Include] = field(init=False, default_factory=list)
-    io_variables: List[IODeclaration] = field(init=False, default_factory=list)
+    version: Optional[str] = None
 
 
 @dataclass
-class Include(QASMNode):
+class Annotation(QASMNode):
+    """An annotation applied to a statement."""
+
+    keyword: str
+    command: Optional[str] = None
+
+
+@dataclass
+class Statement(QASMNode):
+    """A statement: anything that can appear on its own line"""
+
+    annotations: List[Annotation] = field(init=False, default_factory=list)
+
+
+@dataclass
+class CompoundStatement(Statement):
+    """A sequence of statements enclosed within an anonymous scope block"""
+
+    statements: List[Statement]
+
+
+@dataclass
+class Include(Statement):
     """
     An include statement
     """
 
     filename: str
-
-
-class Statement(QASMNode):
-    """A statement: anything that can appear on its own line"""
 
 
 @dataclass
@@ -150,6 +180,8 @@ class ExpressionStatement(Statement):
     expression: Expression
 
 
+# Note that QubitDeclaration is not a valid QuantumStatement, because qubits
+# can only be declared in global scopes, not in gates.
 @dataclass
 class QubitDeclaration(Statement):
     """
@@ -161,12 +193,12 @@ class QubitDeclaration(Statement):
         qubit[4] q;
 
         q // <- qubit
-        [4] // <- designator
+        4 // <- size
 
     """
 
     qubit: Identifier
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 @dataclass
@@ -183,30 +215,13 @@ class QuantumGateDefinition(Statement):
     """
 
     name: Identifier
-    arguments: List[ClassicalArgument]
+    arguments: List[Identifier]
     qubits: List[Identifier]
     body: List[QuantumStatement]
 
 
 class QuantumStatement(Statement):
     """Statements that may appear inside a gate declaration"""
-
-
-@dataclass
-class QuantumForInLoop(Statement):
-    """For In loops that contain only quantum statements."""
-
-    loop_variable: Identifier
-    set_declaration: Union[RangeDefinition, List[Expression], Identifier]
-    block: List[QuantumStatement]
-
-
-@dataclass
-class QuantumWhileLoop(Statement):
-    """While loops that contain only quantum statements."""
-
-    while_condition: Expression
-    block: List[QuantumStatement]
 
 
 @dataclass
@@ -225,8 +240,8 @@ class ExternDeclaration(Statement):
     """
 
     name: Identifier
-    classical_types: List[ClassicalType]
-    return_type: Optional[ClassicalType]
+    arguments: List[ExternArgument]
+    return_type: Optional[ClassicalType] = None
 
 
 class Expression(QASMNode):
@@ -247,9 +262,6 @@ class Identifier(Expression):
     name: str
 
 
-UnaryOperator = Enum("UnaryOperator", "~ ! -")
-
-
 @dataclass
 class UnaryExpression(Expression):
     """
@@ -265,9 +277,6 @@ class UnaryExpression(Expression):
 
     op: UnaryOperator
     expression: Expression
-
-
-BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
 
 
 @dataclass
@@ -286,31 +295,6 @@ class BinaryExpression(Expression):
     rhs: Expression
 
 
-class ConstantName(Enum):
-    """
-    Known constant names
-    """
-
-    pi = auto()
-    tau = auto()
-    euler = auto()
-
-
-@dataclass
-class Constant(Expression):
-    """
-    A constant expression
-
-    Example::
-
-        π
-        𝜏
-        ℇ
-    """
-
-    name: ConstantName
-
-
 @dataclass
 class IntegerLiteral(Expression):
     """
@@ -326,13 +310,27 @@ class IntegerLiteral(Expression):
 
 
 @dataclass
-class RealLiteral(Expression):
+class FloatLiteral(Expression):
     """
     An real number literal
 
     Example::
 
         1.1
+
+    """
+
+    value: float
+
+
+@dataclass
+class ImaginaryLiteral(Expression):
+    """
+    An real number literal
+
+    Example::
+
+        1.1im
 
     """
 
@@ -355,25 +353,12 @@ class BooleanLiteral(Expression):
 
 
 @dataclass
-class StringLiteral(Expression):
-    """
-    A string literal expression
+class BitstringLiteral(Expression):
+    """A literal bitstring value.  The ``value`` is the numerical value of the
+    bitstring, and the ``width`` is the number of digits given."""
 
-    Example::
-
-        'Hadamard gate'
-
-    """
-
-    value: str
-
-
-class TimeUnit(Enum):
-    dt = auto()
-    ns = auto()
-    us = auto()
-    ms = auto()
-    s = auto()
+    value: int
+    width: int
 
 
 @dataclass
@@ -434,7 +419,7 @@ class Cast(Expression):
     """
 
     type: ClassicalType
-    arguments: List[Expression]
+    argument: Expression
 
 
 @dataclass
@@ -513,19 +498,13 @@ class Concatenation(Expression):
     rhs: Expression
 
 
-class QuantumInstruction(QuantumStatement):
-    """
-    Baseclass for quantum instructions.
-    """
-
-
 @dataclass
-class QuantumGate(QuantumInstruction):
+class QuantumGate(QuantumStatement):
     """
     Invoking a quantum gate
 
     Example::
-        cx 0, 1;
+        cx[dur] 0, 1;
 
         or
 
@@ -540,14 +519,8 @@ class QuantumGate(QuantumInstruction):
     modifiers: List[QuantumGateModifier]
     name: Identifier
     arguments: List[Expression]
-    qubits: List[Expression]
-
-
-class GateModifierName(Enum):
-    inv = auto()
-    pow = auto()
-    ctrl = auto()
-    negctrl = auto()
+    qubits: List[Union[IndexedIdentifier, Identifier]]
+    duration: Optional[Expression] = None
 
 
 @dataclass
@@ -567,11 +540,11 @@ class QuantumGateModifier(QASMNode):
     """
 
     modifier: GateModifierName
-    argument: Optional[Expression]
+    argument: Optional[Expression] = None
 
 
 @dataclass
-class QuantumPhase(QuantumInstruction):
+class QuantumPhase(QuantumStatement):
     """
     A quantum phase instruction
 
@@ -585,13 +558,14 @@ class QuantumPhase(QuantumInstruction):
 
     """
 
-    quantum_gate_modifiers: List[QuantumGateModifier]
+    modifiers: List[QuantumGateModifier]
     argument: Expression
     qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
+# Not a full expression because it can only be used in limited contexts.
 @dataclass
-class QuantumMeasurement(QuantumInstruction):
+class QuantumMeasurement(QASMNode):
     """
     A quantum measurement instruction
 
@@ -603,8 +577,34 @@ class QuantumMeasurement(QuantumInstruction):
     qubit: Union[IndexedIdentifier, Identifier]
 
 
+# Note that this is not a QuantumStatement because it involves access to
+# classical bits.
 @dataclass
-class QuantumReset(QuantumInstruction):
+class QuantumMeasurementStatement(Statement):
+    """Stand-alone statement of a quantum measurement, potentially assigning the
+    result to a classical variable.  This is not the only statement that
+    `measure` can appear in (it can also be in classical declaration statements
+    and returns)."""
+
+    measure: QuantumMeasurement
+    target: Optional[Union[IndexedIdentifier, Identifier]]
+
+
+@dataclass
+class QuantumBarrier(QuantumStatement):
+    """
+    A quantum barrier instruction
+
+    Example::
+
+        barrier q;
+    """
+
+    qubits: List[Expression]
+
+
+@dataclass
+class QuantumReset(QuantumStatement):
     """
     A reset instruction.
 
@@ -617,40 +617,6 @@ class QuantumReset(QuantumInstruction):
 
 
 @dataclass
-class QuantumBarrier(QuantumInstruction):
-    """
-    A quantum barrier instruction
-
-    Example::
-
-        barrier q;
-    """
-
-    qubits: List[Union[IndexedIdentifier, Identifier]]
-
-
-@dataclass
-class QuantumMeasurementAssignment(Statement):
-    """
-    A quantum measurement assignment statement
-
-    Example::
-
-        c = measure q;
-    """
-
-    target: Union[IndexedIdentifier, Identifier]
-    measure_instruction: QuantumMeasurement
-
-
-class AccessControl(Enum):
-    """Access modifier for classical arguments."""
-
-    CONST = auto()
-    MUTABLE = auto()
-
-
-@dataclass
 class ClassicalArgument(QASMNode):
     """
     Classical argument for a gate or subroutine declaration
@@ -658,6 +624,14 @@ class ClassicalArgument(QASMNode):
 
     type: ClassicalType
     name: Identifier
+    access: Optional[AccessControl] = None
+
+
+@dataclass
+class ExternArgument(QASMNode):
+    """Classical argument for an extern declaration."""
+
+    type: ClassicalType
     access: Optional[AccessControl] = None
 
 
@@ -673,16 +647,11 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Expression]
-
-
-class IOKeyword(Enum):
-    output = auto()
-    input = auto()
+    init_expression: Optional[Union[Expression, QuantumMeasurement]] = None
 
 
 @dataclass
-class IODeclaration(ClassicalDeclaration):
+class IODeclaration(Statement):
     """
     Input/output variable declaration
 
@@ -693,6 +662,8 @@ class IODeclaration(ClassicalDeclaration):
     """
 
     io_identifier: IOKeyword
+    type: ClassicalType
+    identifier: Identifier
 
 
 @dataclass
@@ -728,7 +699,7 @@ class IntType(ClassicalType):
         int[16]
     """
 
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 @dataclass
@@ -743,7 +714,7 @@ class UintType(ClassicalType):
         uint[16]
     """
 
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 @dataclass
@@ -758,21 +729,21 @@ class FloatType(ClassicalType):
         float[64]
     """
 
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 @dataclass
 class ComplexType(ClassicalType):
     """
-    Complex Type. Its real and imaginary parts are based on other classical types.
+    Complex ClassicalType. Its real and imaginary parts are based on other classical types.
 
     Example::
 
-        complex[int[32]]
+        complex[float]
         complex[float[32]]
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType]
+    base_type: Optional[FloatType]
 
 
 @dataclass
@@ -786,7 +757,7 @@ class AngleType(ClassicalType):
         angle[16]
     """
 
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 @dataclass
@@ -800,7 +771,7 @@ class BitType(ClassicalType):
         creg[8]
     """
 
-    size: Optional[Expression]
+    size: Optional[Expression] = None
 
 
 class BoolType(ClassicalType):
@@ -817,7 +788,9 @@ class ArrayType(ClassicalType):
     arrays declared by being arguments to subroutines.
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType, BitType, BoolType, ComplexType]
+    base_type: Union[
+        IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType
+    ]
     dimensions: List[Expression]
 
 
@@ -839,7 +812,9 @@ class ArrayReferenceType(ClassicalType):
         def f(const array[uint[8], #dim=3] b) {}
     """
 
-    base_type: Union[IntType, UintType, FloatType, AngleType, BitType, BoolType, ComplexType]
+    base_type: Union[
+        IntType, UintType, FloatType, AngleType, DurationType, BitType, BoolType, ComplexType
+    ]
     dimensions: Union[Expression, List[Expression]]
 
 
@@ -865,7 +840,21 @@ class CalibrationGrammarDeclaration(Statement):
         defcalgrammar "openpulse";
     """
 
-    calibration_grammar: str
+    name: str
+
+
+@dataclass
+class CalibrationStatement(Statement):
+    """An inline ``cal`` statement for embedded pulse-grammar interactions.
+
+    Example::
+
+        cal {
+            shift_phase(drive($0), theta);
+        }
+    """
+
+    body: str
 
 
 @dataclass
@@ -875,13 +864,13 @@ class CalibrationDefinition(Statement):
 
     Example::
 
-        defcal rz(angle[20] theta) $q {
-            shift_phase drive($q), -theta;
+        defcal rz(angle[20] theta) q {
+            shift_phase drive(q), -theta;
         }
     """
 
     name: Identifier
-    arguments: List[ClassicalArgument]
+    arguments: List[Union[ClassicalArgument, Expression]]
     qubits: List[Identifier]
     return_type: Optional[ClassicalType]
     body: str
@@ -903,23 +892,18 @@ class SubroutineDefinition(Statement):
 
     name: Identifier
     arguments: List[Union[ClassicalArgument, QuantumArgument]]
-    return_type: Optional[ClassicalType]
     body: List[Statement]
+    return_type: Optional[ClassicalType] = None
 
 
 @dataclass
 class QuantumArgument(QASMNode):
     """
-    Quantum argument in subroutine definition
-
-    Example::
-
-        qubit q
-        qubit[4] q
+    Quantum argument for a subroutine declaration
     """
 
-    qubit: Identifier
-    size: Optional[Expression]
+    name: Identifier
+    size: Optional[Expression] = None
 
 
 @dataclass
@@ -935,16 +919,10 @@ class ReturnStatement(Statement):
 
     """
 
-    expression: Optional[Union[Expression, QuantumMeasurement]]
+    expression: Optional[Union[Expression, QuantumMeasurement]] = None
 
 
-class ControlDirectiveStatement(Statement):
-    """
-    Base class for control directive statements
-    """
-
-
-class BreakStatement(ControlDirectiveStatement):
+class BreakStatement(Statement):
     """
     Break statement
 
@@ -954,7 +932,7 @@ class BreakStatement(ControlDirectiveStatement):
     """
 
 
-class ContinueStatement(ControlDirectiveStatement):
+class ContinueStatement(Statement):
     """
     Continue statement
 
@@ -964,7 +942,7 @@ class ContinueStatement(ControlDirectiveStatement):
     """
 
 
-class EndStatement(ControlDirectiveStatement):
+class EndStatement(Statement):
     """
     End statement
 
@@ -1021,19 +999,34 @@ class ForInLoop(Statement):
         }
     """
 
-    loop_variable: Identifier
-    set_declaration: Union[RangeDefinition, DiscreteSet, Identifier]
+    type: ClassicalType
+    identifier: Identifier
+    set_declaration: Union[RangeDefinition, DiscreteSet, Expression]
     block: List[Statement]
 
 
-class TimingStatement(QuantumStatement):
+@dataclass
+class SwitchStatement(Statement):
+    """A switch-case statement.
+
+    The literal cases are stored in the `cases` dictionary, in declaration
+    order.  Python's `dict` guarantees (for all supported versions of Python)
+    that the iteration order will be insertion order, so this field *is*
+    ordered.
+
+    The default case, if any, is in the `default` attribute.
     """
-    Base class for timing statement
-    """
+
+    target: Expression
+    cases: List[Tuple[List[Expression], CompoundStatement]]
+    # Note that `None` is quite different to `[]` in this case; the latter is
+    # an explicitly empty body, whereas the absence of a default might mean
+    # that the switch is inexhaustive, and a linter might want to complain.
+    default: Optional[CompoundStatement]
 
 
 @dataclass
-class DelayInstruction(TimingStatement):
+class DelayInstruction(QuantumStatement):
     """
     Delay instruction
 
@@ -1042,13 +1035,12 @@ class DelayInstruction(TimingStatement):
         delay[start_stretch] $0;
     """
 
-    arguments: List[Expression]
     duration: Expression
-    qubits: List[Expression]
+    qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
 @dataclass
-class Box(TimingStatement):
+class Box(QuantumStatement):
     """
     Timing box
 
@@ -1065,7 +1057,7 @@ class Box(TimingStatement):
 
 
 @dataclass
-class DurationOf(QASMNode):
+class DurationOf(Expression):
     """
     Duration Of
 
@@ -1074,7 +1066,15 @@ class DurationOf(QASMNode):
         durationof({x $0;})
     """
 
-    target: Union[Identifier, List[QuantumStatement]]
+    target: List[Statement]
+
+
+@dataclass
+class SizeOf(Expression):
+    """``sizeof`` an array's dimensions."""
+
+    target: Expression
+    index: Optional[Expression] = None
 
 
 @dataclass
@@ -1090,9 +1090,6 @@ class AliasStatement(Statement):
 
     target: Identifier
     value: Union[Identifier, Concatenation]
-
-
-AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
 
 
 @dataclass
@@ -1111,12 +1108,12 @@ class ClassicalAssignment(Statement):
 
 
 @dataclass
-class Pragma(Statement):
+class Pragma(QASMNode):
     """
     Pragma
     Example::
 
-        #pragma {verbatim;}
+        #pragma val1 val2 val3
     """
 
-    statements: List[Statement]
+    command: str

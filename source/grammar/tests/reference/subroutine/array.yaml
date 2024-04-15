@@ -1,278 +1,227 @@
 # indent w/ 2 spaces
 source: |
   def test_array_1(mutable array[uint[16], 4, 2] a) {}
-  def test_array_2(const array[uint[16], 4, 2] a) {}
+  def test_array_2(readonly array[uint[16], 4, 2] a) {}
   def test_array_3(mutable array[uint[16], #dim=2] a) {}
-  def test_array_4(const array[uint[16], #dim=2*n] a) {}
-  def test_array_5(const array[int[8], #dim=1] a, mutable array[complex[float[64]], #dim=3] b, const array[complex[float[64]], 2, 2] c) -> int[8] {}
+  def test_array_4(readonly array[uint[16], #dim=2*n] a) {}
+  def test_array_5(readonly array[int[8], #dim=1] a, mutable array[complex[float[64]], #dim=3] b, readonly array[complex[float[64]], 2, 2] c) -> int[8] {}
 reference: |
   program
-    header
-    globalStatement
-      subroutineDefinition
-        def
-        test_array_1
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              mutable
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_array_1
+          (
+          argumentDefinitionList
+            argumentDefinition
               arrayReferenceType
+                mutable
                 array
                 [
-                nonArrayType
-                  singleDesignatorType
-                    uint
+                scalarType
+                  uint
                   designator
                     [
                     expression
-                      expressionTerminator
-                        16
+                      16
                     ]
                 ,
-                arrayReferenceTypeDimensionSpecifier
-                  expressionList
-                    expression
-                      expressionTerminator
-                        4
-                    ,
-                    expression
-                      expressionTerminator
-                        2
-                ]
-              a
-        )
-        subroutineBlock
-          {
-          }
-    globalStatement
-      subroutineDefinition
-        def
-        test_array_2
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              const
-              arrayReferenceType
-                array
-                [
-                nonArrayType
-                  singleDesignatorType
-                    uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
-                ,
-                arrayReferenceTypeDimensionSpecifier
-                  expressionList
-                    expression
-                      expressionTerminator
-                        4
-                    ,
-                    expression
-                      expressionTerminator
-                        2
-                ]
-              a
-        )
-        subroutineBlock
-          {
-          }
-    globalStatement
-      subroutineDefinition
-        def
-        test_array_3
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              mutable
-              arrayReferenceType
-                array
-                [
-                nonArrayType
-                  singleDesignatorType
-                    uint
-                  designator
-                    [
-                    expression
-                      expressionTerminator
-                        16
-                    ]
-                ,
-                arrayReferenceTypeDimensionSpecifier
-                  #dim
-                  =
+                expressionList
                   expression
-                    expressionTerminator
-                      2
+                    4
+                  ,
+                  expression
+                    2
                 ]
               a
-        )
-        subroutineBlock
-          {
-          }
-    globalStatement
-      subroutineDefinition
-        def
-        test_array_4
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              const
+          )
+          scope
+            {
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_array_2
+          (
+          argumentDefinitionList
+            argumentDefinition
               arrayReferenceType
+                readonly
                 array
                 [
-                nonArrayType
-                  singleDesignatorType
-                    uint
+                scalarType
+                  uint
                   designator
                     [
                     expression
-                      expressionTerminator
-                        16
+                      16
                     ]
                 ,
-                arrayReferenceTypeDimensionSpecifier
-                  #dim
-                  =
+                expressionList
                   expression
-                    logicalAndExpression
-                      bitOrExpression
-                        xOrExpression
-                          bitAndExpression
-                            equalityExpression
-                              comparisonExpression
-                                bitShiftExpression
-                                  additiveExpression
-                                    multiplicativeExpression
-                                      multiplicativeExpression
-                                        unaryExpression
-                                          powerExpression
-                                            indexExpression
-                                              expressionTerminator
-                                                2
-                                      *
-                                      unaryExpression
-                                        powerExpression
-                                          indexExpression
-                                            expressionTerminator
-                                              n
+                    4
+                  ,
+                  expression
+                    2
                 ]
               a
-        )
-        subroutineBlock
-          {
-          }
-    globalStatement
-      subroutineDefinition
-        def
-        test_array_5
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              const
+          )
+          scope
+            {
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_array_3
+          (
+          argumentDefinitionList
+            argumentDefinition
               arrayReferenceType
+                mutable
                 array
                 [
-                nonArrayType
-                  singleDesignatorType
-                    int
+                scalarType
+                  uint
                   designator
                     [
                     expression
-                      expressionTerminator
-                        8
+                      16
                     ]
                 ,
-                arrayReferenceTypeDimensionSpecifier
-                  #dim
-                  =
-                  expression
-                    expressionTerminator
-                      1
+                #dim
+                =
+                expression
+                  2
                 ]
               a
-          ,
-          anyTypeArgument
-            classicalArgument
-              mutable
+          )
+          scope
+            {
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_array_4
+          (
+          argumentDefinitionList
+            argumentDefinition
               arrayReferenceType
+                readonly
                 array
                 [
-                nonArrayType
+                scalarType
+                  uint
+                  designator
+                    [
+                    expression
+                      16
+                    ]
+                ,
+                #dim
+                =
+                expression
+                  expression
+                    2
+                  *
+                  expression
+                    n
+                ]
+              a
+          )
+          scope
+            {
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_array_5
+          (
+          argumentDefinitionList
+            argumentDefinition
+              arrayReferenceType
+                readonly
+                array
+                [
+                scalarType
+                  int
+                  designator
+                    [
+                    expression
+                      8
+                    ]
+                ,
+                #dim
+                =
+                expression
+                  1
+                ]
+              a
+            ,
+            argumentDefinition
+              arrayReferenceType
+                mutable
+                array
+                [
+                scalarType
                   complex
                   [
-                  numericType
-                    singleDesignatorType
-                      float
+                  scalarType
+                    float
                     designator
                       [
                       expression
-                        expressionTerminator
-                          64
+                        64
                       ]
                   ]
                 ,
-                arrayReferenceTypeDimensionSpecifier
-                  #dim
-                  =
-                  expression
-                    expressionTerminator
-                      3
+                #dim
+                =
+                expression
+                  3
                 ]
               b
-          ,
-          anyTypeArgument
-            classicalArgument
-              const
+            ,
+            argumentDefinition
               arrayReferenceType
+                readonly
                 array
                 [
-                nonArrayType
+                scalarType
                   complex
                   [
-                  numericType
-                    singleDesignatorType
-                      float
+                  scalarType
+                    float
                     designator
                       [
                       expression
-                        expressionTerminator
-                          64
+                        64
                       ]
                   ]
                 ,
-                arrayReferenceTypeDimensionSpecifier
-                  expressionList
-                    expression
-                      expressionTerminator
-                        2
-                    ,
-                    expression
-                      expressionTerminator
-                        2
+                expressionList
+                  expression
+                    2
+                  ,
+                  expression
+                    2
                 ]
               c
-        )
-        returnSignature
-          ->
-          classicalType
-            nonArrayType
-              singleDesignatorType
-                int
+          )
+          returnSignature
+            ->
+            scalarType
+              int
               designator
                 [
                 expression
-                  expressionTerminator
-                    8
+                  8
                 ]
-        subroutineBlock
-          {
-          }
+          scope
+            {
+            }
+    <EOF>

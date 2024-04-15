@@ -1,0 +1,4 @@
+# Pin docutils to a known-good version with the `Node.previous_sibling`
+# monkey-patching as applied in `source/conf.py`.  Can be relaxed once docutils
+# releases a new version with the reference patch applied.
+docutils==0.19.0

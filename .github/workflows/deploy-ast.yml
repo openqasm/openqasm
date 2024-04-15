@@ -1,0 +1,68 @@
+name: Deploy Reference Python Package
+
+on:
+  push:
+    tags:
+      - 'ast-py/v*'
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-ast.yml
+
+  deploy:
+    name: Deploy to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # There's deliberately no check-out step here, because we don't want the
+      # checkout anywhere near us complicating matters; we're just trying to
+      # ensure that the pre-built wheel works, and its version matches what we
+      # expect from the tag.
+
+      - uses: actions/setup-python@v5
+        with:
+          # The version checker uses 'importlib.metadata' which is Python 3.10+.
+          python-version: '3.10'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: openqasm3-python-wheel
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: openqasm3-python-sdist
+
+      - name: Verify package
+        run: |
+          set -e
+          python3 -mvenv .venv
+          source .venv/bin/activate
+
+          python3 -mpip install -U pip wheel
+          python3 -mpip install openqasm3-*.whl
+
+          # Extract the version information from the end of the tag.
+          tag_version=${GITHUB_REF#refs/tags/ast-py/v}
+          # We could get this from the wheel filename too, but it's easier to
+          # test with Python built-ins.
+          wheel_version=$(python3 -c 'from importlib.metadata import version; print(version("openqasm3"))')
+
+          if [[ "$tag_version" != "$wheel_version" ]]; then
+            echo "Version mismatch: tag says '$tag_version', wheel says '$wheel_version'" >&2
+            exit 1
+          fi
+
+          # Last-ditch validity check that the wheel actually imports.
+          python3 -c 'import openqasm3'
+
+      - name: Upload to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.OPENQASM_BOT_PYPI_TOKEN }}
+        run: |
+          set -e
+          source .venv/bin/activate
+
+          python3 -mpip install -U twine
+          twine upload openqasm3-*.whl openqasm3-*.tar.gz

@@ -1,144 +1,128 @@
 # indent w/ 2 spaces
+# beware the tab character in f = 1 im below
 source: |
-  complex[int[32]] a;
-  complex[float[40]] b = 4-5.5im;
-  complex[angle[20]] d = a + b;
+  complex[float] a;
+  complex[float] b = 4 - 5.5im;
+  complex[float[64]] d = a + 3 im;
   complex[float[32]] c = a ** b;
+  complex[float] e = 1im;
+  complex[float] f = 1	im;
+  complex z;
 reference: |
   program
-    header
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
             complex
             [
-            numericType
-              singleDesignatorType
-                int
-              designator
-                [
-                expression
-                  expressionTerminator
-                    32
-                ]
+            scalarType
+              float
             ]
-            a
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
+          a
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
             complex
             [
-            numericType
-              singleDesignatorType
-                float
-              designator
-                [
-                expression
-                  expressionTerminator
-                    40
-                ]
+            scalarType
+              float
             ]
-            b
-            equalsExpression
-              =
+          b
+          =
+          declarationExpression
+            expression
               expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    unaryExpression
-                                      powerExpression
-                                        indexExpression
-                                          expressionTerminator
-                                            4
-                                -
-                                multiplicativeExpression
-                                  unaryExpression
-                                    powerExpression
-                                      indexExpression
-                                        expressionTerminator
-                                          5.5im
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
+                4
+              -
+              expression
+                5.5im
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
             complex
             [
-            numericType
-              singleDesignatorType
-                angle
+            scalarType
+              float
               designator
                 [
                 expression
-                  expressionTerminator
-                    20
+                  64
                 ]
             ]
-            d
-            equalsExpression
-              =
+          d
+          =
+          declarationExpression
+            expression
               expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    unaryExpression
-                                      powerExpression
-                                        indexExpression
-                                          expressionTerminator
-                                            a
-                                +
-                                multiplicativeExpression
-                                  unaryExpression
-                                    powerExpression
-                                      indexExpression
-                                        expressionTerminator
-                                          b
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          complexDeclaration
+                a
+              +
+              expression
+                3 im
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
             complex
             [
-            numericType
-              singleDesignatorType
-                float
+            scalarType
+              float
               designator
                 [
                 expression
-                  expressionTerminator
-                    32
+                  32
                 ]
             ]
-            c
-            equalsExpression
-              =
+          c
+          =
+          declarationExpression
+            expression
               expression
-                unaryExpression
-                  powerExpression
-                    powerExpression
-                      indexExpression
-                        expressionTerminator
-                          a
-                    **
-                    indexExpression
-                      expressionTerminator
-                        b
-        ;
+                a
+              **
+              expression
+                b
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            complex
+            [
+            scalarType
+              float
+            ]
+          e
+          =
+          declarationExpression
+            expression
+              1im
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            complex
+            [
+            scalarType
+              float
+            ]
+          f
+          =
+          declarationExpression
+            expression
+              1	im
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          scalarType
+            complex
+          z
+          ;
+    <EOF>

@@ -75,7 +75,7 @@ to capture data. The hardware can be accessed as OpenPulse ``port``'s via ``exte
 identifier that specifies an external linkage that will be resolved at compile-time via vendor
 supplied translation units.
 
-.. code-block:: c
+.. code-block:: openpulse
 
     extern port drive_port0
 
@@ -112,7 +112,7 @@ The frame is composed of four parts:
 
 A ``frame`` from an existing calibration can also be accessed via an ``extern`` identifier
 
-.. code-block:: c
+.. code-block:: openpulse
 
     extern frame xy_frame0
 
@@ -125,7 +125,7 @@ Frame Initialization
 
 Frames can be initialized using the ``newframe`` command by providing the ``port``, ``frequency``, and ``phase`` e.g.
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
   extern port drive0;
   frame driveframe0 = newframe(drive0, 5e9, 0.0); // newframe(port pr, float[size] frequency, angle[size] phase)
@@ -139,7 +139,7 @@ to raise a compile-time error when such an initialization is encountered.
 
 Note that multiple frames may address the same port e.g.
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
   extern port measure_port;
   frame measure_frame_0 = newframe(measure_port, 5e9, 0.0);
@@ -156,23 +156,56 @@ NCO in analogy to virtual to physical register allocation.
 Frame Manipulation
 ~~~~~~~~~~~~~~~~~~
 
-The (frequency, phase) tuple of a frame can be manipulated throughout program
-by referencing ``.frequency``, and ``.phase``, with updates applied immediately
-at the current time of the frame. Operations must be appropriate for the respective type,
-``float`` for frequency and ``angle`` for phase. Again, the exact precision of these calculations
-is hardware specific. If either the frequency or phase are set to values that are invalid for
-the hardware, the compiler shall raise a compile-time error.
+The ``phase`` and ``frequency`` states of a frame can be manipulated throughout the program
+by using ``set`` and ``shift`` instructions and read using a ``get`` instruction. In particular,
+the `set_phase` and `shift_phase` instructions allow one to supply the frame and a value of type
+``angle`` representing the amount by which to set/shift the phase.
+
+.. code-block:: openpulse
+
+  set_phase(frame fr, angle phase);
+  shift_phase(frame fr, angle phase);
+
+The `get_phase` instruction allows one to supply the frame from which to retrieve the phase of
+type ``angle``.
+
+.. code-block:: openpulse
+
+  get_phase(frame fr) -> angle;
+
+Analogously, the `set_frequency` and `shift_frequency` instructions allow one to supply the frame
+and a value of type ``float`` representing the amount by which to set/shift the frequency.
+
+.. code-block:: openpulse
+
+  set_frequency(frame fr, float freq);
+  shift_frequency(frame fr, float freq);
+
+The `get_frequency` instruction allows one to supply the frame from which to retrieve the frequency
+of type ``float``.
+
+.. code-block:: openpulse
+
+  get_frequency(frame fr) -> float;
+
+Changing the frequency or phase behaves as an instantaneous operation (ie., its
+duration is zero device ticks) at the current time point of the frame. If a vendor
+is unable to support such instantaneous operations, it is expected that the
+compiler shall raise a compile-time error when encountering such frame manipulations.
+
+The exact precision and range of the frequency is hardware specific, and it is likely
+hardware vendors will perform a float to fixed conversion in the backend. If the frequency
+is set to an out of bounds value, the compiler shall raise a compile-time error.
 
 Here's an example of manipulating the phase to calibrate an ``rz`` gate on a frame called
 ``driveframe``:
 
-.. code-block:: javascript
+.. code-block:: openpulse
+   :force:
 
-  ...
-
-   // Example 1: Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
+   // Shift phase of the "drive" frame by pi/4, to realize a virtual rz gate with angle -pi/4
    cal {
-     driveframe.phase += pi/4;
+     shift_phase(driveframe, pi/4);
    }
 
    // The following is an example only. Frames as arrays has not been agreed on.
@@ -180,36 +213,32 @@ Here's an example of manipulating the phase to calibrate an ``rz`` gate on a fra
    // which also has not been well-defined. We are exploring other solutions to
    // the problem of mapping qubits to pulse-level resources.
 
-   // Example 2: Define a calibration for the rz gate on all 8 physical qubits
+   // Define a calibration for the rz gate on all 8 physical qubits
    cal {
      array[frame, 8] rz_frames;
      frame[0] = newframe(...);
      // and so on
    }
 
-   defcal rz(angle[20] theta) $q {
-     rz_frames[q].phase -= theta;
+   defcal rz(angle[20] theta) q {
+     shift_phase(rz_frames[q], -theta);
    }
 
 Manipulating frames based on the state of other frames is also permitted:
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
-   // Swap phases between two frames
-   const angle temp = frame1.phase;
-   frame1.phase = frame2.phase;
-   frame2.phase = temp;
-
-Changing the frequency or phase is an instantaneous operation. If a vendor
-is unable to support such instantaneous operations, it is expected that the
-compiler shall raise a compile-time error when encountering such frame manipulations.
+   angle temp1 = get_phase(frame1);
+   angle temp2 = get_phase(frame2);
+   set_phase(frame1, temp2);
+   set_phase(frame2, temp1);
 
 Waveforms
 ---------
 
 Waveforms are of type ``waveform`` and can either be:
 
-- An array of complex samples (note this syntax is still under [active development](https://github.com/Qiskit/openqasm/pull/301) and is subject to change.) which define the points for the waveform envelope
+- An array of complex samples which define the points for the waveform envelope
 - An abstract mathematical function representing a waveform. This will later be
   materialized into a list of complex samples, either by the compiler or the
   hardware using the parameters provided to the ``extern`` declared waveform template.
@@ -232,7 +261,8 @@ generators may have optimized implementations of common pulse shapes like gaussi
 Providing structured gaussian parameters instead of the materialized list of complex
 samples provides optimization opportunities that wouldn't be available otherwise.
 
-.. code-block:: javascript
+.. code-block:: openpulse
+   :force:
 
    // arbitrary complex samples
    waveform arb_waveform = [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im];
@@ -272,7 +302,7 @@ samples provides optimization opportunities that wouldn't be available otherwise
 We can manipulate the ``waveform`` types using the following signal processing functions to produce
 new waveforms (this list may be updated as more functionality is required).
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
     // Multiply two input waveforms entry by entry to produce a new waveform
     // :math:`wf(t_i) = wf_1(t_i) \times wf_2(t_i)`
@@ -294,28 +324,29 @@ Play instruction
 Waveforms are scheduled using the ``play`` instruction. These instructions may
 only appear inside a ``defcal`` block and have two required parameters:
 
-- A value of type ``waveform`` representing the waveform envelope.
 - The frame to use for the pulse.
+- A value of type ``waveform`` representing the waveform envelope.
 
-Here, the ``frame`` provides both time at which the ``waveform`` envelope is scheduled (i.e. via the frame ``.time``
-attribute), its carrier frequency (i.e. via the frames ``.frequency`` attribute), and its phase offset (i.e. via
-the frame ``.phase`` attribute).
+Here, the ``frame`` provides the time at which the ``waveform`` envelope is scheduled (i.e. via
+the frame's current ``time``), its carrier frequency (i.e. via the frames current ``frequency``),
+and its phase offset (i.e. via the frame's current ``phase``).
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
-  play(waveform wfm, frame fr)
+  play(frame fr, waveform wfm)
 
 For example,
 
-.. code-block:: javascript
+.. code-block:: openpulse
+  :force:
 
   defcal play_my_pulses $0 {
     // Play a 3 sample pulse on the tx0 port
-    play([1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im], driveframe);
+    play(driveframe, [1+0im, 0+1im, 1/sqrt(2)+1/sqrt(2)im]);
 
     // Play a gaussian pulse on the tx1 port
     frame f1 = newframe(tx1, q1_freq, 0.0);
-    play(gaussian(...), f1);
+    play(f1, gaussian(...));
   }
 
 If the ``waveform`` duration is not realizable by the sample rate of the associated ``port``,
@@ -344,22 +375,22 @@ However, the following are possible parameters that might also be included:
 Again it is up to the hardware vendor to determine the parameters and write a
 extern definition at the top-level, such as:
 
-.. code-block:: javascript
+.. code-block:: openpulse
 
    // Minimum requirement
    extern capture_v0(frame output);
 
    // A capture command that returns an iq value
-   extern capture_v1(waveform filter, frame output) -> complex[float[32]];
+   extern capture_v1(frame output, waveform filter) -> complex[float[32]];
 
    // A capture command that returns a discrimnated bit
-   extern capture_v2(waveform filter, frame output) -> bit;
+   extern capture_v2(frame output, waveform filter) -> bit;
 
    // A capture command that returns a raw waveform data
-   extern capture_v3(duration len, frame output) -> waveform;
+   extern capture_v3(frame output, duration len) -> waveform;
 
    // A capture that returns a count e.g. number of photons detected
-   extern capture_v4(duration len, frame output) -> int
+   extern capture_v4(frame output, duration len) -> int
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -369,14 +400,16 @@ pushing the results into some buffer which is then accessed outside the program.
 For example, the ``capture`` instruction could return raw waveform data that is then
 discriminated using user-defined boxcar and discrimination ``extern``\s.
 
-.. code-block:: javascript
+.. code-block::
 
-    // Use a boxcar function to generate IQ data from raw waveform
-    extern boxcar(waveform input) -> complex[float[64]];
-    // Use a linear discriminator to generate bits from IQ data
-    extern discriminate(complex[float[64]] iq) -> bit;
+    defcalgrammar "openpulse";
 
     cal {
+        // Use a boxcar function to generate IQ data from raw waveform
+        extern boxcar(waveform input) -> complex[float[64]];
+        // Use a linear discriminator to generate bits from IQ data
+        extern discriminate(complex[float[64]] iq) -> bit;
+
         // Define the ports
         extern port m0;
         extern port cap0;
@@ -392,14 +425,14 @@ discriminated using user-defined boxcar and discrimination ``extern``\s.
         waveform meas_wf = gaussian_square(1.0, 16000dt, 262dt, 13952dt);
 
         // Play the stimulus
-        play(meas_wf, stimulus_frame);
+        play(stimulus_frame, meas_wf);
 
         // Align measure and capture frames
         barrier stimulus_frame, capture_frame;
 
         // Capture transmitted data after interaction with measurement resonator
-        // extern capture(duration duration, frame capture_frame) -> waveform;
-        waveform raw_output = capture_v1(16000dt, capture_frame);
+        // extern capture_v1(frame capture_frame, duration duration) -> waveform;
+        waveform raw_output = capture_v1(capture_frame, 16000dt);
 
         // Kernel and discriminate
         complex[float[32]] iq = boxcar(raw_output);
@@ -426,9 +459,9 @@ As briefly discussed in the :ref:`Frame Initialization` section, a ``frame`` ini
 would be absolute 0. Meanwhile, a ``defcal``\s start time is determined by when it is scheduled
 (see :ref:`Timing` section for more details) e.g.
 
-.. code-block:: javascript
+.. code-block::
 
-  ...
+  defcalgrammar "openpulse";
 
   cal {
     extern port d0;
@@ -438,22 +471,22 @@ would be absolute 0. Meanwhile, a ``defcal``\s start time is determined by when 
   }
 
   defcal my_gate1 $0 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   defcal my_gate2 $0 {
     // initialized to time at beginning of `my_gate2`
     frame driveframe2 = newframe(d0, 5.0e9, 0.0);
-    play(wf, driveframe2);
+    play(driveframe2, wf);
   }
 
   defcal my_gate3 $0 {
     // initialized to time at beginning of `my_gate3`
     frame driveframe3 = newframe(d0, 5.0e9, 0.0);
-    play(wf, driveframe3);
+    play(driveframe3, wf);
   }
 
-  // driveframe1.time = 0ns when `play(wf, driveframe1)` is issued, advances to 16ns after `play`
+  // driveframe1.time = 0ns when `play(driveframe1, wf)` is issued, advances to 16ns after `play`
   my_gate1 $0;
   // driveframe2.time = 16ns when initialized via `newframe`
   my_gate2 $0;
@@ -466,9 +499,7 @@ Delay
 When a ``delay`` instruction is issued for a list of ``frame``\s, the ``frame`` clocks advance
 by the requested duration.
 
-.. code-block:: javascript
-
-  ...
+.. code-block:: openpulse
 
   // driveframe advances by 13ns
   delay[13ns] driveframe;
@@ -482,9 +513,7 @@ Play and Capture
 When a ``play`` or ``capture`` instruction is issued, the ``frame`` clock advances
 by the duration of the associated ``waveform`` argument.
 
-.. code-block:: javascript
-
-  ...
+.. code-block:: openpulse
 
   cal {
     extern port d0;
@@ -495,7 +524,7 @@ by the duration of the associated ``waveform`` argument.
   delay[13ns] driveframe;
   // driveframe.time is now 13ns
 
-  play(wf, driveframe);
+  play(driveframe, wf);
   // driveframe.time is now 29ns
 
 Barrier
@@ -504,7 +533,9 @@ Barrier
 When a ``barrier`` instruction is issued for a list of ``frame``\s, the ``frame`` clocks are
 aligned to the latest time of the all ``frame``\s listed.
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   cal {
     extern port d0;
@@ -525,25 +556,27 @@ aligned to the latest time of the all ``frame``\s listed.
 
 Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters the block e.g.
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   cal {
     extern port tx0;
     extern port tx1;
-    waveform p = ...; // some 100ns waveform
+    waveform p = /* ... some 100ns waveform ... */;
     frame driveframe1 = newframe(tx0, 5.0e9, 0);
     frame driveframe2 = newframe(tx1, 6.0e9, 0);
   }
 
   defcal two_qubit_gate $1 $2 {
     // implicit: barrier driveframe1, driveframe2;
-    play(wf, driveframe1);
-    play(wf, driveframe2);
+    play(driveframe1, wf);
+    play(driveframe2, wf);
   }
 
   defcal single_qubit_gate $1 {
     // implicit: barrier driveframe1;
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   single_qubit_gate $1;
@@ -554,41 +587,44 @@ Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters t
 Phase tracking
 ~~~~~~~~~~~~~~
 
-As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a frame can be manipulated
-throughout a program by referencing ``.phase``. The phase is also implicitly manipulated when the time
-of the frame is advanced using a ``delay``, ``play``, or ``capture`` instruction e.g.
+As discussed in the :ref:`Frame Manipulation` section, the accrued phase of a frame can be
+manipulated throughout a program via ``set_phase`` and ``shift_phase`` instructions. In addition,
+the phase is implicitly manipulated when the time of the frame is advanced using a ``delay``,
+``play``, or ``capture`` instruction e.g.
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   cal {
     extern port tx0;
-    waveform p = ...; // some 100ns waveform
+    waveform p = /* ... some 100ns waveform ... */;
 
     // Frame initialized with accrued phase of 0
     frame driveframe0 = newframe(tx0, 5.0e9, 0);
   }
 
   defcal single_qubit_gate $0 {
-    play(wf, driveframe0);
+    play(driveframe0, wf);
   }
 
   defcal single_qubit_delay $0 {
     delay[13ns] driveframe0;
   }
 
-  // driveframe0.phase = 0
+  // get_phase(driveframe0) == 0
   single_qubit_gate $0;
-  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * durationof(wf)
-  //                                         += 2π * 5e9 * 100e-9
+  // Implicit advancement: -> shift_phase(driveframe0, 2π * get_frequency(driveframe0) * durationof(wf))
+  //                        = shift_phase(driveframe0, 2π * 5e9 * 100e-9)
 
   // Change the frequency
   cal {
-    driveframe0.frequency = 6e9;
+    set_frequency(driveframe0, 6e9);
   }
 
   single_qubit_delay $0;
-  // Implicit advancement: driveframe0.phase += 2π * driveframe0.frequency * 13e-9
-  //                                         += 2π * 6e9 * 13e-9
+  // Implicit advancement: -> set_phase(driveframe0, 2π * get_frequency(driveframe0) * 13e-9)
+  //                        = set_phase(driveframe0, 2π * 6e9 * 13e-9)
 
 
 
@@ -601,19 +637,17 @@ Collisions
 If a frame is scheduled or referenced simultaneously in two ``defcal`` or ``cal`` blocks, it is
 considered a compile-time error e.g.
 
-.. code-block:: javascript
+.. code-block::
 
-  ...
+  defcalgrammar "openpulse";
 
   defcal single_qubit_gate $0 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
 
   defcal single_qubit_gate $1 {
-    play(wf, driveframe1);
+    play(driveframe1, wf);
   }
-
-  ...
 
   // Compile-time error when requesting parallel usage of the same frame
   single_qubit_gate $0 $1;
@@ -637,7 +671,9 @@ the program.
 
 Here we want to sweep the frequency of a long pulse that saturates the qubit transition.
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   // sweep parameters would be programmed in by some higher level bindings
   const float frequency_start = 4.5e9;
@@ -647,18 +683,18 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
   // define a long saturation pulse of a set duration and amplitude
   defcal saturation_pulse $0 {
       // assume frame can be linked from a vendor supplied `cal` block
-      play(constant(0.1, 100e-6), driveframe);
+      play(driveframe, constant(0.1, 100e-6));
   }
 
   // step into a `cal` block to set the start of the frequency sweep
   cal {
-      driveframe.frequency = frequency_start;
+      set_frequency(driveframe, frequency_start);
   }
 
-  for i in [1:frequency_num_steps] {
+  for int i in [1:frequency_num_steps] {
       // step into a `cal` block to adjust the pulse frequency via the frame frequency
       cal {
-          driveframe.frequency += frequency_step;
+          shift_frequency(driveframe, frequency_step);
       }
 
       saturation_pulse $0;
@@ -669,20 +705,22 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
 
 Here we want to sweep the time of the pulse and observe coherent Rabi flopping dynamics.
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   const duration pulse_length_start = 20dt;
   const duration pulse_length_step = 1dt;
   const int pulse_length_num_steps = 100;
 
-  for i in [1:pulse_length_num_steps] {
+  for int i in [1:pulse_length_num_steps] {
       duration pulse_length = pulse_length_start + (i-1)*pulse_length_step);
       duration sigma = pulse_length / 4;
       // since we are manipulating pulse lengths it is easier to define and play the waveform in a `cal` block
       cal {
           waveform wf = gaussian(0.5, pulse_length, sigma);
           // assume frame can be linked from a vendor supplied `cal` block
-          play(wf, driveframe);
+          play(driveframe, wf);
       }
       measure $0;
   }
@@ -691,7 +729,9 @@ Cross-resonance gate
 ~~~~~~~~~~~~~~~~~~~~
 
 
-.. code-block:: javascript
+.. code-block::
+
+  defcalgrammar "openpulse";
 
   cal {
      // Access globally (or externally) defined ports
@@ -708,10 +748,10 @@ Cross-resonance gate
 
       // generate new frame for second drive that is locally scoped
       // initialized to time at the beginning of `cross_resonance`
-      frame temp_frame = newframe(d1, frame0.frequency, frame0.phase);
+      frame temp_frame = newframe(d1, get_frequency(frame0), get_phase(frame0));
 
-      play(wf1, frame0);
-      play(wf2, temp_frame);
+      play(frame0, wf1);
+      play(temp_frame, wf2);
 
       /*** Do post-rotation ***/
 
@@ -720,7 +760,10 @@ Cross-resonance gate
 Geometric gate
 ~~~~~~~~~~~~~~
 
-.. code-block:: javascript
+.. code-block::
+  :force:
+
+  defcalgrammar "openpulse";
 
   cal {
       extern port dq;
@@ -730,21 +773,21 @@ Geometric gate
       frame frame_12 = newframe(dq, fq_01 + anharm, 0);
   }
 
-  defcal geo_gate(angle[32] theta) $q {
+  defcal geo_gate(angle[32] theta) q {
       // theta: rotation angle (about z-axis) on Bloch sphere
 
       // Assume we have calibrated 0->1 pi pulses and 1->2 pi pulse
       // envelopes (no sideband)
-      waveform X_01 = {...};
-      waveform X_12 = {...};
+      waveform X_01 = { ... };
+      waveform X_12 = { ... };
       float[32] a = sin(theta/2);
       float[32] b = sqrt(1-a**2);
 
       // Double-tap
-      play(scale(a, X_01), frame_01);
-      play(scale(b, X_12), frame_12);
-      play(scale(a, X_01), frame_01);
-      play(scale(b, X_12), frame_12);
+      play(frame_01, scale(a, X_01));
+      play(frame_12, scale(b, X_12));
+      play(frame_01, scale(a, X_01));
+      play(frame_12, scale(b, X_12));
   }
 
 Neutral atoms
@@ -760,7 +803,10 @@ sideband).
 
 The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on q2 and q3.
 
-.. code-block:: javascript
+.. code-block::
+  :force:
+
+  defcalgrammar "openpulse";
 
   // Raman transition detuning Δ from the  5S1/2 to 5P1/2 transition
   const float Δ = ...;
@@ -801,7 +847,7 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     frame q3_frame = newframe(aod_port, qubit_freq, 0)
 
     // Generic gaussian envelope
-    waveform π_half_sig = gaussian(..., π_half_time, ...);
+    waveform π_half_sig = gaussian(1.0, π_half_time, 100dt);
 
     // Waveforms ultimately supplied to the AODs. We mix our general Gaussian pulse with a sine wave to
     // put a sideband on the outgoing pulse. This helps us target the qubit position while maintainig the
@@ -814,22 +860,22 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
   // π/2 pulses on all three qubits
   defcal rx(π/2) $1 $2 $3 {
         // Simultaneous π/2 pulses
-        play(constant(raman_a_amp, π_half_time) , raman_a_frame);
-        play(constant(raman_b_amp, π_half_time) , raman_b_frame);
-        play(q1_π_half_sig, q1_frame);
-        play(q2_π_half_sig, q2_frame);
-        play(q3_π_half_sig, q3_frame);
+        play(raman_a_frame, constant(raman_a_amp, π_half_time));
+        play(raman_b_frame, constant(raman_b_amp, π_half_time));
+        play(q1_frame, q1_π_half_sig);
+        play(q2_frame, q2_π_half_sig);
+        play(q3_frame, q3_π_half_sig);
   }
 
   // π/2 pulse on only qubit $2
   defcal rx(π/2) $2 {
-      play(constant(raman_a_amp, π_half_time) , raman_a_frame);
-      play(constant(raman_b_amp, π_half_time) , raman_b_frame);
-      play(q2_π_half_sig, q2_frame);
+      play(raman_a_frame, constant(raman_a_amp, π_half_time));
+      play(raman_b_frame, constant(raman_b_amp, π_half_time));
+      play(q2_frame, q2_π_half_sig);
   }
 
   // Ramsey sequence on qubit 1 and 3, Hahn echo on qubit 2
-  for τ in [0:10us:1ms] {
+  for duration τ in [0:10us:1ms] {
 
     // First π/2 pulse
     rx(π/2) $0, $1, $2;
@@ -840,7 +886,7 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     }
 
     // Hahn echo π pulse composed of two π/2 pulses
-    for ct in [0:1]:
+    for int ct in [0:1]:
       rx(π/2) $2;
 
     cal {
@@ -851,9 +897,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
       delay[τ/2] raman_a_frame raman_b_frame q1_frame q2_frame q3_frame;
 
       // Time-proportional phase increment signals different amount
-      q1_frame.phase += tppi_1 * τ;
-      q2_frame.phase += tppi_2 * τ;
-      q3_frame.phase += tppi_3 * τ;
+      shift_phase(q1_frame, tppi_1 * τ);
+      shift_phase(q2_frame, tppi_2 * τ);
+      shift_phase(q3_frame, tppi_3 * τ);
     }
 
     // Second π/2 pulse
@@ -866,7 +912,10 @@ In this example, we want to perform readout and capture of a pair of qubits, but
 single physical transmission and capture port. The example is for just two qubits, but works the same for
 many (just adding more frames, waveforms, plays, and captures).
 
-.. code-block:: javascript
+.. code-block::
+  :force:
+
+  defcalgrammar "openpulse";
 
   const duration electrical_delay = ...;
   const float q0_ro_freq = ...;
@@ -892,8 +941,8 @@ many (just adding more frames, waveforms, plays, and captures).
       waveform q1_ro_wf = constant(amp=0.2, d=...);
 
       // multiplexed readout
-      play(q0_ro_wf, q0_stimulus_frame);
-      play(q1_ro_wf, q1_stimulus_frame);
+      play(q0_stimulus_frame, q0_ro_wf);
+      play(q1_stimulus_frame, q1_ro_wf);
 
       // simple boxcar kernel
       waveform ro_kernel = constant(amp=1, d=...);
@@ -902,9 +951,9 @@ many (just adding more frames, waveforms, plays, and captures).
       delay[electrical_delay] q0_capture_frame q1_capture_frame;
 
       // multiplexed capture
-      // extern capture(waveform ro_kernel, frame capture_frame) -> bit;
-      b[1] = capture(ro_kernel, q0_capture_frame);
-      b[2] = capture(ro_kernel, q1_capture_frame);
+      // extern capture(frame capture_frame, waveform ro_kernel) -> bit;
+      b[1] = capture(q0_capture_frame, ro_kernel);
+      b[2] = capture(q1_capture_frame, ro_kernel);
 
       return b;
   }

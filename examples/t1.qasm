@@ -1,7 +1,6 @@
 /* Measuring the relaxation time of a qubit
  * This example demonstrates the repeated use of fixed delays.
 */
-OPENQASM 3.0;
 include "stdgates.inc";
 
 duration stride = 1us;            // time resolution of points taken
@@ -19,12 +18,12 @@ bit c1;
 defcalgrammar "openpulse";
 
 // define a gate calibration for an X gate on any qubit
-defcal x $q {
-   play drive($q), gaussian(100, 30, 5);
+defcal x q {
+   play drive(q), gaussian(100, 30, 5);
 }
 
-for p in [0 : points-1] {
-    for i in [1 : shots] {
+for int[32] p in [0 : points-1] {
+    for uint i in [1 : shots] {
         // start of a basic block
         reset $0;
         reset $1;

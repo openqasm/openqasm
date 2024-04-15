@@ -15,54 +15,6 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 Chair: Niel de Beaudrap  
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
-### Types and casting
-
-**Objective**: Define type hierarchy and implicit casting rules.  
-**Questions**:
-
- * Any implicit casts?
- * What explicit casts are allowed?
- * Registers vs arrays?
- * Can you index into integers and get bit value?
- * Is an int equivalent to an array of bits?
-
-Chair: Michael Healy (IBM Quantum)  
-Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman
-
-### Pragmas
-
-**Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.  
-**Questions**:
-
- * What should be the pragma syntax? Should there be more directives (e.g., `#if`, `#define`), or should the functionality avoid anything like a pre-processor?
- * What should be supported in the language instead of as a pragma?
- * What is not supported by pragmas
- * Conventions:
-    * How should multiple OpenQASM tools interact with pragmas?
-    * How do pragmas that may operate at different levels of the MLIR different stages of processing determine when and where to be processed?
-    * Syntactical conventions for independent developers
-
-Chair: Jeff Heckey (AWS)  
-Members: Ali Javadi (IBM Quantum)
-BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)
-
-### Dynamic Deference & Allocation
-
-**Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/Qiskit/openqasm/issues/307)
- * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
- * If in scope, provide rough solutions.
- * Keep in mind the difference between dynamic dereference and dynamic allocation.
- * Capture implicit assumptions that would make it hard to introduce this in future.
-
-**Questions**:
- * Do dynamically deferenced qubits break hidden assumptions in the current spec?
-    * Gates may have different implementations for each dynamic qubit
-    * Multiple qubit gates require connectivity or swaps
-    * Index out of bounds in runtime?
-
-Chair: Dor Israeli (Quantum Machines)
-Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
-
 ### Profiles & Releases
 
 **Objectives**: Define a minimum set of features for hardware implementors (base profile) and build
@@ -92,8 +44,8 @@ This working group will have completed its efforts when:
 - At least one profile has been defined
 - The release version of OpenQASM 3.0, and associated infrastructure, is merged
 
-Chair: Steven Heidel (AWS Quantum)
-Members: 2-3 other AWS Quantum members TBD, Dor Israeli, Bettina Heim, (your name here?)
+Chair: Michael Healy (IBM Quantum)
+Members: Ali Javadi, Bettina Heim, Blake Johnson, Dor Israeli, Jeff Heckey, Jon Best, Lev Bishop, Luciano Bello, Niel de Beaudrap, Philipp Schindler, Steven Heidel, Thomas Alexander, Yunong Shi
 
 ## Past Working Groups
 
@@ -104,3 +56,55 @@ OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
+
+
+### Types and casting
+
+**Objective**: Define type hierarchy and implicit casting rules.
+**Questions**:
+
+ * Any implicit casts?
+ * What explicit casts are allowed?
+ * Registers vs arrays?
+ * Can you index into integers and get bit value?
+ * Is an int equivalent to an array of bits?
+
+Chair: Michael Healy (IBM Quantum)
+Members: Niel de Beaudrap, Hiroshi Horii, Blake Johnson, Colm Ryan, Luciano Bello, Prasahnt Sivarajah, Yunong Shi, Jake Lishman, Bettina Heim
+
+### Dynamic Dereference & Allocation
+
+**Objectives**: Formulate response to issues raised by [Physical mapping of dynamically dereferenced qubits #307](https://github.com/openqasm/openqasm/issues/307)
+ * Provide concrete examples proving this cannot be dealt with in OpenQASM 3 as the spec stands
+ * If in scope, provide rough solutions.
+ * Keep in mind the difference between dynamic dereference and dynamic allocation.
+ * Capture implicit assumptions that would make it hard to introduce this in future.
+
+**Questions**:
+ * Do dynamically dereferenced qubits break hidden assumptions in the current spec?
+    * Gates may have different implementations for each dynamic qubit
+    * Multiple qubit gates require connectivity or swaps
+    * Index out of bounds in runtime?
+
+Chair: Dor Israeli (Quantum Machines)
+Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
+
+Group was merged into part of the profiles and releases working group.
+
+
+### Pragmas
+
+**Objectives**: Define a pragma syntax, standard directives, the standard behavioral expectations for interacting within a toolchain.
+**Questions**:
+
+ * What should be the pragma syntax? Should there be more directives (e.g., `#if`, `#define`), or should the functionality avoid anything like a pre-processor?
+ * What should be supported in the language instead of as a pragma?
+ * What is not supported by pragmas
+ * Conventions:
+    * How should multiple OpenQASM tools interact with pragmas?
+    * How do pragmas that may operate at different levels of the MLIR different stages of processing determine when and where to be processed?
+    * Syntactical conventions for independent developers
+
+Chair: Jeff Heckey (AWS)  
+Members: Ali Javadi (IBM Quantum)
+BẢO Bach Gia (Ho Chi Minh University of Technology), Jake Lishman (IBM Quantum), Jack Woehr (IBM Quantum), Lev S. Bishop (IBM Quantum), Michael Healy (IBM Quantum), Thomas Alexander (IBM Quantum), Yunong Shi (AWS)

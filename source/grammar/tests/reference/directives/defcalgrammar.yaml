@@ -1,0 +1,25 @@
+source: |
+  defcalgrammar 'openpulse';
+  defcalgrammar "openpulse";
+  defcalgrammar "001";
+reference: |
+  program
+    statementOrScope
+      statement
+        calibrationGrammarStatement
+          defcalgrammar
+          'openpulse'
+          ;
+    statementOrScope
+      statement
+        calibrationGrammarStatement
+          defcalgrammar
+          "openpulse"
+          ;
+    statementOrScope
+      statement
+        calibrationGrammarStatement
+          defcalgrammar
+          "001"
+          ;
+    <EOF>

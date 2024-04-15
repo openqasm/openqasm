@@ -6,243 +6,208 @@ source: |
     return result;
   }
   def test_sub2(int[5] i, bit[2] b, creg c[3]) {
-    for j in {2, 3}
+    for int[5] j in {2, 3}
       i += j;
     return i+1;
   }
+  def returns_a_measure(qubit q) {
+    return measure q;
+  }
 reference: |
   program
-    header
-    globalStatement
-      subroutineDefinition
-        def
-        test_sub1
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              singleDesignatorType
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_sub1
+          (
+          argumentDefinitionList
+            argumentDefinition
+              scalarType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
+                designator
+                  [
+                  expression
                     5
-                ]
+                  ]
               i
-          ,
-          anyTypeArgument
-            quantumArgument
-              qubit
-              designator
-                [
-                expression
-                  expressionTerminator
+            ,
+            argumentDefinition
+              qubitType
+                qubit
+                designator
+                  [
+                  expression
                     2
-                ]
+                  ]
               q1
-          ,
-          anyTypeArgument
-            quantumArgument
+            ,
+            argumentDefinition
               qreg
               q2
               designator
                 [
                 expression
-                  expressionTerminator
-                    5
+                  5
                 ]
-        )
-        returnSignature
-          ->
-          classicalType
-            nonArrayType
-              singleDesignatorType
-                int
+          )
+          returnSignature
+            ->
+            scalarType
+              int
               designator
                 [
                 expression
-                  expressionTerminator
-                    10
+                  10
                 ]
-        subroutineBlock
-          {
-          statement
-            classicalDeclarationStatement
-              classicalDeclaration
-                singleDesignatorDeclaration
-                  singleDesignatorType
+          scope
+            {
+            statementOrScope
+              statement
+                classicalDeclarationStatement
+                  scalarType
                     int
-                  designator
-                    [
-                    expression
-                      expressionTerminator
+                    designator
+                      [
+                      expression
                         10
-                    ]
+                      ]
                   result
-              ;
-          statement
-            branchingStatement
-              if
-              (
-              expression
-                logicalAndExpression
-                  bitOrExpression
-                    xOrExpression
-                      bitAndExpression
-                        equalityExpression
-                          equalityExpression
-                            comparisonExpression
-                              bitShiftExpression
-                                additiveExpression
-                                  multiplicativeExpression
-                                    unaryExpression
-                                      powerExpression
-                                        indexExpression
-                                          expressionTerminator
-                                            result
-                          equalityOperator
-                            ==
-                          comparisonExpression
-                            bitShiftExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  unaryExpression
-                                    powerExpression
-                                      indexExpression
-                                        expressionTerminator
-                                          2
-              )
-              programBlock
-                controlDirective
-                  returnStatement
-                    return
+                  ;
+            statementOrScope
+              statement
+                ifStatement
+                  if
+                  (
+                  expression
                     expression
-                      logicalAndExpression
-                        bitOrExpression
-                          xOrExpression
-                            bitAndExpression
-                              equalityExpression
-                                comparisonExpression
-                                  bitShiftExpression
-                                    additiveExpression
-                                      additiveExpression
-                                        multiplicativeExpression
-                                          unaryExpression
-                                            powerExpression
-                                              indexExpression
-                                                expressionTerminator
-                                                  1
-                                      +
-                                      multiplicativeExpression
-                                        unaryExpression
-                                          powerExpression
-                                            indexExpression
-                                              expressionTerminator
-                                                result
-                    ;
-          returnStatement
-            return
-            expression
-              expressionTerminator
-                result
-            ;
-          }
-    globalStatement
-      subroutineDefinition
-        def
-        test_sub2
-        (
-        anyTypeArgumentList
-          anyTypeArgument
-            classicalArgument
-              singleDesignatorType
+                      result
+                    ==
+                    expression
+                      2
+                  )
+                  statementOrScope
+                    statement
+                      returnStatement
+                        return
+                        expression
+                          expression
+                            1
+                          +
+                          expression
+                            result
+                        ;
+            statementOrScope
+              statement
+                returnStatement
+                  return
+                  expression
+                    result
+                  ;
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          test_sub2
+          (
+          argumentDefinitionList
+            argumentDefinition
+              scalarType
                 int
-              designator
-                [
-                expression
-                  expressionTerminator
+                designator
+                  [
+                  expression
                     5
-                ]
+                  ]
               i
-          ,
-          anyTypeArgument
-            classicalArgument
-              bit
-              designator
-                [
-                expression
-                  expressionTerminator
+            ,
+            argumentDefinition
+              scalarType
+                bit
+                designator
+                  [
+                  expression
                     2
-                ]
+                  ]
               b
-          ,
-          anyTypeArgument
-            classicalArgument
+            ,
+            argumentDefinition
               creg
               c
               designator
                 [
                 expression
-                  expressionTerminator
-                    3
+                  3
                 ]
-        )
-        subroutineBlock
-          {
-          statement
-            loopStatement
-              loopSignature
-                for
-                j
-                in
-                setDeclaration
-                  discreteSet
+          )
+          scope
+            {
+            statementOrScope
+              statement
+                forStatement
+                  for
+                  scalarType
+                    int
+                    designator
+                      [
+                      expression
+                        5
+                      ]
+                  j
+                  in
+                  setExpression
                     {
                     expression
-                      expressionTerminator
-                        2
+                      2
                     ,
                     expression
-                      expressionTerminator
-                        3
+                      3
                     }
-              programBlock
-                statement
-                  assignmentStatement
-                    classicalAssignment
-                      indexedIdentifier
-                        i
-                      assignmentOperator
+                  statementOrScope
+                    statement
+                      assignmentStatement
+                        indexedIdentifier
+                          i
                         +=
-                      expression
-                        expressionTerminator
+                        expression
                           j
-                    ;
-          returnStatement
-            return
-            expression
-              logicalAndExpression
-                bitOrExpression
-                  xOrExpression
-                    bitAndExpression
-                      equalityExpression
-                        comparisonExpression
-                          bitShiftExpression
-                            additiveExpression
-                              additiveExpression
-                                multiplicativeExpression
-                                  unaryExpression
-                                    powerExpression
-                                      indexExpression
-                                        expressionTerminator
-                                          i
-                              +
-                              multiplicativeExpression
-                                unaryExpression
-                                  powerExpression
-                                    indexExpression
-                                      expressionTerminator
-                                        1
-            ;
-          }
+                        ;
+            statementOrScope
+              statement
+                returnStatement
+                  return
+                  expression
+                    expression
+                      i
+                    +
+                    expression
+                      1
+                  ;
+            }
+    statementOrScope
+      statement
+        defStatement
+          def
+          returns_a_measure
+          (
+          argumentDefinitionList
+            argumentDefinition
+              qubitType
+                qubit
+              q
+          )
+          scope
+            {
+            statementOrScope
+              statement
+                returnStatement
+                  return
+                  measureExpression
+                    measure
+                    gateOperand
+                      indexedIdentifier
+                        q
+                  ;
+            }
+    <EOF>

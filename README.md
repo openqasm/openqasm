@@ -1,32 +1,31 @@
 # OpenQASM
 
 
-OpenQASM is an imperative programming language for describing quantum circuits. It is capable to
-describe universal quantum computing using the circuit model, measurement-based model,
+OpenQASM is an imperative programming language for describing quantum circuits. It is capable of
+describing universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
-Specs, examples and tools for the OpenQASM intermediate representation.
+This repo contains the OpenQASM specification, examples, and tools for the OpenQASM intermediate representation.
+
+OpenQASM is a [Qiskit project](https://qiskit.org).
 
 ## Current version: **3.0**
 
-Live doc: [**version 3.0**](https://qiskit.github.io/openqasm)
+* Live language specification [**version 3.0**](https://openqasm.github.io/)
 
-For previous version see: [2.0](https://github.com/Qiskit/openqasm/tree/OpenQASM2.x)
+* The branch of this repository for the previous version: [OpenQASM 2.0](https://github.com/openqasm/openqasm/tree/OpenQASM2.x)
 
 ## About this project
 
-On this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
+In this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
 
 ### Language specs
 
-The live [language documentation](https://qiskit.github.io/openqasm) specification.
+The live [language documentation](https://openqasm.github.io/) specification.
 
 ### Examples
 
-The examples can be found under the [examples](examples) folder.
-
-They are OpenQASM files, i.e.:
-
+An example of OpenQASM 3.0 source code is given below. Several more examples may be found in the [examples folder](examples).
 ```text
 /*
  * Repeat-until-success circuit for Rz(theta),
@@ -70,11 +69,6 @@ h input;
 output = measure input;  // should get zero
 ```
 
-## Plugins
-
-This repository also contains a plugin for working with OpenQASM 2.0 and 3.0 files in vim.
-You can find its full documentation in the [plugins/vim](plugins/vim) directory.
-
 ## Citation format
 
 For research papers, we encourage authors to reference.
@@ -89,7 +83,7 @@ The OpenQASM project has a process for accepting changes to the language and mak
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE] file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
 
 
 ## Contributing
@@ -98,4 +92,4 @@ If you'd like to help please take a look to our [contribution guidelines](CONTRI
 
 ## Release Notes
 
-See the section on Release Notes [contribution guidelines](CONTRIBUTIING.md#release-notes)
+See the section on Release Notes [contribution guidelines](CONTRIBUTING.md#release-notes).

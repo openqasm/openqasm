@@ -1,0 +1,17 @@
+# indent w/ 2 spaces
+source: |
+  pragma IO_BIND[2:3]
+  #pragma  __directive_info__ 0
+reference: |
+  program
+    statementOrScope
+      statement
+        pragma
+          pragma
+          IO_BIND[2:3]
+    statementOrScope
+      statement
+        pragma
+          #pragma
+          __directive_info__ 0
+    <EOF>

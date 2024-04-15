@@ -6,5 +6,5 @@ include requirements.txt
 include openqasm3/py.typed
 
 # ANTLR-generated files.
-include openqasm3/antlr/*.interp
-include openqasm3/antlr/*.tokens
+graft openqasm3/_antlr/_4_*/
+prune **/__pycache__/

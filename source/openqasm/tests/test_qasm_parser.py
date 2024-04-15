@@ -1,7 +1,12 @@
+import dataclasses
+import textwrap
+import pytest
+
 from openqasm3.ast import (
     AccessControl,
     AliasStatement,
     AngleType,
+    Annotation,
     ArrayLiteral,
     ArrayReferenceType,
     ArrayType,
@@ -9,20 +14,21 @@ from openqasm3.ast import (
     BinaryExpression,
     BinaryOperator,
     BitType,
+    BitstringLiteral,
     BoolType,
     BooleanLiteral,
     Box,
     BranchingStatement,
     CalibrationDefinition,
     CalibrationGrammarDeclaration,
+    CalibrationStatement,
     Cast,
     ClassicalArgument,
     ClassicalAssignment,
     ClassicalDeclaration,
     ComplexType,
+    CompoundStatement,
     Concatenation,
-    Constant,
-    ConstantName,
     ContinueStatement,
     DelayInstruction,
     DiscreteSet,
@@ -31,6 +37,9 @@ from openqasm3.ast import (
     DurationType,
     EndStatement,
     ExpressionStatement,
+    ExternArgument,
+    ExternDeclaration,
+    FloatLiteral,
     FloatType,
     ForInLoop,
     FunctionCall,
@@ -38,6 +47,7 @@ from openqasm3.ast import (
     IODeclaration,
     IOKeyword,
     Identifier,
+    ImaginaryLiteral,
     Include,
     IndexExpression,
     IndexedIdentifier,
@@ -51,33 +61,59 @@ from openqasm3.ast import (
     QuantumGateDefinition,
     QuantumGateModifier,
     QuantumMeasurement,
-    QuantumMeasurementAssignment,
+    QuantumMeasurementStatement,
     QuantumPhase,
     QubitDeclaration,
     RangeDefinition,
-    RealLiteral,
     ReturnStatement,
+    SizeOf,
+    Span,
     StretchType,
-    StringLiteral,
     SubroutineDefinition,
+    SwitchStatement,
     TimeUnit,
     UintType,
     UnaryExpression,
     UnaryOperator,
 )
-from openqasm3.parser import parse, Span
+from openqasm3.parser import parse, QASM3ParsingError
 from openqasm3.visitor import QASMVisitor
+
+
+def _with_annotations(node, annotations):
+    """Helper function to attach annotations to a QASMNode, since the current
+    dataclass-based implementation does not allow us to easily add the
+    annotations field (with a default) to statement constructors."""
+    node.annotations = annotations
+    return node
 
 
 class SpanGuard(QASMVisitor):
     """Ensure that we did not forget to set spans when we add new AST nodes"""
 
     def visit(self, node: QASMNode):
-        try:
-            assert node.span is not None
-            return super().visit(node)
-        except Exception as e:
-            raise Exception(f"The span of {type(node)} is None.") from e
+        assert node.span is not None
+        return super().visit(node)
+
+
+def _remove_spans(node):
+    """Return a new ``QASMNode`` with all spans recursively set to ``None`` to
+    reduce noise in test failure messages."""
+    if isinstance(node, list):
+        return [_remove_spans(item) for item in node]
+    if not isinstance(node, QASMNode):
+        return node
+    kwargs = {}
+    no_init = {}
+    for field in dataclasses.fields(node):
+        if field.name == "span":
+            continue
+        target = kwargs if field.init else no_init
+        target[field.name] = _remove_spans(getattr(node, field.name))
+    out = type(node)(**kwargs)
+    for attribute, value in no_init.items():
+        setattr(out, attribute, value)
+    return out
 
 
 def test_qubit_declaration():
@@ -86,7 +122,7 @@ def test_qubit_declaration():
     qubit[4] a;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QubitDeclaration(qubit=Identifier(name="q"), size=None),
             QubitDeclaration(
@@ -106,7 +142,7 @@ def test_bit_declaration():
     bit c;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[ClassicalDeclaration(BitType(None), Identifier("c"), None)]
     )
     SpanGuard().visit(program)
@@ -120,7 +156,7 @@ def test_qubit_and_bit_declaration():
     qubit a;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ClassicalDeclaration(BitType(None), Identifier("c"), None),
             QubitDeclaration(qubit=Identifier(name="a"), size=None),
@@ -129,28 +165,193 @@ def test_qubit_and_bit_declaration():
     SpanGuard().visit(program)
 
 
-def test_complex_declaration():
+def test_integer_declaration():
     p = """
-    complex[int[24]] iq;
+    uint[16] a = 100;
+    uint[16] a = 0b0110_0100;
+    int[16] a = 0B01100100;
+    uint[16] a = 0o144;
+    uint[16] a = 0xff_64;
+    int[16] a = 0X19_a_b;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    uint16 = UintType(IntegerLiteral(16))
+    int16 = IntType(IntegerLiteral(16))
+    a = Identifier("a")
+    assert _remove_spans(program) == Program(
+        statements=[
+            ClassicalDeclaration(uint16, a, IntegerLiteral(100)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0b0110_0100)),
+            ClassicalDeclaration(int16, a, IntegerLiteral(0b0110_0100)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0o144)),
+            ClassicalDeclaration(uint16, a, IntegerLiteral(0xFF64)),
+            ClassicalDeclaration(int16, a, IntegerLiteral(0x19AB)),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_float_declaration():
+    p = """
+    float[64] a = 125.;
+    float[64] a = 1_25.;
+    float[64] a = 1_25.e1;
+    float[64] a = .1_25;
+    float[64] a = .125e1;
+    float[64] a = .125e+1;
+    float[64] a = .125e-1;
+    float[64] a = 125.125e1_25;
+    """.strip()
+    program = parse(p)
+    float64 = FloatType(IntegerLiteral(64))
+    a = Identifier("a")
+    assert _remove_spans(program) == Program(
+        statements=[
+            ClassicalDeclaration(float64, a, FloatLiteral(125.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(125.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1250.0)),
+            ClassicalDeclaration(float64, a, FloatLiteral(0.125)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1.25)),
+            ClassicalDeclaration(float64, a, FloatLiteral(1.25)),
+            ClassicalDeclaration(float64, a, FloatLiteral(0.0125)),
+            ClassicalDeclaration(float64, a, FloatLiteral(125.125e125)),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_simple_type_declarations():
+    p = """
+    int[32] a;
+    int[const_expr] a;
+    int a;
+    uint[32] a = 1;
+    uint[const_expr] a;
+    uint a = 1;
+    float[32] a;
+    float a;
+    angle[32] a;
+    angle a;
+    """.strip()
+    program = parse(p)
+    a = Identifier("a")
+    one = IntegerLiteral(1)
+    thirty_two = IntegerLiteral(32)
+    const_expr = Identifier("const_expr")
+    assert _remove_spans(program) == Program(
+        statements=[
+            ClassicalDeclaration(type=IntType(size=thirty_two), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=IntType(size=const_expr), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=IntType(size=None), identifier=a, init_expression=None),
+            ClassicalDeclaration(type=UintType(size=thirty_two), identifier=a, init_expression=one),
+            ClassicalDeclaration(
+                type=UintType(size=const_expr), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=UintType(size=None), identifier=a, init_expression=one),
+            ClassicalDeclaration(
+                type=FloatType(size=thirty_two), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=FloatType(size=None), identifier=a, init_expression=None),
+            ClassicalDeclaration(
+                type=AngleType(size=thirty_two), identifier=a, init_expression=None
+            ),
+            ClassicalDeclaration(type=AngleType(size=None), identifier=a, init_expression=None),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_complex_declaration():
+    p = """
+    complex[float[64]] a;
+    complex[float] fq;
+    complex implicit;
+    complex[float[64]] imag = 1im;
+    complex[float[64]] c64 = 2+9.2im;
+    complex[float] a_float = 2.1+0im;
+    complex c = 0-9 im ;
+    complex rl = 2.1im - 0.2;
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
         statements=[
             ClassicalDeclaration(
-                ComplexType(base_type=IntType(IntegerLiteral(24))),
-                Identifier("iq"),
+                ComplexType(base_type=FloatType(IntegerLiteral(64))),
+                Identifier("a"),
                 None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(base_type=FloatType(size=None)),
+                Identifier("fq"),
+                None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(base_type=None),
+                Identifier("implicit"),
+                None,
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("imag"),
+                ImaginaryLiteral(1.0),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(64)),
+                ),
+                Identifier("c64"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    IntegerLiteral(2),
+                    ImaginaryLiteral(9.2),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=FloatType(size=None),
+                ),
+                Identifier("a_float"),
+                BinaryExpression(
+                    BinaryOperator["+"],
+                    FloatLiteral(2.1),
+                    ImaginaryLiteral(0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("c"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    IntegerLiteral(0),
+                    ImaginaryLiteral(9.0),
+                ),
+            ),
+            ClassicalDeclaration(
+                ComplexType(
+                    base_type=None,
+                ),
+                Identifier("rl"),
+                BinaryExpression(
+                    BinaryOperator["-"],
+                    ImaginaryLiteral(2.1),
+                    FloatLiteral(0.2),
+                ),
             ),
         ]
     )
     SpanGuard().visit(program)
     context_declaration = program.statements[0]
-    assert context_declaration.span == Span(1, 0, 1, 19)
+    assert context_declaration.span == Span(1, 0, 1, 20)
 
 
 def test_array_declaration():
     p = """
     array[uint[8], 2] a;
+    array[uint, 2] a;
     array[int[8], 2] a = {1, 1};
     array[bit, 2] a = b;
     array[float[32], 2, 2] a;
@@ -161,10 +362,15 @@ def test_array_declaration():
     a, b = Identifier("a"), Identifier("b")
     one, two, eight = IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(8)
     SpanGuard().visit(program)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ClassicalDeclaration(
                 type=ArrayType(base_type=UintType(eight), dimensions=[two]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=UintType(size=None), dimensions=[two]),
                 identifier=a,
                 init_expression=None,
             ),
@@ -205,12 +411,69 @@ def test_array_declaration():
     )
 
 
+def test_extern_declarations():
+    p = """
+    extern f();
+    extern f() -> bool;
+    extern f(bool);
+    extern f(int[32], uint[32]);
+    extern f(mutable array[complex[float[64]], N_ELEMENTS]) -> int[2 * INT_SIZE];
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[],
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[],
+                return_type=BoolType(),
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[
+                    ExternArgument(type=BoolType()),
+                ],
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[
+                    ExternArgument(type=IntType(IntegerLiteral(32))),
+                    ExternArgument(type=UintType(IntegerLiteral(32))),
+                ],
+            ),
+            ExternDeclaration(
+                name=Identifier(name="f"),
+                arguments=[
+                    ExternArgument(
+                        type=ArrayReferenceType(
+                            base_type=ComplexType(FloatType(IntegerLiteral(64))),
+                            dimensions=[Identifier(name="N_ELEMENTS")],
+                        ),
+                        access=AccessControl["mutable"],
+                    ),
+                ],
+                return_type=IntType(
+                    size=BinaryExpression(
+                        op=BinaryOperator["*"],
+                        lhs=IntegerLiteral(2),
+                        rhs=Identifier(name="INT_SIZE"),
+                    )
+                ),
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
 def test_single_gatecall():
     p = """
     h q;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QuantumGate(
                 modifiers=[], name=Identifier("h"), arguments=[], qubits=[Identifier(name="q")]
@@ -231,7 +494,7 @@ gate xy q {
 }
 """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QuantumGateDefinition(
                 Identifier("xy"),
@@ -268,7 +531,7 @@ gate majority a, b, c {
      ccx a, b, c;
 }""".strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QuantumGateDefinition(
                 name=Identifier("majority"),
@@ -316,7 +579,7 @@ def test_gate_definition3():
 gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QuantumGateDefinition(
                 name=Identifier("rz"),
@@ -324,7 +587,7 @@ gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
                 qubits=[Identifier(name="a")],
                 body=[
                     QuantumPhase(
-                        quantum_gate_modifiers=[],
+                        modifiers=[],
                         argument=BinaryExpression(
                             op=BinaryOperator["/"],
                             lhs=UnaryExpression(
@@ -365,7 +628,7 @@ def test_gate_calls():
     """.strip()
     # TODO Add "ctrl @ pow(power) @ phase(theta) q, r;" after we complete expressions
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QubitDeclaration(qubit=Identifier(name="q"), size=None),
             QubitDeclaration(qubit=Identifier(name="r"), size=None),
@@ -399,7 +662,7 @@ def test_gate_defs():
     """.strip()
 
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             QuantumGateDefinition(
                 name=Identifier("xyz"),
@@ -436,7 +699,7 @@ def test_alias_statement():
     let a = b;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[AliasStatement(target=Identifier(name="a"), value=Identifier(name="b"))]
     )
     SpanGuard().visit(program)
@@ -444,6 +707,36 @@ def test_alias_statement():
     assert alias_statement.span == Span(1, 0, 1, 9)
     assert alias_statement.target.span == Span(1, 4, 1, 4)
     assert alias_statement.value.span == Span(1, 8, 1, 8)
+
+
+def test_anonymous_scope():
+    p = textwrap.dedent(
+        """
+    {
+      int i = 1;
+      i = 2;
+    }
+    """
+    ).strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CompoundStatement(
+                statements=[
+                    ClassicalDeclaration(
+                        type=IntType(),
+                        identifier=Identifier("i"),
+                        init_expression=IntegerLiteral(1),
+                    ),
+                    ClassicalAssignment(
+                        lvalue=Identifier("i"), op=AssignmentOperator["="], rvalue=IntegerLiteral(2)
+                    ),
+                ]
+            )
+        ]
+    )
+    compound_statement = program.statements[0]
+    assert compound_statement.span == Span(1, 0, 4, 0)
 
 
 def test_primary_expression():
@@ -455,7 +748,7 @@ def test_primary_expression():
     true;
     false;
     a;
-    "openqasm";
+    "0110_0100";
     sin(0.0);
     foo(x);
     1.1ns;
@@ -470,39 +763,27 @@ def test_primary_expression():
     """.strip()
 
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
-            ExpressionStatement(expression=Constant(name=ConstantName.pi)),
-            ExpressionStatement(expression=Constant(name=ConstantName.pi)),
+            ExpressionStatement(expression=Identifier(name="π")),
+            ExpressionStatement(expression=Identifier(name="pi")),
             ExpressionStatement(expression=IntegerLiteral(5)),
-            ExpressionStatement(expression=RealLiteral(2.0)),
+            ExpressionStatement(expression=FloatLiteral(2.0)),
             ExpressionStatement(expression=BooleanLiteral(True)),
             ExpressionStatement(expression=BooleanLiteral(False)),
             ExpressionStatement(expression=Identifier("a")),
-            ExpressionStatement(expression=StringLiteral("openqasm")),
-            ExpressionStatement(expression=FunctionCall(Identifier("sin"), [RealLiteral(0.0)])),
+            ExpressionStatement(expression=BitstringLiteral(100, 8)),
+            ExpressionStatement(expression=FunctionCall(Identifier("sin"), [FloatLiteral(0.0)])),
             ExpressionStatement(expression=FunctionCall(Identifier("foo"), [Identifier("x")])),
             ExpressionStatement(expression=DurationLiteral(1.1, TimeUnit.ns)),
             ExpressionStatement(expression=DurationLiteral(0.3, TimeUnit.us)),
             ExpressionStatement(expression=DurationLiteral(1e-4, TimeUnit.us)),
             ExpressionStatement(expression=Identifier("x")),
             ExpressionStatement(expression=IndexExpression(Identifier("q"), [IntegerLiteral(1)])),
-            ExpressionStatement(
-                expression=Cast(
-                    IntType(size=IntegerLiteral(1)),
-                    [Identifier("x")],
-                )
-            ),
-            ExpressionStatement(
-                expression=Cast(
-                    BoolType(),
-                    [Identifier("x")],
-                )
-            ),
-            ExpressionStatement(expression=FunctionCall(Identifier("sizeof"), [Identifier("a")])),
-            ExpressionStatement(
-                expression=FunctionCall(Identifier("sizeof"), [Identifier("a"), IntegerLiteral(1)]),
-            ),
+            ExpressionStatement(expression=Cast(IntType(size=IntegerLiteral(1)), Identifier("x"))),
+            ExpressionStatement(expression=Cast(BoolType(), Identifier("x"))),
+            ExpressionStatement(expression=SizeOf(Identifier("a"))),
+            ExpressionStatement(expression=SizeOf(Identifier("a"), IntegerLiteral(1))),
         ]
     )
 
@@ -515,7 +796,7 @@ def test_unary_expression():
     """.strip()
 
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ExpressionStatement(
                 expression=UnaryExpression(
@@ -554,7 +835,7 @@ def test_binary_expression():
     """.strip()
 
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ExpressionStatement(
                 expression=BinaryExpression(
@@ -643,7 +924,7 @@ def test_binary_expression_precedence():
     """.strip()
 
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ExpressionStatement(
                 expression=BinaryExpression(
@@ -748,7 +1029,7 @@ def test_alias_assignment():
     """.strip()
     program = parse(p)
     a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             AliasStatement(target=a, value=b),
             AliasStatement(
@@ -814,50 +1095,61 @@ def test_measurement():
     c[0] = measure q[0];
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
-            QuantumMeasurementAssignment(
-                target=None, measure_instruction=QuantumMeasurement(qubit=Identifier("q"))
+            QuantumMeasurementStatement(QuantumMeasurement(qubit=Identifier("q")), target=None),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(Identifier("q")),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
             ),
-            QuantumMeasurementAssignment(
-                target=IndexedIdentifier(
-                    name=Identifier(name="c"),
-                    indices=[[IntegerLiteral(value=0)]],
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    IndexedIdentifier(Identifier("q"), indices=[[IntegerLiteral(0)]])
                 ),
-                measure_instruction=QuantumMeasurement(qubit=Identifier("q")),
-            ),
-            QuantumMeasurementAssignment(
-                target=IndexedIdentifier(
-                    name=Identifier(name="c"),
-                    indices=[[IntegerLiteral(value=0)]],
-                ),
-                measure_instruction=QuantumMeasurement(
-                    qubit=IndexedIdentifier(
-                        name=Identifier("q"),
-                        indices=[[IntegerLiteral(value=0)]],
-                    ),
-                ),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
             ),
         ]
     )
     SpanGuard().visit(program)
 
 
-def test_calibration_grammar_declaration():
-    p = """
-    defcalgrammar "openpulse";
+@pytest.mark.parametrize("name", ['"openpulse"', "'openpulse'", '"001"'])
+def test_calibration_grammar_declaration(name):
+    p = f"""
+    defcalgrammar {name};
     """.strip()
     program = parse(p)
-    assert program == Program(statements=[CalibrationGrammarDeclaration("openpulse")])
+    assert _remove_spans(program) == Program(statements=[CalibrationGrammarDeclaration(name[1:-1])])
     SpanGuard().visit(program)
+
+
+def test_calibration_statement():
+    p = """
+    cal {shift_phase(drive($0), -theta);}
+    cal {Outer {nested} outer again.}
+    cal {Untokenisable: *$£()"*}
+    cal {}
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationStatement(body="shift_phase(drive($0), -theta);"),
+            CalibrationStatement(body="Outer {nested} outer again."),
+            CalibrationStatement(body='Untokenisable: *$£()"*'),
+            CalibrationStatement(body=""),
+        ],
+    )
 
 
 def test_calibration_definition():
     p = """
-    defcal rz(angle[20] theta) $q -> bit { return shift_phase drive($q), -theta; }
+    defcal rz(angle[20] theta) q { shift_phase drive(q), -theta; }
+    defcal measure $0 -> bit {Outer {nested} outer again.}
+    defcal rx(pi / 2) $1 {Untokenisable: *$£()"*}
+    defcal cx $0, $1 {}
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             CalibrationDefinition(
                 name=Identifier("rz"),
@@ -867,10 +1159,37 @@ def test_calibration_definition():
                         name=Identifier("theta"),
                     )
                 ],
-                qubits=[Identifier("$q")],
-                return_type=BitType(None),
-                body="return shift_phase drive ( $q ) , - theta ;",
-            )
+                qubits=[Identifier("q")],
+                return_type=None,
+                body=" shift_phase drive(q), -theta; ",
+            ),
+            CalibrationDefinition(
+                name=Identifier("measure"),
+                arguments=[],
+                qubits=[Identifier("$0")],
+                return_type=BitType(size=None),
+                body="Outer {nested} outer again.",
+            ),
+            CalibrationDefinition(
+                name=Identifier("rx"),
+                arguments=[
+                    BinaryExpression(
+                        lhs=Identifier("pi"),
+                        op=BinaryOperator["/"],
+                        rhs=IntegerLiteral(2),
+                    )
+                ],
+                qubits=[Identifier("$1")],
+                return_type=None,
+                body='Untokenisable: *$£()"*',
+            ),
+            CalibrationDefinition(
+                name=Identifier("cx"),
+                arguments=[],
+                qubits=[Identifier("$0"), Identifier("$1")],
+                return_type=None,
+                body="",
+            ),
         ]
     )
     SpanGuard().visit(program)
@@ -885,11 +1204,11 @@ def test_subroutine_definition():
     }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             SubroutineDefinition(
                 name=Identifier("ymeasure"),
-                arguments=[QuantumArgument(qubit=Identifier("q"), size=None)],
+                arguments=[QuantumArgument(name=Identifier("q"), size=None)],
                 return_type=BitType(None),
                 body=[
                     QuantumGate(
@@ -917,13 +1236,13 @@ def test_subroutine_signatures():
     def a(int[8] b) {}
     def a(complex[float[32]] b, qubit c) -> int[32] {}
     def a(bit[5] b, qubit[2] c) -> complex[float[64]] {}
-    def a(qubit b, const array[uint[8], 2, 3] c) {}
-    def a(mutable array[uint[8], #dim=5] b, const array[uint[8], 5] c) {}
+    def a(qubit b, readonly array[uint[8], 2, 3] c) {}
+    def a(mutable array[uint[8], #dim=5] b, readonly array[uint[8], 5] c) {}
     """.strip()
     program = parse(p)
     a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
     SpanGuard().visit(program)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             SubroutineDefinition(
                 name=a,
@@ -938,7 +1257,7 @@ def test_subroutine_signatures():
                         type=ComplexType(FloatType(IntegerLiteral(32))),
                         name=b,
                     ),
-                    QuantumArgument(qubit=c, size=None),
+                    QuantumArgument(name=c, size=None),
                 ],
                 return_type=IntType(IntegerLiteral(32)),
                 body=[],
@@ -950,7 +1269,7 @@ def test_subroutine_signatures():
                         type=BitType(size=IntegerLiteral(5)),
                         name=b,
                     ),
-                    QuantumArgument(qubit=c, size=IntegerLiteral(2)),
+                    QuantumArgument(name=c, size=IntegerLiteral(2)),
                 ],
                 return_type=ComplexType(FloatType(IntegerLiteral(64))),
                 body=[],
@@ -958,14 +1277,14 @@ def test_subroutine_signatures():
             SubroutineDefinition(
                 name=a,
                 arguments=[
-                    QuantumArgument(qubit=b, size=None),
+                    QuantumArgument(name=b, size=None),
                     ClassicalArgument(
                         type=ArrayReferenceType(
                             base_type=UintType(IntegerLiteral(8)),
                             dimensions=[IntegerLiteral(2), IntegerLiteral(3)],
                         ),
                         name=c,
-                        access=AccessControl.CONST,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,
@@ -985,7 +1304,7 @@ def test_subroutine_signatures():
                             dimensions=IntegerLiteral(5),
                         ),
                         name=b,
-                        access=AccessControl.MUTABLE,
+                        access=AccessControl.mutable,
                     ),
                     ClassicalArgument(
                         type=ArrayReferenceType(
@@ -993,7 +1312,7 @@ def test_subroutine_signatures():
                             dimensions=[IntegerLiteral(5)],
                         ),
                         name=c,
-                        access=AccessControl.CONST,
+                        access=AccessControl.readonly,
                     ),
                 ],
                 return_type=None,
@@ -1003,12 +1322,27 @@ def test_subroutine_signatures():
     )
 
 
-def test_branch_statement():
+def test_ambiguous_gate_calls():
     p = """
-    if(temp == 1) { ry(pi / 2) q; } else continue;
+    gphase(pi);
+    fn(pi);
     """.strip()
     program = parse(p)
-    assert program == Program(
+    SpanGuard().visit(program)
+    assert _remove_spans(program) == Program(
+        statements=[
+            QuantumPhase(modifiers=[], argument=Identifier("pi"), qubits=[]),
+            ExpressionStatement(FunctionCall(name=Identifier("fn"), arguments=[Identifier("pi")])),
+        ],
+    )
+
+
+def test_branch_statement():
+    p = """
+    if(temp == 1) { ry(pi / 2) q; } else end;
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
         statements=[
             BranchingStatement(
                 condition=BinaryExpression(
@@ -1023,14 +1357,14 @@ def test_branch_statement():
                         arguments=[
                             BinaryExpression(
                                 op=BinaryOperator["/"],
-                                lhs=Constant(ConstantName.pi),
+                                lhs=Identifier(name="pi"),
                                 rhs=IntegerLiteral(2),
                             )
                         ],
                         qubits=[Identifier("q")],
                     ),
                 ],
-                else_block=[ContinueStatement()],
+                else_block=[EndStatement()],
             )
         ]
     )
@@ -1039,13 +1373,14 @@ def test_branch_statement():
 
 def test_for_in_loop():
     p = """
-    for i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; }
+    for uint[8] i in [0: 2] { majority a[i], b[i + 1], a[i + 1]; continue; }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ForInLoop(
-                loop_variable=Identifier("i"),
+                type=UintType(IntegerLiteral(8)),
+                identifier=Identifier("i"),
                 set_declaration=RangeDefinition(
                     start=IntegerLiteral(0), end=IntegerLiteral(2), step=None
                 ),
@@ -1085,6 +1420,7 @@ def test_for_in_loop():
                             ),
                         ],
                     ),
+                    ContinueStatement(),
                 ],
             )
         ]
@@ -1092,15 +1428,157 @@ def test_for_in_loop():
     SpanGuard().visit(program)
 
 
+def test_switch_simple_cases():
+    program = parse("switch (x) { case 0 {} case 1, 2 { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=Identifier("x"),
+                cases=[
+                    ([IntegerLiteral(0)], CompoundStatement(statements=[])),
+                    (
+                        [IntegerLiteral(1), IntegerLiteral(2)],
+                        CompoundStatement(
+                            statements=[
+                                QuantumGate(
+                                    modifiers=[],
+                                    name=Identifier("z"),
+                                    arguments=[],
+                                    qubits=[Identifier("$0")],
+                                )
+                            ]
+                        ),
+                    ),
+                ],
+                default=None,
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_default_case():
+    program = parse("switch (x + 1) { case 0b00 {} default { z $0; }  }")
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=BinaryExpression(
+                    op=BinaryOperator["+"], lhs=Identifier("x"), rhs=IntegerLiteral(1)
+                ),
+                cases=[
+                    ([IntegerLiteral(0)], CompoundStatement(statements=[])),
+                ],
+                default=CompoundStatement(
+                    statements=[
+                        QuantumGate(
+                            modifiers=[],
+                            name=Identifier("z"),
+                            arguments=[],
+                            qubits=[Identifier("$0")],
+                        )
+                    ]
+                ),
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_cases_order():
+    program = parse("switch (i) { case 0 {} case 3, 2 {} case 1, 5 {} case 4, 8 {} case 7, 6 {}}")
+    expected = [
+        [IntegerLiteral(0)],
+        [IntegerLiteral(3), IntegerLiteral(2)],
+        [IntegerLiteral(1), IntegerLiteral(5)],
+        [IntegerLiteral(4), IntegerLiteral(8)],
+        [IntegerLiteral(7), IntegerLiteral(6)],
+    ]
+    switch = program.statements[0]
+    # Test that the iteration order maintains the definition order from the program.
+    assert [values for values, _ in switch.cases] == expected
+
+
+def test_switch_no_cases():
+    program = parse("switch (x) {}")
+    assert _remove_spans(program) == Program(
+        statements=[SwitchStatement(target=Identifier("x"), cases=[], default=None)]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_expression_cases():
+    program = parse(
+        """
+switch (i) {
+    case n {}
+    case 1 + 1, n - 2 {}
+    default {}
+}
+"""
+    )
+    assert _remove_spans(program) == Program(
+        statements=[
+            SwitchStatement(
+                target=Identifier("i"),
+                cases=[
+                    ([Identifier("n")], CompoundStatement(statements=[])),
+                    (
+                        [
+                            BinaryExpression(
+                                op=BinaryOperator["+"], lhs=IntegerLiteral(1), rhs=IntegerLiteral(1)
+                            ),
+                            BinaryExpression(
+                                op=BinaryOperator["-"], lhs=Identifier("n"), rhs=IntegerLiteral(2)
+                            ),
+                        ],
+                        CompoundStatement(statements=[]),
+                    ),
+                ],
+                default=CompoundStatement(statements=[]),
+            )
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_switch_rejects_case_after_default():
+    program = """
+switch (5) {
+    case 0 {
+    }
+    default {
+    }
+    case 1 {
+    }
+}
+"""
+    with pytest.raises(QASM3ParsingError, match="'case' statement after 'default'"):
+        parse(program)
+
+
+def test_switch_rejects_multiple_default():
+    program = """
+switch (5) {
+    case 0 {
+    }
+    default {
+    }
+    default {
+    }
+}
+"""
+    with pytest.raises(QASM3ParsingError, match="multiple 'default' cases"):
+        parse(program)
+
+
 def test_delay_instruction():
     p = """
     delay[start_stretch] $0;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             DelayInstruction(
-                arguments=[],
                 duration=Identifier("start_stretch"),
                 qubits=[Identifier("$0")],
             )
@@ -1115,7 +1593,7 @@ def test_no_designator_type():
     stretch b;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ClassicalDeclaration(
                 DurationType(),
@@ -1136,13 +1614,12 @@ def test_box():
     }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             Box(
                 duration=Identifier("maxdur"),
                 body=[
                     DelayInstruction(
-                        arguments=[],
                         duration=Identifier("start_stretch"),
                         qubits=[Identifier("$0")],
                     ),
@@ -1160,7 +1637,7 @@ def test_quantumloop():
     p = """
     box [maxdur] {
         delay[start_stretch] $0;
-        for i in [1:2]{
+        for uint i in [1:2]{
             h $0;
             cx $0, $1;
         }
@@ -1168,19 +1645,18 @@ def test_quantumloop():
     }
     """.strip()
     program = parse(p)
-    print(parse(p))
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             Box(
                 duration=Identifier("maxdur"),
                 body=[
                     DelayInstruction(
-                        arguments=[],
                         duration=Identifier("start_stretch"),
                         qubits=[Identifier("$0")],
                     ),
                     ForInLoop(
-                        loop_variable=Identifier(name="i"),
+                        type=UintType(size=None),
+                        identifier=Identifier(name="i"),
                         set_declaration=RangeDefinition(
                             start=IntegerLiteral(value=1),
                             end=IntegerLiteral(value=2),
@@ -1213,10 +1689,10 @@ def test_quantumloop():
 
 def test_durationof():
     p = """
-    durationof({x $0;})
+    durationof({x $0;});
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ExpressionStatement(
                 expression=DurationOf(
@@ -1240,7 +1716,7 @@ def test_classical_assignment():
     a[0] = 1;
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
             ClassicalAssignment(
                 lvalue=IndexedIdentifier(
@@ -1259,27 +1735,29 @@ def test_header():
     p = """
     OPENQASM 3.1;
     include "qelib1.inc";
+    include "001";
     input angle[16] variable1;
     output angle[16] variable2;
     """.strip()
     program = parse(p)
-    expected = "3.1"
-    assert program.version == expected
-    assert program.includes == [Include("qelib1.inc")]
-    assert program.io_variables == [
-        IODeclaration(
-            io_identifier=IOKeyword["input"],
-            type=AngleType(size=IntegerLiteral(value=16)),
-            identifier=Identifier(name="variable1"),
-            init_expression=None,
-        ),
-        IODeclaration(
-            io_identifier=IOKeyword["output"],
-            type=AngleType(size=IntegerLiteral(value=16)),
-            identifier=Identifier(name="variable2"),
-            init_expression=None,
-        ),
-    ]
+    assert _remove_spans(program) == Program(
+        version="3.1",
+        statements=[
+            Include("qelib1.inc"),
+            Include("001"),
+            IODeclaration(
+                io_identifier=IOKeyword["input"],
+                type=AngleType(size=IntegerLiteral(value=16)),
+                identifier=Identifier(name="variable1"),
+            ),
+            IODeclaration(
+                io_identifier=IOKeyword["output"],
+                type=AngleType(size=IntegerLiteral(value=16)),
+                identifier=Identifier(name="variable2"),
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
 
 
 def test_end_statement():
@@ -1287,27 +1765,252 @@ def test_end_statement():
     end;
     """.strip()
     program = parse(p)
-    assert program == Program(statements=[EndStatement()])
+    assert _remove_spans(program) == Program(statements=[EndStatement()])
     SpanGuard().visit(program)
 
 
-def test_pramga():
+def test_annotations():
     p = """
-    #pragma {verbatim;}
-    #pragma {my_statement1; my_statement2;}
-    end;
+    @word1 command1
+    input uint[32] x;
+
+    @keyword command command
+
+    x = 1;
+
+    @word1 command1
+    @word2 command2 32f%^&
+    gate my_gate q {}
+
+    @word1 @not_a_separate_annotation uint x;
+    int[8] x;
+
+    @word1
+    qubit q; uint[4] y;
+
+    @outer
+    def fn() {
+        @inner1
+        int[8] x;
+        @inner2 command
+        x = 19;
+    }
     """.strip()
     program = parse(p)
-    assert program == Program(
+    assert _remove_spans(program) == Program(
         statements=[
-            Pragma(statements=[ExpressionStatement(Identifier("verbatim"))]),
-            Pragma(
-                statements=[
-                    ExpressionStatement(Identifier("my_statement1")),
-                    ExpressionStatement(Identifier("my_statement2")),
-                ]
+            _with_annotations(
+                IODeclaration(
+                    type=UintType(IntegerLiteral(32)),
+                    io_identifier=IOKeyword.input,
+                    identifier=Identifier("x"),
+                ),
+                [Annotation(keyword="word1", command="command1")],
             ),
-            EndStatement(),
+            # Extra spacing between the annotation and the statement is no problem.
+            _with_annotations(
+                ClassicalAssignment(
+                    lvalue=Identifier("x"),
+                    op=AssignmentOperator["="],
+                    rvalue=IntegerLiteral(1),
+                ),
+                [Annotation(keyword="keyword", command="command command")],
+            ),
+            # Multiple annotations are correctly split in the list.
+            _with_annotations(
+                QuantumGateDefinition(
+                    name=Identifier("my_gate"), arguments=[], qubits=[Identifier("q")], body=[]
+                ),
+                [
+                    Annotation(keyword="word1", command="command1"),
+                    Annotation(keyword="word2", command="command2 32f%^&"),
+                ],
+            ),
+            # Nesting the annotation syntax doesn't cause problems.
+            _with_annotations(
+                ClassicalDeclaration(
+                    type=IntType(IntegerLiteral(8)),
+                    identifier=Identifier("x"),
+                    init_expression=None,
+                ),
+                [Annotation(keyword="word1", command="@not_a_separate_annotation uint x;")],
+            ),
+            # Annotations only apply to the next statement, even if the next
+            # line contains several statements.
+            _with_annotations(
+                QubitDeclaration(size=None, qubit=Identifier("q")),
+                [Annotation(keyword="word1", command=None)],
+            ),
+            ClassicalDeclaration(
+                type=UintType(IntegerLiteral(4)), identifier=Identifier("y"), init_expression=None
+            ),
+            # Annotations work both outside and inside nested scopes.
+            _with_annotations(
+                SubroutineDefinition(
+                    name=Identifier("fn"),
+                    arguments=[],
+                    return_type=None,
+                    body=[
+                        _with_annotations(
+                            ClassicalDeclaration(
+                                type=IntType(IntegerLiteral(8)),
+                                identifier=Identifier("x"),
+                                init_expression=None,
+                            ),
+                            [Annotation(keyword="inner1", command=None)],
+                        ),
+                        _with_annotations(
+                            ClassicalAssignment(
+                                lvalue=Identifier("x"),
+                                op=AssignmentOperator["="],
+                                rvalue=IntegerLiteral(19),
+                            ),
+                            [Annotation(keyword="inner2", command="command")],
+                        ),
+                    ],
+                ),
+                [Annotation(keyword="outer", command=None)],
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_pragma():
+    p = """
+    #pragma verbatim
+    pragma verbatim
+    #pragma command arg1 arg2
+    pragma command arg1 arg2
+    #pragma otherwise_invalid_token 1a2%&
+    pragma otherwise_invalid_token 1a2%&
+    """  # No strip because all line endings are important for pragmas.
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            Pragma(command="verbatim"),
+            Pragma(command="verbatim"),
+            Pragma(command="command arg1 arg2"),
+            Pragma(command="command arg1 arg2"),
+            Pragma(command="otherwise_invalid_token 1a2%&"),
+            Pragma(command="otherwise_invalid_token 1a2%&"),
         ]
     )
     SpanGuard().visit(program)
+
+
+class TestFailurePaths:
+    def test_missing_for_loop_type(self):
+        p = "for a in b {};"  # No type of for-loop variable.
+        with pytest.raises(QASM3ParsingError):
+            parse(p)
+
+    @pytest.mark.parametrize("keyword", ("continue", "break"))
+    def test_control_flow_outside_loop(self, keyword):
+        message = f"'{keyword}' statement outside loop"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{keyword};")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"if (true) {keyword};")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"def fn() {{ {keyword}; }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"gate my_gate q {{ {keyword}; }}")
+
+    def test_return_outside_subroutine(self):
+        message = f"'return' statement outside subroutine"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("return;")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("if (true) return;")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("gate my_gate q { return; }")
+
+    def test_classical_assignment_in_gate(self):
+        message = "cannot assign to classical parameters in a gate"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"int a; gate my_gate q {{ x q; a = 1; }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"int a; gate my_gate q {{ a = 1; }}")
+
+    def test_classical_declaration_in_gate(self):
+        message = "cannot declare classical variables in a gate"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"gate my_gate q {{ int a; }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"gate my_gate q {{ int a = 1; }}")
+
+    @pytest.mark.parametrize(
+        ("statement", "message"),
+        (
+            ('defcalgrammar "openpulse";', "'defcalgrammar' statements must be global"),
+            ("array[int, 4] arr;", "arrays can only be declared globally"),
+            ("def fn() { }", "subroutine definitions must be global"),
+            ("extern fn();", "extern declarations must be global"),
+            ("gate my_gate q { }", "gate definitions must be global"),
+            ('include "stdgates.inc";', "'include' statements must be global"),
+            ("input int a;", "'input' declarations must be global"),
+            ("output int a;", "'output' declarations must be global"),
+            ("qubit q;", "qubit declarations must be global"),
+            ("qreg q;", "qubit declarations must be global"),
+            ("qreg q[5];", "qubit declarations must be global"),
+            ("\npragma command\n", "pragmas must be global"),
+        ),
+    )
+    def test_global_statement_in_nonglobal_context(self, statement, message):
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"for uint[8] i in [0:4] {{ {statement} }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"while (true) {{ {statement} }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"def fn() {{ {statement} }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"if (true) {{ {statement} }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"if (false) x $0; else {{ {statement} }}")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"def fn() {{ if (true) {{ {statement} }} }}")
+
+    @pytest.mark.parametrize(
+        ("statement", "operation"),
+        (
+            ("measure $0 -> c[0];", "measure"),
+            ("measure $0;", "measure"),
+            ("reset $0;", "reset"),
+        ),
+    )
+    def test_nonunitary_instructions_in_gate(self, statement, operation):
+        message = f"cannot have a non-unitary '{operation}' instruction in a gate"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"bit[5] c; gate my_gate q {{ {statement} }}")
+
+    def test_builtins_with_incorrect_arguments(self):
+        message = "'gphase' takes exactly one argument, .*"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("gphase;")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("gphase();")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("gphase(1, 2);")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("ctrl @ gphase $0;")
+
+        message = "'sizeof' needs either one or two arguments"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("sizeof();")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse("sizeof(arr, 0, 1);")
+
+    @pytest.mark.parametrize(
+        "scalar",
+        ("uint", "uint[32]", "bit", "bit[5]", "bool", "duration", "stretch", "complex[float[64]]"),
+    )
+    def test_complex_with_bad_scalar_type(self, scalar):
+        message = "invalid type of complex components"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"complex[{scalar}] f;")
+
+    def test_array_with_bad_scalar_type(self):
+        message = "invalid scalar type for array"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"array[stretch, 4] arr;")

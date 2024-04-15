@@ -1,4 +1,4 @@
-OPENQASM 3.0;
+OPENQASM 3.0;  // Version statement is optional
 
 // ==================
 // Array declarations
@@ -80,12 +80,12 @@ const uint[32] first_dimension = sizeof(my_doubles);  // still 8.
 // Arrays in subroutines
 // =====================
 
-// Array arguments have a mandatory ``const`` or ``mutable`` specifier when
+// Array arguments have a mandatory ``readonly`` or ``mutable`` specifier when
 // defined in a subroutine argument list.  This is because arrays are passed to
 // subroutines by reference, not by value, so modifications will propagate back
 // to the original data.  Such modifications are only allowed for ``mutable``
-// references, not ``const``.
-def copy_3_bytes(const array[uint[8], 3] in_array, mutable array[uint[8], 3] out_array) {
+// references, not ``readonly``.
+def copy_3_bytes(readonly array[uint[8], 3] in_array, mutable array[uint[8], 3] out_array) {
     // Within this block, ``in_array`` can be read from, but not written to,
     // whereas ``out_array`` can be both read from and written to.
 }
@@ -94,7 +94,7 @@ def copy_3_bytes(const array[uint[8], 3] in_array, mutable array[uint[8], 3] out
 // the sizes of the dimensions are not given explicitly, only the number of
 // dimensions.  This is where the ``sizeof`` operator is most useful.  In these
 // cases, `sizeof` is _not_ a compile-time constant.
-def multi_dimensional_input(const array[int[32], #dim=3] my_array) {
+def multi_dimensional_input(readonly array[int[32], #dim=3] my_array) {
     uint[32] dimension_0 = sizeof(my_array, 0);
     uint[32] dimension_1 = sizeof(my_array, 1);
     uint[32] dimension_2 = sizeof(my_array, 2);

@@ -1,5 +1,4 @@
 // Repetition code gate teleportation
-OPENQASM 3;
 include "stdgates.inc";
 
 // declarations

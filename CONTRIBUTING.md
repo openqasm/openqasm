@@ -27,7 +27,7 @@ You can contribute in many ways to this project.
 
 ## Issue reporting
 
-:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/Qiskit/openqasm/issues).
+:fire: This is a good point to start, when you find a problem please add it to the [issue tracker](https://github.com/openqasm/openqasm/issues).
 
 ## Doubts solving
 
@@ -56,19 +56,19 @@ Please follow the next rules for the commit messages:
 ### Pull requests
 
 - We use [GitHub pull requests](https://help.github.com/articles/about-pull-requests) to accept the contributions.
-- Except for proposals (see next point), please, use [pull requests](https://github.com/Qiskit/openqasm/pulls) as is to submit a new one :smile:.
+- Except for proposals (see next point), please, use [pull requests](https://github.com/openqasm/openqasm/pulls) as is to submit a new one :smile:.
 - Review the parts of the documentation regarding the new changes and update it if it's needed.
 - New features often imply changes in the existent tests or new ones are needed. Once they're updated/added please be sure they keep passing.
 
 ## Spec proposals
 
-:bulb: All new ideas go through the next stages to become a new feature of the language.
+:bulb: All new ideas go through the following stages to become a new feature of the language:
 
-- Draft: Backlog items with different levels of abstraction. Anybody can add one issue in the [main repo](https://github.com/Qiskit/openqasm). Please label it as `draft`.
+- Draft: Backlog items with different levels of abstraction. Anybody can add an issue in the [main repo](https://github.com/openqasm/openqasm). Please label it as `draft`.
 - Proposal: An idea with the correct form:
-  - Add one issue in the [main repo](https://github.com/Qiskit/openqasm) labeled as `proposal` using [this template](templates/proposal.md).
+  - Add an issue in the [main repo](https://github.com/openqasm/openqasm) labeled as `proposal` using [the spec proposal template](https://github.com/openqasm/openqasm/issues/new?template=spec_proposal.yaml)
 - Candidate: During each monthly meeting the assistants select the ones considered more interesting to pass to the next stage. One of the core devs will start commenting on the issue to guide the owner into the next steps, including:
-  - Fork [the main repo](https://github.com/Qiskit/openqasm).
+  - Fork [the main repo](https://github.com/openqasm/openqasm).
   - Add the content of the proposal, note that conformance tests are mandatory at this point.
   - Make a pull request.
   - The core dev can ask for changes before reaching the next stage.
@@ -77,15 +77,25 @@ Please follow the next rules for the commit messages:
 ## Development Cycle
 
 The development cycle for OpenQASM is managed in the open using Github for project management.
-TODO: When preparing a new release changes for the released version should be identified
-in the release notes (See [issue #328](https://github.com/Qiskit/openqasm/issues/328)).
+Release notes are collected separately for the specification and reference parser in
+the `releasenotes` directory.
 
 ### Semantic Versioning
 The OpenQASM language uses [semantic versioning (semver)](https://semver.org/).
 All official releases are identified by a valid semver (See [Tags](#tags)).
 The latest development branch (See [Branches](#branches)) is always identified
 by the semver `<next_major>.<next_minor>.0-dev` where `next_<major/minor>` are
-the target major/minor versions of the next release.
+the target major/minor versions of the next release. Specification changes that
+require backwards incompatible changes to most parsers generally will warrant
+a major version increase, while less drastic changes only warrant a minor
+version increase.
+
+### Timing of Releases
+
+The OpenQASM Technical Steering Committee is the final arbiter on when a new
+semantic version of the specification and reference parser is warranted. The TSC
+expects the cadence of releases to be dicated by the contributions provided by
+the community, and not by a time-based schedule.
 
 ### Branches
 
@@ -96,9 +106,9 @@ branch, the language specification can and will change (possible breaking)
 as new language features are introduced and refined.
 All efforts should be made to ensure that the development branch is maintained in
 a self-consistent state that is passing continuous integration (CI).
-Changes should not be merged unless they are verified by CI. TODO: The latest
-development specification of the language should be automatically published by CI
-to a fixed URL for easy access to the current development HEAD.
+Changes should not be merged unless they are verified by CI. The latest
+development specification of the language (called the live spec) is automatically
+[published by CI](https://openqasm.github.io/) for easy access to the current development HEAD.
 * `stable/<major.minor>` branches:
 Branches under `stable/<major.minor>` are used to maintain released versions of the OpenQASM
 specification. They contain the version of the specification corresponding to the

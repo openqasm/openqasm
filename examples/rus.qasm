@@ -2,7 +2,6 @@
  * Repeat-until-success circuit for Rz(theta),
  * cos(theta-pi)=3/5, from Nielsen and Chuang, Chapter 4.
  */
-OPENQASM 3;
 include "stdgates.inc";
 
 /*

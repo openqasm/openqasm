@@ -4,98 +4,113 @@ on:
   [push, pull_request]
 
 jobs:
+  build:
+      uses: ./.github/workflows/build-ast.yml
+
   tests:
     name: ANTLR AST tests
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
-        antlr-version: ['4.9.2']
+        # Just using minimum and maximum to avoid exploding the matrix.
+        python-version: ['3.7', '3.12']
+        antlr-version: ['4.7', '4.13']
     defaults:
       run:
         working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/setup-java@v2
+      - uses: actions/download-artifact@v4
         with:
-          java-version: '15'
-          distribution: 'adopt'
+          name: openqasm3-python-wheel
+          path: ./source/openqasm/
 
-      - name: Update pip
-        run: python -mpip install --upgrade pip
-
-      - name: Install ANTLR4
-        working-directory: source/grammar
-        run: curl -O https://www.antlr.org/download/antlr-${{ matrix.antlr-version }}-complete.jar
-
-      - name: Install ANTLR4 Python runtime
-        run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
-
-      - name: Generate grammar
-        working-directory: source/grammar
-        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
-
-      - name: Install Python packages for AST
-        run: python -mpip install -r requirements.txt -r requirements-dev.txt
-
-      - name: Build package
-        run: python -mpip install -e .[all]
-
-      - name: Check format
-        run: black --check --diff openqasm3 tests
-
-      - name: Check style
-        run: pylint openqasm3 tests
+      - name: Install package
+        run: |
+          set -e
+          pip install --upgrade pip wheel
+          pip install -r requirements-dev.txt
+          pip install 'antlr4_python3_runtime==${{ matrix.antlr-version }}'
+          pip install "$(echo openqasm3-*.whl)[all]"
 
       - name: Run tests
-        run: pytest -vv --color=yes tests
+        run: |
+          # Swap into the testing directory so the imported `openqasm3` is the
+          # wheel version not the current-directory version.  The
+          # `--import-mode=importlib` stops pytest from modifying the path to
+          # accidentally put the checked-out version (with no ANTLR) back.
+          cd tests
+          pytest -vv --color=yes --import-mode=importlib .
 
-  docs:
-    name: Documentation build
+  style:
+    name: Check AST style
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: source/openqasm
-    strategy:
-      fail-fast: false
-      matrix:
-        antlr-version: ['4.9.2']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prepare environment
+        run: |
+          set -e
+          python -m pip install --upgrade pip wheel
+          python -m pip install -r requirements-dev.txt
+
+      - name: Check formatting
+        run: black --check --diff openqasm3 tests
+
+      - name: Check lint
+        run: pylint openqasm3 tests
+
+  docs:
+    name: AST documentation build
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-      - uses: actions/setup-java@v2
+          python-version: ${{ matrix.python-version }}
+
+      - uses: actions/download-artifact@v4
         with:
-          java-version: '15'
-          distribution: 'adopt'
-      - name: Update pip
-        run: python -mpip install --upgrade pip
-      - name: Install ANTLR4
-        working-directory: source/grammar
-        run: curl -O https://www.antlr.org/download/antlr-${{ matrix.antlr-version }}-complete.jar
-      - name: Install ANTLR4 Python runtime
-        run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
-      - name: Generate grammar
-        working-directory: source/grammar
-        run:
-          java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o ../openqasm/openqasm3/antlr -Dlanguage=Python3 -visitor qasm3.g4
-      - name: Install Python packages for AST
-        run: python -mpip install -r requirements.txt -r requirements-dev.txt
-      - name: Build package
-        run: python -mpip install -e .[all]
+          name: openqasm3-python-wheel
+          path: ./source/openqasm/
+
+      - name: Install package
+        run: |
+          set -e
+          pip install --upgrade pip wheel
+          pip install -r requirements-dev.txt
+          pip install "$(echo openqasm3-*.whl)[all]"
+
       - name: Build documentation
         working-directory: source/openqasm/docs
         run: make html
-      - uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v4
         with:
           name: openqasm3-html-documentation
           path: source/openqasm/docs/_build/html/*

@@ -3,7 +3,7 @@ Contributing
 ============
 
 We welcome any contributions to make this reference package better and more useful, that stay within the bounds of the :ref:`project goals <project-goals>`.
-An easy way to help us to make bug reports if you find something that doesn't work correctly, by opening an issue on `our GitHub page <https://github.com/Qiskit/openqasm/issues/new>`__.
+An easy way to help us to make bug reports if you find something that doesn't work correctly, by opening an issue on `our GitHub page <https://github.com/openqasm/openqasm/issues/new>`__.
 
 If you want to work with the code to make pull requests to improve it, you will need some further packages.
 
@@ -11,7 +11,7 @@ If you want to work with the code to make pull requests to improve it, you will 
 Development Environment
 =======================
 
-To work on development, you will need to have a complete `ANTLR <https://www.antlr.org/>`__ installation (not just the runtime), and the ANTLR grammar files from the `main OpenQASM repository <https://github.com/Qiskit/openqasm>`__.
+To work on development, you will need to have a complete `ANTLR <https://www.antlr.org/>`__ installation (not just the runtime), and the ANTLR grammar files from the `main OpenQASM repository <https://github.com/openqasm/openqasm>`__.
 
 Setting up ANTLR
 ----------------

@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Added `openqasm3.spec.supported_versions` which lists the OpenQASM specification
+    versions supported by the `openqasm3` package. Currently the supported versions
+    are 3.0 and 3.1. In future, additional information on the supported specifications
+    may be added to `openqasm3.spec`.

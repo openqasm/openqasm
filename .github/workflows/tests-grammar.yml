@@ -16,13 +16,13 @@ jobs:
         working-directory: source/grammar
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v4
         with:
           java-version: '15'
           distribution: 'adopt'
@@ -37,7 +37,7 @@ jobs:
         run: python -mpip install antlr4-python3-runtime==${{ matrix.antlr-version }}
 
       - name: Generate grammar
-        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o openqasm_reference_parser -Dlanguage=Python3 qasm3.g4
+        run: java -Xmx500M -jar antlr-${{ matrix.antlr-version }}-complete.jar -o openqasm_reference_parser -Dlanguage=Python3 qasm3Lexer.g4 qasm3Parser.g4
 
       - name: Install Python package
         run: python -mpip install -e .[all]

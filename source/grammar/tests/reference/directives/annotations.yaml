@@ -1,0 +1,147 @@
+source: |
+  @bind [2:3]
+  input uint[16] x;
+
+  @rename other
+  output float[64] var;
+
+  @hello world
+  int[8] x;
+
+  @outer
+  def fn() {
+    @inner word1
+    uint[16] x;
+    @inner word2
+    return;
+  }
+
+  @first
+  @second @not_third
+  uint[16] x;
+
+  @binds tightly
+  x = 1; x = 2;
+reference: |
+  program
+    statementOrScope
+      statement
+        annotation
+          @bind
+          [2:3]
+        ioDeclarationStatement
+          input
+          scalarType
+            uint
+            designator
+              [
+              expression
+                16
+              ]
+          x
+          ;
+    statementOrScope
+      statement
+        annotation
+          @rename
+          other
+        ioDeclarationStatement
+          output
+          scalarType
+            float
+            designator
+              [
+              expression
+                64
+              ]
+          var
+          ;
+    statementOrScope
+      statement
+        annotation
+          @hello
+          world
+        classicalDeclarationStatement
+          scalarType
+            int
+            designator
+              [
+              expression
+                8
+              ]
+          x
+          ;
+    statementOrScope
+      statement
+        annotation
+          @outer
+        defStatement
+          def
+          fn
+          (
+          )
+          scope
+            {
+            statementOrScope
+              statement
+                annotation
+                  @inner
+                  word1
+                classicalDeclarationStatement
+                  scalarType
+                    uint
+                    designator
+                      [
+                      expression
+                        16
+                      ]
+                  x
+                  ;
+            statementOrScope
+              statement
+                annotation
+                  @inner
+                  word2
+                returnStatement
+                  return
+                  ;
+            }
+    statementOrScope
+      statement
+        annotation
+          @first
+        annotation
+          @second
+          @not_third
+        classicalDeclarationStatement
+          scalarType
+            uint
+            designator
+              [
+              expression
+                16
+              ]
+          x
+          ;
+    statementOrScope
+      statement
+        annotation
+          @binds
+          tightly
+        assignmentStatement
+          indexedIdentifier
+            x
+          =
+          expression
+            1
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
+          indexedIdentifier
+            x
+          =
+          expression
+            2
+          ;
+    <EOF>

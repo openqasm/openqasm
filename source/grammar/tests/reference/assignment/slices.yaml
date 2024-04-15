@@ -2,7 +2,6 @@
 source: |
   array[uint[16], 2, 2] a = {{1, 2}, {3, 4}};
   array[uint[16], 2, 4] b = {{1, 2, 3, 4}, {5, 6, 7, 8}};
-
   // Various forms of testing that assignments can be made to indexed
   // identifiers, and from indexed identifiers.
   a = b[0:1][0:1];
@@ -14,456 +13,362 @@ source: |
   a[0:1][0:1] = b[0:1][0:1];
 reference: |
   program
-    header
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          arrayDeclaration
-            arrayType
-              array
-              [
-              nonArrayType
-                singleDesignatorType
-                  uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      16
-                  ]
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          arrayType
+            array
+            [
+            scalarType
+              uint
+              designator
+                [
+                expression
+                  16
+                ]
+            ,
+            expressionList
+              expression
+                2
               ,
-              expressionList
-                expression
-                  expressionTerminator
-                    2
-                ,
-                expression
-                  expressionTerminator
-                    2
-              ]
-            a
-            =
-            arrayInitializer
+              expression
+                2
+            ]
+          a
+          =
+          declarationExpression
+            arrayLiteral
               {
-              arrayInitializer
+              arrayLiteral
                 {
                 expression
-                  expressionTerminator
-                    1
+                  1
                 ,
                 expression
-                  expressionTerminator
-                    2
+                  2
                 }
               ,
-              arrayInitializer
+              arrayLiteral
                 {
                 expression
-                  expressionTerminator
-                    3
+                  3
                 ,
                 expression
-                  expressionTerminator
-                    4
+                  4
                 }
               }
-        ;
-    statement
-      classicalDeclarationStatement
-        classicalDeclaration
-          arrayDeclaration
-            arrayType
-              array
-              [
-              nonArrayType
-                singleDesignatorType
-                  uint
-                designator
-                  [
-                  expression
-                    expressionTerminator
-                      16
-                  ]
+          ;
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          arrayType
+            array
+            [
+            scalarType
+              uint
+              designator
+                [
+                expression
+                  16
+                ]
+            ,
+            expressionList
+              expression
+                2
               ,
-              expressionList
-                expression
-                  expressionTerminator
-                    2
-                ,
-                expression
-                  expressionTerminator
-                    4
-              ]
-            b
-            =
-            arrayInitializer
+              expression
+                4
+            ]
+          b
+          =
+          declarationExpression
+            arrayLiteral
               {
-              arrayInitializer
+              arrayLiteral
                 {
                 expression
-                  expressionTerminator
-                    1
+                  1
                 ,
                 expression
-                  expressionTerminator
-                    2
+                  2
                 ,
                 expression
-                  expressionTerminator
-                    3
+                  3
                 ,
                 expression
-                  expressionTerminator
-                    4
+                  4
                 }
               ,
-              arrayInitializer
+              arrayLiteral
                 {
                 expression
-                  expressionTerminator
-                    5
+                  5
                 ,
                 expression
-                  expressionTerminator
-                    6
+                  6
                 ,
                 expression
-                  expressionTerminator
-                    7
+                  7
                 ,
                 expression
-                  expressionTerminator
-                    8
+                  8
                 }
               }
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            0
-                        :
-                        expression
-                          expressionTerminator
-                            1
-                      ]
-                  indexOperator
-                    [
-                    rangeDefinition
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          1
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                rangeExpression
+                  expression
+                    0
+                  :
+                  expression
+                    1
+                ]
+            indexOperator
+              [
+              rangeExpression
+                expression
+                  0
+                :
+                expression
+                  1
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
-              rangeDefinition
+              rangeExpression
                 expression
-                  expressionTerminator
-                    0
+                  0
                 :
                 expression
-                  expressionTerminator
-                    1
+                  1
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            0
-                        :
-                        expression
-                          expressionTerminator
-                            1
-                      ]
-                  indexOperator
-                    [
-                    rangeDefinition
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          1
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                rangeExpression
+                  expression
+                    0
+                  :
+                  expression
+                    1
+                ]
+            indexOperator
+              [
+              rangeExpression
+                expression
+                  0
+                :
+                expression
+                  1
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      expression
-                        expressionTerminator
-                          0
-                      ]
-                  indexOperator
-                    [
-                    rangeDefinition
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          1
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                expression
+                  0
+                ]
+            indexOperator
+              [
+              rangeExpression
+                expression
+                  0
+                :
+                expression
+                  1
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      expression
-                        expressionTerminator
-                          0
-                      ]
-                  indexOperator
-                    [
-                    expression
-                      expressionTerminator
-                        0
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                expression
+                  0
+                ]
+            indexOperator
+              [
+              expression
+                0
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
             indexOperator
               [
-              rangeDefinition
+              rangeExpression
                 expression
-                  expressionTerminator
-                    0
+                  0
                 :
                 expression
-                  expressionTerminator
-                    1
+                  1
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      expression
-                        expressionTerminator
-                          1
-                      ]
-                  indexOperator
-                    [
-                    rangeDefinition
-                      expression
-                        expressionTerminator
-                          1
-                      :
-                      expression
-                        expressionTerminator
-                          2
-                      :
-                      expression
-                        expressionTerminator
-                          3
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                expression
+                  1
+                ]
+            indexOperator
+              [
+              rangeExpression
+                expression
+                  1
+                :
+                expression
+                  2
+                :
+                expression
+                  3
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
-              rangeDefinition
+              rangeExpression
                 expression
-                  expressionTerminator
-                    0
+                  0
                 :
                 expression
-                  expressionTerminator
-                    1
+                  1
               ]
             indexOperator
               [
               expression
-                expressionTerminator
-                  0
+                0
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            0
-                        :
-                        expression
-                          expressionTerminator
-                            1
-                      ]
-                  indexOperator
-                    [
-                    expression
-                      expressionTerminator
-                        0
-                    ]
-        ;
-    statement
-      assignmentStatement
-        classicalAssignment
+            expression
+              expression
+                b
+              indexOperator
+                [
+                rangeExpression
+                  expression
+                    0
+                  :
+                  expression
+                    1
+                ]
+            indexOperator
+              [
+              expression
+                0
+              ]
+          ;
+    statementOrScope
+      statement
+        assignmentStatement
           indexedIdentifier
             a
             indexOperator
               [
-              rangeDefinition
+              rangeExpression
                 expression
-                  expressionTerminator
-                    0
+                  0
                 :
                 expression
-                  expressionTerminator
-                    1
+                  1
               ]
             indexOperator
               [
-              rangeDefinition
+              rangeExpression
                 expression
-                  expressionTerminator
-                    0
+                  0
                 :
                 expression
-                  expressionTerminator
-                    1
+                  1
               ]
-          assignmentOperator
-            =
+          =
           expression
-            unaryExpression
-              powerExpression
-                indexExpression
-                  indexExpression
-                    indexExpression
-                      expressionTerminator
-                        b
-                    indexOperator
-                      [
-                      rangeDefinition
-                        expression
-                          expressionTerminator
-                            0
-                        :
-                        expression
-                          expressionTerminator
-                            1
-                      ]
-                  indexOperator
-                    [
-                    rangeDefinition
-                      expression
-                        expressionTerminator
-                          0
-                      :
-                      expression
-                        expressionTerminator
-                          1
-                    ]
-        ;
+            expression
+              expression
+                b
+              indexOperator
+                [
+                rangeExpression
+                  expression
+                    0
+                  :
+                  expression
+                    1
+                ]
+            indexOperator
+              [
+              rangeExpression
+                expression
+                  0
+                :
+                expression
+                  1
+              ]
+          ;
+    <EOF>

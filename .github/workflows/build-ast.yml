@@ -1,0 +1,88 @@
+name: Build Python Package
+
+on:
+  workflow_call:
+
+defaults:
+  run:
+    working-directory: source/openqasm
+
+jobs:
+  build:
+    name: Build wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        # This is pure Python, so it shouldn't matter what version we use to
+        # build the sdist and wheel.
+
+      - name: Update pip
+        run: pip install --upgrade pip
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '15'
+          distribution: 'adopt'
+
+      - name: Generate all ANTLR files
+        run: |
+          set -e
+
+          antlr_jar_dir="$PWD/.antlr_jars"
+          antlr_out_dir="$PWD/openqasm3/_antlr"
+          mkdir -p "${antlr_jar_dir}"
+          mkdir -p "${antlr_out_dir}"
+
+          # Parse the full ANTLR versions we need.  The 'sed' strips out
+          # comments from the file.  We have to use `<<<` redirection rather
+          # than pipelining to avoid running in a subshell, which would prevent
+          # use from modifying the `antlr_versions` variable in the loop.
+          declare -a antlr_versions
+          while read -r line; do
+            if [ -n "$line" ]; then
+              antlr_versions+=("$line")
+            fi
+          done <<< $(sed 's/#.*//g' ANTLR_VERSIONS.txt);
+
+          # Download ANTLR.
+          pushd "${antlr_jar_dir}"
+          for version_string in "${antlr_versions[@]}"; do
+            curl -LO "https://www.antlr.org/download/antlr-${version_string}-complete.jar"
+          done
+          popd
+
+          # Build the ANTLR files.
+          pushd ${{ github.workspace }}/source/grammar
+          for version_string in "${antlr_versions[@]}"; do
+            echo "Handling version ${version_string}"
+            IFS=. read -ra version <<< "${version_string}"
+            out_dir="${antlr_out_dir}/_${version[0]}_${version[1]}"
+            mkdir -p "$out_dir"
+            java -Xmx500M -jar "${antlr_jar_dir}/antlr-${version_string}-complete.jar" -o "$out_dir" -Dlanguage=Python3 -visitor qasm3Lexer.g4 qasm3Parser.g4
+          done
+          popd
+
+          # Replace version requirements in setup.cfg.
+          python tools/update_antlr_version_requirements.py setup.cfg ANTLR_VERSIONS.txt
+
+      - name: Install Python build dependencies
+        run: pip install --upgrade build
+
+      - name: Build package
+        run: python -m build --wheel --sdist .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openqasm3-python-wheel
+          path: ./source/openqasm/dist/*.whl
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openqasm3-python-sdist
+          path: ./source/openqasm/dist/*.tar.gz
+          if-no-files-found: error

@@ -1,0 +1,28 @@
+name: Validate release notes
+on:
+  push:
+    branches:
+      - 'main'
+      - 'release/**'
+  pull_request:
+    types: [opened, reopened, labeled, unlabeled, synchronize]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pip packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint releasenotes
+        run: reno lint
+      - name: Check releasenotes updated
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-reno')
+        run: ./.github/renos_updated.sh
