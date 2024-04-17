@@ -336,7 +336,7 @@ gate.
 .. gate:: crx(θ) a, b
 
    Controlled :math:`X` rotation with an angle :math:`\theta` (see :gate:`rx`).  Its mapping is defined by
-   :math:`\mathit{CRX}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{CRX}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
+   :math:`\mathit{CRX}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{RX}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
    or explicitly:
 
    .. math::
@@ -353,7 +353,7 @@ gate.
 .. gate:: cry(θ) a, b
 
    Controlled :math:`Y` rotation with an angle :math:`\theta` (see :gate:`ry`).  Its mapping is defined by
-   :math:`\mathit{CRY}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{CRY}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
+   :math:`\mathit{CRY}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{RY}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
    or explicitly:
 
    .. math::
@@ -370,7 +370,7 @@ gate.
 .. gate:: crz(θ) a, b
 
    Controlled :math:`Z` rotation with an angle :math:`\theta` (see :gate:`rz`). Its mapping is defined by
-   :math:`\mathit{CRZ}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{CRZ}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
+   :math:`\mathit{CRZ}_{ba}(\theta) = I_b{\lvert0\rangle\!\langle0\rvert}_a + \mathit{RZ}_b(\theta){\lvert1\rangle\!\langle1\rvert}_a`,
    or explicitly:
 
    .. math::
