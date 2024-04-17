@@ -34,8 +34,12 @@ extensions = [
   'sphinx.ext.githubpages',
   'sphinxcontrib.bibtex',
   'reno.sphinxext',
-  'multifigure'
+  'openqasm_sphinx',
+  'multifigure',
 ]
+
+# Set the default object-documentation domain to the 'oq' domain of `openqasm_sphinx`.
+primary_domain = "oq"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
