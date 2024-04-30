@@ -4,7 +4,7 @@ source: |
   gate g q {}
   ctrl(2) @ g q;
   negctrl(3) @ g q;
-  pow(-1/2) @ g q;
+  pow(-1./2.) @ g q;
   inv @ g q;
 reference: |
   program
@@ -67,10 +67,10 @@ reference: |
               expression
                 -
                 expression
-                  1
+                  1.
               /
               expression
-                2
+                2.
             )
             @
           g
