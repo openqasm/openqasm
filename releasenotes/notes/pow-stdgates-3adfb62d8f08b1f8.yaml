@@ -2,4 +2,4 @@
 fixes:
   - |
     Corrected the sample definitions of square-root gates involving ``pow`` in the ``stdgates.inc``
-    example file to use floating-point division ``1./2.`` instead of integer division ``1/2``.
+    example file to use floating-point value ``0.5`` instead of integer division ``1/2``.

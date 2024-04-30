@@ -19,17 +19,17 @@ gate z a { p(π) a; }
 // Clifford gate: Hadamard
 gate h a { U(π/2, 0, π) a; gphase(-π/4);}
 // Clifford gate: sqrt(Z) or S gate
-gate s a { pow(1./2.) @ z a; }
+gate s a { pow(0.5) @ z a; }
 // Clifford gate: inverse of sqrt(Z)
-gate sdg a { inv @ pow(1./2.) @ z a; }
+gate sdg a { inv @ pow(0.5) @ z a; }
 
 // sqrt(S) or T gate
-gate t a { pow(1./2.) @ s a; }
+gate t a { pow(0.5) @ s a; }
 // inverse of sqrt(S)
-gate tdg a { inv @ pow(1./2.) @ s a; }
+gate tdg a { inv @ pow(0.5) @ s a; }
 
 // sqrt(NOT) gate
-gate sx a { pow(1./2.) @ x a; }
+gate sx a { pow(0.5) @ x a; }
 
 // Rotation around X-axis
 gate rx(θ) a { U(θ, -π/2, π/2) a; gphase(-θ/2);}
