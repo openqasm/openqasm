@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The section on classical instructions now lists the associativity of all operators in the
+    precedence table, and correctly identifies the power operator as being right-associative.  The
+    previous description of the precedence and associativity was at best imprecise.

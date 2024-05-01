@@ -213,39 +213,32 @@ hardware-dependent rounding mode and subnormal handling.
 Evaluation order
 ~~~~~~~~~~~~~~~~
 
-OpenQASM evaluates expressions from left to right.
+OpenQASM evaluates expressions in natural mathematical order, following the defined
+operator-precedence and -associativity table below.  Operators of greater precedence are evaluated
+before operators of less precedence.  The order of evaluation for operators of the same precedence
+is set by the associativity: left-associative operators evaluate from left to right (*i.e.* ``a + b
++ c`` evaluates as ``(a + b) + c``) while right-associative operators evaluate from right to left
+(*i.e.* ``a ** b ** c`` evaluates as ``a ** (b ** c)``).
 
-   .. table:: [operator-precedence] operator precedence in OpenQASM ordered from highest precedence to lowest precedence. Higher precedence operators will be evaluated first.
+.. table:: [operator-precedence] operator precedence in OpenQASM ordered from highest precedence to lowest precedence. Higher precedence operators will be evaluated first.
 
-      +----------------------------------------+------------------------------------+
-      | Operator                               | Operator Types                     |
-      +----------------------------------------+------------------------------------+
-      | ``()``, ``[]``, ``(type)(x)``          | Call, index, cast                  |
-      +----------------------------------------+------------------------------------+
-      | ``**``                                 | Power                              |
-      +----------------------------------------+------------------------------------+
-      | ``!``, ``-``, ``~``                    | Unary                              |
-      +----------------------------------------+------------------------------------+
-      | ``*``, ``/``, ``%``                    | Multiplicative                     |
-      +----------------------------------------+------------------------------------+
-      | ``+``, ``-``                           | Additive                           |
-      +----------------------------------------+------------------------------------+
-      | ``<<``, ``>>``                         | Bit Shift                          |
-      +----------------------------------------+------------------------------------+
-      | ``<``, ``<=``, ``>``, ``>=``           | Comparison                         |
-      +----------------------------------------+------------------------------------+
-      | ``!=``, ``==``                         | Equality                           |
-      +----------------------------------------+------------------------------------+
-      | ``&``                                  | Bitwise AND                        |
-      +----------------------------------------+------------------------------------+
-      | ``^``                                  | Bitwise XOR                        |
-      +----------------------------------------+------------------------------------+
-      | ``|``                                  | Bitwise OR                         |
-      +----------------------------------------+------------------------------------+
-      | ``&&``                                 | Logical AND                        |
-      +----------------------------------------+------------------------------------+
-      | ``||``                                 | Logical OR                         |
-      +----------------------------------------+------------------------------------+
+   ===============================  ===================  =============
+   Operator                         Operator names       Associativity
+   ===============================  ===================  =============
+   ``()``, ``[]``, ``(type)(x)``    Call, index, cast    left
+   ``**``                           Power                right
+   ``!``, ``-``, ``~``              Unary                right
+   ``*``, ``/``, ``%``              Multiplicative       left
+   ``+``, ``-``                     Additive             left
+   ``<<``, ``>>``                   Bit Shift            left
+   ``<``, ``<=``, ``>``, ``>=``     Comparison           left
+   ``!=``, ``==``                   Equality             left
+   ``&``                            Bitwise AND          left
+   ``^``                            Bitwise XOR          left
+   ``|``                            Bitwise OR           left
+   ``&&``                           Logical AND          left
+   ``||``                           Logical OR           left
+   ===============================  ===================  =============
 
 
 Looping and branching
