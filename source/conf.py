@@ -73,6 +73,8 @@ if version_list_var is not None:
     for ver in version_list:
         extra_nav_links[f'Version {ver}'] = f'/versions/{ver}/index.html'
 
+extra_nav_links["GitHub"] = "https://github.com/openqasm/openqasm/"
+
 print(extra_nav_links)
 
 # Theme specific options
