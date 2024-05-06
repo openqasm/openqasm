@@ -33,7 +33,7 @@ The package can be installed from PyPI (`pip`) with the command
 python -m pip install openqasm3
 ```
 
-If you want to use the parser, you will need to install the extra `parsing`, and to run the tests you need the extra `tests`, for example `pip install openqasm3[tests]`.
+If you want to use the parser, you will need to install the extra `parser`, and to run the tests you need the extra `tests`, for example `pip install openqasm3[tests]`.
 All extras can be installed with the target `openqasm3[all]`.
 
 

@@ -15,6 +15,9 @@ A comment block begins with ``/*`` and ends with ``*/``:
    A comment block
    */
 
+
+.. _version-string:
+
 Version string
 ==============
 
@@ -42,6 +45,8 @@ This statement can only be used at the global scope.
    // First non-comment is a version string
    OPENQASM 3.0;
 
-   include "stdgates.qasm";
+   include "stdgates.inc";
 
    // Rest of QASM program
+
+The file ``stdgates.inc`` itself is :ref:`the standard library of OpenQASM 3 <standard-library>`.

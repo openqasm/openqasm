@@ -535,7 +535,7 @@ class QuantumGateModifier(QASMNode):
     Example::
 
         inv @
-        pow(1/2)
+        pow(1./2.)
         ctrl
     """
 

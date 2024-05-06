@@ -1,4 +1,10 @@
-// OpenQASM 3 standard gate library
+// OpenQASM 3.0 standard gate library
+//
+// Note: the gates defined by this file are exactly the set that the OpenQASM
+// 3.0 specification defined, as are the unitary actions, but implementations
+// have some scope for how they handle the file internally.  See the
+// `source/language/standard_library.rst` documentation for full detail.
+
 
 // phase gate
 gate p(λ) a { ctrl @ gphase(λ) a; }
@@ -13,17 +19,17 @@ gate z a { p(π) a; }
 // Clifford gate: Hadamard
 gate h a { U(π/2, 0, π) a; gphase(-π/4);}
 // Clifford gate: sqrt(Z) or S gate
-gate s a { pow(1/2) @ z a; }
+gate s a { pow(0.5) @ z a; }
 // Clifford gate: inverse of sqrt(Z)
-gate sdg a { inv @ pow(1/2) @ z a; }
+gate sdg a { inv @ pow(0.5) @ z a; }
 
 // sqrt(S) or T gate
-gate t a { pow(1/2) @ s a; }
+gate t a { pow(0.5) @ s a; }
 // inverse of sqrt(S)
-gate tdg a { inv @ pow(1/2) @ s a; }
+gate tdg a { inv @ pow(0.5) @ s a; }
 
 // sqrt(NOT) gate
-gate sx a { pow(1/2) @ x a; }
+gate sx a { pow(0.5) @ x a; }
 
 // Rotation around X-axis
 gate rx(θ) a { U(θ, -π/2, π/2) a; gphase(-θ/2);}
