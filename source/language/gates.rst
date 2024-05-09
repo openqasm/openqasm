@@ -28,10 +28,10 @@ this syntax is a convenient shorthand for broadcasting over the qubits of the re
 
 .. code-block::
 
-   qubit qr0[1];
-   qubit qr1[3];
-   qubit qr2[2];
-   qubit qr3[3];
+   qubit[1] qr0;
+   qubit[3] qr1;
+   qubit[2] qr2;
+   qubit[3] qr3;
 
    g4 qr0[0], qr1, qr2[0], qr3; // ok
    g4 qr0[0], qr2, qr1[0], qr3; // error! qr2 and qr3 differ in size

@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Fixed mistaken ``qubit`` declarations in broadcasting code example.
