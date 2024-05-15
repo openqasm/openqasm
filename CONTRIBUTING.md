@@ -144,6 +144,10 @@ documentation at the same time as the code. To accomplish this we use the
 [reno](https://docs.openstack.org/reno/latest/) tool which enables a Git-based
 workflow for writing and compiling release notes.
 
+Release notes are separated for updates to the specification and the
+grammar/ast generator. The specification release notes are in `spec_releasenotes`
+and the ast/grammar release notes are in `ast_releasenotes`.
+
 #### Adding a new release note
 
 Making a new release note is quite straightforward. Ensure that you have reno
@@ -152,7 +156,7 @@ installed with::
     pip install -U reno
 
 Once you have reno installed you can make a new release note by running in
-your local repository checkout's root::
+your local repository checkout's spec or ast releasenotes dir::
 
     reno new short-description-string
 
