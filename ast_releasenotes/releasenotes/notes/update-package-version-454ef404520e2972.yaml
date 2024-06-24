@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Update the `openqasm3` package version to 1.0.0.
