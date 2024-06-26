@@ -1,10 +1,10 @@
 # TSC
 
 - Blake Johnson
-- Dor Israeli
 - Erik Davis
 - Jialin Dou
 - Lev Bishop
+- Serwan Asaad
 - Simon Cross
 
 # Contributors by commit
