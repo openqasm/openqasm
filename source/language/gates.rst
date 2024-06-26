@@ -347,7 +347,7 @@ For instance, the following defines a quantum Fourier transform on eight qubits:
 .. code-block:: c
   gate QFT256 : qubit[8] q {
         uint n = 8;
-        for uini j in [0 : n-1] {
+        for uint j in [0 : n-1] {
           h q[j];
           for uint k in [j+1 : n-1]
            ctrl @ Rz(pi / 2**(k-j+1)) q[j], q[k];
@@ -360,7 +360,7 @@ For instance, the following defines a quantum Fourier transform on eight qubits:
 Classical storage types and parameters in a ``gate`` body are treated as being immutable,
 and cannot be assigned to more than once. (For loop induction variables are treated as being constant within
 the scope of any single iteration of the ``for`` loop, and can only be modified by the logic of the loop
-itself.) External functions, ``reset`` operations, ``measure`` operations (or other operations with potentially
+itself.) ``extern`` functions, ``reset`` operations, ``measure`` operations (or other operations with potentially
 random outcomes), cannot be involved in the program logic of a ``gate`` body. This ensures that an invocation of
 a user-defined ``gate``, corresponds to a definite finite sequence of built-in unitary gates.
 
@@ -371,7 +371,7 @@ cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
 and the variable parameters ``params`` must have the appropriate type (or be expressions which can be implicitly 
 cast to the appropriate type).
 
-The quantum operands of a ``gate`` invocation must have the appropriate types, to the declaration of the ``gate``.
+The quantum operands of a ``gate`` invocation must have the appropriate types to the declaration of the ``gate``.
 There is one exception to this type-agreement condition: if a ``gate`` has one or more operands of type ``qubit``,
 the gate may instead act on some qubit register(s) *of identical size* for one or all of those operands.
 For example, using a 'short' ``gate`` declaration (all of whose operands are individual qubits):
