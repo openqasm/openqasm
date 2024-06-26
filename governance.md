@@ -18,10 +18,10 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 ## Structures
 
-We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The current TSC (as of January 16, 2024) is:
+We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors. The current TSC (as of June 26, 2024) is:
 
 * Blake Johnson (IBM Quantum)
-* Dor Israeli (Quantum Machines)
+* Serwan Asaad (Quantum Machines)
 * Erik Davis (AWS)
 * Jialin Dou (Quantinuum)
 * Lev S Bishop (IBM Quantum)
