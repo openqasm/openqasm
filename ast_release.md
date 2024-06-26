@@ -1,7 +1,5 @@
 # Deploying the OQ3 Python AST
 
-Author: Jake Lishman `jake.lishman@ibm.com`
-
 You need:
 - permission to push tags to `openqasm/openqasm`
 - a reviewer to approve a PR to the branch
@@ -11,7 +9,7 @@ Most of the deployment is automated by the GitHub workflows:
 - `/.github/workflows/deploy-ast.yml`
 which do what they say on the tin.
 
-The "deploy" workflow uses the organisation-level secret `OPENQASM_BOT_PYPI_TOKEN`, which is an API token for the PyPI user `openqasm-bot`, which I (Jake: `jake.lishman@ibm.com`) currently own.
+The "deploy" workflow uses the organisation-level secret `OPENQASM_BOT_PYPI_TOKEN`, which is an API token for the PyPI user `openqasm-bot` currently owned by Jake Lishman (`jake.lishman@ibm.com`).
 PyPI's authorisation policies may need us to change how we handle that in the future, if they bring in some of their proposed changes around API tokens and 2FA.
 
 ## Procedure
@@ -38,7 +36,7 @@ This causes problems when people want to use our package in conjunction with ano
 The wheel-build action `build-ast.yml` uses the file `/source/openqasm/ANTLR_VERSIONS.txt` to decide which versions of the ANTLR compiler it should use to generate ANTLR files in the wheel.
 
 The Python ANTLR runtime is compatible with all releases of ANTLR that share the same `major.minor` version, and potentially differ in the patch number.
-For example, if version 4.11.1 of the ANTLR compiler (the Java bit) was used, the generated files will be compatible with versions 4.11.0, 4.11.1 and 4.11.1 (etc) of `antlr4-python3-runtime`, but versions 4.10.1 or 4.12.0 would not be.
+For example, if version 4.11.1 of the ANTLR compiler (the Java bit) was used, the generated files will be compatible with versions 4.11.0, 4.11.1 and 4.11.2 (etc) of `antlr4-python3-runtime`, but versions 4.10.1 or 4.12.0 would not be.
 
 There's little harm in supporting ANTLR as far back as the grammar allows, nor as recent as ANTLR has released; the wider range we allow, the more packages we can coexist with, and the extra weight in the pure-Python wheel from the generated files from a new version is only on the order of 500kB.
 The versions need to form a contiguous set of minor releases (e.g. `4.1; 4.2; 4.3` is allowed, but `4.1; 4.3` is not) because Python-packaging requirements mean we need to have a range, not a discrete set.
