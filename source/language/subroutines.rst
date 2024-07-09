@@ -88,7 +88,7 @@ this::
    c = measure q;
    c2 = measure r;
    bit result;
-   result = parity(c || c2);
+   result = parity(c ++ c2);
 
 .. _arrays-in-subroutines:
 
