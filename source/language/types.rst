@@ -65,7 +65,7 @@ declares a reference to a quantum bit. These qubits are referred
 to as "virtual qubits" (in distinction to "physical qubits" on
 actual hardware; see below). The statement ``qubit[size] name;``
 declares a quantum register with ``size`` qubits.
-Sizes must always be :ref:`compile-time constant <const-expression>` positive
+Sizes must always be :ref:`compile-time constant <const-expression>` non-negative
 integers.
 Quantum registers are static arrays of qubits
 that cannot be dynamically resized.
@@ -218,6 +218,7 @@ There are n-bit signed and unsigned integers. The statements ``int[size] name;``
 signed 1:n-1:0 and unsigned 0:n:0 integers of the given size. The sizes
 and the surrounding brackets can be omitted (*e.g.* ``int name;``) to use
 a precision that is specified by the particular target architecture.
+If provided, the ``size`` of an unsigned integer must be at least 1, and the ``size`` of an unsigned integer must be at least 2.
 Bit-level operations cannot be used on types without a specified width, and
 unspecified-width types are different to *all* specified-width types for
 the purposes of casting.
@@ -291,8 +292,8 @@ multiplication and division by unsigned integers is defined by standard
 unsigned-integer arithmetic, with more details found in :ref:`the section on
 classical instructions <classical-instructions>`.
 
-The statement ``angle[size] name;`` statement declares a new angle called
-``name`` with ``size`` bits in its representation.  Angles can be assigned
+The statement ``angle[size] name;`` declares a new angle called
+``name`` with ``size`` bits in its representation, where ``size`` must be a positive integer.  Angles can be assigned
 values using the constant ``π`` or ``pi``, such as::
 
    // Declare a 20-bit angle with the value of "π/2"
@@ -783,6 +784,8 @@ of 7 total dimensions. The subscript operator ``[]`` is used for element access,
 and for multi-dimensional arrays subarray accesses can be specified using a
 comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
 dimension specified first.
+
+One or more dimension(s) of an array can be zero, in which case the array has size zero.  An array of size zero cannot be indexed, e.g. given ``array[float[32], 0] myArray;``, it is an error to use either ``myArray[0]`` or ``myArray[-1]``.
 
 For interoperability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
