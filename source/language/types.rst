@@ -218,7 +218,7 @@ There are n-bit signed and unsigned integers. The statements ``int[size] name;``
 signed 1:n-1:0 and unsigned 0:n:0 integers of the given size. The sizes
 and the surrounding brackets can be omitted (*e.g.* ``int name;``) to use
 a precision that is specified by the particular target architecture.
-If provided, the ``size`` of an unsigned integer must be at least 1, and the ``size`` of a signed integer must be at least 2.
+If provided, the ``size`` of an integer must be at least 1.
 Bit-level operations cannot be used on types without a specified width, and
 unspecified-width types are different to *all* specified-width types for
 the purposes of casting.
