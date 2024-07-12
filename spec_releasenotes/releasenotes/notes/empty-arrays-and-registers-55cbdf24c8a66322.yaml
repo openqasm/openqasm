@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Clarify that arrays and registers of size zero are allowed.
