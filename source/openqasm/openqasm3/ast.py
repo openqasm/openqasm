@@ -575,6 +575,7 @@ class QuantumMeasurement(QASMNode):
     """
 
     qubit: Union[IndexedIdentifier, Identifier]
+    name: Identifier = field(default_factory=lambda: Identifier("measure"))
 
 
 # Note that this is not a QuantumStatement because it involves access to
