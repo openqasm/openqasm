@@ -92,12 +92,12 @@ frame of a Hamiltonian, throughout the execution of a program. Openpulse provide
 
 - Tracking time appropriately so programs do not need to deal in absolute time or with the
   bookkeeping of advancing time in a sequence of pulses.
-- Tracking accrued phase by producing a complex value given an input time (i.e. via the mathematical
+- Tracking accrued phase by producing a complex value given an input time (*i.e.* via the mathematical
   relationship :math:`e^{i\left(2\pi f t + \theta\right)}`,  where `f` is frequency and
   :math:`\theta` is the accrued phase). In this way,  a ``frame`` type behaves analogously to
   a `numerically-controlled oscillator (NCO) <https://en.wikipedia.org/wiki/Numerically-controlled_oscillator>`_).
   One motivation for keeping track of accrued phase is to allow pulses to be defined in the rotating frame with the
-  effect being an equivalent application in the lab frame (i.e. with the carrier supplied by the ``frame``).
+  effect being an equivalent application in the lab frame (*i.e.* with the carrier supplied by the ``frame``).
   Another motivation is to more naturally implement a "virtual Z-gate", which does not require a physical pulse but
   rather shifts the phase of all future pulses on that frame.
 
@@ -327,9 +327,9 @@ only appear inside a ``defcal`` block and have two required parameters:
 - The frame to use for the pulse.
 - A value of type ``waveform`` representing the waveform envelope.
 
-Here, the ``frame`` provides the time at which the ``waveform`` envelope is scheduled (i.e. via
-the frame's current ``time``), its carrier frequency (i.e. via the frames current ``frequency``),
-and its phase offset (i.e. via the frame's current ``phase``).
+Here, the ``frame`` provides the time at which the ``waveform`` envelope is scheduled (*i.e.* via
+the frame's current ``time``), its carrier frequency (*i.e.* via the frames current ``frequency``),
+and its phase offset (*i.e.* via the frame's current ``phase``).
 
 .. code-block:: openpulse
 
@@ -798,7 +798,7 @@ an acousto-optic deflector (AOD). The EOMs put sidebands on the laser light whil
 the light in an amount proportional to the frequency of the RF drive. This example was chosen
 because it is similar in spirit to the work by Levine et al._:cite:`levine2019` except that phase
 control is exerted using virtual Z gates on the AODs -- requiring frame tracking of the qubit
-frequency yet application of a tone that maps to the qubit position (i.e. requires the use of a
+frequency yet application of a tone that maps to the qubit position (*i.e.* requires the use of a
 sideband).
 
 The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on q2 and q3.

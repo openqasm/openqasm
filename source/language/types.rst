@@ -168,7 +168,7 @@ hold over permutations of physical qubit labels. Thus, physical qubits cannot be
 compiler or hardware provider without opt-in from the programmer.
 
 Note that while physical circuits require physical qubits, the converse need not be true. A circuit
-that would require routing or gate decomposition to run (i.e., does not have a ``defcal`` for every
+that would require routing or gate decomposition to run (*i.e.*, does not have a ``defcal`` for every
 operation in the circuit) would by definition not be a physical circuit. However, physical qubits
 can still be used in such circuits.
 
@@ -857,7 +857,7 @@ Index sets and slicing
 Register concatenation and slicing
 ----------------------------------
 
-Two or more registers of the same type (i.e. classical or quantum) can
+Two or more registers of the same type (*i.e.* classical or quantum) can
 be concatenated to form a register of the same type whose size is the
 sum of the sizes of the individual registers. The concatenated register
 is a reference to the bits or qubits of the original registers. The
@@ -865,7 +865,7 @@ statement ``a ++ b`` denotes the concatenation of registers ``a`` and ``b``. A r
 be concatenated with any part of itself.
 
 Classical and quantum registers can be indexed in a way that selects a
-subset of (qu)bits, i.e. by an index set. A register so indexed is
+subset of (qu)bits, *i.e.* by an index set. A register so indexed is
 interpreted as a register of the same type but with a different size.
 The register slice is a reference to the original register. A register
 cannot be indexed by an empty index set.
