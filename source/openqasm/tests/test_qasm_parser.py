@@ -368,6 +368,9 @@ def test_array_declaration():
     array[int, 0] a;
     array[int, 2, 0] a;
     array[int, 0, 2] a;
+    array[int, 0] a = {};
+    array[int, 2, 0] a = {{}, {}};
+    array[int, 0, 2] a = {};
     """.strip()
     program = parse(p)
     a, b = Identifier("a"), Identifier("b")
@@ -433,6 +436,23 @@ def test_array_declaration():
                 type=ArrayType(base_type=IntType(size=None), dimensions=[zero, two]),
                 identifier=a,
                 init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero]),
+                identifier=a,
+                init_expression=ArrayLiteral([]),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[two, zero]),
+                identifier=a,
+                init_expression=ArrayLiteral(
+                    [ArrayLiteral([]), ArrayLiteral([])],
+                ),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero, two]),
+                identifier=a,
+                init_expression=ArrayLiteral([]),
             ),
         ],
     )
