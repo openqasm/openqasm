@@ -785,7 +785,7 @@ and for multi-dimensional arrays subarray accesses can be specified using a
 comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
 dimension specified first.
 
-One or more dimension(s) of an array can be zero, in which case the array has size zero.  An array of size zero cannot be indexed, e.g. given ``array[float[32], 0] myArray;``, it is an error to use either ``myArray[0]`` or ``myArray[-1]``.
+One or more dimension(s) of an array can be zero, in which case the array has size zero.  An array of size zero cannot be indexed, e.g. given ``array[float[32], 0] myArray;``, it is an error to access either ``myArray[0]`` or ``myArray[-1]``.
 
 For interoperability, the standard
 ways of declaring quantum registers and bit registers are equivalent to the
