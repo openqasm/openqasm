@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    The types ``bool`` and (scalar) ``bit`` are now explicitly described as being completely
+    interchangeable in expression (r-value) positions, and that ``bit`` and ``bit[1]`` are distinct
+    types.  The difference between the types ``bool`` and ``bit`` is only in their intended storage
+    mechanisms; ``bit`` is the scalar of the register-type ``bit[n]``, which is explicitly a
+    bit-packed type, so cannot be used as the base type of an ``array``, while ``bool`` is a
+    byte-aligned single-bit integer-like type.  ``bit[1]`` is a register (sequence) type that
+    happens to be of length one.
