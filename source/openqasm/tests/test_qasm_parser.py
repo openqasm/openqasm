@@ -2076,7 +2076,6 @@ class TestFailurePaths:
 
     @pytest.mark.parametrize("scalar", ("uint", "int", "angle"))
     def test_nonpositive_width_integer(self, scalar):
-        assert False  # FIXME: not sure why this test is not being invoked
         message = f"{scalar} size must be positive"
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"{scalar}[0] a;")
@@ -2084,7 +2083,7 @@ class TestFailurePaths:
             parse(f"{scalar}[-1] a;")
 
     @pytest.mark.parametrize("oldstylereg", ("qreg", "creg"))
-    def test_nonpositive_width_integer(self, oldstylereg):
+    def test_nonpositive_width_register(self, oldstylereg):
         message = f"{oldstylereg} size must be positive"
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"{oldstylereg} a[0];")
