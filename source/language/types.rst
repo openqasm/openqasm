@@ -67,8 +67,7 @@ actual hardware; see below). The statement ``qubit[size] name;``
 declares a quantum register with ``size`` qubits.
 Sizes must always be :ref:`compile-time constant <const-expression>` positive
 integers.
-Quantum registers are static arrays of qubits
-that cannot be dynamically resized.
+Quantum registers cannot be resized after declaration.
 
 The label ``name[j]`` refers to a qubit of this register, where
 :math:`j\in \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
@@ -191,7 +190,7 @@ Classical bits and registers
 There is a classical bit type that takes values 0 or 1. Classical
 registers are static arrays of bits. The classical registers model part
 of the controller state that is exposed within the OpenQASM program. The
-statement ``bit name;`` declares a classical bit, and or ``bit[size] name;`` declares a register of
+statement ``bit name;`` declares a single classical bit, while ``bit[size] name;`` declares a register of
 ``size`` bits. The label ``name[j]`` refers to a bit of this register, where :math:`j\in
 \{0,1,\dots,\mathrm{size}(\mathrm{name})-1\}` is an integer.
 
@@ -210,6 +209,26 @@ bit is on the right.
    bit[20] bit_array;
    // Declare and assign a register of bits with decimal value of 15
    bit[8] name = "00001111";
+
+
+The scalar type ``bit`` logically represents a single bit of data, but no restrictions or suggestions are made for how an implementation should choose to store a variable decalred as a scalar bit.
+The type ``bit[n]`` behaves as if it is stored in memory as a contiguous bit-packed sequence; this is reflected in its casting rules to and from the other types.
+There are no defined semantics for how ``bit`` or ``bit[n]`` types should behave if used for a parameter or return value in an ``extern`` call that implies an FFI call, and it is discouraged for implementations to allow this.
+Neither scalar ``bit``\ s nor ``bit[n]`` registers can be the base type of an ``array``.
+
+The indexing operation on a ``bit[n]`` with an integer value returns a value of type ``bit``, and a value of type ``bit`` can be assigned to a single integer offset into a ``bit[n]`` type.
+
+Values being used in an expression (r-values, in C parlance) with types ``bool`` and (scalar) ``bit`` are interchangeable; whenever a value can be implicitly cast to type ``bool``, it can also implicitly be cast to type ``bit`` and vice versa.
+For example, it is legal to initialize and set ``bit`` values using the integer literals ``0``, ``1``, and the Boolean literals ``false`` and ``true``.
+Similarly, it is legal to use a ``bit``-valued expression as the condition of an ``if`` statement.
+
+.. note::
+
+   Despite having the same bit length, the types ``bit`` and ``bit[1]`` are distinct.
+   ``bit`` is a scalar that is interchangeable with ``bool``, while ``bit[1]`` is a register type of length one.
+   The literals ``false``, ``true``, ``0`` and ``1`` can be assigned to a value of type ``bit``, while the literals ``"0"`` and ``"1"`` are the corresponding literals for ``bit[1]``.
+
+   The distinction is important in the type-checking of broadcast expressions, and in the implied semantics of the type.
 
 Integers
 ~~~~~~~~
@@ -380,16 +399,19 @@ constant values.
 Boolean types
 ~~~~~~~~~~~~~
 
-There is a Boolean type ``bool name;`` that takes values ``true`` or ``false``. Qubit measurement results
-can be converted from a classical ``bit`` type to a Boolean using ``bool(c)``, where 1 will
-be true and 0 will be false.
+There is a Boolean type ``bool name;`` that takes values ``true`` or ``false``.
+The Boolean type is byte aligned, and can be the base type of an ``array``.
+
+When used in expressions, values of type ``bool`` can always be implicitly cast to the equivalent scalar ``bit``, and vice versa.
+The difference between ``bool`` and ``bit`` is primarily about the expectations of storage requirements; ``bit`` is used when the storage is expected to be bit-packed, such as in the special register type ``bit[n]``.
+``bool`` is a byte-aligned single-bit integer type.
 
 .. code-block::
 
    bit my_bit = 0;
    bool my_bool;
    // Assign a cast bit to a boolean
-   my_bool = bool(my_bit);
+   my_bool = my_bit;
 
 
 .. _const-expression:
@@ -750,11 +772,10 @@ can be accessed, using the following general syntax:
    multiDim[0, 0] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 3.2}}
    multiDim[-1, 1] = 0.0; // multiDim == {{0.0, 1.2}, {2.1, 2.2}, {3.1, 0.0}}
 
-The first argument to the ``array`` declaration is the base type
-of the array. The supported classical types include various sizes of ``bit``,
-``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as
-``bool`` and ``duration``. Note that ``stretch`` is not a valid array
-base type.
+The first argument to the ``array`` declaration is the base type of the array.
+The supported classical types include any sizes of ``int``, ``uint``, ``float``, ``complex``, and ``angle``, as well as ``bool`` and ``duration``.
+Note that ``bit``, ``bit[n]`` and ``stretch`` are not valid array base types, nor are any quantum types.
+
 
 Arrays cannot be resized or reshaped. Arrays are statically typed, and cannot
 implicitly convert to or from any other type.
@@ -784,10 +805,6 @@ and for multi-dimensional arrays subarray accesses can be specified using a
 comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
 dimension specified first.
 
-For interoperability, the standard
-ways of declaring quantum registers and bit registers are equivalent to the
-array syntax version (*i.e.* ``qubit[5] q1;`` is the same as
-``array[qubit, 5] q1;``).
 Assignment to elements of arrays, as in the examples above, acts as expected,
 with the left-hand side of the assignment operating as a reference, thereby
 updating the values inside the original array. For multi-dimensional arrays,
@@ -1077,9 +1094,9 @@ Casting from bool
 ~~~~~~~~~~~~~~~~~
 
 ``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or
-an equivalent representation. ``bool`` values can only be cast to ``bit[1]``
-(a single bit), so explicit index syntax must be given if the target ``bit``
-has more than 1 bit of precision.
+an equivalent representation.
+``bool`` values are interchangeable with scalar ``bit`` values.
+Because of this, a ``bool`` can be assigned to a single index of a ``bit[]`` register type, or an explicit cast can be used to convert a ``bool`` into a ``bit[n]`` value for any ``n``, where all bits are ``0`` except for the low bit, which has the same value as the Boolean.
 
 Casting from int/uint
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1091,7 +1108,7 @@ target type the result is implementation-specific. However,
 casting between ``int[n]`` and ``uint[n]`` is expected to preserve the bit
 ordering, specifically it should be the case that ``x == int[n](uint[n](x))``
 and vice versa. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target
-``bit`` has more or less precision, then explicit slicing syntax must be given.
+``bit[]`` has more or less precision, then explicit slicing syntax must be given.
 As noted, the conversion is done assuming a little-endian 2's complement
 representation.
 
@@ -1153,6 +1170,8 @@ syntax must be given. Likewise, ``bit[n]`` can only be cast to ``angle[m]``
 when ``n==m``, in which case an exact per-bit copy is done using little-endian
 bit order. Finally, casting between bits of differing precisions is not
 allowed, explicit slicing syntax must be given.
+
+The scalar ``bit`` is implicitly interchangeable with ``bool``.
 
 .. _divideDuration:
 
