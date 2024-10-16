@@ -211,7 +211,7 @@ bit is on the right.
    bit[8] name = "00001111";
 
 
-The scalar type ``bit`` logically represents a single bit of data, but no restrictions or suggestions are made for how an implementation should choose to store a variable decalred as a scalar bit.
+The scalar type ``bit`` logically represents a single bit of data, but no restrictions or suggestions are made for how an implementation should choose to store a variable declared as a scalar bit.
 The type ``bit[n]`` behaves as if it is stored in memory as a contiguous bit-packed sequence; this is reflected in its casting rules to and from the other types.
 There are no defined semantics for how ``bit`` or ``bit[n]`` types should behave if used for a parameter or return value in an ``extern`` call that implies an FFI call, and it is discouraged for implementations to allow this.
 Neither scalar ``bit``\ s nor ``bit[n]`` registers can be the base type of an ``array``.
