@@ -70,7 +70,7 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
   - Bettina Heim (Nvidia)
   - Philipp Schindler (Innsbruck)
 
-  This TSC was completed by an election ending on 2023-01-13 to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
+This TSC was completed by an election ending on 2023-01-13 to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again and was replaced by Dor Israeli.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
 
 
 ### Reference models
