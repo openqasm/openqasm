@@ -8,13 +8,6 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 
 ## Current Working Groups
 
-### Generics and circuit families
-
-**Objective**: Recommend what range of generics / parameterised circuit family functionality (beyond angle parameters) would be suitable for inclusion in OpenQASM, and what syntax should be used for it.
-
-Chair: Niel de Beaudrap  
-Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
-
 ### Profiles & Releases
 
 **Objectives**: Define a minimum set of features for hardware implementors (base profile) and build
@@ -49,6 +42,18 @@ Members: Ali Javadi, Bettina Heim, Blake Johnson, Dor Israeli, Jeff Heckey, Jon 
 
 ## Past Working Groups
 
+### Generics and circuit families
+
+**Objective**: Recommend what range of generics / parameterised circuit family functionality (beyond angle parameters) would be suitable for inclusion in OpenQASM, and what syntax should be used for it.
+
+Chair: Niel de Beaudrap
+Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
+
+**Outcome**: The primary outcome was https://github.com/openqasm/openqasm/pull/346
+which proposes modifying the gate syntax to allow classical gate parameters to have
+types other than angle, and to allow gates to accept quantum registers of a
+specified size.
+
 ### OpenPulse
 
 **Objective**: Define a pulse grammar "openpulse" to be used for microcoding of gate instructions with
@@ -56,7 +61,6 @@ OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
-
 
 ### Types and casting
 
@@ -90,7 +94,6 @@ Chair: Dor Israeli (Quantum Machines)
 Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
 
 Group was merged into part of the profiles and releases working group.
-
 
 ### Pragmas
 
