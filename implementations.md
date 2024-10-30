@@ -52,7 +52,4 @@ Quantum software development kit (SDK)
 
 <!--  LocalWords:  Qiskit OpenQASM 3Aissue 3Aopen impl OSS openqasm3 WIP CLI Qu
 <!--  LocalWords:  qasm3tools Braket braket qiskit SDK ANTLR Lexing antum lex
-<!--  LocalWords:  sembly QASM AST BNF
- -->
- -->
- -->
+<!--  LocalWords:  sembly QASM AST BNF  -->
