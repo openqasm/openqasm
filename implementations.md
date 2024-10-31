@@ -23,7 +23,7 @@ you have corrections, please
 | [qasm3tools](#qasm3tools) | CLI | C++ | unknown | unknown | OSS |
 | [Amazon Braket](#amazon-braket) | Python | | web service | incomplete | |
 | [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python | C++ | | | OSS |
-| [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | various |
+| [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | OSS |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
 
