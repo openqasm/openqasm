@@ -22,6 +22,7 @@ you have corrections, please
 | [Quasar](#quasar) | Julia | Julia | parser | WIP | OSS |
 | [qasm3tools](#qasm3tools) | CLI | C++ | unknown | unknown | OSS |
 | [Amazon Braket](#amazon-braket) | Python | | web service | incomplete | |
+| [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python | C++ | | | OSS |
 | [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | various |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
@@ -41,6 +42,10 @@ Unknown
 
 ### [Amazon Braket](https://docs.aws.amazon.com/braket/latest/developerguide/braket-openqasm.html)
 Cloud quantum computing service
+
+### [Munich Quantum Toolkit (MQT)](https://mqt.readthedocs.org)
+* [Exports circuits as OQ3](https://mqt.readthedocs.io/projects/core/en/latest/quickstart.html)
+* [Imports OQ3](https://mqt.readthedocs.io/projects/core/en/latest/api/mqt/core/index.html#mqt.core.load)
 
 ### [Qiskit](https://github.com/qiskit)
 Quantum software development kit (SDK)
