@@ -41,11 +41,12 @@ Version 3.0 of the OpenQASM specification aims to extend OpenQASM to include:
 Scope
 -----
 
-This document aims to define the OpenQASM language itself, but it does not attempt to fully explain
-the motivation for various design choices. A forthcoming paper will provide this background. This
-document also does not seek to define the execution environment that accepts OpenQASM as an input.
-For the previous versions of OpenQASM please read arXiv:1707.03429_.
+This document defines the OpenQASM language specification while the motivation behind 
+its design choices is discussed in detail in arXiv:2104.14722_. Furthermore, the 
+specification does not define the execution environment that accepts OpenQASM as input. 
+For information about previous versions of OpenQASM, please refer to arXiv:1707.03429_.
 
+.. _arXiv:2104.14722: https://arxiv.org/abs/2104.14722
 .. _arXiv:1707.03429: https://arxiv.org/abs/1707.03429
 
 Implementation Details
