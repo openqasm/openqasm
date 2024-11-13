@@ -677,7 +677,7 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
 
   // sweep parameters would be programmed in by some higher level bindings
   const float frequency_start = 4.5e9;
-  const float frequency_step = 1e6
+  const float frequency_step = 1e6;
   const int frequency_num_steps = 301;
 
   // define a long saturation pulse of a set duration and amplitude
@@ -714,7 +714,7 @@ Here we want to sweep the time of the pulse and observe coherent Rabi flopping d
   const int pulse_length_num_steps = 100;
 
   for int i in [1:pulse_length_num_steps] {
-      duration pulse_length = pulse_length_start + (i-1)*pulse_length_step);
+      duration pulse_length = pulse_length_start + (i-1)*pulse_length_step;
       duration sigma = pulse_length / 4;
       // since we are manipulating pulse lengths it is easier to define and play the waveform in a `cal` block
       cal {
