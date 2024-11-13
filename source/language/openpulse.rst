@@ -390,7 +390,7 @@ extern definition at the top-level, such as:
    extern capture_v3(frame output, duration len) -> waveform;
 
    // A capture that returns a count e.g. number of photons detected
-   extern capture_v4(frame output, duration len) -> int
+   extern capture_v4(frame output, duration len) -> int;
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -554,7 +554,7 @@ aligned to the latest time of the all ``frame``\s listed.
     // driveframe1.time == driveframe2.time == 13ns
   }
 
-Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters the block e.g.
+Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame entered in the block e.g.
 
 .. code-block::
 
@@ -842,9 +842,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     frame raman_b_frame = newframe(eom_b_port, Δ-qubit_freq, 0.0);
 
     // Three frames to phase track each qubit's rotating frame of reference at it's frequency
-    frame q1_frame = newframe(aod_port, qubit_freq, 0)
-    frame q2_frame = newframe(aod_port, qubit_freq, 0)
-    frame q3_frame = newframe(aod_port, qubit_freq, 0)
+    frame q1_frame = newframe(aod_port, qubit_freq, 0);
+    frame q2_frame = newframe(aod_port, qubit_freq, 0);
+    frame q3_frame = newframe(aod_port, qubit_freq, 0);
 
     // Generic gaussian envelope
     waveform π_half_sig = gaussian(1.0, π_half_time, 100dt);
