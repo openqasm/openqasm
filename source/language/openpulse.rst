@@ -554,7 +554,7 @@ aligned to the latest time of the all ``frame``\s listed.
     // driveframe1.time == driveframe2.time == 13ns
   }
 
-Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame entered in the block e.g.
+Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame used by the block. For example:
 
 .. code-block::
 
