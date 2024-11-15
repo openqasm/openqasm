@@ -14,6 +14,8 @@ you have corrections, please
     * **parser** -- typically means that semantic analysis is not supported.
     * **front end** -- some semantic analysis or compilation is done.
       Examples of semantic analysis are type checking and constant folding.
+* **status**
+    * **incomplete** This sometimes means WIP and sometimes that not all of OQ3 is supported.
 
 | Name | API language | impl language | function | status | license |
 |------|----------|----------|--------|--------|-------|
@@ -22,6 +24,7 @@ you have corrections, please
 | [Quasar](#quasar) | Julia | Julia | parser | WIP | OSS |
 | [qasm3tools](#qasm3tools) | CLI | C++ | unknown | unknown | OSS |
 | [Amazon Braket](#amazon-braket) | Python | | web service | incomplete | |
+| [LabOne Q](#labone-q) | Python | Rust/Python | SDK | incomplete | OSS |
 | [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python | C++ | | | OSS |
 | [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | OSS |
 
@@ -33,7 +36,7 @@ It is based on [ANTLR](https://www.antlr.org/).
 ### [openqasm3_parser](https://github.com/Qiskit/openqasm3_parser)
 Compiler front end for OpenQASM 3. Lexing, parsing, and semantic analysis.
 
-### [Quasar](https://github.com/kshyatt-aws/Quasar.jl) 
+### [Quasar](https://github.com/kshyatt-aws/Quasar.jl)
 The Qu(antum) as(sembly) (lex/pars)er
 Compiler front end for OpenQASM 3. Lexing, parsing, and semantic analysis.
 
@@ -42,6 +45,11 @@ Unknown
 
 ### [Amazon Braket](https://docs.aws.amazon.com/braket/latest/developerguide/braket-openqasm.html)
 Cloud quantum computing service
+
+### [LabOne Q](https://www.zhinst.com/americas/en/quantum-computing-systems/labone-q)
+SDK and front end for performing experiments on the Zurich Instruments QCCS together with third party control hardware.
+[github](https://github.com/zhinst/laboneq).
+* [Imports OQ3](https://docs.zhinst.com/labone_q_user_manual/core/reference/openqasm3.html)
 
 ### [Munich Quantum Toolkit (MQT)](https://mqt.readthedocs.org)
 * [Exports circuits as OQ3](https://mqt.readthedocs.io/projects/core/en/latest/quickstart.html)
