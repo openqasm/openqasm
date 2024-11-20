@@ -9,7 +9,7 @@ This repo contains the OpenQASM specification, examples, and tools for the OpenQ
 
 OpenQASM is a [Qiskit project](https://qiskit.org).
 
-## :bangbang: Call for Applicants for TSC Secreatary! :bangbang:
+## :bangbang: Call for Applicants for TSC Secretary! :bangbang:
 
 We are searching for candidates for the role of [TSC Secretary](governance.md#tsc-secretary).
 The TSC will select a new Secretary during a TSC meeting in April, 2025.
