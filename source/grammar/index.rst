@@ -1,7 +1,7 @@
-OpenQasm 3.0 Grammar
+OpenQASM 3.0 Grammar
 ====================
 
-OpenQasm 3.0 Grammar specification based in ANTLR_ parser generator.
+OpenQASM 3.0 Grammar specification based in ANTLR_ parser generator.
 
 The ANTLR grammar is intended to serve as the official reference grammar for OpenQASM3 and defines
 the set of syntactically valid statements in the language. ANTLR is used because it provides a

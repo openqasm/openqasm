@@ -12,10 +12,7 @@ Statements are separated by semicolons and whitespace is ignored.
 In other respects, OpenQASM possesses a dual nature as an assembly language and
 as a hardware description language.
 
-Appendix `[app:summary] <#app:summary>`__ summarizes the
-language statements, Appendix `[app:grammar] <#app:grammar>`__ specifies
-the grammar, and Appendix `[app:semantics] <#app:semantics>`__ gives formal
-semantics.
+The OpenQASM grammar specifications can be found at `[OpenQASM 3.0 Grammar] <../grammar/index.html>`__.
 
 .. toctree::
 
