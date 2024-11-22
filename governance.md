@@ -47,38 +47,48 @@ The responsibility of the TSC **Secretary** include:
 * Maintain general documents such as `WG.md`
 
 ### Working Groups
+
 The TSC will, from time to time, elect to create **Working Groups** to study issues. The TSC will appoint a **Contributor** as chair for each WG. These WGs should come back to the TSC with a proposal in the form of a language RFC or pull request to the OpenQASM specification. A WG will be automatically disbanded upon acceptance or (final) rejection of an RFC.
 
+### TSC Membership History
 
-### Past TSCs
+* In January of 2025, the following members' terms will expire:
+  * Blake Johnson
+  * Lev Bishop
+  * Serwan Asaad
+
+#### Call for election December 2024
+
+The TSC therefore calls an election opening 2024-12-15 and ending 2025-01-15. The electors will be directed to an online election platform for their votes. At this time, all three (3) members with expiring terms have indicated they are candidates for re-election. An Issue will be opened in the OpenQASM Github repository soliciting further candidates.
+
+#### Earlier history
 
 * On 26 June, 2024 Dor Israeli resigned and the TSC appointed Serwan Asaad to serve the remainder of Dor's term.
 
 * On 15 January, 2024 voting in the TSC election closed, resulting in the following changes in the composition of the TSC.
-    * Incoming members
-        * Jialin Dou (Quantinuum)
-        * Simon Cross (Zurich Instruments)
-    * Outgoing members
-        * Bettina Heim
-        * Philipp Schindler
+  * Incoming members
+    * Jialin Dou (Quantinuum)
+    * Simon Cross (Zurich Instruments)
+  * Outgoing members
+    * Bettina Heim
+    * Philipp Schindler
 
 * On 2023-06-13, Steven Heidel resigned and the TSC appointed Erik Davis (AWS) to serve the remainder of Steven's term.
 
 * The initial TSC, finishing on 2023-01-13 was:
 
-  - Ali Javadi (IBM Quantum)
-  - Lev S Bishop (IBM Quantum)
-  - Blake Johnson (IBM Quantum)
-  - Steven Heidel (AWS)
-  - Bettina Heim (Nvidia)
-  - Philipp Schindler (Innsbruck)
+  * Ali Javadi (IBM Quantum)
+  * Lev S Bishop (IBM Quantum)
+  * Blake Johnson (IBM Quantum)
+  * Steven Heidel (AWS)
+  * Bettina Heim (Nvidia)
+  * Philipp Schindler (Innsbruck)
 
 This TSC was completed by an election ending on 2023-01-13 to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again and was replaced by Dor Israeli.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
-
 
 ### Reference models
 
 * [Kubernetes](https://github.com/kubernetes/community/blob/master/governance.md)
-    - See also their [Special Interest Group governance rules](https://github.com/kubernetes/community/blob/master/committee-steering/governance/sig-governance.md)
+  *See also their [Special Interest Group governance rules](https://github.com/kubernetes/community/blob/master/committee-steering/governance/sig-governance.md)
 * [Cloud Native Foundation](https://github.com/cncf/foundation/blob/master/charter.md)
 * [ONNX](https://github.com/onnx/onnx/tree/master/community)
