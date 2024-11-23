@@ -1,13 +1,16 @@
 # OpenQASM
 
-
 OpenQASM is an imperative programming language for describing quantum circuits. It is capable of
 describing universal quantum computing using the circuit model, measurement-based model,
 and near-term quantum computing experiments.
 
 This repo contains the OpenQASM specification, examples, and tools for the OpenQASM intermediate representation.
 
-OpenQASM is a [Qiskit project](https://qiskit.org).
+OpenQASM started as a [Qiskit project](https://qiskit.org)
+
+## :bangbang: Call for Candidates for TSC Membership! :bangbang:
+
+The OpenQASM Technical Steering Committee has called an election opening 2024-12-15 and ending 2025-01-15. The electors will be directed to an online election platform for their votes. At this time, all three (3) members with expiring terms have indicated they are candidates for re-election. An [Issue is open in the OpenQASM Github repository soliciting further candidates](https://github.com/openqasm/openqasm/issues/572)
 
 ## :bangbang: Call for Applicants for TSC Secretary! :bangbang:
 
@@ -25,7 +28,7 @@ the current Secretary, at [jack.woehr@procern.com](mailto:jack.woehr@procern.com
 
 ## About this project
 
-In this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and [plugins for some text editors](#plugins).
+In this repository, you'll find all the documentation related to OpenQASM, some useful OpenQASM examples, and a reference grammar.
 
 ### Language specs
 
@@ -34,6 +37,7 @@ The live [language documentation](https://openqasm.github.io/) specification.
 ### Examples
 
 An example of OpenQASM 3.0 source code is given below. Several more examples may be found in the [examples folder](examples).
+
 ```text
 /*
  * Repeat-until-success circuit for Rz(theta),
@@ -81,18 +85,16 @@ output = measure input;  // should get zero
 
 For research papers, we encourage authors to reference.
 
-- [Version 3.0] Andrew W. Cross, Ali Javadi-Abhari, Thomas Alexander, Niel de Beaudrap, Lev S. Bishop, Steven Heidel, Colm A. Ryan, John Smolin, Jay M. Gambetta, Blake R. Johnson "OpenQASM 3: A broader and deeper quantum assembly language" [[arxiv:2104.14722]](https://arxiv.org/abs/2104.14722).
-- [Previous Version: 2.0] Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
+* [Version 3.0] Andrew W. Cross, Ali Javadi-Abhari, Thomas Alexander, Niel de Beaudrap, Lev S. Bishop, Steven Heidel, Colm A. Ryan, John Smolin, Jay M. Gambetta, Blake R. Johnson "OpenQASM 3: A broader and deeper quantum assembly language" [[arxiv:2104.14722]](https://arxiv.org/abs/2104.14722).
+* [Previous Version: 2.0] Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta "Open Quantum Assembly Language" [[arXiv:1707.03429]](https://arxiv.org/abs/1707.03429).
 
 ## Governance
 
 The OpenQASM project has a process for accepting changes to the language and making decisions codified in its [governance model](governance.md).
 
-
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
-
 
 ## Contributing
 
