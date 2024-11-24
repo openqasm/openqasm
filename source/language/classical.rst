@@ -291,7 +291,7 @@ iterations of the loop ``body``.  ``values`` can be:
   an alias to classical bits.  The corresponding scalar type of the loop
   variable is ``bit``, as appropriate.
 
-- a value of type ``array[<scalar>, n]``, _i.e._ a one-dimensional
+- a value of type ``array[<scalar>, n]``, *i.e.* a one-dimensional
   array.  Values of type ``scalar`` must be able to be implicitly promoted to
   values of type ``type``.  Modification of the loop variable does not change
   the corresponding value in the array.

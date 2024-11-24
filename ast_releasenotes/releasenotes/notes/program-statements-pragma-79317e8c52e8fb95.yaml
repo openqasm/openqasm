@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Update the `Program.statements` type annotation to allow `Pragma`.

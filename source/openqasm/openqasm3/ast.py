@@ -138,7 +138,7 @@ class Program(QASMNode):
     An entire OpenQASM 3 program represented by a list of top level statements
     """
 
-    statements: List[Statement]
+    statements: List[Union[Statement, Pragma]]
     version: Optional[str] = None
 
 

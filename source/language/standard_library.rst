@@ -158,7 +158,7 @@ Single-qubit gates
 
       \texttt{sdg a;} \mapsto S^\dagger\colon\ \left\{\begin{alignedat}[c]2
          \lvert0\rangle &{}\to{}&  &\lvert0\rangle\\
-         \lvert1\rangle &{}\to{}& i&\lvert1\rangle.
+         \lvert1\rangle &{}\to{}& -i&\lvert1\rangle.
       \end{alignedat}\right.
 
    .. versionadded:: 3.0
@@ -205,13 +205,13 @@ Single-qubit gates
 
 .. gate:: rx(θ) a
 
-   Rotation about the :math:`X` axis: :math:`\mathit{RX}(\theta) = \exp(-i\theta X)`:
+   Rotation about the :math:`X` axis: :math:`\mathit{RX}(\theta) = \exp(-i\theta X/2)`:
 
    .. math::
 
       \texttt{rx(θ) a;} \mapsto \mathit{RX}(\theta)\colon\ \left\{\begin{aligned}[c]
-         \lvert0\rangle &\to \cos\theta\lvert0\rangle - i\sin\theta\lvert1\rangle\\
-         \lvert1\rangle &\to \cos\theta\lvert1\rangle - i\sin\theta\lvert0\rangle.
+         \lvert0\rangle &\to \cos(\theta/2)\lvert0\rangle - i\sin(\theta/2)\lvert1\rangle\\
+         \lvert1\rangle &\to \cos(\theta/2)\lvert1\rangle - i\sin(\theta/2)\lvert0\rangle.
       \end{aligned}\right.
 
 
@@ -219,27 +219,27 @@ Single-qubit gates
 
 .. gate:: ry(θ) a
 
-   Rotation about the :math:`Y` axis: :math:`\mathit{RY}(\theta) = \exp(-i\theta Y)`:
+   Rotation about the :math:`Y` axis: :math:`\mathit{RY}(\theta) = \exp(-i\theta Y/2)`:
 
    .. math::
 
       \texttt{ry(θ) a;} \mapsto \mathit{RY}(\theta)\colon\ \left\{\begin{aligned}[c]
-         \lvert0\rangle &\to \cos\theta\lvert0\rangle + \sin\theta\lvert1\rangle\\
-         \lvert1\rangle &\to \cos\theta\lvert1\rangle - \sin\theta\lvert0\rangle.
+         \lvert0\rangle &\to \cos(\theta/2)\lvert0\rangle + \sin(\theta/2)\lvert1\rangle\\
+         \lvert1\rangle &\to \cos(\theta/2)\lvert1\rangle - \sin(\theta/2)\lvert0\rangle.
       \end{aligned}\right.
 
    .. versionadded:: 3.0
 
 .. gate:: rz(θ) a
 
-   Rotation about the :math:`Z` axis: :math:`\mathit{RZ}(\theta) = \exp(-i\theta Z)`.  Note that
+   Rotation about the :math:`Z` axis: :math:`\mathit{RZ}(\theta) = \exp(-i\theta Z/2)`.  Note that
    this differs from :gate:`p` by a global phase of half the rotation angle:
 
    .. math::
 
       \texttt{rz(θ) a;} \mapsto \mathit{RZ}(\theta)\colon\ \left\{\begin{aligned}[c]
-         \lvert0\rangle &\to \cos\theta\lvert0\rangle + \sin\theta\lvert1\rangle\\
-         \lvert1\rangle &\to \sin\theta\lvert0\rangle - \cos\theta\lvert1\rangle.
+         \lvert0\rangle &\to \cos(\theta/2)\lvert0\rangle + \sin(\theta/2)\lvert1\rangle\\
+         \lvert1\rangle &\to \sin(\theta/2)\lvert0\rangle - \cos(\theta/2)\lvert1\rangle.
       \end{aligned}\right.
 
    .. seealso::
@@ -343,9 +343,9 @@ gate.
 
       \texttt{crx(θ) a, b;} \mapsto \mathit{CRX}_{ba}(\theta)\colon\ \left\{\begin{aligned}[c]
          {\lvert00\rangle}_{ba} &\to {\lvert00\rangle}_{ba}\\
-         {\lvert01\rangle}_{ba} &\to {\bigl(\cos\theta\lvert0\rangle - i\sin\theta\lvert1\rangle\bigr)}_b{\lvert1\rangle}_a\\
+         {\lvert01\rangle}_{ba} &\to {\bigl(\cos(\theta/2)\lvert0\rangle - i\sin(\theta/2)\lvert1\rangle\bigr)}_b{\lvert1\rangle}_a\\
          {\lvert10\rangle}_{ba} &\to {\lvert10\rangle}_{ba}\\
-         {\lvert11\rangle}_{ba} &\to {\bigl(\cos\theta\lvert1\rangle - i\sin\theta\lvert0\rangle\bigr)}_b{\lvert1\rangle}_a\\
+         {\lvert11\rangle}_{ba} &\to {\bigl(\cos(\theta/2)\lvert1\rangle - i\sin(\theta/2)\lvert0\rangle\bigr)}_b{\lvert1\rangle}_a\\
       \end{aligned}\right.
 
    .. versionadded:: 3.0
@@ -358,11 +358,11 @@ gate.
 
    .. math::
 
-      \texttt{cry(θ) a, b;} \mathit{CRY}_{ba}(\theta)\colon\ \left\{\begin{aligned}[c]
+      \texttt{cry(θ) a, b;} \mapsto \mathit{CRY}_{ba}(\theta)\colon\ \left\{\begin{aligned}[c]
          {\lvert00\rangle}_{ba} &\to {\lvert00\rangle}_{ba}\\
-         {\lvert01\rangle}_{ba} &\to {\bigl(\cos\theta\lvert0\rangle + \sin\theta\lvert1\rangle\bigr)}_b{\lvert1\rangle}_a\\
+         {\lvert01\rangle}_{ba} &\to {\bigl(\cos(\theta/2)\lvert0\rangle + \sin(\theta/2)\lvert1\rangle\bigr)}_b{\lvert1\rangle}_a\\
          {\lvert10\rangle}_{ba} &\to {\lvert10\rangle}_{ba}&\\
-         {\lvert11\rangle}_{ba} &\to {\bigl(\cos\theta\lvert1\rangle - \sin\theta\lvert0\rangle\bigr)}_b{\lvert1\rangle}_a\\
+         {\lvert11\rangle}_{ba} &\to {\bigl(\cos(\theta/2)\lvert1\rangle - \sin(\theta/2)\lvert0\rangle\bigr)}_b{\lvert1\rangle}_a\\
       \end{aligned}\right.
 
    .. versionadded:: 3.0
@@ -375,7 +375,7 @@ gate.
 
    .. math::
 
-      \texttt{crz(θ) a, b;} \mathit{CRZ}_{ba}(\theta)\colon\ \left\{\begin{alignedat}[c]2
+      \texttt{crz(θ) a, b;} \mapsto \mathit{CRZ}_{ba}(\theta)\colon\ \left\{\begin{alignedat}[c]2
          {\lvert00\rangle}_{ba} &{}\to{}& &{\lvert00\rangle}_{ba}\\
          {\lvert01\rangle}_{ba} &{}\to{}& e^{-i\theta/2} &{\lvert01\rangle}_{ba}\\
          {\lvert10\rangle}_{ba} &{}\to{}& &{\lvert10\rangle}_{ba} \vphantom{e^{i\theta/2}}\\

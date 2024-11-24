@@ -1,0 +1,7 @@
+---
+fixes:
+  - |
+    Some minor mathematical errors in the descriptions of the explicit gate
+    actions in :gate:`sdg`, :gate:`rx`, :gate:`ry`, :gate:`rz`, :gate:`crx` and
+    :gate:`cry` were corrected. The gates have not changed their intended
+    meanings.

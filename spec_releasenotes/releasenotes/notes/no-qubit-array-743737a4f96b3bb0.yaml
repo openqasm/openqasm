@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The ``qubit`` type is no longer a valid base type for an ``array``, and it is no longer stated
+    that the register type ``qubit[n]`` is equivalent to an ``array``; there is no need for these
+    semantics, and they clashed with the classical considerations and alignment concerns of arrays
+    in general.

@@ -92,7 +92,7 @@ version increase.
 
 ### Timing of Releases
 
-The OpenQASM Technical Steering Committee is the final arbiter on when a new
+The [OpenQASM Technical Steering Committee](./governance.md) is the final arbiter on when a new
 semantic version of the specification and reference parser is warranted. The TSC
 expects the cadence of releases to be dicated by the contributions provided by
 the community, and not by a time-based schedule.
