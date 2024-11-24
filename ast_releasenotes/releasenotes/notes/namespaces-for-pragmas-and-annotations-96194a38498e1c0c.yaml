@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Updates the annotations keyword to allow it to contain a dotted
+    list of identifiers rather than a single identifier. This change
+    is to support the specification update recommending that pragmas
+    and annotations be prefixed with namespaces.

@@ -38,7 +38,7 @@ CASE: 'case';
 DEFAULT: 'default';
 
 PRAGMA: '#'? 'pragma' -> pushMode(EAT_TO_LINE_END);
-AnnotationKeyword: '@' Identifier ->  pushMode(EAT_TO_LINE_END);
+AnnotationKeyword: '@' Identifier ('.' Identifier)* ->  pushMode(EAT_TO_LINE_END);
 
 
 /* Types. */

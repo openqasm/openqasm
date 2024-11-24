@@ -1795,6 +1795,9 @@ def test_annotations():
         @inner2 command
         x = 19;
     }
+
+    @namespace.name1.name2
+    gate my_gate_2 q {}
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1871,6 +1874,13 @@ def test_annotations():
                 ),
                 [Annotation(keyword="outer", command=None)],
             ),
+            # Namespaced annotations
+            _with_annotations(
+                QuantumGateDefinition(
+                    name=Identifier("my_gate_2"), arguments=[], qubits=[Identifier("q")], body=[]
+                ),
+                [Annotation(keyword="namespace.name1.name2", command=None)],
+            ),
         ],
     )
     SpanGuard().visit(program)
@@ -1880,8 +1890,10 @@ def test_pragma():
     p = """
     #pragma verbatim
     pragma verbatim
+    pragma openqasm.verbatim
     #pragma command arg1 arg2
     pragma command arg1 arg2
+    pragma openqasm.command arg1 arg2
     #pragma otherwise_invalid_token 1a2%&
     pragma otherwise_invalid_token 1a2%&
     """  # No strip because all line endings are important for pragmas.
@@ -1890,8 +1902,10 @@ def test_pragma():
         statements=[
             Pragma(command="verbatim"),
             Pragma(command="verbatim"),
+            Pragma(command="openqasm.verbatim"),
             Pragma(command="command arg1 arg2"),
             Pragma(command="command arg1 arg2"),
+            Pragma(command="openqasm.command arg1 arg2"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
         ]

@@ -1,20 +1,50 @@
 Directives
 ==========
 
-OpenQASM supports directive mechanisms that allows other information to
+OpenQASM supports directive mechanisms that allow other information to
 be included in the program. Directives are either pragmas or annotations.
 Both are used to supply additional information to the compiler passes and the
 target system or simulator. Ideally the meaning of the program does not change
 if some or all of the directives are ignored, so they can be interpreted
 at the discretion of the consuming process.
 
+Pragma and annotation namespacing
+---------------------------------
+
+It is intended that different implementators of the specification might
+define their own pragmas and annotations. This creates the possibility that
+different implementations might define pragmas or annotations that collide.
+
+To avoid such collisions we recommend that implementations namespace their
+pragmas and annotations as follows:
+
+- Pragmas start with `pragma <namespace>.<name>(.<name>)*`.
+- Annotations start with `@<namespace>.<name>(.<name>)*`.
+
+Where `namespace` and `name` are valid OpenQASM identifiers.
+
+If the pragma or annotation takes additional arguments the
+final `<name>` should be followed by a single space before the
+additional text.
+
+The namespace should be a short name that identifies the organization that
+defines behaviour of the pragmas and annotations contained within it.
+
+The namespace `openqasm` is reserved for future use by the OpenQASM
+specification.
+
+
 Pragmas
 -------
 
 Pragma directives start with ``pragma`` and continue to the end of line. The
 text after ``pragma`` is a single string, and parsing is left to the specific
-implementation. Implementations may optionally choose to support the older ``#pragma``
-keyword as a custom extension.
+implementation, although implementors are encourage to use the namespacing
+described above.
+
+Implementations may optionally choose to support the older ``#pragma`` keyword
+as a custom extension.
+
 Pragmas should be processed as soon as they are encountered; if a
 pragma is not supported by a compiler pass it should be ignored and preserved
 intact for future passes.  Pragmas should avoid stateful or positional
@@ -30,7 +60,7 @@ documentation for supported pragmas.
 
 .. code-block::
 
-   pragma simulator noise model "qpu1.noise"
+   pragma qiskit.simulator noise model "qpu1.noise"
 
 Pragmas can also be used to specify system-level information or assertions for
 the entire circuit.
@@ -40,10 +70,10 @@ the entire circuit.
    OPENQASM 3.0;
 
    // Attach billing information
-   pragma user alice account 12345678
+   pragma ibmq.user alice account 12345678
 
    // Assert that the QPU is healthy to run this circuit
-   pragma max_temp qpu 0.4
+   pragma ibmq.max_temp qpu 0.4
 
    qubit[2] q;
 
@@ -53,7 +83,8 @@ Annotations
 
 Annotations can be added to supply additional information to the following
 OpenQASM ``statement`` as defined in the grammar. Annotations will start with a
-``@`` symbol, have an identifying keyword and continue to the end of the line.
+``@`` symbol, have a dotted list of identifying keywords and continue to the end
+of the line.
 
 Multiple annotations may be added to a single statement. No ordering or
 interaction between annotations are prescribed by this specification.
@@ -69,21 +100,21 @@ documentation for supported annotations.
    input bit[2] control_flags;
 
    // Instruct compiler to create a reversible version of the function
-   @reversible
+   @openqasm.reversible
    gate multiply a, b, x {
       x = a * b;
    }
 
    // Prevent swap insertion
-   @noswap
+   @openqasm.noswap
    box {
       rx(pi) q[0];
       cnot q[0], q[3];
    }
 
    // Apply multiple annotations
-   @crosstalk
-   @noise profile "gate_noise.qnf"
+   @openqasm.crosstalk
+   @openqasm.noise profile "gate_noise.qnf"
    defcal noisy_gate $0 $1 { ... }
 
 
