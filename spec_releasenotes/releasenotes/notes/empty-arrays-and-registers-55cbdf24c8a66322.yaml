@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    It has been clarified that arrays and registers of size zero are
+    allowed; however, integers and angles must have size greater than
+    zero.
