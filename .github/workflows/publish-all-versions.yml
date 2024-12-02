@@ -25,7 +25,7 @@ jobs:
           ./buildPublishable.sh main ./publish_build remotes/origin
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.6.9
+        uses: JamesIves/github-pages-deploy-action@v4.7.1
         with:
           token: ${{ secrets.GHPAGES_DEPLOY_TOKEN }}
           repository-name: openqasm/openqasm.github.io
