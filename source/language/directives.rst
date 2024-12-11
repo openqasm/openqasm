@@ -73,7 +73,7 @@ the entire circuit.
    pragma ibm.user alice account 12345678
 
    // Assert that the QPU is healthy to run this circuit
-   pragma ibmq.max_temp qpu 0.4
+   pragma ibm.max_temp qpu 0.4
 
    qubit[2] q;
 
