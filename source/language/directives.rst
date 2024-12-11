@@ -70,7 +70,7 @@ the entire circuit.
    OPENQASM 3.0;
 
    // Attach billing information
-   pragma ibmq.user alice account 12345678
+   pragma ibm.user alice account 12345678
 
    // Assert that the QPU is healthy to run this circuit
    pragma ibmq.max_temp qpu 0.4
