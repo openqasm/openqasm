@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Adds a recommendation that pragmas and annotations start with a namespaced
+    identifier to avoid naming collisions between pragmas and annotations
+    specified by different implementations.
+    To support namespaced annotations, the annotations keyword may now include
+    a dotted ('.') list of identifiers.
