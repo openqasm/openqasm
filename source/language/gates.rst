@@ -20,6 +20,8 @@ Assuming ``g0``, ``g1``, ``g2``, ... are gates defined on 0, 1, 2, ... qubits th
    g2 q1, q2;
    g3 q1, q2, q3;
 
+.. _broadcasting:
+
 Broadcasting
 ~~~~~~~~~~~~
 
@@ -124,10 +126,10 @@ and the corresponding OpenQASM code is
 .. _fig_gate:
 .. figure:: ../qpics/gate.svg
 
-   New gates are defined from previously defined gates. The gates are applied using the statement
-   ``name(params) qargs;`` The parentheses are optional if there
-   are no parameters. The gate :math:`{cphase}(\theta)` corresponds to the unitary matrix
-   :math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
+New gates are defined from previously defined gates. The gates are applied using the statement
+``name(params) qargs;`` The parentheses are optional if there
+are no parameters. The gate :math:`{cphase}(\theta)` corresponds to the unitary matrix
+:math:`{diag}(1,1,1,e^{i\theta})` up to a global phase.
 
 Again, this definition does not imply that ``cphase`` must be implemented with
 this particular series of gates. Rather, we have specified the unitary
@@ -135,7 +137,9 @@ transformation that corresponds to the symbol ``cphase``. The particular
 implementation is up to the compiler, given information about the basis
 gate set supported by a particular target.
 
-In general, new gates are defined by statements of the form
+In general, new gates may be declared in two different ways: a 'short'
+declaration syntax, and a more versatile 'general' declaration syntax.
+'Short' gate declarations are statements of the form
 
 .. code-block::
 
@@ -166,10 +170,57 @@ of the gate definition.
    // this is invalid:
    gate g a
    {
-     U(0, 0, 0) a[0];
+     U(0, 0, 0) a[0]; // not allowed to index an individual qubit operand
    }
 
-Only built-in gate statements and calls to previously defined gates can appear in ``body``.
+'General' gate declarations have a similar structure, with minor differences:
+
+.. code-block:: c
+
+   gate name(typedParams) : typedQargs
+   {
+     body
+   }
+
+The optional parameter list ``typedParams`` is a comma-separated list of variable
+parameters, which in this case must be provided with explicit type specifications.
+The list ``typedQargs`` is a comma-separated list of operands which are either individual
+qubits, or registers/arrays of qubits, where each is again provided with an explicit type
+specification.
+If there are no variable parameters, the parentheses are optional. At least
+one quantum operand is required, and the quantum operands
+must be immediately preceded by a ``:`` delimiter.
+The arguments in ``typedQargs`` can be indexed within the body
+of the gate definition if, and only if, it is a register or array of qubits.
+
+.. code-block:: c
+
+   // this is ok:
+   gate g(angle alpha, int k): qubit[3] a
+   {
+     U(0, 0, alpha) a[0];
+     U(0, 0, alpha/k) a[1];
+     U(0, 0, alpha/(k**2)) a[2];
+   }
+
+   // this is also ok:
+   gate qutritX : qubit[2] a {
+     x a[1];
+     cx a[1], a[0];
+     cx a[0], a[1];
+   }
+
+   // this is invalid:
+   gate g(angle alpha, int k): qubit a
+   {
+     U(0, 0, alpha) a[0]; // not allowed to index an individual qubit operand
+     U(0, 0, alpha/k) a[1];
+     U(0, 0, alpha/(k**2)) a[2];
+   }
+
+
+For either kind of gate declaration, only built-in gate statements and calls to previously
+defined gates can appear in the body of the ``gate``.
 For example, it is not valid to
 declare a classical register in a gate body. Looping constructs over these quantum
 statements are valid.
@@ -180,9 +231,37 @@ and these symbols are scoped only to the subroutine body.
 
 An empty body corresponds to the identity gate.
 
+While the 'general' gate syntax allows for non-``angle`` parameters, OpenQASM current does
+not permit **use** of these parameters within the body of the ``gate``. The additional
+type flexibility is intended to only be interpretted by corresponding ``defcal``
+definitions that may have a way to use such non-``angle`` parameters.
+
 To avoid infinite recursion, gates must be declared before use and
 cannot call themselves. The statement ``name(params) qargs;`` applies the gate,
-and the variable parameters ``params`` can have any type that can promote to ``angle`` type.
+and the variable parameters ``params`` must have the appropriate type (or be expressions
+which can be implicitly cast to the appropriate type).
+
+The quantum operands of a ``gate`` invocation must have the appropriate types to the declaration of the ``gate``.
+There is one exception to this type-agreement condition: if a ``gate`` has one or more operands of type ``qubit``,
+the gate may instead act on some qubit register(s) *of identical size* for one or all of those operands,
+as described in :ref:`broadcasting section <broadcasting>`.
+This functionality extends also to any ``gate`` declared with the
+'general' form, so long as all operands which are given an explicit size in the declaration,
+are provided with arguments of the corresponding type.
+
+.. code-block:: c
+
+   gate g : qubit qb0, qubit qb1, qubit[5] qreg
+   {
+     // body
+   }
+   qubit a[2];
+   qubit b[2];
+   qubit c[5];
+   qubit d[10];
+   g a, b, c; // ok: performs "g a[0], b[0], c; g a[1], b[1], c;"
+   g a, b, d; // error! third operand expects a register of size 5, not 10
+
 
 Quantum gate modifiers
 ~~~~~~~~~~~~~~~~~~~~~~
