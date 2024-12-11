@@ -3,9 +3,9 @@
 
 import openqasm3
 
-project = 'OpenQASM 3 Reference AST'
-copyright = '2021, OpenQASM 3 Team and Contributors'
-author = 'OpenQASM 3 Team and Contributors'
+project = "OpenQASM 3 Reference AST"
+copyright = "2021, OpenQASM 3 Team and Contributors"
+author = "OpenQASM 3 Team and Contributors"
 release = openqasm3.__version__
 
 extensions = [
@@ -14,6 +14,6 @@ extensions = [
     "sphinx.ext.autodoc",
 ]
 
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-html_theme = 'alabaster'
+html_theme = "alabaster"
