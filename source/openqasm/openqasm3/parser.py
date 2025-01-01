@@ -604,7 +604,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitMeasureExpression(self, ctx: qasm3Parser.MeasureExpressionContext):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
-        return ast.QuantumMeasurement(qubit=self.visit(ctx.gateOperand()))
+        return ast.QuantumMeasurement(
+            qubit=self.visit(ctx.gateOperand()),
+            name=_visit_identifier(ctx.getChild(0)),
+        )
 
     @span
     def visitDurationofExpression(self, ctx: qasm3Parser.DurationofExpressionContext):

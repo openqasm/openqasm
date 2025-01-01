@@ -1160,6 +1160,40 @@ def test_measurement():
     SpanGuard().visit(program)
 
 
+def test_custom_measurement():
+    p = """
+    measure_iq q;
+    measure_iq q -> c[0];
+    c[0] = measure_iq q[0];
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            QuantumGate(
+                name=Identifier("measure_iq"),
+                modifiers=[],
+                arguments=[],
+                qubits=[Identifier("q")],
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    qubit=Identifier("q"),
+                    name=Identifier("measure_iq"),
+                ),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    qubit=IndexedIdentifier(Identifier("q"), indices=[[IntegerLiteral(0)]]),
+                    name=Identifier("measure_iq"),
+                ),
+                target=IndexedIdentifier(name=Identifier("c"), indices=[[IntegerLiteral(0)]]),
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
 @pytest.mark.parametrize("name", ['"openpulse"', "'openpulse'", '"001"'])
 def test_calibration_grammar_declaration(name):
     p = f"""
