@@ -170,6 +170,14 @@ def test_qubit_and_bit_declaration():
     SpanGuard().visit(program)
 
 
+def test_non_integer_physical_qubit_raises():
+    p = """
+    barrier $a;
+    """.strip()
+    with pytest.raises(QASM3ParsingError, match="token recognition error at: '\$a'"):
+        parse(p)
+
+
 def test_integer_declaration():
     p = """
     uint[16] a = 100;
