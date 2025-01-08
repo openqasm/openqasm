@@ -384,6 +384,15 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
+    def visitExternIdentifier(self, ctx: qasm3Parser.ExternIdentifierContext):
+        if not self._in_global_scope():
+            _raise_from_context(ctx, "extern identifiers must be global")
+        return ast.ExternIdentifier(
+            type=self.visit(ctx.externType()),
+            name=_visit_identifier(ctx.Identifier())
+        )
+
+    @span
     def visitForStatement(self, ctx: qasm3Parser.ForStatementContext):
         if ctx.setExpression():
             set_declaration = self.visit(ctx.setExpression())
@@ -840,6 +849,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             base_type=base,
             dimensions=dimensions,
         )
+
+    @span
+    def visitExternType(self, ctx: qasm3Parser.ExternTypeContext):
+        if ctx.VOID():
+            return ast.VoidType()
+        _raise_from_context(ctx, "unhandled type: {ctx.getText()}")
 
     @span
     def visitGateOperand(self, ctx: qasm3Parser.GateOperandContext):

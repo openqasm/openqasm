@@ -39,6 +39,7 @@ from openqasm3.ast import (
     ExpressionStatement,
     ExternArgument,
     ExternDeclaration,
+    ExternIdentifier,
     FloatLiteral,
     FloatType,
     ForInLoop,
@@ -75,9 +76,11 @@ from openqasm3.ast import (
     UintType,
     UnaryExpression,
     UnaryOperator,
+    VoidType,
 )
 from openqasm3.parser import parse, QASM3ParsingError
 from openqasm3.visitor import QASMVisitor
+
 
 
 def _with_annotations(node, annotations):
@@ -465,6 +468,7 @@ def test_extern_declarations():
     extern f(bool);
     extern f(int[32], uint[32]);
     extern f(mutable array[complex[float[64]], N_ELEMENTS]) -> int[2 * INT_SIZE];
+    extern void var;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -509,6 +513,10 @@ def test_extern_declarations():
                         rhs=Identifier(name="INT_SIZE"),
                     )
                 ),
+            ),
+            ExternIdentifier(
+                type=VoidType(),
+                name=Identifier("var")
             ),
         ]
     )
