@@ -432,14 +432,21 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, "gate definitions must be global")
         name = _visit_identifier(ctx.Identifier())
         arguments = (
-            [_visit_identifier(id_) for id_ in ctx.params.Identifier()]
-            if ctx.params is not None
+            [self.visit(parameter) for parameter in ctx.gateParameterList().gateParameter()]
+            if ctx.gateParameterList()
             else []
         )
         qubits = [_visit_identifier(id_) for id_ in ctx.qubits.Identifier()]
         with self._push_context(ctx):
             body = self._parse_scoped_statements(ctx.scope())
-        return ast.QuantumGateDefinition(name, arguments, qubits, body)
+        any_typed_params = any([isinstance(p, ast.ClassicalArgument) for p in arguments])
+        all_typed_params = all([isinstance(p, ast.ClassicalArgument) for p in arguments])
+        if any_typed_params and not all_typed_params:
+            _raise_from_context(ctx, "gate definitions cannot mix typed and untyped parameters")
+        if any_typed_params:
+            return ast.QuantumExtendedGateDefinition(name, arguments, qubits, body)
+        else:
+            return ast.QuantumGateDefinition(name, arguments, qubits, body)
 
     @span
     def visitIfStatement(self, ctx: qasm3Parser.IfStatementContext):
@@ -821,6 +828,24 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitDefcalTarget(self, ctx: qasm3Parser.DefcalTargetContext):
         return ast.Identifier(name=ctx.getText())
+
+    @span
+    def visitGateParameter(self, ctx: qasm3Parser.GateParameterContext):
+        name = _visit_identifier(ctx.Identifier())
+        type_ = None
+        if ctx.CREG():
+            size = self.visit(ctx.designator()) if ctx.designator() else None
+            creg_span = get_span(ctx.CREG())
+            type_ = add_span(
+                ast.BitType(size=size),
+                combine_span(creg_span, get_span(size)) if size else creg_span,
+            )
+        elif ctx.scalarType():
+            type_ = self.visit(ctx.scalarType())
+        if type_:
+            return ast.ClassicalArgument(type=type_, name=name)
+        else:
+            return name
 
     @span
     def visitArgumentDefinition(self, ctx: qasm3Parser.ArgumentDefinitionContext):

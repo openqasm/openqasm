@@ -15,7 +15,7 @@ reference: |
           gate
           test_gate
           (
-          identifierList
+          gateParameterList
             theta
           )
           identifierList

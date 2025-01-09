@@ -204,7 +204,7 @@ class QubitDeclaration(Statement):
 @dataclass
 class QuantumGateDefinition(Statement):
     """
-    Define a new quantum gate
+    Define a new quantum gate with the simple syntax
 
     Example::
 
@@ -216,6 +216,25 @@ class QuantumGateDefinition(Statement):
 
     name: Identifier
     arguments: List[Identifier]
+    qubits: List[Identifier]
+    body: List[QuantumStatement]
+
+
+@dataclass
+class QuantumExtendedGateDefinition(Statement):
+    """
+    Define a new quantum gate with the extended syntax
+
+    Example::
+
+        gate rzz(angle theta) c, t {
+            // ...
+        }
+
+    """
+
+    name: Identifier
+    arguments: List[ClassicalArgument]
     qubits: List[Identifier]
     body: List[QuantumStatement]
 

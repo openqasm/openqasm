@@ -59,6 +59,7 @@ from openqasm3.ast import (
     QuantumArgument,
     QuantumGate,
     QuantumGateDefinition,
+    QuantumExtendedGateDefinition,
     QuantumGateModifier,
     QuantumMeasurement,
     QuantumMeasurementStatement,
@@ -616,6 +617,48 @@ gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
     assert gate_declaration.span == Span(1, 0, 1, 43)
     assert gate_declaration.arguments[0].span == Span(1, 8, 1, 8)
     assert gate_declaration.qubits[0].span == Span(1, 11, 1, 11)
+
+
+
+def test_gate_definition4():
+    p = """
+gate rx(angle theta) a { h a; rz(theta) a; h a; }
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            QuantumExtendedGateDefinition(
+                name=Identifier("rx"),
+                arguments=[ClassicalArgument(type=AngleType(), name=Identifier(name="theta"))],
+                qubits=[Identifier(name="a")],
+                body=[
+                    QuantumGate(
+                        modifiers=[],
+                        name=Identifier("h"),
+                        arguments=[],
+                        qubits=[Identifier(name="a")],
+                    ),
+                    QuantumGate(
+                        modifiers=[],
+                        name=Identifier("rz"),
+                        arguments=[Identifier(name="theta")],
+                        qubits=[Identifier(name="a")],
+                    ),
+                    QuantumGate(
+                        modifiers=[],
+                        name=Identifier("h"),
+                        arguments=[],
+                        qubits=[Identifier(name="a")],
+                    )
+                ],
+            )
+        ]
+    )
+    SpanGuard().visit(program)
+    gate_declaration = program.statements[0]
+    assert gate_declaration.span == Span(1, 0, 1, 48)
+    assert gate_declaration.arguments[0].span == Span(1, 8, 1, 14)
+    assert gate_declaration.qubits[0].span == Span(1, 21, 1, 21)
 
 
 def test_gate_calls():
