@@ -619,7 +619,6 @@ gate rz(λ) a { gphase(-λ/2); U(0, 0, λ) a; }
     assert gate_declaration.qubits[0].span == Span(1, 11, 1, 11)
 
 
-
 def test_gate_definition4():
     p = """
 gate rx(angle theta) a { h a; rz(theta) a; h a; }
@@ -649,7 +648,7 @@ gate rx(angle theta) a { h a; rz(theta) a; h a; }
                         name=Identifier("h"),
                         arguments=[],
                         qubits=[Identifier(name="a")],
-                    )
+                    ),
                 ],
             )
         ]
