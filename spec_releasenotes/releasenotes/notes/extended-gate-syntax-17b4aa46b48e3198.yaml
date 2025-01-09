@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Added an extended ``gate`` syntax with typed classical parameters, connecting to
+    non-angle types allowed in ``defcal`` statements, and improving consistency with
+    use of types in other parts of the language.
