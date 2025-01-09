@@ -29,9 +29,8 @@ instruction sequence on *physical* qubits, e.g.
    defcal measure $0 -> bit { ... }
    defcal measure_iq q -> complex[float[32]] { ... }
 
-Note that this syntax is something of a hybrid between the 'short' and 'general' forms of
-``gate`` definitions in that type specifiers are **required** for parameters but that no
-semicolon appears between the classical parameters and the quantum arguments.
+Note that this syntax mirrors the 'general' form of ``gate`` definitions in that type
+specifiers are **required** for parameters.
 
 We distinguish gate and measurement definitions by the presence of a
 return value type in the latter case, analogous to the subroutine syntax
@@ -105,7 +104,7 @@ not be used in the body of ``gate`` defintions, they **may** be used in correspo
 
 .. code-block::
 
-   gate var_amp_x(float amplitude): qubit q { x q; }
+   gate var_amp_x(float amplitude) q { x q; }
    defcal var_amp_x(float amplitude) $0 {
       // implement an x gate using the specified control amplitude ...
    }
