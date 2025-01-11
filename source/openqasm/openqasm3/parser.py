@@ -67,6 +67,7 @@ class QASM3ParsingError(Exception):
 
 class _RaiseOnErrorListener(ErrorListener):
     """Raises exception for all errors handled by this listener."""
+
     def syntaxError(
         self,
         recognizer: object,
