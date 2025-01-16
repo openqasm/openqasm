@@ -1,0 +1,5 @@
+---
+
+fixes:
+  - |
+    Enabled support for array-type variables in the reference parser.
