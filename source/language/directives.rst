@@ -187,6 +187,19 @@ variable:
 
    // Estimate the expectation value and store in an output variable
 
+The above example could also be written using an input array:
+
+.. code-block::
+
+   input array[angle[32], 2] params;
+   qubit q;
+
+   // Build an ansatz using the above free parameters, eg.
+   rx(params[0]) q;
+   ry(params[1]) q;
+
+   // Estimate the expectation value and store in an output variable
+
 The following Python pseudocode illustrates the differences between using and
 not using parameterized circuits in a quantum program for the case of the VQE:
 

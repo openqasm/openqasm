@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Clarify that array type variables are supported as inputs.
