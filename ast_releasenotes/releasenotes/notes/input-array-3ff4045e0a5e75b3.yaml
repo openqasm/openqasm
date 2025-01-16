@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Update the parser to allow inputs of array type.
