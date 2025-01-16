@@ -462,7 +462,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, f"'{keyword}' declarations must be global")
         return ast.IODeclaration(
             io_identifier=ast.IOKeyword.input if ctx.INPUT() else ast.IOKeyword.output,
-            type=self.visit(ctx.scalarType()),
+            type=self.visit(ctx.scalarType() or ctx.arrayType()),
             identifier=_visit_identifier(ctx.Identifier()),
         )
 
