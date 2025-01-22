@@ -31,6 +31,7 @@ statement:
         | delayStatement
         | endStatement
         | expressionStatement
+        | externIdentifier
         | externStatement
         | forStatement
         | gateCallStatement
@@ -105,6 +106,7 @@ quantumDeclarationStatement: qubitType Identifier SEMICOLON;
 
 // Declarations and definitions of higher-order objects.
 defStatement: DEF Identifier LPAREN argumentDefinitionList? RPAREN returnSignature? scope;
+externIdentifier: EXTERN externType Identifier SEMICOLON;
 externStatement: EXTERN Identifier LPAREN externArgumentList? RPAREN returnSignature? SEMICOLON;
 gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=identifierList scope;
 
@@ -206,6 +208,8 @@ scalarType:
 qubitType: QUBIT designator?;
 arrayType: ARRAY LBRACKET scalarType COMMA expressionList RBRACKET;
 arrayReferenceType: (READONLY | MUTABLE) ARRAY LBRACKET scalarType COMMA (expressionList | DIM EQUALS expression) RBRACKET;
+/* This should be overridden by defcalgrammars */
+externType: VOID;
 
 designator: LBRACKET expression RBRACKET;
 
