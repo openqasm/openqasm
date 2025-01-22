@@ -40,6 +40,7 @@ try:
     from antlr4.error.Errors import ParseCancellationException
     from antlr4.error.ErrorStrategy import BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
+    from antlr4.error.ErrorListener import ErrorListener
 except ImportError as exc:
     raise ImportError(
         "Parsing is not available unless the [parser] extra is installed,"
@@ -64,6 +65,21 @@ class QASM3ParsingError(Exception):
     given program could not be correctly parsed."""
 
 
+class _RaiseOnErrorListener(ErrorListener):
+    """Raises exception for all errors handled by this listener."""
+
+    def syntaxError(
+        self,
+        recognizer: object,
+        offendingSymbol: object,
+        line: int,
+        column: int,
+        msg: str,
+        exc: RecognitionException,
+    ):
+        raise QASM3ParsingError(f"L{line}:C{column}: {msg}") from exc
+
+
 def parse(input_: str, *, permissive=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
@@ -83,6 +99,8 @@ def parse(input_: str, *, permissive=False) -> ast.Program:
         # setter method `setErrorHandler`, so we have to set the attribute
         # directly.
         parser._errHandler = BailErrorStrategy()
+        # Raise on lexer errors
+        lexer.addErrorListener(_RaiseOnErrorListener())
     try:
         tree = parser.program()
     except (RecognitionException, ParseCancellationException) as exc:
