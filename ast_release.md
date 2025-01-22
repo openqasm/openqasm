@@ -19,6 +19,7 @@ PyPI's authorisation policies may need us to change how we handle that in the fu
    Modify `/source/openqasm/ANTLR_VERSIONS.txt` if you want to add/remove versions.
 2. Make a PR to that branch that bumps the version numbers of the Python package to the desired value, if it isn't already.
    At the time of writing, the only place needing to be updated is `/source/openqasm/openqasm3/__init__.py:__version__`; everywhere else pulls that in dynamically.
+   You will likely need to add a release note (see also `CONTRIBUTING.md`).
 3. Tag the desired commit, most likely the version-bump one, as `ast-py/v<version>`.
    `<version>` must match the Python-package version string exactly (it's a sanity check in the CD pipeline).
    For example, if releasing version `0.5.0`, set the `__init__.py:__version__` attribute to `"0.5.0"`, and make the tag `ast-py/v0.5.0`.
