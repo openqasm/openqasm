@@ -72,6 +72,7 @@ class TestRoundTrip:
 input int a;
 input float[64] a;
 input complex[float[FLOAT_WIDTH]] a;
+input array[float[64], 5] a;
 output bit b;
 output bit[SIZE] b;
 output bool b;

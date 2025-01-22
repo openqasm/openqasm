@@ -1792,7 +1792,8 @@ def test_header():
     include "qelib1.inc";
     include "001";
     input angle[16] variable1;
-    output angle[16] variable2;
+    input array[float[32], 3] variable2;
+    output angle[16] variable3;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1806,9 +1807,17 @@ def test_header():
                 identifier=Identifier(name="variable1"),
             ),
             IODeclaration(
+                io_identifier=IOKeyword["input"],
+                type=ArrayType(
+                    base_type=FloatType(size=IntegerLiteral(value=32)),
+                    dimensions=[IntegerLiteral(value=3)],
+                ),
+                identifier=Identifier(name="variable2"),
+            ),
+            IODeclaration(
                 io_identifier=IOKeyword["output"],
                 type=AngleType(size=IntegerLiteral(value=16)),
-                identifier=Identifier(name="variable2"),
+                identifier=Identifier(name="variable3"),
             ),
         ],
     )
