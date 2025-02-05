@@ -217,7 +217,7 @@ and these symbols are scoped only to the subroutine body.
 
 An empty body corresponds to the identity gate.
 
-While the 'general' gate syntax allows for non-``angle`` parameters, OpenQASM current does
+While the 'general' gate syntax allows for non-``angle`` parameters, OpenQASM currently does
 not permit **use** of these parameters within the body of the ``gate``. The additional
 type flexibility is intended to only be interpretted by corresponding ``defcal``
 definitions that may have a way to use such non-``angle`` parameters.
