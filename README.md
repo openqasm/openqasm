@@ -34,6 +34,10 @@ In this repository, you'll find all the documentation related to OpenQASM, some 
 
 The live [language documentation](https://openqasm.github.io/) specification.
 
+### Implementations
+
+See this [list of software that implements or supports OpenQASM 3](./implementations.md).
+
 ### Examples
 
 An example of OpenQASM 3.0 source code is given below. Several more examples may be found in the [examples folder](examples).
