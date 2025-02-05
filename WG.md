@@ -8,46 +8,44 @@ for review by the TSC at an agreed upon date. A WG will be automatically disband
 
 ## Current Working Groups
 
+### Profiles
+
+**Objective**: Define a minimum set of features for hardware implementors (basic
+profile) and a framework for structuring additional profiles.
+
+**Description**:
+One of the core tenets of OpenQASM 3.0 is _versatility_, and in particular the idea that not all hardware and tooling needs to support all OpenQASM 3.0 features. A hardware implementor can assume that certain aspects of compilation are dealt with at a higher-level, and can focus their implementation on only core features of the language.
+
+This working group will group various aspects of the language into "featuresets", and then create profiles which are a collection of those featuresets.
+
+This WG will draw inspiration from a complementary effort in the QIR project: https://github.com/qir-alliance/.github/blob/main/workstreams/Base_Profile_Workstream.md
+
+**Questions**:
+- What additional profiles which would be useful?
+- Is it possible to define an OpenQASM 2.0 profile that would certify that a tool is backwards compatible.
+
+**Completion of WG**:
+This working group will have completed its efforts when:
+
+- All features have been defined and grouped into featuresets.
+- At least one profile has been defined.
+
+Chair: Simon Cross (Zurich Instruments)
+Members: Blake Johnson, Erik Davis, Lev Bishop, Serwaan Asaad, Simon Cross
+
+## Past Working Groups
+
 ### Generics and circuit families
 
 **Objective**: Recommend what range of generics / parameterised circuit family functionality (beyond angle parameters) would be suitable for inclusion in OpenQASM, and what syntax should be used for it.
 
-Chair: Niel de Beaudrap  
+Chair: Niel de Beaudrap
 Members: Colm Ryan, Andrew Cross, Ali Javadi, Blake Johnson, Matthew Amy
 
-### Profiles & Releases
-
-**Objectives**: Define a minimum set of features for hardware implementors (base profile) and build
-the infrastructure for specifying profiles and release versions.
-
-**Description**:
-One of the core tenets of OpenQASM 3.0 is _versatility_, and in particular the idea that not all 
-hardware and tooling needs to support all OpenQASM 3.0 features. A hardware implementor can assume
-that certain aspects of compilation are dealt with at a higher-level, and can focus their
-implementation on only core features of the language.
-
-This working group will group various aspects of the language into "featuresets", and then create
-profiles which are a collection of those featuresets. Throughout this process they will also review
-all the featuresets of OpenQASM 3.0 and define a release version of the spec, plus its associated
-Github infrastructure.
-
-This WG will draw inspiration from a complementary effort in the QIR project:
-https://github.com/qir-alliance/.github/blob/main/workstreams/Base_Profile_Workstream.md
-
-**Questions**:
-- Are there additional profiles which would be useful beyond the base profile? For instance, maybe
-an OpenQASM 2.0 profile that would certify a tool is backwards compatible.
-
-**Completion of WG**
-This working group will have completed its efforts when:
-- All features have been defined and grouped into featuresets
-- At least one profile has been defined
-- The release version of OpenQASM 3.0, and associated infrastructure, is merged
-
-Chair: Michael Healy (IBM Quantum)
-Members: Ali Javadi, Bettina Heim, Blake Johnson, Dor Israeli, Jeff Heckey, Jon Best, Lev Bishop, Luciano Bello, Niel de Beaudrap, Philipp Schindler, Steven Heidel, Thomas Alexander, Yunong Shi
-
-## Past Working Groups
+**Outcome**: The primary outcome was https://github.com/openqasm/openqasm/pull/346
+which proposes modifying the gate syntax to allow classical gate parameters to have
+types other than angle, and to allow gates to accept quantum registers of a
+specified size.
 
 ### OpenPulse
 
@@ -56,7 +54,6 @@ OpenQASM `defcal`'s.
 
 Chair: Thomas Alexander (IBM Quantum)  
 Members: Blake Johnson, Colm Ryan, Derek Bolt, Peter Karalekas, Lauren Capelluto, Michael Healy, Prasahnt Sivarajah, Yunong Shi, Steven Heidel
-
 
 ### Types and casting
 
@@ -90,7 +87,6 @@ Chair: Dor Israeli (Quantum Machines)
 Members: Thomas Alexander (IBM Quantum), Niel de Beaudrap (Sussex), Philipp Schindler (Innsbruck), Bettina Heim (Microsoft)
 
 Group was merged into part of the profiles and releases working group.
-
 
 ### Pragmas
 

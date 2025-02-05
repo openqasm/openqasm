@@ -72,6 +72,7 @@ class TestRoundTrip:
 input int a;
 input float[64] a;
 input complex[float[FLOAT_WIDTH]] a;
+input array[float[64], 5] a;
 output bit b;
 output bit[SIZE] b;
 output bool b;
@@ -566,6 +567,7 @@ duration a = durationof({
         input_ = """
 pragma blah blah blah
 pragma command
+pragma namespace.command
 pragma !%^* word
 """.lstrip()  # The ending newline is important for pragmas.
         output = openqasm3.dumps(openqasm3.parse(input_))
@@ -578,6 +580,8 @@ pragma !%^* word
             pytest.param("@command keyword\n", id="single keyword"),
             pytest.param("@command !£4&8 hello world\n", id="hard to tokenise"),
             pytest.param("@command1\n@command2 keyword\n", id="multiple"),
+            pytest.param("@namespace.command1 keyword\n", id="dotted"),
+            pytest.param("@namespace.foo.command1\n", id="multi-dotted"),
         ]
     )
     def annotations(self, request):

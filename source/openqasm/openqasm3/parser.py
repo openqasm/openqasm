@@ -40,6 +40,7 @@ try:
     from antlr4.error.Errors import ParseCancellationException
     from antlr4.error.ErrorStrategy import BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
+    from antlr4.error.ErrorListener import ErrorListener
 except ImportError as exc:
     raise ImportError(
         "Parsing is not available unless the [parser] extra is installed,"
@@ -64,6 +65,21 @@ class QASM3ParsingError(Exception):
     given program could not be correctly parsed."""
 
 
+class _RaiseOnErrorListener(ErrorListener):
+    """Raises exception for all errors handled by this listener."""
+
+    def syntaxError(
+        self,
+        recognizer: object,
+        offendingSymbol: object,
+        line: int,
+        column: int,
+        msg: str,
+        exc: RecognitionException,
+    ):
+        raise QASM3ParsingError(f"L{line}:C{column}: {msg}") from exc
+
+
 def parse(input_: str, *, permissive=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
@@ -83,6 +99,8 @@ def parse(input_: str, *, permissive=False) -> ast.Program:
         # setter method `setErrorHandler`, so we have to set the attribute
         # directly.
         parser._errHandler = BailErrorStrategy()
+        # Raise on lexer errors
+        lexer.addErrorListener(_RaiseOnErrorListener())
     try:
         tree = parser.program()
     except (RecognitionException, ParseCancellationException) as exc:
@@ -469,7 +487,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, f"'{keyword}' declarations must be global")
         return ast.IODeclaration(
             io_identifier=ast.IOKeyword.input if ctx.INPUT() else ast.IOKeyword.output,
-            type=self.visit(ctx.scalarType()),
+            type=self.visit(ctx.scalarType() or ctx.arrayType()),
             identifier=_visit_identifier(ctx.Identifier()),
         )
 
@@ -490,6 +508,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     ):
         identifier = _visit_identifier(ctx.Identifier())
         size = self.visit(ctx.designator()) if ctx.designator() else None
+        if isinstance(size, ast.UnaryExpression) or (
+            isinstance(size, ast.IntegerLiteral) and size.value == 0
+        ):
+            _raise_from_context(
+                ctx.designator(), ("qreg" if ctx.QREG() else "creg") + " size must be positive"
+            )
         if ctx.QREG():
             if not self._in_global_scope():
                 _raise_from_context(ctx, "qubit declarations must be global")
@@ -783,13 +807,31 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.BIT():
             return ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         if ctx.INT():
-            return ast.IntType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            designator = ctx.designator()
+            size = self.visit(designator) if designator else None
+            if isinstance(size, ast.UnaryExpression) or (
+                isinstance(size, ast.IntegerLiteral) and size.value == 0
+            ):
+                _raise_from_context(designator, "int size must be positive")
+            return ast.IntType(size=size)
         if ctx.UINT():
-            return ast.UintType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            designator = ctx.designator()
+            size = self.visit(designator) if designator else None
+            if isinstance(size, ast.UnaryExpression) or (
+                isinstance(size, ast.IntegerLiteral) and size.value == 0
+            ):
+                _raise_from_context(designator, "uint size must be positive")
+            return ast.UintType(size=size)
         if ctx.FLOAT():
             return ast.FloatType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         if ctx.ANGLE():
-            return ast.AngleType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            designator = ctx.designator()
+            size = self.visit(designator) if designator else None
+            if isinstance(size, ast.UnaryExpression) or (
+                isinstance(size, ast.IntegerLiteral) and size.value == 0
+            ):
+                _raise_from_context(designator, "angle size must be positive")
+            return ast.AngleType(size=size)
         if ctx.COMPLEX():
             base = self.visit(ctx.scalarType()) if ctx.scalarType() else None
             if base is not None and not isinstance(base, ast.FloatType):
@@ -814,9 +856,14 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             ),
         ):
             _raise_from_context(ctx.scalarType(), f"invalid scalar type for array")
+        dimensions: list = []
+        for expression in ctx.expressionList().expression():
+            dimensions.append(self.visit(expression))
+            if isinstance(dimensions[-1], ast.UnaryExpression):
+                _raise_from_context(expression, f"all array dimensions must be non-negative")
         return ast.ArrayType(
             base_type=base,
-            dimensions=[self.visit(expression) for expression in ctx.expressionList().expression()],
+            dimensions=dimensions,
         )
 
     @span

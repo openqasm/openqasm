@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    The reference parser will now raise all lexer errors if the permissive flag
+    is not set. This ensures that invalid ASTs are not produced when there are
+    lexer errors. If the permissive flag is set, lexer errors will not raise,
+    but will be reported as warnings instead.
+

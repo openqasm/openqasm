@@ -110,7 +110,7 @@ def visit_multifigure_item_html(self, node):
         MULTIFIGURE_HTML_ITEM_TAG,
         CLASS='figure-item',
         style=' '.join((
-            'max-height: 10rem;',
+            'max-height: 13rem;',
             'width: %i%%;' % node.get('item-width'),
             'display: flex;',
             'flex-direction: column;'))

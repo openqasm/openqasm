@@ -52,7 +52,6 @@ state object is mutated by the visit, and will reflect the output state at the e
     :members:
 """
 
-
 import contextlib
 import dataclasses
 import io

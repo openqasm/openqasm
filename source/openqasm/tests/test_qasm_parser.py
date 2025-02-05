@@ -121,15 +121,14 @@ def test_qubit_declaration():
     p = """
     qubit q;
     qubit[4] a;
+    qubit[0] b;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
         statements=[
             QubitDeclaration(qubit=Identifier(name="q"), size=None),
-            QubitDeclaration(
-                qubit=Identifier(name="a"),
-                size=IntegerLiteral(4),
-            ),
+            QubitDeclaration(qubit=Identifier(name="a"), size=IntegerLiteral(4)),
+            QubitDeclaration(qubit=Identifier(name="b"), size=IntegerLiteral(0)),
         ]
     )
     SpanGuard().visit(program)
@@ -141,10 +140,16 @@ def test_qubit_declaration():
 def test_bit_declaration():
     p = """
     bit c;
+    bit[4] c;
+    bit[0] c;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
-        statements=[ClassicalDeclaration(BitType(None), Identifier("c"), None)]
+        statements=[
+            ClassicalDeclaration(BitType(None), Identifier("c"), None),
+            ClassicalDeclaration(BitType(IntegerLiteral(4)), Identifier("c"), None),
+            ClassicalDeclaration(BitType(IntegerLiteral(0)), Identifier("c"), None),
+        ]
     )
     SpanGuard().visit(program)
     classical_declaration = program.statements[0]
@@ -166,6 +171,14 @@ def test_qubit_and_bit_declaration():
     SpanGuard().visit(program)
 
 
+def test_non_integer_physical_qubit_raises():
+    p = """
+    barrier $a;
+    """.strip()
+    with pytest.raises(QASM3ParsingError, match="token recognition error at: '\$a'"):
+        parse(p)
+
+
 def test_integer_declaration():
     p = """
     uint[16] a = 100;
@@ -174,10 +187,12 @@ def test_integer_declaration():
     uint[16] a = 0o144;
     uint[16] a = 0xff_64;
     int[16] a = 0X19_a_b;
+    uint[4] a = 2;
     """.strip()
     program = parse(p)
     uint16 = UintType(IntegerLiteral(16))
     int16 = IntType(IntegerLiteral(16))
+    uint4 = UintType(IntegerLiteral(4))
     a = Identifier("a")
     assert _remove_spans(program) == Program(
         statements=[
@@ -187,6 +202,7 @@ def test_integer_declaration():
             ClassicalDeclaration(uint16, a, IntegerLiteral(0o144)),
             ClassicalDeclaration(uint16, a, IntegerLiteral(0xFF64)),
             ClassicalDeclaration(int16, a, IntegerLiteral(0x19AB)),
+            ClassicalDeclaration(uint4, a, IntegerLiteral(2)),
         ]
     )
     SpanGuard().visit(program)
@@ -358,9 +374,16 @@ def test_array_declaration():
     array[float[32], 2, 2] a;
     array[complex[float[64]], 2, 2] a = {{1, 1}, {2, 2}};
     array[uint[8], 2, 2] a = {b, b};
+    array[int, 0] a;
+    array[int, 2, 0] a;
+    array[int, 0, 2] a;
+    array[int, 0] a = {};
+    array[int, 2, 0] a = {{}, {}};
+    array[int, 0, 2] a = {};
     """.strip()
     program = parse(p)
     a, b = Identifier("a"), Identifier("b")
+    zero = IntegerLiteral(0)
     one, two, eight = IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(8)
     SpanGuard().visit(program)
     assert _remove_spans(program) == Program(
@@ -407,6 +430,38 @@ def test_array_declaration():
                 type=ArrayType(base_type=UintType(eight), dimensions=[two, two]),
                 identifier=a,
                 init_expression=ArrayLiteral([b, b]),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[two, zero]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero, two]),
+                identifier=a,
+                init_expression=None,
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero]),
+                identifier=a,
+                init_expression=ArrayLiteral([]),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[two, zero]),
+                identifier=a,
+                init_expression=ArrayLiteral(
+                    [ArrayLiteral([]), ArrayLiteral([])],
+                ),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[zero, two]),
+                identifier=a,
+                init_expression=ArrayLiteral([]),
             ),
         ],
     )
@@ -1779,7 +1834,8 @@ def test_header():
     include "qelib1.inc";
     include "001";
     input angle[16] variable1;
-    output angle[16] variable2;
+    input array[float[32], 3] variable2;
+    output angle[16] variable3;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1793,9 +1849,17 @@ def test_header():
                 identifier=Identifier(name="variable1"),
             ),
             IODeclaration(
+                io_identifier=IOKeyword["input"],
+                type=ArrayType(
+                    base_type=FloatType(size=IntegerLiteral(value=32)),
+                    dimensions=[IntegerLiteral(value=3)],
+                ),
+                identifier=Identifier(name="variable2"),
+            ),
+            IODeclaration(
                 io_identifier=IOKeyword["output"],
                 type=AngleType(size=IntegerLiteral(value=16)),
-                identifier=Identifier(name="variable2"),
+                identifier=Identifier(name="variable3"),
             ),
         ],
     )
@@ -1837,6 +1901,9 @@ def test_annotations():
         @inner2 command
         x = 19;
     }
+
+    @namespace.name1.name2
+    gate my_gate_2 q {}
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -1913,6 +1980,13 @@ def test_annotations():
                 ),
                 [Annotation(keyword="outer", command=None)],
             ),
+            # Namespaced annotations
+            _with_annotations(
+                QuantumGateDefinition(
+                    name=Identifier("my_gate_2"), arguments=[], qubits=[Identifier("q")], body=[]
+                ),
+                [Annotation(keyword="namespace.name1.name2", command=None)],
+            ),
         ],
     )
     SpanGuard().visit(program)
@@ -1922,8 +1996,10 @@ def test_pragma():
     p = """
     #pragma verbatim
     pragma verbatim
+    pragma openqasm.verbatim
     #pragma command arg1 arg2
     pragma command arg1 arg2
+    pragma openqasm.command arg1 arg2
     #pragma otherwise_invalid_token 1a2%&
     pragma otherwise_invalid_token 1a2%&
     """  # No strip because all line endings are important for pragmas.
@@ -1932,8 +2008,10 @@ def test_pragma():
         statements=[
             Pragma(command="verbatim"),
             Pragma(command="verbatim"),
+            Pragma(command="openqasm.verbatim"),
             Pragma(command="command arg1 arg2"),
             Pragma(command="command arg1 arg2"),
+            Pragma(command="openqasm.command arg1 arg2"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
             Pragma(command="otherwise_invalid_token 1a2%&"),
         ]
@@ -2056,3 +2134,31 @@ class TestFailurePaths:
         message = "invalid scalar type for array"
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"array[stretch, 4] arr;")
+
+    @pytest.mark.parametrize(
+        "array",
+        (
+            "array[uint, -1]",
+            "array[int, -2, -2]",
+        ),
+    )
+    def test_array_with_negative_dimension(self, array):
+        message = "all array dimensions must be non-negative"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{array} arr;")
+
+    @pytest.mark.parametrize("scalar", ("uint", "int", "angle"))
+    def test_nonpositive_width_integer(self, scalar):
+        message = f"{scalar} size must be positive"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{scalar}[0] a;")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{scalar}[-1] a;")
+
+    @pytest.mark.parametrize("oldstylereg", ("qreg", "creg"))
+    def test_nonpositive_width_register(self, oldstylereg):
+        message = f"{oldstylereg} size must be positive"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{oldstylereg} a[0];")
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"{oldstylereg} a[-1];")

@@ -1,7 +1,7 @@
 OpenPulse Grammar
 =================
 
-*The OpenPulse grammar is still in active development and is liable to change. If you are working on an implementation and find this specification unclear or not supporting your use-cases, please join our community effort to improve pulse-level support in OpenQasm.*
+*The OpenPulse grammar is still in active development and is liable to change. If you are working on an implementation and find this specification unclear or not supporting your use-cases, please join our community effort to improve pulse-level support in OpenQASM.*
 
 OpenQASM allows users to provide the target system's implementation of quantum operations
 with ``cal`` and ``defcal`` blocks . Calibration grammars are open to extension for system implementors. In
@@ -390,7 +390,7 @@ extern definition at the top-level, such as:
    extern capture_v3(frame output, duration len) -> waveform;
 
    // A capture that returns a count e.g. number of photons detected
-   extern capture_v4(frame output, duration len) -> int
+   extern capture_v4(frame output, duration len) -> int;
 
 The return type of a ``capture`` command varies. It could be a raw trace, ie., a
 list of samples taken over a short period of time. It could be some averaged IQ
@@ -554,7 +554,7 @@ aligned to the latest time of the all ``frame``\s listed.
     // driveframe1.time == driveframe2.time == 13ns
   }
 
-Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame enters the block e.g.
+Moreover, ``defcal`` blocks have an implicit ``barrier`` on every frame used by the block. For example:
 
 .. code-block::
 
@@ -677,7 +677,7 @@ Here we want to sweep the frequency of a long pulse that saturates the qubit tra
 
   // sweep parameters would be programmed in by some higher level bindings
   const float frequency_start = 4.5e9;
-  const float frequency_step = 1e6
+  const float frequency_step = 1e6;
   const int frequency_num_steps = 301;
 
   // define a long saturation pulse of a set duration and amplitude
@@ -714,7 +714,7 @@ Here we want to sweep the time of the pulse and observe coherent Rabi flopping d
   const int pulse_length_num_steps = 100;
 
   for int i in [1:pulse_length_num_steps] {
-      duration pulse_length = pulse_length_start + (i-1)*pulse_length_step);
+      duration pulse_length = pulse_length_start + (i-1)*pulse_length_step;
       duration sigma = pulse_length / 4;
       // since we are manipulating pulse lengths it is easier to define and play the waveform in a `cal` block
       cal {
@@ -842,9 +842,9 @@ The program aims to perform a Hahn echo sequence on q1, and a Ramsey sequence on
     frame raman_b_frame = newframe(eom_b_port, Δ-qubit_freq, 0.0);
 
     // Three frames to phase track each qubit's rotating frame of reference at it's frequency
-    frame q1_frame = newframe(aod_port, qubit_freq, 0)
-    frame q2_frame = newframe(aod_port, qubit_freq, 0)
-    frame q3_frame = newframe(aod_port, qubit_freq, 0)
+    frame q1_frame = newframe(aod_port, qubit_freq, 0);
+    frame q2_frame = newframe(aod_port, qubit_freq, 0);
+    frame q3_frame = newframe(aod_port, qubit_freq, 0);
 
     // Generic gaussian envelope
     waveform π_half_sig = gaussian(1.0, π_half_time, 100dt);

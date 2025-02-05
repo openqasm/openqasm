@@ -164,7 +164,7 @@ declarationExpression: arrayLiteral | expression | measureExpression;
 measureExpression: MEASURE gateOperand;
 rangeExpression: expression? COLON expression? (COLON expression)?;
 setExpression: LBRACE expression (COMMA expression)* COMMA? RBRACE;
-arrayLiteral: LBRACE (expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA? RBRACE;
+arrayLiteral: LBRACE ((expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA?)? RBRACE;
 
 // The general form is a comma-separated list of indexing entities.
 // `setExpression` is only valid when being used as a single index: registers
