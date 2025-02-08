@@ -161,7 +161,7 @@ expression:
 // not in the expression tree, but can contain elements that are within it.
 aliasExpression: expression (DOUBLE_PLUS expression)*;
 declarationExpression: arrayLiteral | expression | measureExpression;
-measureExpression: MEASURE gateOperand;
+measureExpression: ( MEASURE | Identifier ) gateOperand;
 rangeExpression: expression? COLON expression? (COLON expression)?;
 setExpression: LBRACE expression (COMMA expression)* COMMA? RBRACE;
 arrayLiteral: LBRACE ((expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA?)? RBRACE;

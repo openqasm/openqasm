@@ -465,7 +465,7 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_statement(context)
 
     def visit_QuantumMeasurement(self, node: ast.QuantumMeasurement, context: PrinterState) -> None:
-        self.stream.write("measure ")
+        self.stream.write(node.name.name + " ")
         self.visit(node.qubit, context)
 
     @_maybe_annotated
