@@ -1,0 +1,5 @@
+---
+other:
+  - |
+    Update the `openqasm3` Python package version to 1.0.1.
+    
