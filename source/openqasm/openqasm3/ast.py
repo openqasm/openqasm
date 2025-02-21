@@ -54,6 +54,7 @@ __all__ = [
     "ExpressionStatement",
     "ExternArgument",
     "ExternDeclaration",
+    "ExternIdentifier",
     "FloatLiteral",
     "FloatType",
     "ForInLoop",
@@ -96,6 +97,7 @@ __all__ = [
     "UnaryExpression",
     "UnaryOperator",
     "WhileLoop",
+    "VoidType",
 ]
 
 AccessControl = Enum("AccessControl", "readonly mutable")
@@ -243,6 +245,17 @@ class ExternDeclaration(Statement):
     arguments: List[ExternArgument]
     return_type: Optional[ClassicalType] = None
 
+
+@dataclass
+class ExternIdentifier(Statement):
+    """
+    A extern identifier. The types are to be defined by the defcalgrammar.
+    
+    Example::
+        extern void var;
+    """
+    type: ClassicalType
+    name: Identifier
 
 class Expression(QASMNode):
     """An expression: anything that returns a value"""
@@ -684,6 +697,11 @@ class ConstantDeclaration(Statement):
 class ClassicalType(QASMNode):
     """
     Base class for classical type
+    """
+
+class VoidType(ClassicalType):
+    """
+    Node representing a classical ``void`` type.
     """
 
 
