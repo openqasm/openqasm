@@ -27,6 +27,7 @@ you have corrections, please
 | [LabOne Q](#labone-q) | Python | Rust/Python | SDK | incomplete | OSS |
 | [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python | C++ | | | OSS |
 | [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | OSS |
+| [Feynman](#feynman) | Haskell | Haskell | front end | unknown | OSS |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
 
@@ -57,6 +58,10 @@ SDK and front end for performing experiments on the Zurich Instruments QCCS toge
 
 ### [Qiskit](https://github.com/qiskit)
 Quantum software development kit (SDK)
+
+### [Feynman](https://github.com/meamy/feynman)
+Toolkit for quantum circuit analysis in the path integral model of quantum mechanics.
+The OpenQASM 3 frontend is [here](https://github.com/meamy/feynman/tree/master/src/Feynman/Frontend/OpenQASM3)
 
 ## OpenQASM 2 Implementations
 
