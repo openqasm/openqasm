@@ -28,6 +28,7 @@ you have corrections, please
 | [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python | C++ | | | OSS |
 | [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | OSS |
 | [Feynman](#feynman) | Haskell | Haskell | front end | unknown | OSS |
+| [AutoQASM](#autoqasm) | Python | Python | front end | incomplete | OSS |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
 
@@ -62,6 +63,14 @@ Quantum software development kit (SDK)
 ### [Feynman](https://github.com/meamy/feynman)
 Toolkit for quantum circuit analysis in the path integral model of quantum mechanics.
 The OpenQASM 3 frontend is [here](https://github.com/meamy/feynman/tree/master/src/Feynman/Frontend/OpenQASM3)
+
+### [AutoQASM](https://github.com/amazon-braket/autoqasm)
+Although it is still a work in progress, the intent is that AutoQASM will support any
+quantum programming paradigm which falls into the OpenQASM 3.0 language scope. AutoQASM
+supports serializing quantum programs to OpenQASM, which allows the programs to interoperate
+with any library or service that supports OpenQASM programs, such as Amazon Braket.
+
+AutoQASM is pure Python but includes dependencies with statically compiled extensions.
 
 ## OpenQASM 2 Implementations
 
