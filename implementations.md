@@ -29,6 +29,7 @@ you have corrections, please
 | [Qiskit](#qiskit) | Python | Rust/Python | SDK | incomplete | OSS |
 | [Feynman](#feynman) | Haskell | Haskell | front end | unknown | OSS |
 | [AutoQASM](#autoqasm) | Python | Python | front end | incomplete | OSS |
+| [OQpy](#oqpy) | Python | Python | front end | complete | OSS |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
 
@@ -72,11 +73,17 @@ with any library or service that supports OpenQASM programs, such as Amazon Brak
 
 AutoQASM is pure Python but includes dependencies with statically compiled extensions.
 
+### [OQpy](https://github.com/openqasm/oqpy)
+The goal of oqpy ("ock-pie") is to make it easy to generate OpenQASM 3 + OpenPulse in Python.
+
+Support is marked "complete" because OQpy depends on the reference parser.
+
 ## OpenQASM 2 Implementations
 
 [OpenQASM](https://github.com/QuantumBFS/OpenQASM.jl) [Julia] Parse a QASM string to its AST according to its BNF specification described in OpenQASM 2.0
 
 
-<!--  LocalWords:  Qiskit OpenQASM 3Aissue 3Aopen impl OSS openqasm3 WIP CLI Qu
-<!--  LocalWords:  qasm3tools Braket braket qiskit SDK ANTLR Lexing antum lex
-<!--  LocalWords:  sembly QASM AST BNF  -->
+<!--  LocalWords:  Qiskit OpenQASM 3Aissue 3Aopen impl OSS openqasm3 WIP CLI Qu 3Aissue OQ3
+<!--  LocalWords:  qasm3tools Braket braket qiskit SDK ANTLR Lexing antum lex 3Aopen LabOne
+<!--  LocalWords:  sembly QASM AST BNF  labone MQT munich mqt feynman AutoQASM autoqasm
+<!--  LocalWords:  OQpy oqpy QCCS github frontend ock OpenPulse  -->
