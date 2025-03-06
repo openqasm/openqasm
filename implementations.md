@@ -17,20 +17,20 @@ you have corrections, please
 * **status**
     * **incomplete** This sometimes means WIP and sometimes that not all of OQ3 is supported.
 
-| Name                                                        | API language | impl language | function    | status     | license |
-|-------------------------------------------------------------|--------------|---------------|-------------|------------|---------|
-| [Reference parser](#reference-parser)                       | Python       | Python        | front-end   | complete   | OSS     |
-| [openqasm3_parser](#openqasm3_parser)                       | Rust         | Rust          | front-end   | WIP        | OSS     |
-| [Quasar](#quasar)                                           | Julia        | Julia         | parser      | WIP        | OSS     |
-| [qasm3tools](#qasm3tools)                                   | CLI          | C++           | unknown     | unknown    | OSS     |
-| [Amazon Braket](#amazon-braket)                             | Python       |               | web service | incomplete |         |
-| [LabOne Q](#labone-q)                                       | Python       | Rust/Python   | SDK         | incomplete | OSS     |
-| [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python       | C++           |             |            | OSS     |
-| [Qiskit](#qiskit)                                           | Python       | Rust/Python   | SDK         | incomplete | OSS     |
-| [Feynman](#feynman)                                         | Haskell      | Haskell       | front end   | unknown    | OSS     |
-| [AutoQASM](#autoqasm)                                       | Python       | Python        | front end   | incomplete | OSS     |
-| [OQpy](#oqpy)                                               | Python       | Python        | front end   | complete   | OSS     |
-| [MATLAB Support Package for Quantum Computing](#matlab)     | MATLAB       | MATLAB        | frontend    | unknown    | Unknown |
+| Name                                                        | API language | impl language | function             | status     | license |
+|-------------------------------------------------------------|--------------|---------------|----------------------|------------|---------|
+| [Reference parser](#reference-parser)                       | Python       | Python        | front-end            | complete   | OSS     |
+| [openqasm3_parser](#openqasm3_parser)                       | Rust         | Rust          | front-end            | WIP        | OSS     |
+| [Quasar](#quasar)                                           | Julia        | Julia         | parser               | WIP        | OSS     |
+| [qasm3tools](#qasm3tools)                                   | CLI          | C++           | unknown              | unknown    | OSS     |
+| [Amazon Braket](#amazon-braket)                             | Python       |               | web service          | incomplete |         |
+| [LabOne Q](#labone-q)                                       | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
+| [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python       | C++           | front end            |            | OSS     |
+| [Qiskit](#qiskit)                                           | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
+| [Feynman](#feynman)                                         | Haskell      | Haskell       | front end            | unknown    | OSS     |
+| [AutoQASM](#autoqasm)                                       | Python       | Python        | circuit construction | incomplete | OSS     |
+| [OQpy](#oqpy)                                               | Python       | Python        | circuit construction | complete   | OSS     |
+| [MATLAB Support Package for Quantum Computing](#matlab)     | MATLAB       | MATLAB        | circuit construction | unknown    | unknown |
 
 ### [Reference parser](https://github.com/openqasm/openqasm/tree/main/source/openqasm)
 
@@ -86,8 +86,27 @@ We don't know if it can import OpenQASM 3
 
 ## OpenQASM 2 Implementations
 
-[OpenQASM](https://github.com/QuantumBFS/OpenQASM.jl) [Julia] Parse a QASM string to its AST according to its BNF specification described in OpenQASM 2.0
+# circuit construction
 
+[Cirq](https://github.com/quantumlib/cirq)
+[Pennylane](https://pennylane.ai/)
+[ProjectQ](https://github.com/ProjectQ-Framework/ProjectQ)
+[XACC](https://github.com/eclipse-xacc/xacc)
+[OpenQASM](https://github.com/QuantumBFS/OpenQASM.jl)
+[quilc](https://github.com/quil-lang/quilc)
+[QuTiP](https://github.com/qutip/qutip-qip)
+
+# compilation and synthesis
+
+[PyZX](https://github.com/zxcalc/pyzx)
+[Tweedledum](https://github.com/boschmitt/tweedledum) - No longer maintained
+[QasmTrans](https://github.com/pnnl/qasmtrans)
+
+# simulation
+
+[Intel-QS](https://github.com/intel/intel-qs)
+[qsim](https://github.com/quantumlib/qsim)
+[qvm](https://github.com/quil-lang/qvm)
 
 <!--  LocalWords:  Qiskit OpenQASM 3Aissue 3Aopen impl OSS openqasm3 WIP CLI Qu 3Aissue OQ3
 <!--  LocalWords:  qasm3tools Braket braket qiskit SDK ANTLR Lexing antum lex 3Aopen LabOne
