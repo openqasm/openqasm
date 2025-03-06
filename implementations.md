@@ -81,7 +81,7 @@ Support is marked "complete" because OQpy depends on the reference parser.
 
 ### [MATLAB](https://www.mathworks.com/products/quantum-computing.html) Support Package for Quantum Computing
 
-Here is a function for [exporting to OpenQASM 3](https://www.mathworks.com/help/matlab/ref/quantumcircuit.generateqasm.html)
+Here is a function for [exporting to OpenQASM 3](https://www.mathworks.com/help/matlab/ref/quantumcircuit.generateqasm.html).
 We don't know if it can import OpenQASM 3
 
 ## OpenQASM 2 Implementations
