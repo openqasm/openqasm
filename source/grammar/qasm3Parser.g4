@@ -106,7 +106,7 @@ quantumDeclarationStatement: qubitType Identifier SEMICOLON;
 // Declarations and definitions of higher-order objects.
 defStatement: DEF Identifier LPAREN argumentDefinitionList? RPAREN returnSignature? scope;
 externStatement: EXTERN Identifier LPAREN externArgumentList? RPAREN returnSignature? SEMICOLON;
-gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=identifierList scope;
+gateStatement: GATE Identifier (LPAREN params=gateParameterList? RPAREN)? qubits=identifierList scope;
 
 // Non-declaration assignments and calculations.
 assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | measureExpression) SEMICOLON;
@@ -220,11 +220,17 @@ argumentDefinition:
     | (CREG | QREG) Identifier designator?
     | arrayReferenceType Identifier
 ;
+gateParameter:
+    Identifier
+    | scalarType Identifier
+    | CREG Identifier designator?
+;
 
 argumentDefinitionList: argumentDefinition (COMMA argumentDefinition)* COMMA?;
 defcalArgumentDefinitionList: defcalArgumentDefinition (COMMA defcalArgumentDefinition)* COMMA?;
 defcalOperandList: defcalOperand (COMMA defcalOperand)* COMMA?;
 expressionList: expression (COMMA expression)* COMMA?;
 identifierList: Identifier (COMMA Identifier)* COMMA?;
+gateParameterList: gateParameter (COMMA gateParameter)* COMMA?;
 gateOperandList: gateOperand (COMMA gateOperand)* COMMA?;
 externArgumentList: externArgument (COMMA externArgument)* COMMA?;
