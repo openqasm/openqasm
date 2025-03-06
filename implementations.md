@@ -86,7 +86,7 @@ We don't know if it can import OpenQASM 3
 
 ## OpenQASM 2 Implementations
 
-# circuit construction
+### circuit construction
 
 * [Cirq](https://github.com/quantumlib/cirq)
 * [Pennylane](https://pennylane.ai/)
@@ -96,13 +96,13 @@ We don't know if it can import OpenQASM 3
 * [quilc](https://github.com/quil-lang/quilc)
 * [QuTiP](https://github.com/qutip/qutip-qip)
 
-# compilation and synthesis
+### compilation and synthesis
 
 * [PyZX](https://github.com/zxcalc/pyzx)
 * [Tweedledum](https://github.com/boschmitt/tweedledum) - No longer maintained
 * [QasmTrans](https://github.com/pnnl/qasmtrans)
 
-# simulation
+### simulation
 
 * [Intel-QS](https://github.com/intel/intel-qs)
 * [qsim](https://github.com/quantumlib/qsim)
