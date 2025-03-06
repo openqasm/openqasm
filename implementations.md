@@ -25,7 +25,7 @@ you have corrections, please
 | [qasm3tools](#qasm3tools)                                   | CLI          | C++           | unknown              | unknown    | OSS     |
 | [Amazon Braket](#amazon-braket)                             | Python       |               | web service          | incomplete |         |
 | [LabOne Q](#labone-q)                                       | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
-| [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python       | C++           | front end            |            | OSS     |
+| [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python       | C++           | import / export      |            | OSS     |
 | [Qiskit](#qiskit)                                           | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
 | [Feynman](#feynman)                                         | Haskell      | Haskell       | front end            | unknown    | OSS     |
 | [AutoQASM](#autoqasm)                                       | Python       | Python        | circuit construction | incomplete | OSS     |
