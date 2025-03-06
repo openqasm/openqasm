@@ -88,25 +88,25 @@ We don't know if it can import OpenQASM 3
 
 # circuit construction
 
-[Cirq](https://github.com/quantumlib/cirq)
-[Pennylane](https://pennylane.ai/)
-[ProjectQ](https://github.com/ProjectQ-Framework/ProjectQ)
-[XACC](https://github.com/eclipse-xacc/xacc)
-[OpenQASM](https://github.com/QuantumBFS/OpenQASM.jl)
-[quilc](https://github.com/quil-lang/quilc)
-[QuTiP](https://github.com/qutip/qutip-qip)
+* [Cirq](https://github.com/quantumlib/cirq)
+* [Pennylane](https://pennylane.ai/)
+* [ProjectQ](https://github.com/ProjectQ-Framework/ProjectQ)
+* [XACC](https://github.com/eclipse-xacc/xacc)
+* [OpenQASM](https://github.com/QuantumBFS/OpenQASM.jl)
+* [quilc](https://github.com/quil-lang/quilc)
+* [QuTiP](https://github.com/qutip/qutip-qip)
 
 # compilation and synthesis
 
-[PyZX](https://github.com/zxcalc/pyzx)
-[Tweedledum](https://github.com/boschmitt/tweedledum) - No longer maintained
-[QasmTrans](https://github.com/pnnl/qasmtrans)
+* [PyZX](https://github.com/zxcalc/pyzx)
+* [Tweedledum](https://github.com/boschmitt/tweedledum) - No longer maintained
+* [QasmTrans](https://github.com/pnnl/qasmtrans)
 
 # simulation
 
-[Intel-QS](https://github.com/intel/intel-qs)
-[qsim](https://github.com/quantumlib/qsim)
-[qvm](https://github.com/quil-lang/qvm)
+* [Intel-QS](https://github.com/intel/intel-qs)
+* [qsim](https://github.com/quantumlib/qsim)
+* [qvm](https://github.com/quil-lang/qvm)
 
 <!--  LocalWords:  Qiskit OpenQASM 3Aissue 3Aopen impl OSS openqasm3 WIP CLI Qu 3Aissue OQ3
 <!--  LocalWords:  qasm3tools Braket braket qiskit SDK ANTLR Lexing antum lex 3Aopen LabOne
