@@ -52,30 +52,44 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
 
 ### TSC Membership History
 
-* In January of 2025, the following members' terms will expire:
-  * Blake Johnson
-  * Lev Bishop
-  * Serwan Asaad
+* In **January of 2026**, the following members' terms will expire:
+  * Simon Cross
+  * Erik Davis
+  * Jialin Dou
 
-#### Call for election December 2024
+* **22 November, 2024** the TSC [called for candidates](https://github.com/openqasm/openqasm/issues/572) for the 3 seats up for re-election. These were the seats held by Serwan Asaad, Lev Bishop, and Blake Johnson. All 3 incumbents chose to stand for re-election. No other candidates were nominated nor self-nominated despite publication of the upcoming election via GitHub, Qiskit Slack, and other media. The required election was held 17 December, 2024 through 17 January, 2025 on the [Belenios platform](https://vote.belenios.org) and eligible electors solicited via email to cast their votes. 16 electors responded, with the following result:
+  * Serwan Asaad 15
+  * Lev Bishop 16
+  * Blake Johnson 15
 
-The TSC therefore calls an election opening 2024-12-15 and ending 2025-01-15. The electors will be directed to an online election platform for their votes. At this time, all three (3) members with expiring terms have indicated they are candidates for re-election. An Issue will be opened in the OpenQASM Github repository soliciting further candidates.
+  * Thus, at its meeting of **22 January, 2025**, the TSC reported the re-election of the 3 incumbents, the TSC membership now comprising:
+    * Serwan Asaad
+    * Lev Bishop
+    * Simon Cross
+    * Erik Davis
+    * Jialin Dou
+    * Blake Johnson
 
-#### Earlier history
+* On **26 June, 2024** Dor Israeli resigned and the TSC appointed Serwan Asaad to serve the remainder of Dor's term.
 
-* On 26 June, 2024 Dor Israeli resigned and the TSC appointed Serwan Asaad to serve the remainder of Dor's term.
+* At its meeting of **6 December, 2023**, the TSC called for an election to 3 seats held by Erik Davis, Bettina Heim, and Philipp Schindler with the following 4 candidates:
 
-* On 15 January, 2024 voting in the TSC election closed, resulting in the following changes in the composition of the TSC.
-  * Incoming members
-    * Jialin Dou (Quantinuum)
-    * Simon Cross (Zurich Instruments)
-  * Outgoing members
-    * Bettina Heim
-    * Philipp Schindler
+  * Erik Davis
+  * Yunong Shi
+  * Jialin Dou
+  * Simon Cross
 
-* On 2023-06-13, Steven Heidel resigned and the TSC appointed Erik Davis (AWS) to serve the remainder of Steven's term.
+  * On **15 January, 2024** voting in the TSC election closed, resulting in the following changes in the composition of the TSC.
+    * Incoming members
+      * Jialin Dou (Quantinuum)
+      * Simon Cross (Zurich Instruments)
+    * Outgoing members
+      * Bettina Heim
+      * Philipp Schindler
 
-* The initial TSC, finishing on 2023-01-13 was:
+* On **13 June, 2023**, Steven Heidel resigned and the TSC appointed Erik Davis (AWS) to serve the remainder of Steven's term.
+
+* The initial TSC, finishing on **13 January, 2023** was:
 
   * Ali Javadi (IBM Quantum)
   * Lev S Bishop (IBM Quantum)
@@ -84,7 +98,7 @@ The TSC therefore calls an election opening 2024-12-15 and ending 2025-01-15. Th
   * Bettina Heim (Nvidia)
   * Philipp Schindler (Innsbruck)
 
-This TSC was completed by an election ending on 2023-01-13 to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again and was replaced by Dor Israeli.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
+This TSC was completed by an election ending on **2023-01-13** to elect the seats held by Ali, Lev and Blake.  Ali chose not to stand again and was replaced by Dor Israeli.  The other three seats were chosen to have staggered terms, with their election due to start at the end of 2023.
 
 ### Reference models
 

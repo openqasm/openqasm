@@ -8,9 +8,6 @@ This repo contains the OpenQASM specification, examples, and tools for the OpenQ
 
 OpenQASM started as a [Qiskit project](https://qiskit.org)
 
-## :bangbang: Call for Candidates for TSC Membership! :bangbang:
-
-The OpenQASM Technical Steering Committee has called an election opening 2024-12-15 and ending 2025-01-15. The electors will be directed to an online election platform for their votes. At this time, all three (3) members with expiring terms have indicated they are candidates for re-election. An [Issue is open in the OpenQASM Github repository soliciting further candidates](https://github.com/openqasm/openqasm/issues/572)
 
 ## :bangbang: Call for Applicants for TSC Secretary! :bangbang:
 
