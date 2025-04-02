@@ -1,7 +1,7 @@
 Built-in quantum instructions
 =============================
 
-This section describes built-in non-unitary operations.
+This section describes built-in operations on qubits, including non-unitary ones.
 
 Initialization
 --------------
@@ -73,3 +73,47 @@ broadcasts to ``b[j] = measure a[j];`` for each index ``j`` into register ``a``.
    ``c[0] = measure q[0];`` while the bottom depicts measurement of an entire register using the
    statement ``c = measure q;``. The center circuit of the top row depicts measurement as the
    final operation on ``q[0]``.
+
+
+.. _nop:
+
+Explicit no-operation
+---------------------
+
+.. versionadded:: 3.2
+   The entire ``nop`` directive.
+
+The statement ``nop <qubits>;`` is an explicit no-operation on all mentioned qubits, but marks them as being "used" within a scope.
+``<qubits>`` is a comma-separated list of qubit or qubit-register operands.
+
+In the global scope this has no effect on the program operation, though a compiler must still validate the arguments.
+This has a particularly important effect on :ref:`boxed scopes <Boxed expressions>`; a ``nop`` counts as a "use" of the qubit within the ``box``, causing the qubit to be synchronized with the rest of the box at entry and exit.
+
+A ``nop`` statement is valid in exactly the places that a gate-call statement is valid.
+The operands of a ``nop`` statement must all be in scope and be of type ``qubit`` or ``qubit[n]`` for any non-negative integer ``n``.
+
+For example:
+
+.. code-block::
+
+   include "stdgates.inc";
+
+   stretch s;
+   box [s] {
+      // Qubits $0 and $1 are explicitly used by the `cx`.
+      cx $0, $1;
+
+      // Qubit $2 must be synchronized to $0 and $1 at the start
+      // and end of the box, but has no defined operations within
+      // the box.
+      nop $2;
+
+      // More than one qubit can be specified in the list.  It is
+      // not an error to duplicate qubits, nor to ``nop`` a qubit
+      // with explicit operations in this scope.
+      nop $3, $0;
+
+      // The ``nop`` statement can have zero operands, and this
+      // has no observable effect at all.
+      nop;
+   }
