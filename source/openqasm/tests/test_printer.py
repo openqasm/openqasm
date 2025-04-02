@@ -548,6 +548,7 @@ box[100.0ns] {
 }
 box[a + b] {
   x $0;
+  nop $1;
 }
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_), indent="  ").strip()

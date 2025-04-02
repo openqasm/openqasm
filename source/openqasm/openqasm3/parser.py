@@ -485,6 +485,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
+    def visitNopStatement(self, ctx: qasm3Parser.NopStatementContext):
+        if (operands := ctx.gateOperandList()) is None:
+            return ast.QuantumNop(operands=[])
+        return ast.QuantumNop(operands=[self.visit(operand) for operand in operands.gateOperand()])
+
+    @span
     def visitMeasureArrowAssignmentStatement(
         self, ctx: qasm3Parser.MeasureArrowAssignmentStatementContext
     ):

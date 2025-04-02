@@ -329,6 +329,29 @@ require more than 150ns for all valid combinations:
     }
 
 
+Qubits can be marked as synchronized by a box using the ``nop`` keyword (see :ref:`nop`).
+This can allow the explicit synchronization of qubits at a high level, without assigning any semantics to the action of that qubit within a box.
+For example:
+
+.. code-block::
+
+   include "stdgates.inc";
+
+   stretch s;
+   box [s] {
+      // Qubits $0 and $1 are explicitly used by the `cx`.
+      cx $0, $1;
+
+      // Qubit $2 must be synchronized to $0 and $1 at the start
+      // and end of the box, but has no defined operations within
+      // the box.
+      nop $2;
+   }
+
+.. versionadded:: 3.2
+   The ``nop`` directive.
+
+
 Barrier instruction
 -------------------
 

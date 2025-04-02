@@ -60,6 +60,7 @@ from openqasm3.ast import (
     QuantumGate,
     QuantumGateDefinition,
     QuantumGateModifier,
+    QuantumNop,
     QuantumMeasurement,
     QuantumMeasurementStatement,
     QuantumPhase,
@@ -1784,6 +1785,31 @@ def test_classical_assignment():
         ]
     )
     SpanGuard().visit(program)
+
+
+def test_nop():
+    p = """
+    nop;
+    nop $0;
+    nop qr1, qr2[2];
+    box {
+        nop $1;
+    }
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            QuantumNop(operands=[]),
+            QuantumNop(operands=[Identifier("$0")]),
+            QuantumNop(
+                operands=[
+                    Identifier("qr1"),
+                    IndexedIdentifier(name=Identifier("qr2"), indices=[[IntegerLiteral(value=2)]]),
+                ]
+            ),
+            Box(duration=None, body=[QuantumNop(operands=[Identifier("$1")])]),
+        ]
+    )
 
 
 def test_header():

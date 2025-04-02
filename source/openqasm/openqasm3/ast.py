@@ -76,6 +76,7 @@ __all__ = [
     "QuantumGate",
     "QuantumGateDefinition",
     "QuantumGateModifier",
+    "QuantumNop",
     "QuantumMeasurement",
     "QuantumMeasurementStatement",
     "QuantumPhase",
@@ -561,6 +562,20 @@ class QuantumPhase(QuantumStatement):
     modifiers: List[QuantumGateModifier]
     argument: Expression
     qubits: List[Union[IndexedIdentifier, Identifier]]
+
+
+@dataclass
+class QuantumNop(QuantumStatement):
+    """A ``nop`` statment.
+
+    Example::
+
+        nop;
+        nop $0;
+        nop q[0], q;
+    """
+
+    operands: List[Union[Identifier, IndexedIdentifier]]
 
 
 # Not a full expression because it can only be used in limited contexts.

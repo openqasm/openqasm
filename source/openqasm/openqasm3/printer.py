@@ -464,6 +464,14 @@ class Printer(QASMVisitor[PrinterState]):
             self._visit_sequence(node.qubits, context, start=" ", separator=", ")
         self._end_statement(context)
 
+    def visit_QuantumNop(self, node: ast.QuantumNop, context: PrinterState) -> None:
+        self._start_line(context)
+        self.stream.write("nop")
+        if node.operands:
+            self.stream.write(" ")
+            self._visit_sequence(node.operands, context, separator=", ")
+        self._end_statement(context)
+
     def visit_QuantumMeasurement(self, node: ast.QuantumMeasurement, context: PrinterState) -> None:
         self.stream.write("measure ")
         self.visit(node.qubit, context)

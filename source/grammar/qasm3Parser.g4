@@ -39,6 +39,7 @@ statement:
         | includeStatement
         | ioDeclarationStatement
         | measureArrowAssignmentStatement
+        | nopStatement
         | oldStyleDeclarationStatement
         | quantumDeclarationStatement
         | resetStatement
@@ -78,6 +79,7 @@ switchCaseItem:
 barrierStatement: BARRIER gateOperandList? SEMICOLON;
 boxStatement: BOX designator? scope;
 delayStatement: DELAY designator gateOperandList? SEMICOLON;
+nopStatement: NOP gateOperandList? SEMICOLON;
 /* `gateCallStatement`  is split in two to avoid a potential ambiguity with an
  * `expressionStatement` that consists of a single function call.  The only
  * "gate" that can have no operands is `gphase` with no control modifiers, and

@@ -36,6 +36,7 @@ IN: 'in';
 SWITCH: 'switch';
 CASE: 'case';
 DEFAULT: 'default';
+NOP: 'nop';
 
 PRAGMA: '#'? 'pragma' -> pushMode(EAT_TO_LINE_END);
 AnnotationKeyword: '@' Identifier ('.' Identifier)* ->  pushMode(EAT_TO_LINE_END);

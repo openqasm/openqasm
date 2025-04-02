@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Added an explicit no-operation statement ``nop <qubits>;``, which can be used to mark qubits as
+    "used" by a scope (such as a ``box``) without implying any operations on them.  See :ref:`nop`
+    for full details.
