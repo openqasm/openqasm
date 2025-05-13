@@ -12,10 +12,10 @@ OpenQASM started as a [Qiskit project](https://qiskit.org)
 ## :bangbang: Call for Applicants for TSC Secretary! :bangbang:
 
 We are searching for candidates for the role of [TSC Secretary](governance.md#tsc-secretary).
-The TSC will select a new Secretary during a TSC meeting in April, 2025.
+The TSC will select a new Secretary during a TSC meeting in November, 2025.
 Candidates should familiarize themselves with the [responsibilties of the role](governance.md#tsc-secretary).
 If you are interested in presenting yourself as a candidate, please contact Jack Woehr,
-the current Secretary, at [jack.woehr@procern.com](mailto:jack.woehr@procern.com) before April, 2025.
+the current Secretary, at [jack.woehr@procern.com](mailto:jack.woehr@procern.com) before November, 2025.
 
 ## Current version: **3.1**
 
