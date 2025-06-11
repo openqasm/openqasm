@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Fix a typo in a example of the `durationof` keyword.
