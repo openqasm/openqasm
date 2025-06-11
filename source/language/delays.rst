@@ -247,7 +247,7 @@ to properly take into account the finite duration of each gate.
    stretch a;
    stretch b;
    duration start_stretch = a - .5 * durationof({x $0;});
-   duration middle_stretch = a - .5 * duration0({x $0;}) - .5 * durationof({y $0;});
+   duration middle_stretch = a - .5 * durationof({x $0;}) - .5 * durationof({y $0;});
    duration end_stretch = a - .5 * durationof({y $0;});
 
    delay[start_stretch] $0;
