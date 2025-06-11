@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Introduces a new ast node type ``QuantumExtendedGateDefinition``` where the arguments
+    are ``List[ClassicalType]`` instead of ``List[Indentifier]``. A new node type was
+    introduced in order to avoid breaking backward compatibility with prior versions of
+    the reference parser. Consumers of the AST should now check for this new node type in
+    addition to the previously existing ``QuantumGateDefinition``.
