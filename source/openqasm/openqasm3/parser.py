@@ -127,7 +127,7 @@ def add_span(node: _NodeT, span: ast.Span) -> _NodeT:
 
 def combine_span(first: ast.Span, second: ast.Span):
     """Combine two spans and return the combined one"""
-    return ast.Span(first.start_line, first.start_column, second.start_line, second.start_column)
+    return ast.Span(first.start_line, first.start_column, second.end_line, second.end_column)
 
 
 def span(func):

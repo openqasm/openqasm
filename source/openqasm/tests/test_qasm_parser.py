@@ -77,7 +77,7 @@ from openqasm3.ast import (
     UnaryExpression,
     UnaryOperator,
 )
-from openqasm3.parser import parse, QASM3ParsingError
+from openqasm3.parser import combine_span, parse, QASM3ParsingError
 from openqasm3.visitor import QASMVisitor
 
 
@@ -2146,3 +2146,9 @@ class TestFailurePaths:
             parse(f"{oldstylereg} a[0];")
         with pytest.raises(QASM3ParsingError, match=message):
             parse(f"{oldstylereg} a[-1];")
+
+
+def test_combine_span():
+    a = Span(start_line=1, start_column=2, end_line=3, end_column=4)
+    b = Span(start_line=5, start_column=6, end_line=7, end_column=8)
+    assert combine_span(a, b) == Span(start_line=1, start_column=2, end_line=7, end_column=8)
