@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Updates the type annotation for AliasStatement.value to Expression to match
+    the grammar. Previously the annotation was Union[Identifier, Concatenation].
