@@ -4,8 +4,8 @@
 import openqasm3
 
 project = "OpenQASM 3 Reference AST"
-copyright = "2021, OpenQASM 3 Team and Contributors"
-author = "OpenQASM 3 Team and Contributors"
+copyright = "Copyright 2017-2025, OpenQASM Contributors."
+author = "OpenQASM Contributors"
 release = openqasm3.__version__
 
 extensions = [
