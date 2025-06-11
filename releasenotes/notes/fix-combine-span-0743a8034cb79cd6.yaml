@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fix combine_span to return a span that ends at the end of the second span.
+    Previously the returned span ended at the beginning of the second span.
