@@ -20,8 +20,8 @@ from typing import List
 version = os.getenv('VERSION','Live')
 
 project = f'OpenQASM {version} Specification'
-copyright = '2017-2023, Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
-author = 'Andrew W. Cross, Lev S. Bishop, John A. Smolin, Jay M. Gambetta'
+copyright = 'Copyright 2017-2025, OpenQASM Contributors.'
+author = 'OpenQASM Contributors'
 
 
 # -- General configuration ---------------------------------------------------
