@@ -678,7 +678,9 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = None
+    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = (
+        None
+    )
 
 
 @dataclass
