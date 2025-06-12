@@ -592,6 +592,22 @@ class QuantumMeasurement(QASMNode):
     qubit: Union[IndexedIdentifier, Identifier]
 
 
+# Not a full expression because it can only be used in limited contexts.
+@dataclass
+class QuantumMeasurementGeneric(QASMNode):
+    """
+    A custom quantum measurement instruction that takes an identifier
+    for the measurement function rather than the `measure` keyword.
+
+    Example::
+
+        measure_iq q;
+    """
+
+    identifier: Identifier
+    qubit: Union[IndexedIdentifier, Identifier]
+
+
 # Note that this is not a QuantumStatement because it involves access to
 # classical bits.
 @dataclass
@@ -601,7 +617,7 @@ class QuantumMeasurementStatement(Statement):
     `measure` can appear in (it can also be in classical declaration statements
     and returns)."""
 
-    measure: QuantumMeasurement
+    measure: Union[QuantumMeasurement, QuantumMeasurementGeneric]
     target: Optional[Union[IndexedIdentifier, Identifier]]
 
 
@@ -662,7 +678,7 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Union[Expression, QuantumMeasurement]] = None
+    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = None
 
 
 @dataclass
@@ -934,7 +950,7 @@ class ReturnStatement(Statement):
 
     """
 
-    expression: Optional[Union[Expression, QuantumMeasurement]] = None
+    expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = None
 
 
 class BreakStatement(Statement):
