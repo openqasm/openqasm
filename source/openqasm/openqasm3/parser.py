@@ -638,8 +638,16 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitMeasureExpressionGeneric(self, ctx: qasm3Parser.MeasureExpressionGenericContext):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+        name = _visit_identifier(ctx.Identifier())
+        arguments = (
+            [self.visit(argument) for argument in ctx.expressionList().expression()]
+            if ctx.expressionList()
+            else []
+        )
         return ast.QuantumMeasurementGeneric(
-            identifier=self.visit(ctx.Identifier()), qubit=self.visit(ctx.gateOperand())
+            name=name,
+            arguments=arguments,
+            qubit=self.visit(ctx.gateOperand()),
         )
 
     @span

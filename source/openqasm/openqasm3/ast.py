@@ -604,7 +604,8 @@ class QuantumMeasurementGeneric(QASMNode):
         measure_iq q;
     """
 
-    identifier: Identifier
+    name: Identifier
+    arguments: List[Expression]
     qubit: Union[IndexedIdentifier, Identifier]
 
 
