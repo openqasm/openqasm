@@ -164,7 +164,7 @@ expression:
 aliasExpression: expression (DOUBLE_PLUS expression)*;
 declarationExpression: arrayLiteral | expression | measureExpression | measureExpressionGeneric;
 measureExpression: MEASURE gateOperand;
-measureExpressionGeneric: Identifier gateOperand;
+measureExpressionGeneric: Identifier (LPAREN expressionList? RPAREN)? gateOperand;
 rangeExpression: expression? COLON expression? (COLON expression)?;
 setExpression: LBRACE expression (COMMA expression)* COMMA? RBRACE;
 arrayLiteral: LBRACE ((expression | arrayLiteral) (COMMA (expression | arrayLiteral))* COMMA?)? RBRACE;
