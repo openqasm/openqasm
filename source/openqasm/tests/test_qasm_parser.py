@@ -1374,7 +1374,8 @@ def test_calibration_definition_usage():
             ),
             QuantumMeasurementStatement(
                 measure=QuantumMeasurementGeneric(
-                    identifier=None,
+                    name=Identifier("measure_iq"),
+                    arguments=[],
                     qubit=Identifier("$0"),
                 ),
                 target=Identifier(
@@ -1389,7 +1390,8 @@ def test_calibration_definition_usage():
             ),
             QuantumMeasurementStatement(
                 measure=QuantumMeasurementGeneric(
-                    identifier=None,
+                    name=Identifier("measure_iq"),
+                    arguments=[],
                     qubit=Identifier("$0"),
                 ),
                 target=Identifier("iq"),
@@ -1402,6 +1404,8 @@ def test_calibration_definition_usage():
                 ),
                 target=None,
             ),
+            # TODO: It's not possible to distinguish a gate and a measurement here so
+            #       this is parsed as a quantum gate. Is this acceptable?
             QuantumGate(
                 modifiers=[],
                 name=Identifier(
@@ -1434,7 +1438,8 @@ def test_calibration_definition_usage():
                     name="iq2",
                 ),
                 init_expression=QuantumMeasurementGeneric(
-                    identifier=None,
+                    name=Identifier("measure_iq"),
+                    arguments=[],
                     qubit=Identifier("$0"),
                 ),
             ),
