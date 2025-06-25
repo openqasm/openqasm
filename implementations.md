@@ -1,4 +1,3 @@
-<!-- Copyright Contributors to the Qiskit project. -->
 # OpenQASM 3 Implementations
 
 Listed here are publicly available tools that implement or support OpenQASM 3.
