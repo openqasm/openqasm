@@ -2152,3 +2152,62 @@ def test_combine_span():
     a = Span(start_line=1, start_column=2, end_line=3, end_column=4)
     b = Span(start_line=5, start_column=6, end_line=7, end_column=8)
     assert combine_span(a, b) == Span(start_line=1, start_column=2, end_line=7, end_column=8)
+
+
+def test_comment_preservation():
+    """Test that comments are preserved in HIDDEN channel."""
+    source = textwrap.dedent("""
+        OPENQASM 3.0;
+        // Line comment before include
+        include "std_gates.inc"; // Inline comment
+        /* Block comment before declaration */
+        qubit q[2]; /* Inline block comment */
+        
+        // Comment before gate
+        h q[0]; // Gate with comment
+        /* Multi-line block comment
+           spanning multiple lines */
+        cnot q[0], q[1];
+    """)
+    
+    # Import required ANTLR classes for lexer testing
+    from antlr4 import CommonTokenStream, InputStream
+    from openqasm3._antlr.qasm3Lexer import qasm3Lexer
+    
+    # Create lexer and token stream
+    input_stream = InputStream(source)
+    lexer = qasm3Lexer(input_stream)
+    tokens = CommonTokenStream(lexer)
+    tokens.fill()
+    
+    # Get all tokens including hidden ones
+    all_tokens = tokens.getTokens(0, tokens.size())
+    
+    # Find comment tokens in HIDDEN channel
+    line_comments = []
+    block_comments = []
+    
+    for token in all_tokens:
+        if token.channel == lexer.HIDDEN:
+            if token.type == lexer.LineComment:
+                line_comments.append(token.text)
+            elif token.type == lexer.BlockComment:
+                block_comments.append(token.text)
+    
+    # Verify line comments are preserved
+    assert len(line_comments) >= 4, f"Expected at least 4 line comments, found {len(line_comments)}"
+    assert any("Line comment before include" in comment for comment in line_comments)
+    assert any("Inline comment" in comment for comment in line_comments)
+    assert any("Comment before gate" in comment for comment in line_comments)
+    assert any("Gate with comment" in comment for comment in line_comments)
+    
+    # Verify block comments are preserved
+    assert len(block_comments) >= 3, f"Expected at least 3 block comments, found {len(block_comments)}"
+    assert any("Block comment before declaration" in comment for comment in block_comments)
+    assert any("Inline block comment" in comment for comment in block_comments)
+    assert any("Multi-line block comment" in comment for comment in block_comments)
+    
+    # Verify parser still works normally (comments don't break parsing)
+    program = parse(source)
+    assert program is not None
+    assert len(program.statements) >= 3  # include, qubit declaration, gates
