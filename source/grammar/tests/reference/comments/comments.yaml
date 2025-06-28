@@ -5,7 +5,7 @@ source: |
   include "std_gates.inc"; // Inline comment
   /* Block comment before declaration */
   qubit q[2]; /* Inline block comment */
-  
+
   // Comment before gate
   h q[0]; // Gate with comment
   /* Multi-line block comment
