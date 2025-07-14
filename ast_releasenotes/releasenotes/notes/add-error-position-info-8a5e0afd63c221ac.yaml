@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add parsing positional information (line, column) to 
+    `openqasm3.parser.QASM3ParsingError`.

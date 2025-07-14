@@ -33,7 +33,7 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-from typing import Union, TypeVar, List
+from typing import Union, TypeVar, List, Optional
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
@@ -64,6 +64,20 @@ class QASM3ParsingError(Exception):
     """An error raised by the AST visitor during the AST-generation phase.  This is raised in cases where the
     given program could not be correctly parsed."""
 
+    def __init__(
+        self, message: str, line: Optional[int] = None, column: Optional[int] = None
+    ) -> None:
+        if line is not None and column is not None:
+            prefix = f"L{line}:C{column}: "
+        elif line is not None:
+            prefix = f"L{line}: "
+        else:
+            prefix = ""
+
+        super().__init__(f"{prefix}{message}")
+        self.line = line
+        self.column = column
+
 
 class _RaiseOnErrorListener(ErrorListener):
     """Raises exception for all errors handled by this listener."""
@@ -77,7 +91,7 @@ class _RaiseOnErrorListener(ErrorListener):
         msg: str,
         exc: RecognitionException,
     ):
-        raise QASM3ParsingError(f"L{line}:C{column}: {msg}") from exc
+        raise QASM3ParsingError(msg, line=line, column=column) from exc
 
 
 def parse(input_: str, *, permissive=False) -> ast.Program:
@@ -103,8 +117,10 @@ def parse(input_: str, *, permissive=False) -> ast.Program:
         lexer.addErrorListener(_RaiseOnErrorListener())
     try:
         tree = parser.program()
-    except (RecognitionException, ParseCancellationException) as exc:
-        raise QASM3ParsingError() from exc
+    except RecognitionException as exc:
+        raise QASM3ParsingError(exc.message) from exc
+    except ParseCancellationException as exc:
+        raise QASM3ParsingError("parse failed") from exc
     return QASMNodeVisitor().visitProgram(tree)
 
 
@@ -148,7 +164,7 @@ def _visit_identifier(identifier: TerminalNode):
 
 
 def _raise_from_context(ctx: ParserRuleContext, message: str):
-    raise QASM3ParsingError(f"L{ctx.start.line}:C{ctx.start.column}: {message}")
+    raise QASM3ParsingError(message, ctx.start.line, ctx.start.column)
 
 
 class QASMNodeVisitor(qasm3ParserVisitor):
