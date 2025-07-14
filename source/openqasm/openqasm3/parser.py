@@ -33,7 +33,7 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-from typing import Union, TypeVar, List
+from typing import Union, TypeVar, List, Optional
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
@@ -64,7 +64,9 @@ class QASM3ParsingError(Exception):
     """An error raised by the AST visitor during the AST-generation phase.  This is raised in cases where the
     given program could not be correctly parsed."""
 
-    def __init__(self, message: str, line: int | None = None, column: int | None = None) -> None:
+    def __init__(
+        self, message: str, line: Optional[int] = None, column: Optional[int] = None
+    ) -> None:
         if line is not None and column is not None:
             prefix = f"L{line}:C{column}: "
         elif line is not None:
@@ -89,7 +91,7 @@ class _RaiseOnErrorListener(ErrorListener):
         msg: str,
         exc: RecognitionException,
     ):
-        raise QASM3ParsingError(msg, line, column) from exc
+        raise QASM3ParsingError(msg, line=line, column=column) from exc
 
 
 def parse(input_: str, *, permissive=False) -> ast.Program:
