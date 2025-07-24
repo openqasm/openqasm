@@ -15,17 +15,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-            # Build on the oldest and latest supported Pythons
-            # and on the oldest and latest ANTLR version supported
-            # by each of those Pythons:
-            - python-version: '3.9'
-              antlr-version: '4.7'
-            - python-version: '3.9'
-              antlr-version: '4.13'
-            - python-version: '3.13'
-              antlr-version: '4.9'
-            - python-version: '3.13'
-              antlr-version: '4.13'
+          # Build on the oldest and latest supported Pythons
+          # and on the oldest and latest ANTLR version supported
+          # by each of those Pythons:
+          - python-version: '3.9'
+            antlr-version: '4.7'
+          - python-version: '3.9'
+            antlr-version: '4.13'
+          - python-version: '3.13'
+            antlr-version: '4.9'
+          - python-version: '3.13'
+            antlr-version: '4.13'
     defaults:
       run:
         working-directory: source/openqasm
