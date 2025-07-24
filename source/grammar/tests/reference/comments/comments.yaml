@@ -4,7 +4,7 @@ source: |
   // Line comment before include
   include "std_gates.inc"; // Inline comment
   /* Block comment before declaration */
-  qubit q[2]; /* Inline block comment */
+  qubit[2] q; /* Inline block comment */
 
   // Comment before gate
   h q[0]; // Gate with comment
@@ -26,52 +26,50 @@ reference: |
     statementOrScope
       statement
         quantumDeclarationStatement
-          qubit
+          qubitType
+            qubit
+            designator
+              [
+              expression
+                2
+              ]
           q
-          designator
-            [
-            expression
-              2
-            ]
           ;
     statementOrScope
       statement
-        quantumGateStatement
+        gateCallStatement
           h
           gateOperandList
             gateOperand
               indexedIdentifier
                 q
-                indexExpressionList
-                  indexExpression
-                    [
-                    expression
-                      0
-                    ]
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
           ;
     statementOrScope
       statement
-        quantumGateStatement
+        gateCallStatement
           cnot
           gateOperandList
             gateOperand
               indexedIdentifier
                 q
-                indexExpressionList
-                  indexExpression
-                    [
-                    expression
-                      0
-                    ]
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
             ,
             gateOperand
               indexedIdentifier
                 q
-                indexExpressionList
-                  indexExpression
-                    [
-                    expression
-                      1
-                    ]
+                indexOperator
+                  [
+                  expression
+                    1
+                  ]
           ;
     <EOF>
