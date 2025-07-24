@@ -100,7 +100,7 @@ __all__ = [
 ]
 
 AccessControl = Enum("AccessControl", "readonly mutable")
-AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ~= ^= <<= >>= %= **=")
+AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ^= <<= >>= %= **=")
 BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
 GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")
 IOKeyword = Enum("IOKeyword", "input output")

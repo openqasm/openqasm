@@ -175,8 +175,10 @@ def test_non_integer_physical_qubit_raises():
     p = """
     barrier $a;
     """.strip()
-    with pytest.raises(QASM3ParsingError, match=r"token recognition error at: '\$a'"):
+    with pytest.raises(QASM3ParsingError, match=r"token recognition error at: '\$a'") as e_info:
         parse(p)
+    assert e_info.value.line == 1
+    assert e_info.value.column == len("barrier ")
 
 
 def test_integer_declaration():

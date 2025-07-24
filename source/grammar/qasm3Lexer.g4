@@ -122,7 +122,7 @@ TILDE: '~';
 EXCLAMATION_POINT: '!';
 
 EqualityOperator: '==' | '!=';
-CompoundAssignmentOperator: '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '~=' | '^=' | '<<=' | '>>=' | '%=' | '**=';
+CompoundAssignmentOperator: '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<<=' | '>>=' | '%=' | '**=';
 ComparisonOperator: '>' | '<' | '>=' | '<=';
 BitshiftOperator: '>>' | '<<';
 
