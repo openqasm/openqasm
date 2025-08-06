@@ -102,7 +102,9 @@ array parameters must be specified using the ``#dim = const expression``
 syntax below, or specific lengths for each dimension must be provided.
 The unspecified-length version is provided because the lengths of
 the dimensions of array parameters (in the case of strided access) may not be
-known until runtime. Passing multiple overlapping mutable references to the same
+known until runtime. The array references defined using the unspecified-length
+syntax have a different type from the ones defined using specific lengths for
+each dimension. Passing multiple overlapping mutable references to the same
 array to a subroutine is forbidden. However, the compiler will not always be
 able to resolve when this happens, and if it does, then no guarantees are made
 about the order that updates are made in.
@@ -133,15 +135,31 @@ The dimensions of arrays may be queried inside of subroutines using the built-in
 ``sizeof()`` function, which takes two parameters: the array being queried, and
 the zero-based dimension number requested. If the second parameter is omitted,
 then it defaults to ``0``, *i.e.* ``sizeof(arr) == sizeof(arr, 0)``.
-``sizeof()`` returns a ``const uint`` representing the length of the
-requested dimension of the array argument. The array argument can be
+``sizeof()`` returns a ``uint`` when querying an array reference defined using
+the unspecified-length syntax, and a ``const uint`` when querying an array defined
+using specific lengths for each dimension. In both cases the return value represents
+the length of the requested dimension of the array argument. The array argument can be
 subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
 
 .. code-block::
 
-   def arr_subroutine(readonly array[int[8], #dim = 2] twoD_arg) {
+   def unspecified_length_arr_subroutine(readonly array[int[8], #dim = 2] twoD_arg) {
      uint[32] firstDim  = sizeof(twoD_arg, 0);
      uint[32] secondDim = sizeof(twoD_arg, 1);
+     int[32] sum = 0;
+     for int ii in [0:firstDim-1] {
+       for int jj in [0:secondDim-1] {
+         sum += int[32](twoD_arg[ii][jj]);
+       }
+     }
+     // ...
+   }
+
+.. code-block::
+
+   def specific_length_arr_subroutine(readonly array[int[8], 3, 4] twoD_arg) {
+     const uint[32] firstDim  = sizeof(twoD_arg, 0);
+     const uint[32] secondDim = sizeof(twoD_arg, 1);
      int[32] sum = 0;
      for int ii in [0:firstDim-1] {
        for int jj in [0:secondDim-1] {
