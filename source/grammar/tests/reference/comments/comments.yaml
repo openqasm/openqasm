@@ -1,0 +1,75 @@
+# Test comment preservation with HIDDEN channel
+source: |
+  OPENQASM 3.0;
+  // Line comment before include
+  include "std_gates.inc"; // Inline comment
+  /* Block comment before declaration */
+  qubit[2] q; /* Inline block comment */
+
+  // Comment before gate
+  h q[0]; // Gate with comment
+  /* Multi-line block comment
+     spanning multiple lines */
+  cnot q[0], q[1];
+reference: |
+  program
+    version
+      OPENQASM
+      3.0
+      ;
+    statementOrScope
+      statement
+        includeStatement
+          include
+          "std_gates.inc"
+          ;
+    statementOrScope
+      statement
+        quantumDeclarationStatement
+          qubitType
+            qubit
+            designator
+              [
+              expression
+                2
+              ]
+          q
+          ;
+    statementOrScope
+      statement
+        gateCallStatement
+          h
+          gateOperandList
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
+          ;
+    statementOrScope
+      statement
+        gateCallStatement
+          cnot
+          gateOperandList
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    0
+                  ]
+            ,
+            gateOperand
+              indexedIdentifier
+                q
+                indexOperator
+                  [
+                  expression
+                    1
+                  ]
+          ;
+    <EOF>

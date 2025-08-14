@@ -77,7 +77,7 @@ from openqasm3.ast import (
     UnaryExpression,
     UnaryOperator,
 )
-from openqasm3.parser import combine_span, parse, QASM3ParsingError
+from openqasm3.parser import combine_span, parse, QASM3ParsingError, get_comments
 from openqasm3.visitor import QASMVisitor
 
 
@@ -2154,3 +2154,43 @@ def test_combine_span():
     a = Span(start_line=1, start_column=2, end_line=3, end_column=4)
     b = Span(start_line=5, start_column=6, end_line=7, end_column=8)
     assert combine_span(a, b) == Span(start_line=1, start_column=2, end_line=7, end_column=8)
+
+
+def test_comment_preservation():
+    """Test that comments are preserved in HIDDEN channel."""
+    # Simple test case focusing on comment preservation
+    source = textwrap.dedent(
+        """
+        OPENQASM 3.0;
+        // Line comment before include
+        include "stdgates.inc"; // Inline comment
+        /* Block comment before declaration */
+        qubit q; /* Inline block comment */
+    """
+    )
+
+    # Get comments using the public API
+    comments = get_comments(source)
+
+    # Separate line and block comments
+    line_comments = [c for c in comments if c["type"] == "line"]
+    block_comments = [c for c in comments if c["type"] == "block"]
+
+    # Verify line comments are preserved
+    assert (
+        len(line_comments) >= 2
+    ), f"Expected at least 2 line comments, found {len(line_comments)}: {line_comments}"
+    assert any("Line comment before include" in comment["text"] for comment in line_comments)
+    assert any("Inline comment" in comment["text"] for comment in line_comments)
+
+    # Verify block comments are preserved
+    assert (
+        len(block_comments) >= 2
+    ), f"Expected at least 2 block comments, found {len(block_comments)}: {block_comments}"
+    assert any("Block comment before declaration" in comment["text"] for comment in block_comments)
+    assert any("Inline block comment" in comment["text"] for comment in block_comments)
+
+    # Verify parser still works normally (comments don't break parsing)
+    program = parse(source)
+    assert program is not None
+    assert len(program.statements) >= 2  # include, qubit declaration
