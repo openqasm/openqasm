@@ -30,6 +30,7 @@ __all__ = [
     "span",
     "QASMNodeVisitor",
     "QASM3ParsingError",
+    "get_comments",
 ]
 
 from contextlib import contextmanager
@@ -130,6 +131,46 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
         return ast.Span(node.start.line, node.start.column, node.stop.line, node.stop.column)
     else:
         return ast.Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)
+
+
+def get_comments(input_: str) -> List[dict]:
+    """Extract comments from OpenQASM 3 source code.
+
+    Args:
+        input_: The OpenQASM 3 source code as a string.
+
+    Returns:
+        A list of dictionaries containing comment information. Each dictionary has:
+        - 'type': 'line' or 'block'
+        - 'text': the comment text (including comment markers)
+        - 'line': line number where the comment starts
+        - 'column': column number where the comment starts
+    """
+    input_stream = InputStream(input_)
+    lexer = qasm3Lexer(input_stream)
+    token_stream = CommonTokenStream(lexer)
+    token_stream.fill()
+
+    comments = []
+    all_tokens = token_stream.getTokens(0, len(token_stream.tokens))
+
+    for token in all_tokens:
+        if token.channel == lexer.HIDDEN:
+            if token.type == lexer.LineComment:
+                comments.append(
+                    {"type": "line", "text": token.text, "line": token.line, "column": token.column}
+                )
+            elif token.type == lexer.BlockComment:
+                comments.append(
+                    {
+                        "type": "block",
+                        "text": token.text,
+                        "line": token.line,
+                        "column": token.column,
+                    }
+                )
+
+    return comments
 
 
 _NodeT = TypeVar("_NodeT", bound=ast.QASMNode)
