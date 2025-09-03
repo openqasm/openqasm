@@ -1104,7 +1104,7 @@ class AliasStatement(Statement):
     """
 
     target: Identifier
-    value: Union[Identifier, Concatenation]
+    value: Expression
 
 
 @dataclass
