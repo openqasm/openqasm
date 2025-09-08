@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         # This is pure Python, so it shouldn't matter what version we use to
         # build the sdist and wheel.
 
