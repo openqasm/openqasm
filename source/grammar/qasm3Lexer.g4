@@ -160,8 +160,8 @@ BitstringLiteral: '"' ([01] '_'?)* [01] '"';
 // Ignore whitespace between tokens, and define C++-style comments.
 Whitespace: [ \t]+ -> skip ;
 Newline: [\r\n]+ -> skip ;
-LineComment : '//' ~[\r\n]* -> skip;
-BlockComment : '/*' .*? '*/' -> skip;
+LineComment : '//' ~[\r\n]* -> channel(HIDDEN);
+BlockComment : '/*' .*? '*/' -> channel(HIDDEN);
 
 
 // The version identifier token would be ambiguous between itself and
@@ -201,12 +201,12 @@ mode EAT_TO_LINE_END;
 // of the tokens, because ANTLR doesn't allow us to inherit rules directly.
 mode CAL_PRELUDE;
     CAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
-    CAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
+    CAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> channel(HIDDEN);
     CAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
 
 mode DEFCAL_PRELUDE;
     DEFCAL_PRELUDE_WHITESPACE: [ \t\r\n]+ -> skip;
-    DEFCAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> skip;
+    DEFCAL_PRELUDE_COMMENT: (LineComment | BlockComment) -> channel(HIDDEN);
     DEFCAL_PRELUDE_LBRACE: LBRACE -> type(LBRACE), mode(CAL_BLOCK);
 
     // Duplications of valid constant expression tokens that may appear in the

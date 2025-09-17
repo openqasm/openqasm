@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Comment preservation support has been added to the ANTLR grammar. Line comments
+    (``//``) and block comments (``/* */``) are now directed to the HIDDEN channel
+    instead of being skipped entirely. This enables formatting tools, IDEs, and other
+    language processors to preserve comments when processing OpenQASM code, improving
+    the developer experience while maintaining backward compatibility with existing
+    parsers that ignore comments.
