@@ -70,7 +70,7 @@ Similarly, even if a hardware implementation accepts values declared ``complex[f
 
 Hardware implementations that support a particular feature *must* follow the rules for it given in this specification, unless such a feature is specifically stated to be "implementation-defined".
 If they cannot, then they *must not* accept programs that use that feature.
-The user can therefore expect that if an OpenQASM 3 program accepted by two implementations, both will perform the same behaviour except in cases this document explicitly allows it to differ.
+The user can therefore expect that if an OpenQASM 3 program is accepted by two implementations, both will perform the same behaviour except in cases this document explicitly allows it to differ.
 
 
 Contributors
