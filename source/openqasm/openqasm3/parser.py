@@ -130,7 +130,7 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
     if isinstance(node, ParserRuleContext):
         return ast.Span(node.start.line, node.start.column, node.stop.line, node.stop.column)
     else:
-        return ast.Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)
+        return ast.Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)  # type: ignore[attr-defined]
 
 
 def get_comments(input_: str) -> List[dict]:
@@ -201,7 +201,7 @@ def span(func):
 
 
 def _visit_identifier(identifier: TerminalNode):
-    return add_span(ast.Identifier(identifier.getText()), get_span(identifier))
+    return add_span(ast.Identifier(identifier.getText()), get_span(identifier))  # type: ignore[attr-defined]
 
 
 def _raise_from_context(ctx: ParserRuleContext, message: str):
