@@ -283,7 +283,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
+    def visitScope(self, ctx: qasm3Parser.ScopeContext) -> ast.CompoundStatement:
         return ast.CompoundStatement(
             statements=[self.visit(statement) for statement in ctx.statementOrScope()]
         )
