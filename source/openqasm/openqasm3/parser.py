@@ -658,7 +658,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def _visit_binary_expression(self, ctx: ParserRuleContext):
+    def _visit_binary_expression(self, ctx: qasm3Parser.ParserRuleContext):
         return ast.BinaryExpression(
             lhs=self.visit(ctx.expression(0)),
             op=ast.BinaryOperator[ctx.op.text],
