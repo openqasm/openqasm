@@ -218,7 +218,7 @@ class Printer(QASMVisitor[PrinterState]):
         self._end_statement(context)
 
     def _visit_statement_list(
-        self, nodes: List[ast.Statement], context: PrinterState, prefix: str = ""
+        self, nodes: Sequence[ast.Statement], context: PrinterState, prefix: str = ""
     ) -> None:
         self.stream.write(prefix)
         self.stream.write("{")
