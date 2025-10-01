@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional
+from typing import Union, TypeVar, List, Optional, cast
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
@@ -331,7 +331,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitBoxStatement(self, ctx: qasm3Parser.BoxStatementContext):
         return ast.Box(
             duration=self.visit(ctx.designator()) if ctx.designator() else None,
-            body=self._parse_scoped_statements(ctx.scope()),
+            body=cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())),
         )
 
     @span
@@ -513,7 +513,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
         qubits = [_visit_identifier(id_) for id_ in ctx.qubits.Identifier()]
         with self._push_context(ctx):
-            body = self._parse_scoped_statements(ctx.scope())
+            body = cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope()))
         return ast.QuantumGateDefinition(name, arguments, qubits, body)
 
     @span
