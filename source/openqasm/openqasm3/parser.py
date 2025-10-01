@@ -941,6 +941,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 name=name, size=self.visit(designator) if designator else None
             )
         access = None
+        type_: ast.ClassicalType
         if ctx.CREG():
             size = self.visit(ctx.designator()) if ctx.designator() else None
             creg_span = get_span(ctx.CREG())
@@ -974,6 +975,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitExternArgument(self, ctx: qasm3Parser.ExternArgumentContext):
         access = None
+        type_: ast.ClassicalType
         if ctx.CREG():
             type_ = ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         elif ctx.scalarType():
