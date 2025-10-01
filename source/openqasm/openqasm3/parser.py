@@ -293,7 +293,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if not self._in_global_scope():
             _raise_from_context(ctx, "pragmas must be global")
         return ast.Pragma(
-            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None
+            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else ""
         )
 
     @span
