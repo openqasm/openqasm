@@ -34,10 +34,15 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional, cast
+from typing import Union, TypeVar, List, Optional, cast, Protocol
 
 try:
-    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
+    from antlr4 import (
+        CommonTokenStream,
+        InputStream,
+        ParserRuleContext,
+        RecognitionException,
+    )
     from antlr4.error.Errors import ParseCancellationException
     from antlr4.error.ErrorStrategy import BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
@@ -95,6 +100,22 @@ class _RaiseOnErrorListener(ErrorListener):
         raise QASM3ParsingError(msg, line=line, column=column) from exc
 
 
+class _OperatorToken(Protocol):
+    text: str
+
+
+class _BinaryExpressionContext(Protocol):
+    """Describes the attributes for binary-expression types.
+
+    This enables static type checking to correctly infer attribute types.
+    """
+
+    op: _OperatorToken
+
+    def expression(self, index: Optional[int] = None) -> ParserRuleContext:
+        pass
+
+
 def parse(input_: str, *, permissive=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
@@ -128,9 +149,13 @@ def parse(input_: str, *, permissive=False) -> ast.Program:
 def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
     """Get the span of a node"""
     if isinstance(node, ParserRuleContext):
-        return ast.Span(node.start.line, node.start.column, node.stop.line, node.stop.column)
+        return ast.Span(
+            node.start.line, node.start.column, node.stop.line, node.stop.column
+        )
     else:
-        return ast.Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)  # type: ignore[attr-defined]
+        return ast.Span(
+            node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop
+        )  # type: ignore[attr-defined]
 
 
 def get_comments(input_: str) -> List[dict]:
@@ -158,7 +183,12 @@ def get_comments(input_: str) -> List[dict]:
         if token.channel == lexer.HIDDEN:
             if token.type == lexer.LineComment:
                 comments.append(
-                    {"type": "line", "text": token.text, "line": token.line, "column": token.column}
+                    {
+                        "type": "line",
+                        "text": token.text,
+                        "line": token.line,
+                        "column": token.column,
+                    }
                 )
             elif token.type == lexer.BlockComment:
                 comments.append(
@@ -184,7 +214,9 @@ def add_span(node: _NodeT, span: ast.Span) -> _NodeT:
 
 def combine_span(first: ast.Span, second: ast.Span):
     """Combine two spans and return the combined one"""
-    return ast.Span(first.start_line, first.start_column, second.end_line, second.end_column)
+    return ast.Span(
+        first.start_line, first.start_column, second.end_line, second.end_column
+    )
 
 
 def span(func):
@@ -249,7 +281,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     def _in_loop(self):
         return any(
-            isinstance(scope, (qasm3Parser.ForStatementContext, qasm3Parser.WhileStatementContext))
+            isinstance(
+                scope,
+                (qasm3Parser.ForStatementContext, qasm3Parser.WhileStatementContext),
+            )
             for scope in reversed(self._current_context())
         )
 
@@ -258,12 +293,18 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     ) -> List[ast.Statement]:
         with self._push_scope(node.parentCtx):
             block = self.visit(node)
-            return block.statements if isinstance(block, ast.CompoundStatement) else [block]
+            return (
+                block.statements
+                if isinstance(block, ast.CompoundStatement)
+                else [block]
+            )
 
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
         with self._push_context(ctx):
-            version = ctx.version().VersionSpecifier().getText() if ctx.version() else None
+            version = (
+                ctx.version().VersionSpecifier().getText() if ctx.version() else None
+            )
             statements = [self.visit(statement) for statement in ctx.statementOrScope()]
             return ast.Program(statements=statements, version=version)
 
@@ -279,7 +320,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitAnnotation(self, ctx: qasm3Parser.AnnotationContext):
         return ast.Annotation(
             keyword=ctx.AnnotationKeyword().getText()[1:],
-            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None,
+            command=ctx.RemainingLineContent().getText()
+            if ctx.RemainingLineContent()
+            else None,
         )
 
     @span
@@ -293,11 +336,15 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if not self._in_global_scope():
             _raise_from_context(ctx, "pragmas must be global")
         return ast.Pragma(
-            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else ""
+            command=ctx.RemainingLineContent().getText()
+            if ctx.RemainingLineContent()
+            else ""
         )
 
     @span
-    def visitAliasDeclarationStatement(self, ctx: qasm3Parser.AliasDeclarationStatementContext):
+    def visitAliasDeclarationStatement(
+        self, ctx: qasm3Parser.AliasDeclarationStatementContext
+    ):
         return ast.AliasStatement(
             target=_visit_identifier(ctx.Identifier()),
             value=self.visit(ctx.aliasExpression()),
@@ -331,7 +378,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitBoxStatement(self, ctx: qasm3Parser.BoxStatementContext):
         return ast.Box(
             duration=self.visit(ctx.designator()) if ctx.designator() else None,
-            body=cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())),
+            body=cast(
+                List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())
+            ),
         )
 
     @span
@@ -347,10 +396,14 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def visitCalibrationGrammarStatement(self, ctx: qasm3Parser.CalibrationGrammarStatementContext):
+    def visitCalibrationGrammarStatement(
+        self, ctx: qasm3Parser.CalibrationGrammarStatementContext
+    ):
         if not self._in_global_scope():
             _raise_from_context(ctx, "'defcalgrammar' statements must be global")
-        return ast.CalibrationGrammarDeclaration(name=ctx.StringLiteral().getText()[1:-1])
+        return ast.CalibrationGrammarDeclaration(
+            name=ctx.StringLiteral().getText()[1:-1]
+        )
 
     @span
     def visitClassicalDeclarationStatement(
@@ -360,7 +413,11 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, "cannot declare classical variables in a gate")
         if ctx.arrayType() and not self._in_global_scope():
             _raise_from_context(ctx, "arrays can only be declared globally")
-        init = self.visit(ctx.declarationExpression()) if ctx.declarationExpression() else None
+        init = (
+            self.visit(ctx.declarationExpression())
+            if ctx.declarationExpression()
+            else None
+        )
         return ast.ClassicalDeclaration(
             type=self.visit(ctx.scalarType() or ctx.arrayType()),
             identifier=_visit_identifier(ctx.Identifier()),
@@ -368,7 +425,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def visitConstDeclarationStatement(self, ctx: qasm3Parser.ConstDeclarationStatementContext):
+    def visitConstDeclarationStatement(
+        self, ctx: qasm3Parser.ConstDeclarationStatementContext
+    ):
         return ast.ConstantDeclaration(
             type=self.visit(ctx.scalarType()),
             identifier=_visit_identifier(ctx.Identifier()),
@@ -387,12 +446,17 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, "subroutine definitions must be global")
         name = _visit_identifier(ctx.Identifier())
         arguments = (
-            [self.visit(argument) for argument in ctx.argumentDefinitionList().argumentDefinition()]
+            [
+                self.visit(argument)
+                for argument in ctx.argumentDefinitionList().argumentDefinition()
+            ]
             if ctx.argumentDefinitionList()
             else []
         )
         return_type = (
-            self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
+            self.visit(ctx.returnSignature().scalarType())
+            if ctx.returnSignature()
+            else None
         )
         with self._push_context(ctx):
             body = self._parse_scoped_statements(ctx.scope())
@@ -410,9 +474,14 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             if ctx.defcalArgumentDefinitionList()
             else []
         )
-        qubits = [self.visit(operand) for operand in ctx.defcalOperandList().defcalOperand() or []]
+        qubits = [
+            self.visit(operand)
+            for operand in ctx.defcalOperandList().defcalOperand() or []
+        ]
         return_type = (
-            self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
+            self.visit(ctx.returnSignature().scalarType())
+            if ctx.returnSignature()
+            else None
         )
 
         return ast.CalibrationDefinition(
@@ -430,7 +499,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             if ctx.gateOperandList()
             else []
         )
-        return ast.DelayInstruction(duration=self.visit(ctx.designator()), qubits=qubits)
+        return ast.DelayInstruction(
+            duration=self.visit(ctx.designator()), qubits=qubits
+        )
 
     @span
     def visitEndStatement(self, _: qasm3Parser.EndStatementContext):
@@ -450,7 +521,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             else []
         )
         return_type = (
-            self.visit(ctx.returnSignature().scalarType()) if ctx.returnSignature() else None
+            self.visit(ctx.returnSignature().scalarType())
+            if ctx.returnSignature()
+            else None
         )
         return ast.ExternDeclaration(
             name=_visit_identifier(ctx.Identifier()),
@@ -490,9 +563,12 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.GPHASE():
             if len(arguments) != 1:
                 _raise_from_context(
-                    ctx, f"'gphase' takes exactly one argument, but received {arguments}"
+                    ctx,
+                    f"'gphase' takes exactly one argument, but received {arguments}",
                 )
-            return ast.QuantumPhase(modifiers=modifiers, argument=arguments[0], qubits=qubits)
+            return ast.QuantumPhase(
+                modifiers=modifiers, argument=arguments[0], qubits=qubits
+            )
         return ast.QuantumGate(
             modifiers=modifiers,
             name=_visit_identifier(ctx.Identifier()),
@@ -513,15 +589,21 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
         qubits = [_visit_identifier(id_) for id_ in ctx.qubits.Identifier()]
         with self._push_context(ctx):
-            body = cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope()))
+            body = cast(
+                List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())
+            )
         return ast.QuantumGateDefinition(name, arguments, qubits, body)
 
     @span
     def visitIfStatement(self, ctx: qasm3Parser.IfStatementContext):
         if_body = self._parse_scoped_statements(ctx.if_body)
-        else_body = self._parse_scoped_statements(ctx.else_body) if ctx.else_body else []
+        else_body = (
+            self._parse_scoped_statements(ctx.else_body) if ctx.else_body else []
+        )
         return ast.BranchingStatement(
-            condition=self.visit(ctx.expression()), if_block=if_body, else_block=else_body
+            condition=self.visit(ctx.expression()),
+            if_block=if_body,
+            else_block=else_body,
         )
 
     @span
@@ -531,7 +613,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.Include(filename=ctx.StringLiteral().getText()[1:-1])
 
     @span
-    def visitIoDeclarationStatement(self, ctx: qasm3Parser.IoDeclarationStatementContext):
+    def visitIoDeclarationStatement(
+        self, ctx: qasm3Parser.IoDeclarationStatementContext
+    ):
         if not self._in_global_scope():
             keyword = "input" if ctx.INPUT() else "output"
             _raise_from_context(ctx, f"'{keyword}' declarations must be global")
@@ -545,17 +629,23 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitNopStatement(self, ctx: qasm3Parser.NopStatementContext):
         if (operands := ctx.gateOperandList()) is None:
             return ast.QuantumNop(operands=[])
-        return ast.QuantumNop(operands=[self.visit(operand) for operand in operands.gateOperand()])
+        return ast.QuantumNop(
+            operands=[self.visit(operand) for operand in operands.gateOperand()]
+        )
 
     @span
     def visitMeasureArrowAssignmentStatement(
         self, ctx: qasm3Parser.MeasureArrowAssignmentStatementContext
     ):
         if self._in_gate():
-            _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+            _raise_from_context(
+                ctx, "cannot have a non-unitary 'measure' instruction in a gate"
+            )
         return ast.QuantumMeasurementStatement(
             measure=self.visit(ctx.measureExpression()),
-            target=self.visit(ctx.indexedIdentifier()) if ctx.indexedIdentifier() else None,
+            target=self.visit(ctx.indexedIdentifier())
+            if ctx.indexedIdentifier()
+            else None,
         )
 
     @span
@@ -568,7 +658,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             isinstance(size, ast.IntegerLiteral) and size.value == 0
         ):
             _raise_from_context(
-                ctx.designator(), ("qreg" if ctx.QREG() else "creg") + " size must be positive"
+                ctx.designator(),
+                ("qreg" if ctx.QREG() else "creg") + " size must be positive",
             )
         if ctx.QREG():
             if not self._in_global_scope():
@@ -586,7 +677,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def visitQuantumDeclarationStatement(self, ctx: qasm3Parser.QuantumDeclarationStatementContext):
+    def visitQuantumDeclarationStatement(
+        self, ctx: qasm3Parser.QuantumDeclarationStatementContext
+    ):
         if not self._in_global_scope():
             _raise_from_context(ctx, "qubit declarations must be global")
         size_designator = ctx.qubitType().designator()
@@ -598,7 +691,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitResetStatement(self, ctx: qasm3Parser.ResetStatementContext):
         if self._in_gate():
-            _raise_from_context(ctx, "cannot have a non-unitary 'reset' instruction in a gate")
+            _raise_from_context(
+                ctx, "cannot have a non-unitary 'reset' instruction in a gate"
+            )
         return ast.QuantumReset(qubits=self.visit(ctx.gateOperand()))
 
     @span
@@ -658,7 +753,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def _visit_binary_expression(self, ctx: qasm3Parser.ParserRuleContext):
+    def _visit_binary_expression(self, ctx: _BinaryExpressionContext):
         return ast.BinaryExpression(
             lhs=self.visit(ctx.expression(0)),
             op=ast.BinaryOperator[ctx.op.text],
@@ -679,12 +774,16 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitCastExpression(self, ctx: qasm3Parser.CastExpressionContext):
-        return ast.Cast(type=self.visit(ctx.getChild(0)), argument=self.visit(ctx.expression()))
+        return ast.Cast(
+            type=self.visit(ctx.getChild(0)), argument=self.visit(ctx.expression())
+        )
 
     @span
     def visitMeasureExpression(self, ctx: qasm3Parser.MeasureExpressionContext):
         if self._in_gate():
-            _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+            _raise_from_context(
+                ctx, "cannot have a non-unitary 'measure' instruction in a gate"
+            )
         return ast.QuantumMeasurement(qubit=self.visit(ctx.gateOperand()))
 
     @span
@@ -714,17 +813,23 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.Identifier():
             return _visit_identifier(ctx.Identifier())
         if ctx.BinaryIntegerLiteral():
-            return ast.IntegerLiteral(value=int(ctx.BinaryIntegerLiteral().getText(), 2))
+            return ast.IntegerLiteral(
+                value=int(ctx.BinaryIntegerLiteral().getText(), 2)
+            )
         if ctx.OctalIntegerLiteral():
             return ast.IntegerLiteral(value=int(ctx.OctalIntegerLiteral().getText(), 8))
         if ctx.DecimalIntegerLiteral():
-            return ast.IntegerLiteral(value=int(ctx.DecimalIntegerLiteral().getText(), 10))
+            return ast.IntegerLiteral(
+                value=int(ctx.DecimalIntegerLiteral().getText(), 10)
+            )
         if ctx.HexIntegerLiteral():
             return ast.IntegerLiteral(value=int(ctx.HexIntegerLiteral().getText(), 16))
         if ctx.FloatLiteral():
             return ast.FloatLiteral(value=float(ctx.FloatLiteral().getText()))
         if ctx.ImaginaryLiteral():
-            return ast.ImaginaryLiteral(value=float(ctx.ImaginaryLiteral().getText()[:-2]))
+            return ast.ImaginaryLiteral(
+                value=float(ctx.ImaginaryLiteral().getText()[:-2])
+            )
         if ctx.BooleanLiteral():
             return ast.BooleanLiteral(value=ctx.BooleanLiteral().getText() == "true")
         if ctx.BitstringLiteral():
@@ -760,7 +865,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             except StopIteration:
                 return self.visit(previous)
             lhs = recurse(current, iterator)
-            return add_span(ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
+            return add_span(
+                ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span)
+            )
 
         # This iterator should always be non-empty if ANTLR did its job right.
         iterator = reversed(ctx.expression())
@@ -796,7 +903,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitSetExpression(self, ctx: qasm3Parser.SetExpressionContext):
-        return ast.DiscreteSet(values=[self.visit(expression) for expression in ctx.expression()])
+        return ast.DiscreteSet(
+            values=[self.visit(expression) for expression in ctx.expression()]
+        )
 
     @span
     def visitArrayLiteral(self, ctx: qasm3Parser.ArrayLiteralContext):
@@ -809,7 +918,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return isinstance(child, array_literal_element)
 
         return ast.ArrayLiteral(
-            values=[self.visit(element) for element in ctx.getChildren(predicate=predicate)],
+            values=[
+                self.visit(element) for element in ctx.getChildren(predicate=predicate)
+            ],
         )
 
     def visitIndexOperator(self, ctx: qasm3Parser.IndexOperatorContext):
@@ -842,10 +953,13 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitGateModifier(self, ctx: qasm3Parser.GateModifierContext):
         if ctx.INV():
-            return ast.QuantumGateModifier(modifier=ast.GateModifierName["inv"], argument=None)
+            return ast.QuantumGateModifier(
+                modifier=ast.GateModifierName["inv"], argument=None
+            )
         if ctx.POW():
             return ast.QuantumGateModifier(
-                modifier=ast.GateModifierName["pow"], argument=self.visit(ctx.expression())
+                modifier=ast.GateModifierName["pow"],
+                argument=self.visit(ctx.expression()),
             )
         return ast.QuantumGateModifier(
             modifier=ast.GateModifierName["ctrl" if ctx.CTRL() else "negctrl"],
@@ -861,7 +975,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.STRETCH():
             return ast.StretchType()
         if ctx.BIT():
-            return ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            return ast.BitType(
+                size=self.visit(ctx.designator()) if ctx.designator() else None
+            )
         if ctx.INT():
             designator = ctx.designator()
             size = self.visit(designator) if designator else None
@@ -879,7 +995,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 _raise_from_context(designator, "uint size must be positive")
             return ast.UintType(size=size)
         if ctx.FLOAT():
-            return ast.FloatType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            return ast.FloatType(
+                size=self.visit(ctx.designator()) if ctx.designator() else None
+            )
         if ctx.ANGLE():
             designator = ctx.designator()
             size = self.visit(designator) if designator else None
@@ -891,7 +1009,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.COMPLEX():
             base = self.visit(ctx.scalarType()) if ctx.scalarType() else None
             if base is not None and not isinstance(base, ast.FloatType):
-                _raise_from_context(ctx.scalarType(), f"invalid type of complex components")
+                _raise_from_context(
+                    ctx.scalarType(), f"invalid type of complex components"
+                )
             return ast.ComplexType(base_type=base)
         _raise_from_context(ctx, "unhandled type: {ctx.getText()}")
 
@@ -916,7 +1036,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         for expression in ctx.expressionList().expression():
             dimensions.append(self.visit(expression))
             if isinstance(dimensions[-1], ast.UnaryExpression):
-                _raise_from_context(expression, f"all array dimensions must be non-negative")
+                _raise_from_context(
+                    expression, f"all array dimensions must be non-negative"
+                )
         return ast.ArrayType(
             base_type=base,
             dimensions=dimensions,
@@ -936,7 +1058,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitArgumentDefinition(self, ctx: qasm3Parser.ArgumentDefinitionContext):
         name = _visit_identifier(ctx.Identifier())
         if ctx.qubitType() or ctx.QREG():
-            designator = ctx.qubitType().designator() if ctx.qubitType() else ctx.designator()
+            designator = (
+                ctx.qubitType().designator() if ctx.qubitType() else ctx.designator()
+            )
             return ast.QuantumArgument(
                 name=name, size=self.visit(designator) if designator else None
             )
@@ -952,13 +1076,17 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         elif ctx.arrayReferenceType():
             array_ctx = ctx.arrayReferenceType()
             access = (
-                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+                ast.AccessControl.readonly
+                if array_ctx.READONLY()
+                else ast.AccessControl.mutable
             )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())
                 if array_ctx.expression()
-                else [self.visit(expr) for expr in array_ctx.expressionList().expression()]
+                else [
+                    self.visit(expr) for expr in array_ctx.expressionList().expression()
+                ]
             )
             type_ = add_span(
                 ast.ArrayReferenceType(base_type=base_type, dimensions=dimensions),
@@ -969,7 +1097,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return ast.ClassicalArgument(type=type_, name=name, access=access)
 
     @span
-    def visitDefcalArgumentDefinition(self, ctx: qasm3Parser.DefcalArgumentDefinitionContext):
+    def visitDefcalArgumentDefinition(
+        self, ctx: qasm3Parser.DefcalArgumentDefinitionContext
+    ):
         return self.visit(ctx.getChild(0))
 
     @span
@@ -977,19 +1107,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         access = None
         type_: ast.ClassicalType
         if ctx.CREG():
-            type_ = ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
+            type_ = ast.BitType(
+                size=self.visit(ctx.designator()) if ctx.designator() else None
+            )
         elif ctx.scalarType():
             type_ = self.visit(ctx.scalarType())
         else:
             array_ctx = ctx.arrayReferenceType()
             access = (
-                ast.AccessControl.readonly if array_ctx.READONLY() else ast.AccessControl.mutable
+                ast.AccessControl.readonly
+                if array_ctx.READONLY()
+                else ast.AccessControl.mutable
             )
             base_type = self.visit(array_ctx.scalarType())
             dimensions = (
                 self.visit(array_ctx.expression())
                 if array_ctx.expression()
-                else [self.visit(expr) for expr in array_ctx.expressionList().expression()]
+                else [
+                    self.visit(expr) for expr in array_ctx.expressionList().expression()
+                ]
             )
             type_ = add_span(
                 ast.ArrayReferenceType(base_type=base_type, dimensions=dimensions),
@@ -1003,5 +1139,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.Identifier(ctx.HardwareQubit().getText())
         return _visit_identifier(ctx.Identifier())
 
-    def visitStatementOrScope(self, ctx: qasm3Parser.StatementOrScopeContext) -> ast.Statement:
+    def visitStatementOrScope(
+        self, ctx: qasm3Parser.StatementOrScopeContext
+    ) -> ast.Statement:
         return self.visit(ctx.scope()) if ctx.scope() else self.visit(ctx.statement())
