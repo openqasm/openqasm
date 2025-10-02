@@ -113,7 +113,18 @@ class _BinaryExpressionContext(Protocol):
     op: _OperatorToken
 
     def expression(self, index: Optional[int] = None) -> ParserRuleContext:
-        pass
+        ...
+
+
+class _TokenWithSpan(Protocol):
+    line: int
+    start: int
+    stop: int
+
+
+class _TerminalNodeWithSymbol(Protocol):
+    """Captures the token attribute the generated terminal nodes expose for spans."""
+    symbol: _TokenWithSpan
 
 
 def parse(input_: str, *, permissive=False) -> ast.Program:
@@ -153,9 +164,14 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
             node.start.line, node.start.column, node.stop.line, node.stop.column
         )
     else:
+        # Terminal nodes carry their position via the generated `symbol` token.
+        token_with_position = cast(_TerminalNodeWithSymbol, node).symbol
         return ast.Span(
-            node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop
-        )  # type: ignore[attr-defined]
+            token_with_position.line,
+            token_with_position.start,
+            token_with_position.line,
+            token_with_position.stop,
+        )
 
 
 def get_comments(input_: str) -> List[dict]:
