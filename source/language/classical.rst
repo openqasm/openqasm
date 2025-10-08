@@ -619,15 +619,15 @@ Examples:
 	int i = foo(q);
 
 	switch (i) {
-	case 1, 2, 5, 12 {
-	}
-	case 3 {
-	  switch (j) {
-	  case 10, 15, 20 {
-	    h q;	  
-	  }
-	}
-	}
+    case 1, 2, 5, 12 { }
+    case 3 {
+      switch (j) {
+        case 10, 15, 20 {
+          h q;
+        }
+      }
+    }
+  }
 
 
 Extern function calls
