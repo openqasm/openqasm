@@ -640,6 +640,13 @@ inputs of these functions.
       | tan      | (``float`` or ``angle``)            | ``float``                            | Tangent.                               |
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
 
+.. note::
+
+   The `pow` function was once erroneously listed as a built-in arithmetic function in the table above.
+   It could not be parsed by the reference grammar because it conflicted with
+   the `pow` gate modifier. It was also not mentioned in the OpenQASM 3 paper.
+   Use the `**` operator instead.
+
 For each built-in function, the chosen overload is the first one to appear in
 the list above where all given operands can be implicitly cast to the valid
 input types.  The output type is not considered when choosing an overload.  It
