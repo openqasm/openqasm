@@ -189,6 +189,11 @@ and power and the corresponding assignment operators.
    runtime.  OpenQASM 3 compilers may reject programs that require runtime
    operations on these values if the target backend does not support them.
 
+.. note::
+
+   For floating-point and complex values, the ``**`` operator returns
+   the principal value.
+
 Complex numbers
 ~~~~~~~~~~~~~~~
 
@@ -209,6 +214,11 @@ hardware-dependent rounding mode and subnormal handling.
    complex[float[64]] e = a * b;   // e = 15.0-80.0im;
    complex[float[64]] f = a / b;   // f = (-55.0+60.0im)/53.0
    complex[float[64]] g = a ** b;  // g = (0.10694695640729072+0.17536481119721312im)
+
+.. note::
+
+   For floating-point and complex values, the ``**`` operator returns
+   the principal value.
 
 Evaluation order
 ~~~~~~~~~~~~~~~~
