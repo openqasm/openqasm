@@ -661,18 +661,6 @@ is an error if there is no valid overload for a given sequence of operands.
    // cases; in the first, there is an exact type match, in the second the
    // ``int[8]`` input can be implicitly promoted to ``float``.
 
-   const int[8] i2 = pow(i1, u1);
-   // Value 64, expression has type `const int`.  The first overload of `pow`
-   // is chosen, because `i1` can be implicitly promoted to `const int` and
-   // `u1` to `const uint`.
-
-   const float[64] f4 = pow(i1, -2);
-   // Value 0.0625, expression has type `const float`.  The second,
-   // `(float, float) -> float`, overload is chosen, because `-2` (type
-   // `const int`) cannot be implicitly promoted to `const uint`, but both
-   // input types can be implicitly promoted to `float`.  The `complex` overload
-   // is not attempted, because it has lower priority.
-
    const bit[8] b2 = rotl(b1, 3);
    // Value "0101_0001", expression has type `const bit[8]`.
 
