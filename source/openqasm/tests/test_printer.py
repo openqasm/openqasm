@@ -480,10 +480,12 @@ measure q;
 measure $0;
 measure q[0];
 measure q[1:3];
+measure_iq q;
 c = measure q;
 c = measure $0;
 c = measure q[0];
 c = measure q[1:3];
+c = measure_iq q;
 def f() {
   return measure q;
 }
@@ -495,6 +497,9 @@ def f() {
 }
 def f() {
   return measure q[1:3];
+}
+def f() {
+  return measure_iq q;
 }
 """.strip()
         output = openqasm3.dumps(
