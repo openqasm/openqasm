@@ -615,12 +615,6 @@ inputs of these functions.
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
       | popcount | ``bit[_]``                          | ``uint``                             | Number of set (1) bits.                |
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
-      | pow      | ``int``, ``uint``                   | ``int``                              | :math:`\texttt{pow(a, b)} = a^b`.      |
-      |          |                                     |                                      |                                        |
-      |          | ``float``, ``float``                | ``float``                            | For floating-point and complex values, |
-      |          |                                     |                                      | the principal value is returned.       |
-      |          | ``complex``, ``complex``            | ``complex``                          |                                        |
-      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
       | rotl     | ``bit[n] value``, ``int distance``  | ``bit[n]``                           | Rotate the bits in the representation  |
       |          |                                     |                                      | of ``value`` by ``distance`` places    |
       |          | ``uint[n] value``, ``int distance`` | ``uint[n]``                          | to the left (towards higher            |
