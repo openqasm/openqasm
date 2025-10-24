@@ -62,7 +62,7 @@ from openqasm3.ast import (
     QuantumGateModifier,
     QuantumNop,
     QuantumMeasurement,
-    QuantumMeasurementGeneric,
+    QuantumCallExpression,
     QuantumMeasurementStatement,
     QuantumPhase,
     QubitDeclaration,
@@ -1380,7 +1380,7 @@ def test_calibration_definition_usage_measurement():
     SpanGuard().visit(program)
 
 
-def test_calibration_definition_usage_generic_measurement():
+def test_calibration_definition_usage_quantum_call():
     p = """
     defcal measure_iq q -> complex[float[32]] { ... measure_iq implementation ... }
     complex[float[32]] iq;
@@ -1432,18 +1432,18 @@ def test_calibration_definition_usage_generic_measurement():
                 ],
             ),
             QuantumMeasurementStatement(
-                measure=QuantumMeasurementGeneric(
+                measure=QuantumCallExpression(
                     name=Identifier("measure_iq"),
                     arguments=[],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
                 target=Identifier("iq"),
             ),
             QuantumMeasurementStatement(
-                measure=QuantumMeasurementGeneric(
+                measure=QuantumCallExpression(
                     name=Identifier("measure_iq"),
                     arguments=[],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
                 target=Identifier("iq"),
             ),
@@ -1454,10 +1454,10 @@ def test_calibration_definition_usage_generic_measurement():
                     ),
                 ),
                 identifier=Identifier("iq2"),
-                init_expression=QuantumMeasurementGeneric(
+                init_expression=QuantumCallExpression(
                     name=Identifier("measure_iq"),
                     arguments=[],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
             ),
             SubroutineDefinition(
@@ -1470,13 +1470,91 @@ def test_calibration_definition_usage_generic_measurement():
                 ),
                 body=[
                     ReturnStatement(
-                        expression=QuantumMeasurementGeneric(
+                        expression=QuantumCallExpression(
                             name=Identifier("measure_iq"),
                             arguments=[],
-                            qubit=Identifier("q"),
+                            qubits=[Identifier("q")],
                         )
                     ),
                 ],
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_quantum_call_multi_qubits():
+    p = """
+    defcal my_quantum_call q0, q1 -> int[32] {}
+    int[32] register;
+    my_quantum_call $0, $2;
+    register = my_quantum_call $0, $2;
+    my_quantum_call $0, $2 -> register;
+    int[32] register2 = my_quantum_call $0, $2;
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier(
+                    name="my_quantum_call",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("q0"),
+                    Identifier("q1"),
+                ],
+                return_type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                body="",
+            ),
+            ClassicalDeclaration(
+                type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                identifier=Identifier("register"),
+                init_expression=None,
+            ),
+            # TODO: It's not possible to distinguish a gate and a quantum call here so
+            #       this is parsed as a quantum gate. Is this acceptable?
+            QuantumGate(
+                modifiers=[],
+                name=Identifier(
+                    name="my_quantum_call",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("$0"),
+                    Identifier("$2"),
+                ],
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
+                target=Identifier("register"),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
+                target=Identifier("register"),
+            ),
+            ClassicalDeclaration(
+                type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                identifier=Identifier("register2"),
+                init_expression=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
             ),
         ],
     )
@@ -1539,7 +1617,7 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                 ],
             ),
             QuantumMeasurementStatement(
-                measure=QuantumMeasurementGeneric(
+                measure=QuantumCallExpression(
                     name=Identifier("measure_rotated"),
                     arguments=[
                         BinaryExpression(
@@ -1548,12 +1626,12 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                             rhs=IntegerLiteral(2),
                         ),
                     ],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
                 target=Identifier("c"),
             ),
             QuantumMeasurementStatement(
-                measure=QuantumMeasurementGeneric(
+                measure=QuantumCallExpression(
                     name=Identifier("measure_rotated"),
                     arguments=[
                         BinaryExpression(
@@ -1562,14 +1640,14 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                             rhs=IntegerLiteral(2),
                         ),
                     ],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
                 target=Identifier("c"),
             ),
             ClassicalDeclaration(
                 type=BitType(),
                 identifier=Identifier("c2"),
-                init_expression=QuantumMeasurementGeneric(
+                init_expression=QuantumCallExpression(
                     name=Identifier("measure_rotated"),
                     arguments=[
                         BinaryExpression(
@@ -1578,7 +1656,7 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                             rhs=IntegerLiteral(2),
                         ),
                     ],
-                    qubit=Identifier("$0"),
+                    qubits=[Identifier("$0")],
                 ),
             ),
             SubroutineDefinition(
@@ -1587,7 +1665,7 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                 return_type=BitType(),
                 body=[
                     ReturnStatement(
-                        expression=QuantumMeasurementGeneric(
+                        expression=QuantumCallExpression(
                             name=Identifier("measure_rotated"),
                             arguments=[
                                 BinaryExpression(
@@ -1596,7 +1674,7 @@ def test_calibration_definition_usage_generic_measurement_with_parameters():
                                     rhs=IntegerLiteral(2),
                                 ),
                             ],
-                            qubit=Identifier("q"),
+                            qubits=[Identifier("q")],
                         )
                     ),
                 ],

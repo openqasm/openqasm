@@ -594,19 +594,21 @@ class QuantumMeasurement(QASMNode):
 
 # Not a full expression because it can only be used in limited contexts.
 @dataclass
-class QuantumMeasurementGeneric(QASMNode):
+class QuantumCallExpression(QASMNode):
     """
-    A custom quantum measurement instruction that takes an identifier
-    for the measurement function rather than the `measure` keyword.
+    A quantum call expression that invokes a defcal with an identifier
+    for the function name. This can be used for measurements or other
+    defcal operations that return values.
 
     Example::
 
         measure_iq q;
+        measure_rotated(pi/2) q1, q2;
     """
 
     name: Identifier
     arguments: List[Expression]
-    qubit: Union[IndexedIdentifier, Identifier]
+    qubits: List[Union[IndexedIdentifier, Identifier]]
 
 
 # Note that this is not a QuantumStatement because it involves access to
@@ -618,7 +620,7 @@ class QuantumMeasurementStatement(Statement):
     `measure` can appear in (it can also be in classical declaration statements
     and returns)."""
 
-    measure: Union[QuantumMeasurement, QuantumMeasurementGeneric]
+    measure: Union[QuantumMeasurement, QuantumCallExpression]
     target: Optional[Union[IndexedIdentifier, Identifier]]
 
 
@@ -679,9 +681,7 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = (
-        None
-    )
+    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumCallExpression]] = None
 
 
 @dataclass
@@ -953,7 +953,7 @@ class ReturnStatement(Statement):
 
     """
 
-    expression: Optional[Union[Expression, QuantumMeasurement, QuantumMeasurementGeneric]] = None
+    expression: Optional[Union[Expression, QuantumMeasurement, QuantumCallExpression]] = None
 
 
 class BreakStatement(Statement):
