@@ -130,13 +130,18 @@ def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
                 line = line[2:]
                 continue
             if found_openqasm:
+                # If here, we've got a non-space, non-comment token after an `OPENQASM` one, so it's
+                # either a valid version or the file is syntactically invalid.
                 if (m := _VERSION_NUM.match(line)) is not None:
                     return tuple(int(x) for x in m.group(0).split("."))
-            elif line.startswith("OPENQASM"):
+                return None
+            if line.startswith("OPENQASM"):
                 found_openqasm = True
                 line = line[len("OPENQASM") :]
-            else:
-                return None
+                continue
+            # We've got a non-OPENQASM token as the first non-comment token, so there's no
+            # syntactically valid version statement.
+            return None
     return None
 
 

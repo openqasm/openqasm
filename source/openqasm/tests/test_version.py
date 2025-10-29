@@ -43,3 +43,8 @@ def test_ignore_non_syntactic_version():
         OPENQASM 3.0;
     """
     assert parse_version(prog) is None
+
+
+def test_ignore_invalid_version_statement():
+    prog = "OPENQASM invalid;"
+    assert parse_version(prog) is None
