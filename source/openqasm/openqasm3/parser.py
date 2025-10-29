@@ -637,7 +637,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitQuantumCallExpression(self, ctx: qasm3Parser.QuantumCallExpressionContext):
         if self._in_gate():
-            _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+            _raise_from_context(
+                ctx,
+                "cannot have a non-unitary measure-like quantum call expression instruction in a gate",
+            )
         name = _visit_identifier(ctx.Identifier())
         arguments = (
             [self.visit(argument) for argument in ctx.expressionList().expression()]
