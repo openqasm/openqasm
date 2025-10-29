@@ -503,23 +503,23 @@ Examples:
 
 .. code-block::
 
-	OPENQASM 3.0;
+	OPENQASM 3.1;
 
 	int i = 15;
 
 	switch (i) {
-	case 1, 3, 5 {
-	  // OpenQASM3 statement(s)
-	}
-	case 2, 4, 6 {
-	  // OpenQASM3 statement(s)
-	}
-	case -1 {
-	  // OpenQASM3 statement(s)
-	}
-	default {
-	  // OpenQASM3 statement(s)
-	}
+		case 1, 3, 5 {
+		  // OpenQASM3 statement(s)
+		}
+		case 2, 4, 6 {
+		  // OpenQASM3 statement(s)
+		}
+		case -1 {
+		  // OpenQASM3 statement(s)
+		}
+		default {
+		  // OpenQASM3 statement(s)
+		}
 	}
 
 
@@ -527,25 +527,25 @@ Examples:
 
 .. code-block::
 
-	OPENQASM 3.0;
+	OPENQASM 3.1;
 
 	const int A = 0;
 	const int B = 1;
 	int i = 15;
 
 	switch (i) {
-	case A {
-	  // OpenQASM3 statement(s)
-	}
-	case B {
-	  // OpenQASM3 statement(s)
-	}
-	case B+1 {
-	  // OpenQASM3 statement(s)
-	}
-	default {
-	  // OpenQASM3 statement(s)
-	}
+		case A {
+		  // OpenQASM3 statement(s)
+		}
+		case B {
+		  // OpenQASM3 statement(s)
+		}
+		case B+1 {
+		  // OpenQASM3 statement(s)
+		}
+		default {
+		  // OpenQASM3 statement(s)
+		}
 	}
 	
 
@@ -553,22 +553,22 @@ Examples:
 
 .. code-block::
 
-	OPENQASM 3.0;
+	OPENQASM 3.1;
 
 	bit[2] b;
 	switch (int(b)) {
-	case 0b00 {
-	  // OpenQASM3 statement(s)
-	}
-	case 0b01 {
-	  // OpenQASM3 statement(s)
-	}
-	case 0b10 {
-	  // OpenQASM3 statement(s)
-	}
-	case 0b11 {
-	  // OpenQASM3 statement(s)
-	}
+		case 0b00 {
+		  // OpenQASM3 statement(s)
+		}
+		case 0b01 {
+		  // OpenQASM3 statement(s)
+		}
+		case 0b10 {
+		  // OpenQASM3 statement(s)
+		}
+		case 0b11 {
+		  // OpenQASM3 statement(s)
+		}
 	}
 	
 4. A ``switch`` statement containing declarations at ``case`` statement scope, and a function call, also at ``case`` statement scope:
@@ -576,7 +576,7 @@ Examples:
 
 .. code-block::
 
-	OPENQASM 3.0;
+	OPENQASM 3.1;
 
 	def foo(int i, qubit[8] d) -> bit {
 	  return measure d[i];
@@ -592,16 +592,16 @@ Examples:
 	qubit[8] q0;
 
 	switch (i) {
-	case 1 {
-	  j = k + foo(k, q0);
-	}
-	case 2 {
-	  float[64] d = j / k;
-	}
-	case 3 {
-	}
-	default {
-	}
+		case 1 {
+		  j = k + foo(k, q0);
+		}
+		case 2 {
+		  float[64] d = j / k;
+		}
+		case 3 {
+		}
+		default {
+		}
 	}
 	
 	
@@ -609,7 +609,8 @@ Examples:
 
 .. code-block::
 
-	OPENQASM 3.0;
+	OPENQASM 3.1;
+	include "stdgates.inc";
 
 	def foo(qubit[8] q) -> int {
 	  int r = 0;
@@ -629,14 +630,14 @@ Examples:
 	int i = foo(q);
 
 	switch (i) {
-	case 1, 2, 5, 12 {
-	}
-	case 3 {
-	  switch (j) {
-	  case 10, 15, 20 {
-	    h q;	  
-	  }
-	}
+		case 1, 2, 5, 12 { }
+		case 3 {
+			switch (j) {
+				case 10, 15, 20 {
+					h q;
+				}
+			}
+		}
 	}
 
 
