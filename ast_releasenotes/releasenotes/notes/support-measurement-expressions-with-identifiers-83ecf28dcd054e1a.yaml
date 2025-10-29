@@ -1,7 +1,7 @@
 ---
 features:
   - |
-    Added QuantumMeasurementGeneric AST node to support parsing of measurement
+    Added QuantumCallExpression AST node to support parsing of measurement
     statements such as `measure_iq $0` and `measure_rotated(pi) $0` where the
     measurement function is not named `measure` or accepts classical arguments.
     The parser already supported defining such a measurement operations using,
