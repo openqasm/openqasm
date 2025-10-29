@@ -62,6 +62,7 @@ from openqasm3.ast import (
     QuantumGateModifier,
     QuantumNop,
     QuantumMeasurement,
+    QuantumCallExpression,
     QuantumMeasurementStatement,
     QuantumPhase,
     QubitDeclaration,
@@ -1203,6 +1204,7 @@ def test_calibration_definition():
     p = """
     defcal rz(angle[20] theta) q { shift_phase drive(q), -theta; }
     defcal measure $0 -> bit {Outer {nested} outer again.}
+    defcal measure_iq q -> complex[float[32]] { non-bit measure }
     defcal rx(pi / 2) $1 {Untokenisable: *$£()"*}
     defcal cx $0, $1 {}
     """.strip()
@@ -1225,8 +1227,17 @@ def test_calibration_definition():
                 name=Identifier("measure"),
                 arguments=[],
                 qubits=[Identifier("$0")],
-                return_type=BitType(size=None),
+                return_type=BitType(),
                 body="Outer {nested} outer again.",
+            ),
+            CalibrationDefinition(
+                name=Identifier("measure_iq"),
+                arguments=[],
+                qubits=[Identifier("q")],
+                return_type=ComplexType(
+                    base_type=FloatType(size=IntegerLiteral(value=32)),
+                ),
+                body=" non-bit measure ",
             ),
             CalibrationDefinition(
                 name=Identifier("rx"),
@@ -1235,7 +1246,7 @@ def test_calibration_definition():
                         lhs=Identifier("pi"),
                         op=BinaryOperator["/"],
                         rhs=IntegerLiteral(2),
-                    )
+                    ),
                 ],
                 qubits=[Identifier("$1")],
                 return_type=None,
@@ -1247,6 +1258,428 @@ def test_calibration_definition():
                 qubits=[Identifier("$0"), Identifier("$1")],
                 return_type=None,
                 body="",
+            ),
+        ]
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_gate():
+    p = """
+    defcal rz(angle[20] theta) q { ... rz implementation ... }
+    rz(pi / 2) $0;
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier("rz"),
+                arguments=[
+                    ClassicalArgument(
+                        type=AngleType(
+                            size=IntegerLiteral(
+                                value=20,
+                            ),
+                        ),
+                        name=Identifier("theta"),
+                        access=None,
+                    ),
+                ],
+                qubits=[
+                    Identifier("q"),
+                ],
+                return_type=None,
+                body=" ... rz implementation ... ",
+            ),
+            QuantumGate(
+                modifiers=[],
+                name=Identifier("rz"),
+                arguments=[
+                    BinaryExpression(
+                        op=BinaryOperator["/"],
+                        lhs=Identifier("pi"),
+                        rhs=IntegerLiteral(2),
+                    ),
+                ],
+                qubits=[
+                    Identifier("$0"),
+                ],
+                duration=None,
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_measurement():
+    p = """
+    defcal measure q -> bit { ... measure implementation ... }
+    bit c;
+    measure $0;
+    c = measure $0;
+    measure $0 -> c;
+    bit c2 = measure $0;
+    def measure2(qubit q) -> bit {
+        return measure q;
+    }
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier(
+                    name="measure",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier(
+                        name="q",
+                    ),
+                ],
+                return_type=BitType(),
+                body=" ... measure implementation ... ",
+            ),
+            ClassicalDeclaration(
+                type=BitType(),
+                identifier=Identifier("c"),
+                init_expression=None,
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    qubit=Identifier("$0"),
+                ),
+                target=None,
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    qubit=Identifier("$0"),
+                ),
+                target=Identifier("c"),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumMeasurement(
+                    qubit=Identifier("$0"),
+                ),
+                target=Identifier("c"),
+            ),
+            ClassicalDeclaration(
+                type=BitType(),
+                identifier=Identifier("c2"),
+                init_expression=QuantumMeasurement(
+                    qubit=Identifier("$0"),
+                ),
+            ),
+            SubroutineDefinition(
+                name=Identifier("measure2"),
+                arguments=[QuantumArgument(name=Identifier("q"))],
+                return_type=BitType(),
+                body=[
+                    ReturnStatement(expression=QuantumMeasurement(qubit=Identifier(name="q"))),
+                ],
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_quantum_call():
+    p = """
+    defcal measure_iq q -> complex[float[32]] { ... measure_iq implementation ... }
+    complex[float[32]] iq;
+    measure_iq $0;
+    iq = measure_iq $0;
+    measure_iq $0 -> iq;
+    complex[float[32]] iq2 = measure_iq $0;
+    def measure2(qubit q) -> complex[float[32]] {
+        return measure_iq q;
+    }
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier(
+                    name="measure_iq",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("q"),
+                ],
+                return_type=ComplexType(
+                    base_type=FloatType(
+                        size=IntegerLiteral(value=32),
+                    ),
+                ),
+                body=" ... measure_iq implementation ... ",
+            ),
+            ClassicalDeclaration(
+                type=ComplexType(
+                    base_type=FloatType(
+                        size=IntegerLiteral(value=32),
+                    ),
+                ),
+                identifier=Identifier("iq"),
+                init_expression=None,
+            ),
+            # TODO: It's not possible to distinguish a gate and a measurement here so
+            #       this is parsed as a quantum gate. Is this acceptable?
+            QuantumGate(
+                modifiers=[],
+                name=Identifier(
+                    name="measure_iq",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("$0"),
+                ],
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("measure_iq"),
+                    arguments=[],
+                    qubits=[Identifier("$0")],
+                ),
+                target=Identifier("iq"),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("measure_iq"),
+                    arguments=[],
+                    qubits=[Identifier("$0")],
+                ),
+                target=Identifier("iq"),
+            ),
+            ClassicalDeclaration(
+                type=ComplexType(
+                    base_type=FloatType(
+                        size=IntegerLiteral(value=32),
+                    ),
+                ),
+                identifier=Identifier("iq2"),
+                init_expression=QuantumCallExpression(
+                    name=Identifier("measure_iq"),
+                    arguments=[],
+                    qubits=[Identifier("$0")],
+                ),
+            ),
+            SubroutineDefinition(
+                name=Identifier("measure2"),
+                arguments=[QuantumArgument(name=Identifier("q"))],
+                return_type=ComplexType(
+                    base_type=FloatType(
+                        size=IntegerLiteral(value=32),
+                    ),
+                ),
+                body=[
+                    ReturnStatement(
+                        expression=QuantumCallExpression(
+                            name=Identifier("measure_iq"),
+                            arguments=[],
+                            qubits=[Identifier("q")],
+                        )
+                    ),
+                ],
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_quantum_call_multi_qubits():
+    p = """
+    defcal my_quantum_call q0, q1 -> int[32] {}
+    int[32] register;
+    my_quantum_call $0, $2;
+    register = my_quantum_call $0, $2;
+    my_quantum_call $0, $2 -> register;
+    int[32] register2 = my_quantum_call $0, $2;
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier(
+                    name="my_quantum_call",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("q0"),
+                    Identifier("q1"),
+                ],
+                return_type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                body="",
+            ),
+            ClassicalDeclaration(
+                type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                identifier=Identifier("register"),
+                init_expression=None,
+            ),
+            # TODO: It's not possible to distinguish a gate and a quantum call here so
+            #       this is parsed as a quantum gate. Is this acceptable?
+            QuantumGate(
+                modifiers=[],
+                name=Identifier(
+                    name="my_quantum_call",
+                ),
+                arguments=[],
+                qubits=[
+                    Identifier("$0"),
+                    Identifier("$2"),
+                ],
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
+                target=Identifier("register"),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
+                target=Identifier("register"),
+            ),
+            ClassicalDeclaration(
+                type=IntType(
+                    size=IntegerLiteral(value=32),
+                ),
+                identifier=Identifier("register2"),
+                init_expression=QuantumCallExpression(
+                    name=Identifier("my_quantum_call"),
+                    arguments=[],
+                    qubits=[Identifier("$0"), Identifier("$2")],
+                ),
+            ),
+        ],
+    )
+    SpanGuard().visit(program)
+
+
+def test_calibration_definition_usage_generic_measurement_with_parameters():
+    p = """
+    defcal measure_rotated(angle[20] theta) q -> bit { ... measurement_rotated implementation ... }
+    bit c;
+    measure_rotated(pi / 2) $0;
+    c = measure_rotated(pi / 2) $0;
+    measure_rotated(pi / 2) $0 -> c;
+    bit c2 = measure_rotated(pi / 2) $0;
+    def measure2(qubit q) -> bit {
+        return measure_rotated(pi / 2) q;
+    }
+    """.strip()
+    program = parse(p)
+    assert _remove_spans(program) == Program(
+        statements=[
+            CalibrationDefinition(
+                name=Identifier("measure_rotated"),
+                arguments=[
+                    ClassicalArgument(
+                        type=AngleType(
+                            size=IntegerLiteral(value=20),
+                        ),
+                        name=Identifier("theta"),
+                        access=None,
+                    ),
+                ],
+                qubits=[
+                    Identifier("q"),
+                ],
+                return_type=BitType(),
+                body=" ... measurement_rotated implementation ... ",
+            ),
+            ClassicalDeclaration(
+                type=BitType(),
+                identifier=Identifier("c"),
+                init_expression=None,
+            ),
+            # TODO: It's not possible to distinguish a gate and a measurement here so
+            #       this is parsed as a quantum gate. Is this acceptable?
+            QuantumGate(
+                modifiers=[],
+                name=Identifier(
+                    name="measure_rotated",
+                ),
+                arguments=[
+                    BinaryExpression(
+                        lhs=Identifier("pi"),
+                        op=BinaryOperator["/"],
+                        rhs=IntegerLiteral(2),
+                    ),
+                ],
+                qubits=[
+                    Identifier("$0"),
+                ],
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("measure_rotated"),
+                    arguments=[
+                        BinaryExpression(
+                            lhs=Identifier("pi"),
+                            op=BinaryOperator["/"],
+                            rhs=IntegerLiteral(2),
+                        ),
+                    ],
+                    qubits=[Identifier("$0")],
+                ),
+                target=Identifier("c"),
+            ),
+            QuantumMeasurementStatement(
+                measure=QuantumCallExpression(
+                    name=Identifier("measure_rotated"),
+                    arguments=[
+                        BinaryExpression(
+                            lhs=Identifier("pi"),
+                            op=BinaryOperator["/"],
+                            rhs=IntegerLiteral(2),
+                        ),
+                    ],
+                    qubits=[Identifier("$0")],
+                ),
+                target=Identifier("c"),
+            ),
+            ClassicalDeclaration(
+                type=BitType(),
+                identifier=Identifier("c2"),
+                init_expression=QuantumCallExpression(
+                    name=Identifier("measure_rotated"),
+                    arguments=[
+                        BinaryExpression(
+                            lhs=Identifier("pi"),
+                            op=BinaryOperator["/"],
+                            rhs=IntegerLiteral(2),
+                        ),
+                    ],
+                    qubits=[Identifier("$0")],
+                ),
+            ),
+            SubroutineDefinition(
+                name=Identifier("measure2"),
+                arguments=[QuantumArgument(name=Identifier("q"))],
+                return_type=BitType(),
+                body=[
+                    ReturnStatement(
+                        expression=QuantumCallExpression(
+                            name=Identifier("measure_rotated"),
+                            arguments=[
+                                BinaryExpression(
+                                    lhs=Identifier("pi"),
+                                    op=BinaryOperator["/"],
+                                    rhs=IntegerLiteral(2),
+                                ),
+                            ],
+                            qubits=[Identifier("q")],
+                        )
+                    ),
+                ],
             ),
         ]
     )

@@ -307,9 +307,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitAssignmentStatement(self, ctx: qasm3Parser.AssignmentStatementContext):
         if self._in_gate():
             _raise_from_context(ctx, "cannot assign to classical parameters in a gate")
-        if ctx.measureExpression():
+        measure = ctx.measureExpression() or ctx.quantumCallExpression()
+        if measure:
             return ast.QuantumMeasurementStatement(
-                measure=self.visit(ctx.measureExpression()),
+                measure=self.visit(measure),
                 target=self.visit(ctx.indexedIdentifier()),
             )
         return ast.ClassicalAssignment(
@@ -553,8 +554,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     ):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+        measure = ctx.measureExpression() or ctx.quantumCallExpression()
         return ast.QuantumMeasurementStatement(
-            measure=self.visit(ctx.measureExpression()),
+            measure=self.visit(measure),
             target=self.visit(ctx.indexedIdentifier()) if ctx.indexedIdentifier() else None,
         )
 
@@ -609,6 +611,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             expression = self.visit(ctx.expression())
         elif ctx.measureExpression():
             expression = self.visit(ctx.measureExpression())
+        elif ctx.quantumCallExpression():
+            expression = self.visit(ctx.quantumCallExpression())
         else:
             expression = None
         return ast.ReturnStatement(expression=expression)
@@ -686,6 +690,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
         return ast.QuantumMeasurement(qubit=self.visit(ctx.gateOperand()))
+
+    @span
+    def visitQuantumCallExpression(self, ctx: qasm3Parser.QuantumCallExpressionContext):
+        if self._in_gate():
+            _raise_from_context(
+                ctx,
+                "cannot have a non-unitary measure-like quantum call expression instruction in a gate",
+            )
+        name = _visit_identifier(ctx.Identifier())
+        arguments = (
+            [self.visit(argument) for argument in ctx.expressionList().expression()]
+            if ctx.expressionList()
+            else []
+        )
+        return ast.QuantumCallExpression(
+            name=name,
+            arguments=arguments,
+            qubits=[self.visit(operand) for operand in ctx.gateOperandList().gateOperand()],
+        )
 
     @span
     def visitDurationofExpression(self, ctx: qasm3Parser.DurationofExpressionContext):
