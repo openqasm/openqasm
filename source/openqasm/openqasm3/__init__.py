@@ -11,7 +11,8 @@ The AST itself is in the :obj:`.ast` module.  There is a reference parser in the
 :obj:`.parser` module, which requires the ``[parser]`` extra to be installed.
 
 With the ``[parser]`` extra installed, the simplest interface to the parser is
-the :obj:`~parser.parse` function.
+the :obj:`~parser.parse` function.  You can use :func:`.parse_version` to check
+the potential version of an OpenQASM program before invoking your own parser.
 """
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "dumps",
     "parser",
     "parse",
+    "parse_version",
 ]
 
 __version__ = "1.0.1"
@@ -40,4 +42,4 @@ else:
     # Any import errors in section are of interest to the user, and should be propagated.
     del antlr4
     from . import parser
-    from .parser import parse
+    from .parser import parse, parse_version

@@ -2627,3 +2627,16 @@ def test_comment_preservation():
     program = parse(source)
     assert program is not None
     assert len(program.statements) >= 2  # include, qubit declaration
+
+
+@pytest.mark.parametrize("version", ["2.0", "4.0"])
+def test_rejects_invalid_version(version):
+    prog = f"OPENQASM {version};"
+    with pytest.raises(QASM3ParsingError, match="unsupported version"):
+        parse(prog)
+
+
+@pytest.mark.parametrize("version", ["2.0", "4.0"])
+def test_attempts_invalid_version_when_allowed(version):
+    prog = f"OPENQASM {version};"
+    assert parse(prog, ignore_version=True) is not None
