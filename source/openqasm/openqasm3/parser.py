@@ -35,7 +35,7 @@ __all__ = [
 
 import re
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional
+from typing import Union, TypeVar, List, Optional, Tuple
 
 try:
     from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
@@ -99,7 +99,7 @@ class _RaiseOnErrorListener(ErrorListener):
 _VERSION_NUM = re.compile(r"\d+(\.\d+)*")
 
 
-def parse_version(prog: str) -> tuple[int, ...] | None:
+def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
     """Extract the version number from a potential OpenQASM program.
 
     If there is a syntactically valid ``OPENQASM <version>`` statement (with or without the
