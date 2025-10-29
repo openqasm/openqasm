@@ -405,7 +405,7 @@ such as at the top level of the main circuit or of a subroutine.
 
 .. code-block::
 
-   OPENQASM 3.1;
+   OPENQASM 3.0;
 
    break;  // Invalid: no containing loop.
 
