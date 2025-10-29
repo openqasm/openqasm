@@ -88,6 +88,9 @@ jobs:
       - name: Check lint
         run: pylint openqasm3 tests
 
+      - name: Check types
+        run: mypy openqasm3
+
   docs:
     name: AST documentation build
     needs: build
