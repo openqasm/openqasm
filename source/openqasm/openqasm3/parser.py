@@ -112,8 +112,7 @@ class _BinaryExpressionContext(Protocol):
 
     op: _OperatorToken
 
-    def expression(self, index: Optional[int] = None) -> ParserRuleContext:
-        ...
+    def expression(self, index: Optional[int] = None) -> ParserRuleContext: ...
 
 
 class _TokenWithSpan(Protocol):
