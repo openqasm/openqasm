@@ -34,10 +34,15 @@ __all__ = [
 ]
 
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional
+from typing import Union, TypeVar, List, Optional, cast, Protocol
 
 try:
-    from antlr4 import CommonTokenStream, InputStream, ParserRuleContext, RecognitionException
+    from antlr4 import (
+        CommonTokenStream,
+        InputStream,
+        ParserRuleContext,
+        RecognitionException,
+    )
     from antlr4.error.Errors import ParseCancellationException
     from antlr4.error.ErrorStrategy import BailErrorStrategy
     from antlr4.tree.Tree import TerminalNode
@@ -48,9 +53,9 @@ except ImportError as exc:
         " such as by 'pip install openqasm3[parser]'."
     ) from exc
 
-from ._antlr.qasm3Lexer import qasm3Lexer
-from ._antlr.qasm3Parser import qasm3Parser
-from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor
+from ._antlr.qasm3Lexer import qasm3Lexer  # type: ignore[import-not-found]
+from ._antlr.qasm3Parser import qasm3Parser  # type: ignore[import-not-found]
+from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor  # type: ignore[import-not-found]
 from . import ast
 
 _TYPE_NODE_INIT = {
@@ -95,6 +100,33 @@ class _RaiseOnErrorListener(ErrorListener):
         raise QASM3ParsingError(msg, line=line, column=column) from exc
 
 
+class _OperatorToken(Protocol):
+    text: str
+
+
+class _BinaryExpressionContext(Protocol):
+    """Describes the attributes for binary-expression types.
+
+    This enables static type checking to correctly infer attribute types.
+    """
+
+    op: _OperatorToken
+
+    def expression(self, index: Optional[int] = None) -> ParserRuleContext: ...
+
+
+class _TokenWithSpan(Protocol):
+    line: int
+    start: int
+    stop: int
+
+
+class _TerminalNodeWithSymbol(Protocol):
+    """Captures the token attribute the generated terminal nodes expose for spans."""
+
+    symbol: _TokenWithSpan
+
+
 def parse(input_: str, *, permissive=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
@@ -130,7 +162,14 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
     if isinstance(node, ParserRuleContext):
         return ast.Span(node.start.line, node.start.column, node.stop.line, node.stop.column)
     else:
-        return ast.Span(node.symbol.line, node.symbol.start, node.symbol.line, node.symbol.stop)
+        # Terminal nodes carry their position via the generated `symbol` token.
+        token_with_position = cast(_TerminalNodeWithSymbol, node).symbol
+        return ast.Span(
+            token_with_position.line,
+            token_with_position.start,
+            token_with_position.line,
+            token_with_position.stop,
+        )
 
 
 def get_comments(input_: str) -> List[dict]:
@@ -158,7 +197,12 @@ def get_comments(input_: str) -> List[dict]:
         if token.channel == lexer.HIDDEN:
             if token.type == lexer.LineComment:
                 comments.append(
-                    {"type": "line", "text": token.text, "line": token.line, "column": token.column}
+                    {
+                        "type": "line",
+                        "text": token.text,
+                        "line": token.line,
+                        "column": token.column,
+                    }
                 )
             elif token.type == lexer.BlockComment:
                 comments.append(
@@ -201,7 +245,7 @@ def span(func):
 
 
 def _visit_identifier(identifier: TerminalNode):
-    return add_span(ast.Identifier(identifier.getText()), get_span(identifier))
+    return add_span(ast.Identifier(identifier.getText()), get_span(identifier))  # type: ignore[attr-defined]
 
 
 def _raise_from_context(ctx: ParserRuleContext, message: str):
@@ -249,7 +293,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     def _in_loop(self):
         return any(
-            isinstance(scope, (qasm3Parser.ForStatementContext, qasm3Parser.WhileStatementContext))
+            isinstance(
+                scope,
+                (qasm3Parser.ForStatementContext, qasm3Parser.WhileStatementContext),
+            )
             for scope in reversed(self._current_context())
         )
 
@@ -283,7 +330,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def visitScope(self, ctx: qasm3Parser.ScopeContext) -> List[ast.Statement]:
+    def visitScope(self, ctx: qasm3Parser.ScopeContext) -> ast.CompoundStatement:
         return ast.CompoundStatement(
             statements=[self.visit(statement) for statement in ctx.statementOrScope()]
         )
@@ -293,7 +340,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if not self._in_global_scope():
             _raise_from_context(ctx, "pragmas must be global")
         return ast.Pragma(
-            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else None
+            command=ctx.RemainingLineContent().getText() if ctx.RemainingLineContent() else ""
         )
 
     @span
@@ -332,7 +379,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitBoxStatement(self, ctx: qasm3Parser.BoxStatementContext):
         return ast.Box(
             duration=self.visit(ctx.designator()) if ctx.designator() else None,
-            body=self._parse_scoped_statements(ctx.scope()),
+            body=cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())),
         )
 
     @span
@@ -491,7 +538,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if ctx.GPHASE():
             if len(arguments) != 1:
                 _raise_from_context(
-                    ctx, f"'gphase' takes exactly one argument, but received {arguments}"
+                    ctx,
+                    f"'gphase' takes exactly one argument, but received {arguments}",
                 )
             return ast.QuantumPhase(modifiers=modifiers, argument=arguments[0], qubits=qubits)
         return ast.QuantumGate(
@@ -514,7 +562,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
         qubits = [_visit_identifier(id_) for id_ in ctx.qubits.Identifier()]
         with self._push_context(ctx):
-            body = self._parse_scoped_statements(ctx.scope())
+            body = cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope()))
         return ast.QuantumGateDefinition(name, arguments, qubits, body)
 
     @span
@@ -522,7 +570,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if_body = self._parse_scoped_statements(ctx.if_body)
         else_body = self._parse_scoped_statements(ctx.else_body) if ctx.else_body else []
         return ast.BranchingStatement(
-            condition=self.visit(ctx.expression()), if_block=if_body, else_block=else_body
+            condition=self.visit(ctx.expression()),
+            if_block=if_body,
+            else_block=else_body,
         )
 
     @span
@@ -570,7 +620,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             isinstance(size, ast.IntegerLiteral) and size.value == 0
         ):
             _raise_from_context(
-                ctx.designator(), ("qreg" if ctx.QREG() else "creg") + " size must be positive"
+                ctx.designator(),
+                ("qreg" if ctx.QREG() else "creg") + " size must be positive",
             )
         if ctx.QREG():
             if not self._in_global_scope():
@@ -662,7 +713,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         )
 
     @span
-    def _visit_binary_expression(self, ctx: ParserRuleContext):
+    def _visit_binary_expression(self, ctx: _BinaryExpressionContext):
         return ast.BinaryExpression(
             lhs=self.visit(ctx.expression(0)),
             op=ast.BinaryOperator[ctx.op.text],
@@ -868,7 +919,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.QuantumGateModifier(modifier=ast.GateModifierName["inv"], argument=None)
         if ctx.POW():
             return ast.QuantumGateModifier(
-                modifier=ast.GateModifierName["pow"], argument=self.visit(ctx.expression())
+                modifier=ast.GateModifierName["pow"],
+                argument=self.visit(ctx.expression()),
             )
         return ast.QuantumGateModifier(
             modifier=ast.GateModifierName["ctrl" if ctx.CTRL() else "negctrl"],
@@ -964,6 +1016,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 name=name, size=self.visit(designator) if designator else None
             )
         access = None
+        type_: ast.ClassicalType
         if ctx.CREG():
             size = self.visit(ctx.designator()) if ctx.designator() else None
             creg_span = get_span(ctx.CREG())
@@ -997,6 +1050,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitExternArgument(self, ctx: qasm3Parser.ExternArgumentContext):
         access = None
+        type_: ast.ClassicalType
         if ctx.CREG():
             type_ = ast.BitType(size=self.visit(ctx.designator()) if ctx.designator() else None)
         elif ctx.scalarType():
