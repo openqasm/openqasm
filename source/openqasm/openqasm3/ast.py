@@ -637,8 +637,9 @@ class QuantumBarrier(QuantumStatement):
     qubits: List[Expression]
 
 
+# Note that this is not a QuantumStatement because a reset is not a unitary operation.
 @dataclass
-class QuantumReset(QuantumStatement):
+class QuantumReset(Statement):
     """
     A reset instruction.
 
