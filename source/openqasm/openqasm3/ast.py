@@ -1060,7 +1060,7 @@ class SwitchStatement(Statement):
 
 
 @dataclass
-class DelayInstruction(QuantumStatement):
+class DelayInstruction(Statement):
     """
     Delay instruction
 
@@ -1074,7 +1074,7 @@ class DelayInstruction(QuantumStatement):
 
 
 @dataclass
-class Box(QuantumStatement):
+class Box(Statement):
     """
     Timing box
 
@@ -1087,7 +1087,7 @@ class Box(QuantumStatement):
     """
 
     duration: Optional[Expression]
-    body: List[QuantumStatement]
+    body: List[Statement]
 
 
 @dataclass

@@ -447,7 +447,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitBoxStatement(self, ctx: qasm3Parser.BoxStatementContext):
         return ast.Box(
             duration=self.visit(ctx.designator()) if ctx.designator() else None,
-            body=cast(List[ast.QuantumStatement], self._parse_scoped_statements(ctx.scope())),
+            body=self._parse_scoped_statements(ctx.scope()),
         )
 
     @span
