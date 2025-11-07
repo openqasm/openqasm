@@ -89,7 +89,7 @@ jobs:
         run: pylint openqasm3 tests
 
       - name: Check types
-        run: mypy openqasm3 --ignore-missing-imports
+        run: mypy --ignore-missing-imports openqasm3 tests
 
   docs:
     name: AST documentation build
