@@ -33,8 +33,9 @@ __all__ = [
     "get_comments",
 ]
 
+import re
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional, cast, Protocol
+from typing import Union, TypeVar, List, Optional, Protocol, Tuple, cast
 
 try:
     from antlr4 import (
@@ -127,7 +128,60 @@ class _TerminalNodeWithSymbol(Protocol):
     symbol: _TokenWithSpan
 
 
-def parse(input_: str, *, permissive=False) -> ast.Program:
+_VERSION_NUM = re.compile(r"\d+(\.\d+)*")
+
+
+def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
+    """Extract the version number from a potential OpenQASM program.
+
+    If there is a syntactically valid ``OPENQASM <version>`` statement (with or without the
+    necessary semicolon) as the first non-comment statement of the file, the ``<version>`` is
+    returned as a tuple of ``int``.  If not, ``None`` is returned.
+
+    This function can return version numbers even for programs that are not syntactically valid; it
+    is used as an initial test to set the version of the parser appropriately.
+
+    This function may return version tuples that are longer than two parts, although OpenQASM 2.0
+    and 3.0 both specified a maximum of two components.
+    """
+    in_multiline_comment = False
+    found_openqasm = False
+    for line in prog.splitlines():
+        while line:
+            line = line.strip()
+            if in_multiline_comment:
+                if (loc := line.find("*/")) < 0:
+                    break
+                line = line[loc + 2 :]
+                in_multiline_comment = False
+                continue
+            if line.startswith("//"):
+                break
+            if line.startswith("/*"):
+                in_multiline_comment = True
+                line = line[2:]
+                continue
+            if found_openqasm:
+                # If here, we've got a non-space, non-comment token after an `OPENQASM` one, so it's
+                # either a valid version or the file is syntactically invalid.
+                if (m := _VERSION_NUM.match(line)) is not None:
+                    return tuple(int(x) for x in m.group(0).split("."))
+                return None
+            if line.startswith("OPENQASM"):
+                found_openqasm = True
+                line = line[len("OPENQASM") :]
+                continue
+            # We've got a non-OPENQASM token as the first non-comment token, so there's no
+            # syntactically valid version statement.
+            return None
+    return None
+
+
+MIN_SUPPORTED_VERSION = (3,)
+MAX_SUPPORTED_VERSION = (3, 1)
+
+
+def parse(input_: str, *, permissive=False, ignore_version=False) -> ast.Program:
     """
     Parse a complete OpenQASM 3 program from a string.
 
@@ -136,8 +190,22 @@ def parse(input_: str, *, permissive=False) -> ast.Program:
         recover from incorrect input or not.  Defaults to ``False``; if set to
         ``True``, the reference AST produced may be invalid if ANTLR emits any
         warning messages during its parsing phase.
+    :param ignore_version: If true, ignore the specified version of the OpenQASM program, and
+        attempt to parse it anyway.  There is no guarantee that the output was syntactically or
+        semantically valid for the given version if this is set.
     :return: A complete :obj:`~ast.Program` node.
     """
+    version = parse_version(input_)
+    if version is None:
+        version = MIN_SUPPORTED_VERSION
+    if not ignore_version:
+        version_str = ".".join(str(part) for part in version)
+        if len(version) > 2:
+            raise QASM3ParsingError(
+                f"version can only be `<major>` or `<major>.<minor>`, but got '{version_str}'"
+            )
+        if not MIN_SUPPORTED_VERSION <= version <= MAX_SUPPORTED_VERSION:
+            raise QASM3ParsingError(f"program reports being unsupported version '{version_str}'")
     lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
@@ -354,9 +422,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     def visitAssignmentStatement(self, ctx: qasm3Parser.AssignmentStatementContext):
         if self._in_gate():
             _raise_from_context(ctx, "cannot assign to classical parameters in a gate")
-        if ctx.measureExpression():
+        measure = ctx.measureExpression() or ctx.quantumCallExpression()
+        if measure:
             return ast.QuantumMeasurementStatement(
-                measure=self.visit(ctx.measureExpression()),
+                measure=self.visit(measure),
                 target=self.visit(ctx.indexedIdentifier()),
             )
         return ast.ClassicalAssignment(
@@ -603,8 +672,9 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     ):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
+        measure = ctx.measureExpression() or ctx.quantumCallExpression()
         return ast.QuantumMeasurementStatement(
-            measure=self.visit(ctx.measureExpression()),
+            measure=self.visit(measure),
             target=self.visit(ctx.indexedIdentifier()) if ctx.indexedIdentifier() else None,
         )
 
@@ -660,6 +730,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             expression = self.visit(ctx.expression())
         elif ctx.measureExpression():
             expression = self.visit(ctx.measureExpression())
+        elif ctx.quantumCallExpression():
+            expression = self.visit(ctx.quantumCallExpression())
         else:
             expression = None
         return ast.ReturnStatement(expression=expression)
@@ -737,6 +809,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         if self._in_gate():
             _raise_from_context(ctx, "cannot have a non-unitary 'measure' instruction in a gate")
         return ast.QuantumMeasurement(qubit=self.visit(ctx.gateOperand()))
+
+    @span
+    def visitQuantumCallExpression(self, ctx: qasm3Parser.QuantumCallExpressionContext):
+        if self._in_gate():
+            _raise_from_context(
+                ctx,
+                "cannot have a non-unitary measure-like quantum call expression instruction in a gate",
+            )
+        name = _visit_identifier(ctx.Identifier())
+        arguments = (
+            [self.visit(argument) for argument in ctx.expressionList().expression()]
+            if ctx.expressionList()
+            else []
+        )
+        return ast.QuantumCallExpression(
+            name=name,
+            arguments=arguments,
+            qubits=[self.visit(operand) for operand in ctx.gateOperandList().gateOperand()],
+        )
 
     @span
     def visitDurationofExpression(self, ctx: qasm3Parser.DurationofExpressionContext):
