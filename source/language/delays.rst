@@ -47,11 +47,11 @@ Below are some examples of values of type ``duration``.
 .. code-block::
 
        // fixed duration, in standard units
-       duration a = 300ns;
+       const duration a = 300ns;
        // fixed duration, backend dependent
-       duration b = 800dt;
+       const duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = durationof({x $3;});
+       const duration c = durationof({x $3;});
 
 We further introduce a ``stretch`` declaration, which is a special
 syntax for introducing a ``const duration`` with an unspecified,
