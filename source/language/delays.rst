@@ -148,6 +148,23 @@ backend-specific externs).
        // stretchy duration with backtracking by up to half b
        stretch e = -0.5 * b + c;
 
+Because `stretch` introduces a `const duration`, initialization with a non-`const` expression are a type error. On the other hand, because stretch resolution requires solving a system of constraints, a compiler may reject a well-typed program involving stretch durations due to a failure to resolve the constraint system.
+
+.. code-block::
+
+       input duration a; // not const
+       const duration b = 300ns;
+       stretch c;
+
+       // type error: const initializer expected
+       stretch d = c + a;
+
+       // stretch resolution error: 'e' resolved to -200ns
+       stretch e = b - 500ns;
+       delay[e] q0;
+
+
+
 Delays (and other duration-based instructions)
 ----------------------------------------------
 
