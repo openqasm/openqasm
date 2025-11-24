@@ -6,3 +6,6 @@ Sphinx>=4.0
 # Black uses calver majors for changes to the default style;
 # we can allow updates within a given year.
 black~=24.10
+
+# MyPy for type checking
+mypy~=1.18
