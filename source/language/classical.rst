@@ -648,8 +648,8 @@ Extern function calls
 statement ``extern name(inputs) -> output;`` where ``inputs`` is a comma-separated list of type
 names and ``output`` is a single type name. The parentheses may be omitted if there are no ``inputs``.
 
-``extern`` functions can take of any number of arguments whose types correspond to the classical
-types of OpenQASM. Inputs are passed by value. They can return zero or one value whose type
+``extern`` functions can take any number of arguments whose types correspond to the classical
+types of OpenQASM. Inputs are passed by value. They can return zero or one values whose type
 is any classical type in OpenQASM except real constants. If necessary,
 multiple return values can be accommodated by concatenating registers.
 The type and size of each argument must be known at compile time to
