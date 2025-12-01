@@ -4,8 +4,6 @@ source: |
   array[int[8], 4] x;
   array[float[64], 4, 2] x;
   array[angle[32], 4, 3, 2] x;
-  array[bit[8], 2] x;
-  array[bit[16], 2, 2] x;
   array[complex[float[32]], 4] x;
   array[bool, 3] x;
   array[int[8], 4] x = {1, 2, 3, 4};
@@ -23,7 +21,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [
@@ -43,7 +41,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               int
               designator
                 [
@@ -63,7 +61,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               float
               designator
                 [
@@ -86,7 +84,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               angle
               designator
                 [
@@ -112,50 +110,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
-              bit
-              designator
-                [
-                expression
-                  8
-                ]
-            ,
-            expressionList
-              expression
-                2
-            ]
-          x
-          ;
-    statementOrScope
-      statement
-        classicalDeclarationStatement
-          arrayType
-            array
-            [
-            scalarType
-              bit
-              designator
-                [
-                expression
-                  16
-                ]
-            ,
-            expressionList
-              expression
-                2
-              ,
-              expression
-                2
-            ]
-          x
-          ;
-    statementOrScope
-      statement
-        classicalDeclarationStatement
-          arrayType
-            array
-            [
-            scalarType
+            arrayBaseType
               complex
               [
               scalarType
@@ -179,7 +134,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               bool
             ,
             expressionList
@@ -194,7 +149,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               int
               designator
                 [
@@ -230,7 +185,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               int
               designator
                 [
@@ -254,7 +209,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               int
               designator
                 [
@@ -288,7 +243,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [
@@ -341,7 +296,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [
@@ -388,7 +343,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [
@@ -431,7 +386,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [

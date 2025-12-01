@@ -19,7 +19,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [
@@ -64,7 +64,7 @@ reference: |
           arrayType
             array
             [
-            scalarType
+            arrayBaseType
               uint
               designator
                 [

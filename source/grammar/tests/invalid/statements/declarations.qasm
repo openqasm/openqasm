@@ -30,6 +30,8 @@ array myvar;
 array[8] myvar;
 array[not_a_type, 4] myvar;
 array[int[8], int[8], 2] myvar;
+array[bit[8], 4] myvar;
+array[stretch, 4] myvar;
 
 // Invalid identifiers.
 int[8] int;
