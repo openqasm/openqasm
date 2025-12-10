@@ -1,5 +1,7 @@
 import dataclasses
 import textwrap
+from typing import Any, Optional
+
 import pytest
 
 from openqasm3.ast import (
@@ -93,7 +95,7 @@ def _with_annotations(node, annotations):
 class SpanGuard(QASMVisitor):
     """Ensure that we did not forget to set spans when we add new AST nodes"""
 
-    def visit(self, node: QASMNode):
+    def visit(self, node: QASMNode, context: Optional[Any] = None):
         assert node.span is not None
         return super().visit(node)
 

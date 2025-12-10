@@ -65,4 +65,4 @@ RUNTIME_VERSION = tuple(int(x) for x in _parts)
 
 # These imports are re-directed into concrete versioned ones.  Doing them
 # manually here helps stop pylint complaining.
-from . import qasm3Lexer, qasm3Parser, qasm3ParserVisitor, qasm3ParserListener
+from . import qasm3Lexer, qasm3Parser, qasm3ParserVisitor, qasm3ParserListener  # type: ignore[attr-defined]

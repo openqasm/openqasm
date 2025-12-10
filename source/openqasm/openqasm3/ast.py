@@ -102,7 +102,7 @@ __all__ = [
 AccessControl = Enum("AccessControl", "readonly mutable")
 AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ^= <<= >>= %= **=")
 BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
-GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")
+GateModifierName = Enum("GateModifierName", "inv pow ctrl negctrl")
 IOKeyword = Enum("IOKeyword", "input output")
 TimeUnit = Enum("TimeUnit", "dt ns us ms s")
 UnaryOperator = Enum("UnaryOperator", "~ ! -")
@@ -637,8 +637,9 @@ class QuantumBarrier(QuantumStatement):
     qubits: List[Expression]
 
 
+# Note that this is not a QuantumStatement because a reset is not a unitary operation.
 @dataclass
-class QuantumReset(QuantumStatement):
+class QuantumReset(Statement):
     """
     A reset instruction.
 
@@ -1060,7 +1061,7 @@ class SwitchStatement(Statement):
 
 
 @dataclass
-class DelayInstruction(QuantumStatement):
+class DelayInstruction(Statement):
     """
     Delay instruction
 
@@ -1074,7 +1075,7 @@ class DelayInstruction(QuantumStatement):
 
 
 @dataclass
-class Box(QuantumStatement):
+class Box(Statement):
     """
     Timing box
 
@@ -1087,7 +1088,7 @@ class Box(QuantumStatement):
     """
 
     duration: Optional[Expression]
-    body: List[QuantumStatement]
+    body: List[Statement]
 
 
 @dataclass
