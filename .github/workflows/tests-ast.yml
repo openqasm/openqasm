@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/
@@ -106,7 +106,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/
@@ -122,7 +122,7 @@ jobs:
         working-directory: source/openqasm/docs
         run: make html
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: openqasm3-html-documentation
           path: source/openqasm/docs/_build/html/*

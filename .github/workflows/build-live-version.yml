@@ -24,7 +24,7 @@ jobs:
       - name: Generate HTML
         run: make html
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: html
           path: build/html
