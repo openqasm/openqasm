@@ -118,6 +118,7 @@ class _BinaryExpressionContext(Protocol):
 
 class _TokenWithSpan(Protocol):
     line: int
+    column: int
     start: int
     stop: int
 
@@ -234,9 +235,9 @@ def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:
         token_with_position = cast(_TerminalNodeWithSymbol, node).symbol
         return ast.Span(
             token_with_position.line,
-            token_with_position.start,
+            token_with_position.column,
             token_with_position.line,
-            token_with_position.stop,
+            token_with_position.column + (token_with_position.stop - token_with_position.start),
         )
 
 
