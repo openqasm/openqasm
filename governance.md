@@ -57,6 +57,9 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
   * Erik Davis
   * Jialin Dou
 
+* An election has been prepared and will become active 2026-01-08. Electors will be notified with a link to the election via email.
+Some notices may have been mailed out by the election software in advance. The election will actually open 2026-01-08.
+
 * **22 November, 2024** the TSC [called for candidates](https://github.com/openqasm/openqasm/issues/572) for the 3 seats up for re-election. These were the seats held by Serwan Asaad, Lev Bishop, and Blake Johnson. All 3 incumbents chose to stand for re-election. No other candidates were nominated nor self-nominated despite publication of the upcoming election via GitHub, Qiskit Slack, and other media. The required election was held 17 December, 2024 through 17 January, 2025 on the [Belenios platform](https://vote.belenios.org) and eligible electors solicited via email to cast their votes. 16 electors responded, with the following result:
   * Serwan Asaad 15
   * Lev Bishop 16
