@@ -140,8 +140,7 @@ def test_qubit_declaration():
     assert qubit_declaration.qubit.span == Span(1, 6, 1, 6)
 
 
-def test_terminal_span_uses_column_positions():
-    """Test that terminal nodes use column positions, not byte offsets."""
+def test_terminal_node_span_positions():
     source = "OPENQASM 3.0;\nqubit myqubit;"
     program = parse(source)
     qubit_declaration = program.statements[0]
