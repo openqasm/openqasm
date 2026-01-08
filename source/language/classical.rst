@@ -47,7 +47,8 @@ and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift
 ``>>`` by an unsigned integer, and the corresponding assignment operators. The
 shift operators shift bits off the end. They also support bitwise negation ``~``,
 ``popcount`` [1]_, and left and right circular shift, ``rotl`` and ``rotr``,
-respectively.
+respectively. For arrays, the ``sizeof()`` [3]_ function can be used to query 
+their dimensions.
 
 .. code-block::
 
@@ -356,7 +357,7 @@ While loops
 ~~~~~~~~~~~
 
 The statement ``while ( bool ) <body>`` executes program until the Boolean evaluates to
-false [3]_. Variables in the loop condition statement may be modified
+false [4]_. Variables in the loop condition statement may be modified
 within the while loop body.  The ``body`` can be either a single statement
 terminated by a semicolon, or a program block in curly braces ``{}`` of several
 statements:
@@ -674,6 +675,11 @@ computation, but does not wait for that computation to terminate.
    instructions.
 
 .. [3]
+   ``sizeof(array)`` or ``sizeof(array, dimension)`` returns the size of the 
+   specified dimension of an array as a ``const uint``. The dimension 
+   parameter is zero-based and defaults to 0 if omitted.
+
+.. [4]
    This clearly allows users to write code that does not terminate. We
    do not discuss implementation details here, but one possibility is to
    compile into target code that imposes iteration limits.
