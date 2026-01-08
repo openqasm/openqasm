@@ -140,6 +140,14 @@ def test_qubit_declaration():
     assert qubit_declaration.qubit.span == Span(1, 6, 1, 6)
 
 
+def test_terminal_node_span_positions():
+    source = "OPENQASM 3.0;\nqubit myqubit;"
+    program = parse(source)
+    qubit_declaration = program.statements[0]
+    assert qubit_declaration.qubit.span == Span(2, 6, 2, 12)
+    assert qubit_declaration.qubit.name == "myqubit"
+
+
 def test_bit_declaration():
     p = """
     bit c;
