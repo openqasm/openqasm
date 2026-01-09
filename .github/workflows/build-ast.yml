@@ -75,13 +75,13 @@ jobs:
       - name: Build package
         run: python -m build --wheel --sdist .
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/dist/*.whl
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: openqasm3-python-sdist
           path: ./source/openqasm/dist/*.tar.gz
