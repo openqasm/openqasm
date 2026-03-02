@@ -2,63 +2,6 @@
 
 In alphabetical order
 
-## Blake Johnson (IBM Quantum)
-
-Blake is the Quantum Engine Lead at IBM Quantum, where one of his principal responsibilities is
-technical evolution of what is executable on IBM Quantum systems. Blake has sought to ensure that
-OpenQASM lives up to its name of being an open project, by soliciting feedback on early drafts of
-the OpenQASM 3 proposal, and eventually forming the OpenQASM Technical Steering committee. If
-elected for another term, Blake will strive to continue to expand the OpenQASM community and create
-an ecosystem of people and code that work together across a variety of contexts (e.g. academic and
-industry, qubit modality, etc.) while also pushing for a language that can exercise increasingly
-powerful capabilities in quantum computing systems.
-
-## Erik Davis (AWS)
-
-I am a software engineer at the AWS Center for Quantum Computing, where I serve as lead developer
-for an in-house OpenQASM+OpenPulse compiler. I have worked on compiler toolchains or control
-software at three quantum computing companies, with experience spanning multiple qubit architectures
-(superconducting qubits & quantum dots), multiple levels of abstraction (gate-based and pulse-based
-compilation), and multiple hardware backends (from commercial off-the-shelf waveform generators to
-more boutique efforts).
-
-
-OpenQASM is the premier language for describing quantum experiments, for both technical and social
-reasons. As a matter of the language itself, the "two-level semantics" -- where gate-based circuits
-may be mixed with pulse-based calibrations -- is well suited to the reality of quantum hardware
-today. Just as significantly, the community surrounding the language offers tooling and support that
-no single quantum effort could sustain independently. At AWS we have bet on OpenQASM for both of
-these reasons.
-
-
-The field of quantum computing never stands still. As a TSC member, my mission would be to steer
-OpenQASM to comfortably meet the demands of increasingly larger and more sophisticated experimental
-demonstrations. In particular, I am interested in exploring extensions to the language which enrich
-the "classical/quantum" interface with ideas from distributed computing (such as message passing
-interfaces or refinements to the OpenQASM memory model). I am also very interested in the
-relationship between OpenQASM as a circuit representation to the next-generation of QEC tooling, for
-which it may be natural to express experiments in other terms (e.g. with lattice surgery
-operations). Along these frontiers and others, I will work to ensure that OpenQASM remains a pillar
-of the industry.
-
-## Jialin Dou (Quantinuum)
-
-Quantinuum is the world’s largest integrated quantum computing company. Quantinuum focuses on
-trapped-ion computing using the QCCD architecture. In addition to its high fidelity, the
-architecture also allows for mid-circuit measurement.
-
-As the Software Development Manager at Quantinuum, Jialin is responsible for the system software
-teams, encompassing the compiler team, cloud platform team, and quantum programming language
-team. Furthermore, Jialin assumes the role of Program Manager for Quantinuum's quantum chemistry
-team.
-
-Jialin's participation in the TSC would enable him to bring Quantinuum's unique perspectives.
-
-## Lev Bishop (IBM Quantum)
-
-Lev leads the quantum software architecture team at IBM Quantum and has been involved with OpenQASM since the very beginning, before it was "Open" and was merely an internal project. His main technical goals have been to expand scope and adoption of the language while keeping a focus on making sure all the features are well-defined and work together properly so the language remains a tight interchange format and doesn't accidentally become a "kitchen-sink" language that by trying to please everyone ends up ill-suited to any particular task, nor becomes fragmented by incompatible partial implementations. If re-elected he intends to continue in this role of making sure all proposed additions have clear use-cases and interact cleanly with existing functionality. As recent examples of this approach please see the discussions around arrays (which were added to the language in a different form than the initial proposall) and dynamic qubit dereferencing (which was put on hold pending further language evolution). From a governance point of view Lev's philosophy is to introduce "just-enough" governance to allow smooth collaboration, which means only adding formality and process when there is a present need based on the size and tensions of the collaboration and otherwise keeping fast and lightweight. He thinks this approach has been successful so far for OpenQASM and is pleased with the evolution of the community during his first term, and if re-elected intends to use his TSC authority light-handedly with consensus as being the primary goal. An example of this approach was starting the initial openqasm repo within the qiskit org for expediency, but migrating to a dedicated org as soon as it became clear that there were advantages to doing so.
-
-
 ## Serwan Asaad (Quantum Machines)
 
 Serwan Asaad is a product manager at Quantum Machines where he leads the development of software layers above the QUA pulse-level language, which include the calibration software QUAlibrate and the OpenQASM3-to-QUA compiler. He also developed the open-source software QuAM, which can effectively translate gates into hardware-specific pulse-level instructions, and thus facilitates OpenQASM3-to-QUA compilation.
@@ -66,6 +9,10 @@ Serwan Asaad is a product manager at Quantum Machines where he leads the develop
 Serwan holds a PhD from UNSW, where he demonstrated the coherent electric control of a high-spin nucleus and achieved record-breaking spin-qubit 2Q gate fidelities. Throughout his academic career, Serwan had a strong focus on developing measurement control software such as [SilQ](https://nulinspiratie.github.io/SilQ/) (not to be confused with Silq), and contributing to the open-source projects QCoDeS and PycQED.
 
 Serwan predicts a transition towards circuit-level languages for quantum control, and OpenQASM3 serves as a necessary bridge in this transition. We're hearing requests from several partners and customers, and we want to promote this integration as much as possible. Ensuring its continued adoption as a standard requires tight collaboration with relevant parties both up and down the stack. Serwan can contribute to this by discussing the challenges and resolutions that arise when integrating OpenQASM3 with hardware-specific languages.
+
+## Lev Bishop (IBM Quantum)
+
+Lev leads the quantum software architecture team at IBM Quantum and has been involved with OpenQASM since the very beginning, before it was "Open" and was merely an internal project. His main technical goals have been to expand scope and adoption of the language while keeping a focus on making sure all the features are well-defined and work together properly so the language remains a tight interchange format and doesn't accidentally become a "kitchen-sink" language that by trying to please everyone ends up ill-suited to any particular task, nor becomes fragmented by incompatible partial implementations. If re-elected he intends to continue in this role of making sure all proposed additions have clear use-cases and interact cleanly with existing functionality. As recent examples of this approach please see the discussions around arrays (which were added to the language in a different form than the initial proposall) and dynamic qubit dereferencing (which was put on hold pending further language evolution). From a governance point of view Lev's philosophy is to introduce "just-enough" governance to allow smooth collaboration, which means only adding formality and process when there is a present need based on the size and tensions of the collaboration and otherwise keeping fast and lightweight. He thinks this approach has been successful so far for OpenQASM and is pleased with the evolution of the community during his first term, and if re-elected intends to use his TSC authority light-handedly with consensus as being the primary goal. An example of this approach was starting the initial openqasm repo within the qiskit org for expediency, but migrating to a dedicated org as soon as it became clear that there were advantages to doing so.
 
 ## Simon Cross (Zurich Instruments)
 
@@ -106,3 +53,30 @@ help both produce excellent software.
 Simon has a long history of contributing to the Python open source ecosystem,
 and a PSF Community Service Award. He hopes to bring this experience to OpenQASM
 and, in this way, continue being of service into the future.
+
+## Aniket Dalvi (Amazon Braket)
+
+Amazon Braket provides users access to diverse quantum hardware hosted on AWS cloud infrastructure. As an Applied Scientist at Braket, I focus on quantum compilation and expanding OpenQASM 3 support across our hardware and simulator offerings. Prior to this, I earned my PhD at Duke University, where my research spanned the quantum stack with a focus on control software, compilation, and representations. As part of my research on Quantum Intermediate Representation, I extensively studied the evolution of OpenQASM and its role in the current software stack.
+
+Throughout my career, I have utilized OpenQASM as both a primary input language and a critical interchange format for compiler optimization. My background bridges the gap between academic research and industrial-scale implementation, giving me a unique perspective on the requirements and utility of the language across different personas. With over 10 years of experience in the open-source community, I look forward to contributing toward the development and maintenance of OpenQASM.
+
+We are at a pivotal juncture where NISQ and early fault-tolerant devices co-exist. If elected to the Steering Committee, I will work to ensure OpenQASM remains a stable, empowering standard for current users while proactively defining the language features necessary to transition us into the fault-tolerant era.
+
+## Ian Davis (Microsoft)
+
+I am a Principal Engineer working on quantum compilers, developer tooling, and ecosystem interoperability within the Microsoft Quantum Development Kit. My work has focused on language and compiler infrastructure, including the design and implementation of OpenQASM 2.0 and 3.0 parsing, semantic analysis, and compiler integration within the QDK, as well as OpenQASM language service capabilities in Visual Studio Code. I have also contributed to the broader quantum IR ecosystem as an author of PyQIR, co-author of qir-runner, and as a member of the QIR Alliance steering committee.
+
+Through this work, I have developed a deep appreciation for the role OpenQASM plays as a common interchange format across quantum platforms, toolchains, and vendors. I actively participate in OpenQASM TSC meetings, contribute issues and reviews, and help evolve the language specification to reflect real-world compiler and tooling needs. My experience spans both specification design and production compiler implementations, giving me a pragmatic perspective on how language decisions affect interoperability, correctness, and long-term maintainability.
+
+If selected to continue serving the OpenQASM community in a governance role, my goal would be to help ensure that OpenQASM remains a stable, extensible, and implementation-friendly foundation for the quantum ecosystem. I am interested in strengthening alignment between OpenQASM, intermediate representations such as QIR, and developer tooling, so that advances in one area translate cleanly and predictably across the stack. With over 18 years of open‑source experience, I am committed to transparent governance and sustaining OpenQASM as an open, cross‑vendor foundation for quantum software that enables innovation.
+
+## Blake Johnson (IBM Quantum)
+
+Blake is the Quantum Engine Lead at IBM Quantum, where one of his principal responsibilities is
+technical evolution of what is executable on IBM Quantum systems. Blake has sought to ensure that
+OpenQASM lives up to its name of being an open project, by soliciting feedback on early drafts of
+the OpenQASM 3 proposal, and eventually forming the OpenQASM Technical Steering committee. If
+elected for another term, Blake will strive to continue to expand the OpenQASM community and create
+an ecosystem of people and code that work together across a variety of contexts (e.g. academic and
+industry, qubit modality, etc.) while also pushing for a language that can exercise increasingly
+powerful capabilities in quantum computing systems.
