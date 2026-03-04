@@ -1,0 +1,15 @@
+---
+features:
+  - |
+    A new function, :func:`.parse_version`, can extract the version number
+    from an OpenQASM program without parsing the entire input.  This can be
+    used to detect the version number and dispatch to the correct version of
+    a custom parser.
+  - |
+    The function :func:`.parse` has a new keyword argument ``ignore_version``,
+    which can be set ``True`` to suppress the error on an incorrect version,
+    although the output AST may not be correct in this instance.
+fixes:
+  - |
+    The parser will now correctly reject OpenQASM programs that report a
+    language version the parser does not support.

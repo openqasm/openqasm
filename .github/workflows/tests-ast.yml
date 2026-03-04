@@ -31,7 +31,7 @@ jobs:
         working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/
@@ -68,7 +68,7 @@ jobs:
       run:
         working-directory: source/openqasm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -88,6 +88,9 @@ jobs:
       - name: Check lint
         run: pylint openqasm3 tests
 
+      - name: Check types
+        run: mypy --ignore-missing-imports openqasm3 tests
+
   docs:
     name: AST documentation build
     needs: build
@@ -97,13 +100,13 @@ jobs:
         working-directory: source/openqasm
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/
@@ -119,7 +122,7 @@ jobs:
         working-directory: source/openqasm/docs
         run: make html
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: openqasm3-html-documentation
           path: source/openqasm/docs/_build/html/*

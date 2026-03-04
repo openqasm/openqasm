@@ -1,7 +1,7 @@
 # indent w/ 2 spaces
 source: |
   OPENQASM 3.0;
-  include "std_gates.inc";
+  include "stdgates.inc";
   input angle[32] param1;
   input angle[32] param2;
   output bit result;
@@ -15,7 +15,7 @@ reference: |
       statement
         includeStatement
           include
-          "std_gates.inc"
+          "stdgates.inc"
           ;
     statementOrScope
       statement

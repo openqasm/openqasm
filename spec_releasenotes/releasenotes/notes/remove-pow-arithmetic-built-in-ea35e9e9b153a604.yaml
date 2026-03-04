@@ -1,0 +1,7 @@
+---
+issues:
+  - |
+    Removed the `pow` function from the built-in arithmetic functions list in the specification.
+    The `pow` function could not be parsed by the reference grammar because it conflicted with
+    the `pow` gate modifier. It was also not mentioned in the OpenQASM 3 paper. Use the `**`
+    operator instead.

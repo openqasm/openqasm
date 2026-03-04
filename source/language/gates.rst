@@ -91,7 +91,7 @@ For example the ``gate`` block
 
    gate h q {
       U(π/2, 0, π) q;
-      gphase -π/4;
+      gphase(-π/4);
    }
 
 defines a new gate called ``h`` and associates it to the unitary matrix of the Hadamard gate. Once we have

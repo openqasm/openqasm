@@ -12,7 +12,7 @@ jobs:
     name: Build wheels
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -75,13 +75,13 @@ jobs:
       - name: Build package
         run: python -m build --wheel --sdist .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: openqasm3-python-wheel
           path: ./source/openqasm/dist/*.whl
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: openqasm3-python-sdist
           path: ./source/openqasm/dist/*.tar.gz

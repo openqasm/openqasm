@@ -102,7 +102,7 @@ __all__ = [
 AccessControl = Enum("AccessControl", "readonly mutable")
 AssignmentOperator = Enum("AssignmentOperator", "= += -= *= /= &= |= ^= <<= >>= %= **=")
 BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - * / % **")
-GateModifierName = Enum("GateModifier", "inv pow ctrl negctrl")
+GateModifierName = Enum("GateModifierName", "inv pow ctrl negctrl")
 IOKeyword = Enum("IOKeyword", "input output")
 TimeUnit = Enum("TimeUnit", "dt ns us ms s")
 UnaryOperator = Enum("UnaryOperator", "~ ! -")
@@ -592,6 +592,25 @@ class QuantumMeasurement(QASMNode):
     qubit: Union[IndexedIdentifier, Identifier]
 
 
+# Not a full expression because it can only be used in limited contexts.
+@dataclass
+class QuantumCallExpression(QASMNode):
+    """
+    A quantum call expression that invokes a defcal with an identifier
+    for the function name. This can be used for measurements or other
+    defcal operations that return values.
+
+    Example::
+
+        measure_iq q;
+        measure_rotated(pi/2) q1, q2;
+    """
+
+    name: Identifier
+    arguments: List[Expression]
+    qubits: List[Union[IndexedIdentifier, Identifier]]
+
+
 # Note that this is not a QuantumStatement because it involves access to
 # classical bits.
 @dataclass
@@ -601,7 +620,7 @@ class QuantumMeasurementStatement(Statement):
     `measure` can appear in (it can also be in classical declaration statements
     and returns)."""
 
-    measure: QuantumMeasurement
+    measure: Union[QuantumMeasurement, QuantumCallExpression]
     target: Optional[Union[IndexedIdentifier, Identifier]]
 
 
@@ -618,8 +637,9 @@ class QuantumBarrier(QuantumStatement):
     qubits: List[Expression]
 
 
+# Note that this is not a QuantumStatement because a reset is not a unitary operation.
 @dataclass
-class QuantumReset(QuantumStatement):
+class QuantumReset(Statement):
     """
     A reset instruction.
 
@@ -662,7 +682,7 @@ class ClassicalDeclaration(Statement):
 
     type: ClassicalType
     identifier: Identifier
-    init_expression: Optional[Union[Expression, QuantumMeasurement]] = None
+    init_expression: Optional[Union[Expression, QuantumMeasurement, QuantumCallExpression]] = None
 
 
 @dataclass
@@ -934,7 +954,7 @@ class ReturnStatement(Statement):
 
     """
 
-    expression: Optional[Union[Expression, QuantumMeasurement]] = None
+    expression: Optional[Union[Expression, QuantumMeasurement, QuantumCallExpression]] = None
 
 
 class BreakStatement(Statement):
@@ -1041,7 +1061,7 @@ class SwitchStatement(Statement):
 
 
 @dataclass
-class DelayInstruction(QuantumStatement):
+class DelayInstruction(Statement):
     """
     Delay instruction
 
@@ -1055,7 +1075,7 @@ class DelayInstruction(QuantumStatement):
 
 
 @dataclass
-class Box(QuantumStatement):
+class Box(Statement):
     """
     Timing box
 
@@ -1068,7 +1088,7 @@ class Box(QuantumStatement):
     """
 
     duration: Optional[Expression]
-    body: List[QuantumStatement]
+    body: List[Statement]
 
 
 @dataclass

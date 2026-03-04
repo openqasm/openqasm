@@ -615,12 +615,6 @@ inputs of these functions.
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
       | popcount | ``bit[_]``                          | ``uint``                             | Number of set (1) bits.                |
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
-      | pow      | ``int``, ``uint``                   | ``int``                              | :math:`\texttt{pow(a, b)} = a^b`.      |
-      |          |                                     |                                      |                                        |
-      |          | ``float``, ``float``                | ``float``                            | For floating-point and complex values, |
-      |          |                                     |                                      | the principal value is returned.       |
-      |          | ``complex``, ``complex``            | ``complex``                          |                                        |
-      +----------+-------------------------------------+--------------------------------------+----------------------------------------+
       | rotl     | ``bit[n] value``, ``int distance``  | ``bit[n]``                           | Rotate the bits in the representation  |
       |          |                                     |                                      | of ``value`` by ``distance`` places    |
       |          | ``uint[n] value``, ``int distance`` | ``uint[n]``                          | to the left (towards higher            |
@@ -646,6 +640,13 @@ inputs of these functions.
       | tan      | (``float`` or ``angle``)            | ``float``                            | Tangent.                               |
       +----------+-------------------------------------+--------------------------------------+----------------------------------------+
 
+.. note::
+
+   The `pow` function was once erroneously listed as a built-in arithmetic function in the table above.
+   It could not be parsed by the reference grammar because it conflicted with
+   the `pow` gate modifier. It was also not mentioned in the OpenQASM 3 paper.
+   Use the `**` operator instead.
+
 For each built-in function, the chosen overload is the first one to appear in
 the list above where all given operands can be implicitly cast to the valid
 input types.  The output type is not considered when choosing an overload.  It
@@ -666,18 +667,6 @@ is an error if there is no valid overload for a given sequence of operands.
    // The ``float -> float`` overload of ``exp`` is chosen in both of these
    // cases; in the first, there is an exact type match, in the second the
    // ``int[8]`` input can be implicitly promoted to ``float``.
-
-   const int[8] i2 = pow(i1, u1);
-   // Value 64, expression has type `const int`.  The first overload of `pow`
-   // is chosen, because `i1` can be implicitly promoted to `const int` and
-   // `u1` to `const uint`.
-
-   const float[64] f4 = pow(i1, -2);
-   // Value 0.0625, expression has type `const float`.  The second,
-   // `(float, float) -> float`, overload is chosen, because `-2` (type
-   // `const int`) cannot be implicitly promoted to `const uint`, but both
-   // input types can be implicitly promoted to `float`.  The `complex` overload
-   // is not attempted, because it has lower priority.
 
    const bit[8] b2 = rotl(b1, 3);
    // Value "0101_0001", expression has type `const bit[8]`.

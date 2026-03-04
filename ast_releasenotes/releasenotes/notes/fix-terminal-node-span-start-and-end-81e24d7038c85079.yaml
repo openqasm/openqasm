@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Fix the start and end positions of terminal node spans. Previously the
+    start and end were incorrectly set to byte offsets within the source program.
+    Now the are correctly set to the column offsets.

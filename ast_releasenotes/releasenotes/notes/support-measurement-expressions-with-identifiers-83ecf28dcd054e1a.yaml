@@ -1,0 +1,14 @@
+---
+features:
+  - |
+    Added QuantumCallExpression AST node to support parsing of measurement
+    statements such as `measure_iq $0` and `measure_rotated(pi) $0` where the
+    measurement function is not named `measure` or accepts classical arguments.
+    The parser already supported defining such a measurement operations using,
+    e.g., `defcal measure_iq q -> complex[float[32]] { ... }` but the resulting
+    operation could not be called.
+fixes:
+  - |
+    Fixed calling measurement operations defined via `defcal` statements.
+    Previously such operations could only be called if they were named
+    `measure` and had no classical parameters.

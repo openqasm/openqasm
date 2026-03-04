@@ -1,5 +1,5 @@
-const myvar;
-const myvar = ;
+const int myvar;
+const int myvar = ;
 const myvar = 8.0;
 input const myvar = 8;
 output const myvar = 8;

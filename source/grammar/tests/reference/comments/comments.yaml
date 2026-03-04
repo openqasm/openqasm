@@ -2,7 +2,7 @@
 source: |
   OPENQASM 3.0;
   // Line comment before include
-  include "std_gates.inc"; // Inline comment
+  include "stdgates.inc"; // Inline comment
   /* Block comment before declaration */
   qubit[2] q; /* Inline block comment */
 
@@ -21,7 +21,7 @@ reference: |
       statement
         includeStatement
           include
-          "std_gates.inc"
+          "stdgates.inc"
           ;
     statementOrScope
       statement

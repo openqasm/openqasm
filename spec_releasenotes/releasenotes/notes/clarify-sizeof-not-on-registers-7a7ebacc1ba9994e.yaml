@@ -1,0 +1,4 @@
+---
+issues:
+  - |
+    Clarified that ``sizeof()`` does not operate on bit or qubit registers.

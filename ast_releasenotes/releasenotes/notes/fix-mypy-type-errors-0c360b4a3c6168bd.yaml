@@ -1,0 +1,11 @@
+---
+other:
+  - |
+    Fixed all existing MyPy type checking errors in the codebase. The changes
+    improve type safety and code maintainability by adding proper type annotations
+    and fixing type inconsistencies. Additionally, auto-generated ANTLR parser
+    files are now excluded from MyPy checks via configuration.
+
+    The AST nodes ``QuantumReset``, ``DelayInstruction``, and ``Box`` are now
+    of type ``Statement`` rather than ``QuantumStatement`` because they may not
+    appear inside a gate definition.

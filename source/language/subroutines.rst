@@ -168,3 +168,8 @@ subscripted, meaning that ``sizeof(arr[0], 0) == sizeof(arr, 1)``.
      }
      // ...
    }
+
+Note that while bit and qubit registers such as ``bit[n] b`` and ``qubit[n] q`` in some
+contexts operate in ways reminiscent of arrays (in particular, indexing is a natural
+operation on such varaibles), variables of neither type are valid arguments to
+``sizeof()``.
