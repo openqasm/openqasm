@@ -1,23 +1,25 @@
 Table of Contents
 =================
 
-* [Contributing](#contributing)
-   * [Issue reporting](#issue-reporting)
-   * [Doubts solving](#doubts-solving)
-   * [Improvement proposal](#improvement-proposal)
-   * [Documentation](#documentation)
-   * [Code](#code)
-      * [Commits](#commits)
-      * [Pull requests](#pull-requests)
-   * [Spec proposals](#spec-proposals)
-   * [Development Cycle](#development-cycle)
-      * [Semantic Versioning](#semantic-versioning)
-      * [Branches](#branches)
-      * [Release Notes](#release-notes)
-         * [Adding a new release note](#adding-a-new-release-note)
-      * [Tags](#tags)
-      * [Release cycle](#release-cycle)
-         * [Example release cycle](#example-release-cycle)
+- [Table of Contents](#table-of-contents)
+- [Contributing](#contributing)
+  - [Issue reporting](#issue-reporting)
+  - [Doubts solving](#doubts-solving)
+  - [Improvement proposal](#improvement-proposal)
+  - [Documentation](#documentation)
+  - [Code](#code)
+    - [Commits](#commits)
+    - [Pull requests](#pull-requests)
+  - [Spec proposals](#spec-proposals)
+  - [Development Cycle](#development-cycle)
+    - [Semantic Versioning](#semantic-versioning)
+    - [Timing of Releases](#timing-of-releases)
+    - [Branches](#branches)
+    - [Release Notes](#release-notes)
+      - [Adding a new release note](#adding-a-new-release-note)
+    - [Tags](#tags)
+    - [Release cycle](#release-cycle)
+      - [Example release cycle](#example-release-cycle)
 
 # Contributing
 
@@ -222,10 +224,9 @@ To release a version a new version of OpenQASM:
 
 1. (optional) If releasing a minor version create a new stable branch for the minor version (See [Branches](#branches)).
    This should be cut from the latest development branch.
-2.  Create a new tag with the required semantic version number (see [Tags](#tags)) and push it to Github which will trigger CI (TODO).
+2.  Create a new tag with the required semantic version number (see [Tags](#tags)) and push it to Github which will trigger CI.
 3.  Update the development branch version identifier to the next release version (`<major>.<minor+1>.0-dev`).
-4.  TODO: Enable CI to create a Github release page with a generated changelog, publish documentation for the
-    new version to Github pages, and update the root language specification URL to point to the latest release.
+4.  TODO: Enable CI to create a Github release page with a generated changelog.
 
 #### Example release cycle
 
@@ -235,9 +236,9 @@ and is referred to by version as `3.2.0-dev`.
 
 To trigger a bugfix release - `3.1.2`:
 1. Create a PR into `stable/3.1` with all required changes. These may be backported commits from `3.2.0-dev`.
-2. Upon merger of the PR tag the HEAD of `stable/3.1` with `3.1.2` and push to Github.
+2. Upon merger of the PR tag the HEAD of `stable/3.1` with `spec/v3.1.2` and push to Github.
 
 To trigger a minor release - `3.2.0`:
 1. Create a new stable branch `stable/3.2` using the current development branch as the base branch, eg., `git checkout -b stable/3.2 main`.
 2. Push this branch to Github.
-3. Tag the branch with `3.2.0` and push to Github.
+3. Tag the branch with `spec/v3.2.0` and push to Github.
