@@ -54,8 +54,7 @@ for branch in $(git for-each-ref --format='%(refname:short)' --sort=-refname "re
   # correct "named stable branch" code path for scanning release notes.
   releaseNotesRst="source/release_notes.rst"
   if [ -f "${releaseNotesRst}" ]; then
-    cp "${releaseNotesRst}" "${releaseNotesRst}.bak"
-    sed "s|^\(\.\. release-notes::.*\)|\1\n  :branch: ${branch}|" "${releaseNotesRst}.bak" > "${releaseNotesRst}"
+    sed --in-place "s|^\(\.\. release-notes::.*\)|\1\n  :branch: ${branch}|" "${releaseNotesRst}"
   fi
 
   # build
