@@ -2,7 +2,7 @@ name: Publish All Versions
 
 on:
   push:
-    branches: [ main, 'stable/**' ]
+    branches: [ main, 'stable/**', 'brj/add-branch-directive' ]
 
 jobs:
   build:
