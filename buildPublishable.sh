@@ -61,9 +61,7 @@ for branch in $(git for-each-ref --format='%(refname:short)' --sort=-refname "re
   VERSION=${versionNum} VERSION_LIST=${versionList} make html
 
   # Restore the original release_notes.rst
-  if [ -f "${releaseNotesRst}.bak" ]; then
-    mv "${releaseNotesRst}.bak" "${releaseNotesRst}"
-  fi
+  git restore "${releaseNotesRst}"
 
   echo "Copy to publish dir ${destDir}/versions/${versionNum}"
   mv build/html "${destDir}/versions/${versionNum}"
