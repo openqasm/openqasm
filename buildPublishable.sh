@@ -50,8 +50,18 @@ for branch in $(git for-each-ref --format='%(refname:short)' --sort=-refname "re
   echo "Checkout stable branch ${branch} with version number ${versionNum}"
   git checkout "${branch}"
 
+  # Inject :branch: option into the release-notes directive so reno uses the
+  # correct "named stable branch" code path for scanning release notes.
+  releaseNotesRst="source/release_notes.rst"
+  if [ -f "${releaseNotesRst}" ]; then
+    sed --in-place "s|^\(\.\. release-notes::.*\)|\1\n  :branch: ${branch}|" "${releaseNotesRst}"
+  fi
+
   # build
   VERSION=${versionNum} VERSION_LIST=${versionList} make html
+
+  # Restore the original release_notes.rst
+  git restore "${releaseNotesRst}"
 
   echo "Copy to publish dir ${destDir}/versions/${versionNum}"
   mv build/html "${destDir}/versions/${versionNum}"
