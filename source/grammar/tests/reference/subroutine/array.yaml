@@ -19,7 +19,7 @@ reference: |
                 mutable
                 array
                 [
-                scalarType
+                arrayBaseType
                   uint
                   designator
                     [
@@ -51,7 +51,7 @@ reference: |
                 readonly
                 array
                 [
-                scalarType
+                arrayBaseType
                   uint
                   designator
                     [
@@ -83,7 +83,7 @@ reference: |
                 mutable
                 array
                 [
-                scalarType
+                arrayBaseType
                   uint
                   designator
                     [
@@ -113,7 +113,7 @@ reference: |
                 readonly
                 array
                 [
-                scalarType
+                arrayBaseType
                   uint
                   designator
                     [
@@ -147,7 +147,7 @@ reference: |
                 readonly
                 array
                 [
-                scalarType
+                arrayBaseType
                   int
                   designator
                     [
@@ -167,7 +167,7 @@ reference: |
                 mutable
                 array
                 [
-                scalarType
+                arrayBaseType
                   complex
                   [
                   scalarType
@@ -191,7 +191,7 @@ reference: |
                 readonly
                 array
                 [
-                scalarType
+                arrayBaseType
                   complex
                   [
                   scalarType

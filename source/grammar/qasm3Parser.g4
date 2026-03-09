@@ -206,9 +206,18 @@ scalarType:
     | STRETCH
     | COMPLEX (LBRACKET scalarType RBRACKET)?
 ;
+arrayBaseType:
+    INT designator?
+    | UINT designator?
+    | FLOAT designator?
+    | ANGLE designator?
+    | BOOL
+    | DURATION
+    | COMPLEX (LBRACKET scalarType RBRACKET)?
+;
 qubitType: QUBIT designator?;
-arrayType: ARRAY LBRACKET scalarType COMMA expressionList RBRACKET;
-arrayReferenceType: (READONLY | MUTABLE) ARRAY LBRACKET scalarType COMMA (expressionList | DIM EQUALS expression) RBRACKET;
+arrayType: ARRAY LBRACKET arrayBaseType COMMA expressionList RBRACKET;
+arrayReferenceType: (READONLY | MUTABLE) ARRAY LBRACKET arrayBaseType COMMA (expressionList | DIM EQUALS expression) RBRACKET;
 
 designator: LBRACKET expression RBRACKET;
 
