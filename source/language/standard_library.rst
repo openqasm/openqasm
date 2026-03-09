@@ -238,8 +238,8 @@ Single-qubit gates
    .. math::
 
       \texttt{rz(θ) a;} \mapsto \mathit{RZ}(\theta)\colon\ \left\{\begin{aligned}[c]
-         \lvert0\rangle &\to \cos(\theta/2)\lvert0\rangle + \sin(\theta/2)\lvert1\rangle\\
-         \lvert1\rangle &\to \sin(\theta/2)\lvert0\rangle - \cos(\theta/2)\lvert1\rangle.
+         \lvert0\rangle &\to \exp(-i\theta/2)\lvert0\rangle \\
+         \lvert1\rangle &\to \exp(\phantom{-} i\theta/2)\lvert1\rangle.
       \end{aligned}\right.
 
    .. seealso::
