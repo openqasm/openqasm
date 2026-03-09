@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Corrected the explicit state mapping for the rz gate given in the docs (source/language/standard_library.rst).
