@@ -62,7 +62,7 @@ SDK and front end for performing experiments on the Zurich Instruments QCCS toge
 ### [Qiskit](https://github.com/qiskit)
 Quantum software development kit (SDK)
 
-### [js-quantum]](https://github.com/hviana/js-quantum)
+### [js-quantum](https://github.com/hviana/js-quantum)
 js-quantum is a self-contained TypeScript quantum SDK for building, simulating,
 and serializing quantum circuits, with real state-vector simulation and Born-rule measurement sampling.
 Its main advantages are a clean declarative API, zero native or WebAssembly dependencies, and broad
