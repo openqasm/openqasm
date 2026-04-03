@@ -26,6 +26,7 @@ you have corrections, please
 | [LabOne Q](#labone-q)                                       | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
 | [Munich Quantum Toolkit (MQT)](#munich-quantum-toolkit-mqt) | Python       | C++           | import / export      |            | OSS     |
 | [Qiskit](#qiskit)                                           | Python       | Rust/Python   | SDK                  | incomplete | OSS     |
+| [js-quantum](#js-quantum)                                   | Javascript   | Javascript/TS | SDK                  | complete   | OSS     |
 | [Feynman](#feynman)                                         | Haskell      | Haskell       | front end            | unknown    | OSS     |
 | [AutoQASM](#autoqasm)                                       | Python       | Python        | circuit construction | incomplete | OSS     |
 | [OQpy](#oqpy)                                               | Python       | Python        | circuit construction | complete   | OSS     |
@@ -60,6 +61,12 @@ SDK and front end for performing experiments on the Zurich Instruments QCCS toge
 
 ### [Qiskit](https://github.com/qiskit)
 Quantum software development kit (SDK)
+
+### [js-quantum](https://github.com/hviana/js-quantum)
+js-quantum is a self-contained TypeScript quantum SDK for building, simulating,
+and serializing quantum circuits, with real state-vector simulation and Born-rule measurement sampling.
+Its main advantages are a clean declarative API, zero native or WebAssembly dependencies, and broad
+runtime compatibility across browsers, Node.js, Deno, Bun, and Cloudflare Workers.
 
 ### [Feynman](https://github.com/meamy/feynman)
 Toolkit for quantum circuit analysis in the path integral model of quantum mechanics.
