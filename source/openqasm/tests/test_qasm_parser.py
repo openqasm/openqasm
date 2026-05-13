@@ -1,5 +1,6 @@
 import dataclasses
 import textwrap
+import warnings
 from typing import Any, Optional
 
 import pytest
@@ -2639,14 +2640,348 @@ def test_comment_preservation():
     assert len(program.statements) >= 2  # include, qubit declaration
 
 
-@pytest.mark.parametrize("version", ["2.0", "4.0"])
-def test_rejects_invalid_version(version):
+@pytest.mark.parametrize(
+    "version,pattern",
+    [
+        ("2.0", "OpenQASM 2"),
+        ("2.1", "OpenQASM 2"),
+        ("4.0", "major version"),
+        ("4.3", "major version"),
+    ],
+)
+def test_rejects_invalid_version(version, pattern):
     prog = f"OPENQASM {version};"
-    with pytest.raises(QASM3ParsingError, match="unsupported version"):
+    with pytest.raises(QASM3ParsingError, match=pattern):
         parse(prog)
 
 
-@pytest.mark.parametrize("version", ["2.0", "4.0"])
+@pytest.mark.parametrize("version", ["2.0", "2.1", "4.0", "4.3"])
 def test_attempts_invalid_version_when_allowed(version):
     prog = f"OPENQASM {version};"
     assert parse(prog, ignore_version=True) is not None
+
+
+class TestVersionParsingBehavior:
+    """Tests for the version parsing rules defined in the spec."""
+
+    # Rule 1: Exact version match
+    def test_accepts_minimum_supported_version(self):
+        program = parse("OPENQASM 3.0;")
+        assert program.version == "3.0"
+
+    def test_accepts_maximum_supported_version(self):
+        program = parse("OPENQASM 3.1;")
+        assert program.version == "3.1"
+
+    def test_accepts_major_only_version(self):
+        program = parse("OPENQASM 3;")
+        assert program.version == "3"
+
+    # Rule 3: Minor version defaults to zero — enforces 3.0 rules
+    def test_major_only_version_enforces_3_0_rules(self):
+        """OPENQASM 3; is equivalent to OPENQASM 3.0; and must reject 3.1 features."""
+        source = """
+        OPENQASM 3;
+        int x = 1;
+        switch (x) { case 0 {} case 1 {} }
+        """
+        with pytest.raises(QASM3ParsingError, match="'switch' requires OpenQASM 3.1"):
+            parse(source)
+
+    # Rule 4: Missing version header
+    def test_missing_version_header_warns(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            program = parse('include "stdgates.inc";')
+            assert len(w) == 1
+            assert "no version header" in str(w[0].message).lower()
+            assert program.version is None
+
+    def test_missing_version_header_no_warn_when_ignored(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            parse('include "stdgates.inc";', ignore_version=True)
+            assert len(w) == 0
+
+    # Rule 5: Declared version exceeds parser support
+    def test_rejects_version_exceeding_parser_support(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds.*maximum"):
+            parse("OPENQASM 3.99;")
+
+    # Rule 6: Unknown major version
+    def test_rejects_unknown_major_version(self):
+        with pytest.raises(QASM3ParsingError, match="major version"):
+            parse("OPENQASM 4.0;")
+
+    # Rule 7: Major version 2
+    def test_rejects_openqasm_2(self):
+        with pytest.raises(QASM3ParsingError, match="OpenQASM 2"):
+            parse("OPENQASM 2.0;")
+
+    def test_openqasm_2_accepted_when_ignored(self):
+        program = parse("OPENQASM 2.0;", ignore_version=True)
+        assert program.version == "2.0"
+
+    # Rule 8: Patch versions
+    def test_rejects_patch_version(self):
+        with pytest.raises(QASM3ParsingError, match="major.*minor"):
+            parse("OPENQASM 3.0.1;")
+
+    # Edge case: version one minor above supported
+    def test_rejects_one_above_max_minor(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds"):
+            parse("OPENQASM 3.2;")
+
+    # ignore_version bypass
+    def test_ignore_version_bypasses_all_checks(self):
+        program = parse("OPENQASM 4.0;", ignore_version=True)
+        assert program.version == "4.0"
+
+
+class TestIncludeVersionValidation:
+    """Tests for version validation of included files."""
+
+    def _resolver(self, files: dict):
+        return lambda filename: files.get(filename)
+
+    def test_included_version_equal_to_root(self):
+        resolver = self._resolver({"lib.qasm": "OPENQASM 3.1;\n"})
+        program = parse(
+            'OPENQASM 3.1;\ninclude "lib.qasm";',
+            include_resolver=resolver,
+        )
+        assert program is not None
+
+    def test_included_version_lower_than_root(self):
+        resolver = self._resolver({"lib.qasm": "OPENQASM 3.0;\n"})
+        program = parse(
+            'OPENQASM 3.1;\ninclude "lib.qasm";',
+            include_resolver=resolver,
+        )
+        assert program is not None
+
+    def test_included_version_higher_than_root(self):
+        resolver = self._resolver({"lib.qasm": "OPENQASM 3.1;\n"})
+        with pytest.raises(QASM3ParsingError, match="exceeds root version"):
+            parse(
+                'OPENQASM 3.0;\ninclude "lib.qasm";',
+                include_resolver=resolver,
+            )
+
+    def test_included_no_version_header(self):
+        resolver = self._resolver({"lib.qasm": "qubit q;\n"})
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            program = parse(
+                'OPENQASM 3.1;\ninclude "lib.qasm";',
+                include_resolver=resolver,
+            )
+        assert program is not None
+
+    def test_no_resolver_skips_validation(self):
+        program = parse('OPENQASM 3.0;\ninclude "lib.qasm";')
+        assert program is not None
+
+    def test_resolver_returns_none_skips_file(self):
+        resolver = self._resolver({})
+        program = parse(
+            'OPENQASM 3.0;\ninclude "lib.qasm";',
+            include_resolver=resolver,
+        )
+        assert program is not None
+
+    def test_ignore_version_skips_include_validation(self):
+        """Include validation is skipped when ignore_version=True."""
+        resolver = self._resolver({"lib.qasm": "OPENQASM 3.1;\n"})
+        program = parse(
+            'OPENQASM 3.0;\ninclude "lib.qasm";',
+            ignore_version=True,
+            include_resolver=resolver,
+        )
+        assert program is not None
+
+
+class TestRecursiveIncludeValidation:
+    """Test recursive include resolution and validation."""
+
+    def _make_resolver(self, file_map):
+        """Create a resolver from a filename->content dict."""
+        def resolver(filename):
+            return file_map.get(filename)
+        return resolver
+
+    def test_nested_include_version_validated(self):
+        """Nested include declaring higher version than root is rejected."""
+        files = {
+            "inner.qasm": 'OPENQASM 3.1;\nqubit q;\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "inner.qasm";\n'
+        with pytest.raises(QASM3ParsingError, match="declares version '3.1' which exceeds root version '3.0'"):
+            parse(source, include_resolver=self._make_resolver(files))
+
+    def test_nested_include_lower_version_accepted(self):
+        """Nested include declaring lower or equal version is accepted."""
+        files = {
+            "inner.qasm": 'OPENQASM 3.0;\nqubit q;\n',
+        }
+        source = 'OPENQASM 3.1;\ninclude "inner.qasm";\n'
+        result = parse(source, include_resolver=self._make_resolver(files))
+        assert isinstance(result, Program)
+
+    def test_deeply_nested_includes(self):
+        """Version validation works through multiple levels of nesting."""
+        files = {
+            "level1.qasm": 'include "level2.qasm";\nqubit q1;\n',
+            "level2.qasm": 'OPENQASM 3.1;\nqubit q2;\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "level1.qasm";\n'
+        with pytest.raises(QASM3ParsingError, match="declares version '3.1' which exceeds root version '3.0'"):
+            parse(source, include_resolver=self._make_resolver(files))
+
+    def test_circular_include_detected(self):
+        """Circular includes raise an error."""
+        files = {
+            "a.qasm": 'include "b.qasm";\n',
+            "b.qasm": 'include "a.qasm";\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "a.qasm";\n'
+        with pytest.raises(QASM3ParsingError, match="circular include detected"):
+            parse(source, include_resolver=self._make_resolver(files))
+
+    def test_self_circular_include(self):
+        """A file including itself is detected as circular."""
+        files = {
+            "self.qasm": 'include "self.qasm";\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "self.qasm";\n'
+        with pytest.raises(QASM3ParsingError, match="circular include detected"):
+            parse(source, include_resolver=self._make_resolver(files))
+
+    def test_depth_limit_exceeded(self):
+        """Include depth exceeding limit raises an error."""
+        # Create a chain of 52 includes
+        files = {}
+        for i in range(52):
+            next_file = f"level{i+1}.qasm"
+            if i < 51:
+                files[next_file] = f'include "level{i+2}.qasm";\n'
+            else:
+                files[next_file] = 'qubit q;\n'
+        source = 'OPENQASM 3.0;\ninclude "level1.qasm";\n'
+        with pytest.raises(QASM3ParsingError, match="include depth exceeds maximum"):
+            parse(source, include_resolver=self._make_resolver(files))
+
+    def test_diamond_includes_allowed(self):
+        """Diamond-shaped include graphs are allowed (A->B->D, A->C->D)."""
+        files = {
+            "b.qasm": 'include "d.qasm";\nqubit q1;\n',
+            "c.qasm": 'include "d.qasm";\nqubit q2;\n',
+            "d.qasm": 'qubit shared;\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "b.qasm";\ninclude "c.qasm";\n'
+        result = parse(source, include_resolver=self._make_resolver(files))
+        assert isinstance(result, Program)
+
+    def test_unresolvable_nested_include_skipped(self):
+        """Includes that resolve to None are silently skipped."""
+        files = {
+            "outer.qasm": 'include "missing.qasm";\nqubit q;\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "outer.qasm";\n'
+        result = parse(source, include_resolver=self._make_resolver(files))
+        assert isinstance(result, Program)
+
+    def test_no_nested_includes_zero_overhead(self):
+        """Programs without nested includes have no extra overhead."""
+        files = {
+            "simple.qasm": 'qubit q;\n',
+        }
+        source = 'OPENQASM 3.0;\ninclude "simple.qasm";\n'
+        result = parse(source, include_resolver=self._make_resolver(files))
+        assert isinstance(result, Program)
+
+
+class TestFeatureVersionGating:
+    """Test that version-gated features are rejected when version is too low."""
+
+    def test_switch_rejected_at_3_0(self):
+        """Switch statement requires 3.1."""
+        source = """
+        OPENQASM 3.0;
+        int x = 1;
+        switch (x) { case 0 {} case 1 {} }
+        """
+        with pytest.raises(QASM3ParsingError, match="'switch' requires OpenQASM 3.1"):
+            parse(source)
+
+    def test_switch_accepted_at_3_1(self):
+        """Switch statement valid at 3.1."""
+        source = """
+        OPENQASM 3.1;
+        int x = 1;
+        switch (x) { case 0 {} case 1 {} }
+        """
+        result = parse(source)
+        assert any(isinstance(s, SwitchStatement) for s in result.statements)
+
+    def test_switch_accepted_with_ignore_version(self):
+        """Switch statement accepted when ignore_version=True regardless of declared version."""
+        source = """
+        OPENQASM 3.0;
+        int x = 1;
+        switch (x) { case 0 {} case 1 {} }
+        """
+        result = parse(source, ignore_version=True)
+        assert any(isinstance(s, SwitchStatement) for s in result.statements)
+
+    def test_anonymous_scope_rejected_at_3_0(self):
+        """Bare scope block at program level requires 3.1."""
+        source = """
+        OPENQASM 3.0;
+        { qubit q; }
+        """
+        with pytest.raises(QASM3ParsingError, match="'anonymous_scope' requires OpenQASM 3.1"):
+            parse(source)
+
+    def test_anonymous_scope_accepted_at_3_1(self):
+        """Bare scope block at program level valid at 3.1."""
+        source = """
+        OPENQASM 3.1;
+        { qubit q; }
+        """
+        result = parse(source)
+        assert any(isinstance(s, CompoundStatement) for s in result.statements)
+
+    def test_scope_in_control_flow_accepted_at_3_0(self):
+        """Scope blocks as control-flow bodies are valid in 3.0."""
+        source = """
+        OPENQASM 3.0;
+        qubit q;
+        bool b = true;
+        if (b) { x q; }
+        """
+        result = parse(source)
+        assert isinstance(result, Program)
+
+    def test_nop_rejected_below_3_2(self):
+        """Nop statement requires 3.2."""
+        source = """
+        OPENQASM 3.1;
+        qubit q;
+        nop q;
+        """
+        with pytest.raises(QASM3ParsingError, match="'nop' requires OpenQASM 3.2"):
+            parse(source)
+
+    def test_feature_gating_error_message_format(self):
+        """Error messages include both declared and required versions."""
+        source = """
+        OPENQASM 3.0;
+        int x = 1;
+        switch (x) { case 0 {} }
+        """
+        with pytest.raises(
+            QASM3ParsingError,
+            match=r"'switch' requires OpenQASM 3\.1 or later, but version 3\.0 was declared",
+        ):
+            parse(source)
