@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Defined version parsing behavior in the specification. The version string
+    section now includes a versioning model overview, nine numbered rules for
+    how parsers should handle version headers, and guidance on version headers
+    in included files. See :ref:`version-string` for details.

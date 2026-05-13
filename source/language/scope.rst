@@ -282,7 +282,7 @@ Some further examples:
 .. code-block:: c
    :linenos:
 
-   OPENQASM 3.0
+   OPENQASM 3.1
 
    int ii = 100;         // 'ii' is declared in the global scope.
    qubit[5] q;           // 'q' is declared in the global scope.
