@@ -16,17 +16,20 @@ reference: |
             ,
             b
             ,
-          {
-          gateCallStatement
-            CX
-            gateOperandList
-              gateOperand
-                indexedIdentifier
-                  a
-              ,
-              gateOperand
-                indexedIdentifier
-                  b
-            ;
-          }
+          scope
+            {
+            statementOrScope
+              statement
+                gateCallStatement
+                  CX
+                  gateOperandList
+                    gateOperand
+                      indexedIdentifier
+                        a
+                    ,
+                    gateOperand
+                      indexedIdentifier
+                        b
+                  ;
+            }
     <EOF>

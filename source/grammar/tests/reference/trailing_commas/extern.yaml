@@ -1,6 +1,6 @@
 # indent w/ 2 spaces
 source: |
-  extern fun(int) -> int;
+  extern fun(int, int,) -> int;
 reference: |
   program
     statementOrScope
