@@ -1,0 +1,32 @@
+# indent w/ 2 spaces
+source: |
+  gate g a, b,
+  {
+     CX a, b;
+  }
+reference: |
+  program
+    statementOrScope
+      statement
+        gateStatement
+          gate
+          g
+          identifierList
+            a
+            ,
+            b
+            ,
+          {
+          gateCallStatement
+            CX
+            gateOperandList
+              gateOperand
+                indexedIdentifier
+                  a
+              ,
+              gateOperand
+                indexedIdentifier
+                  b
+            ;
+          }
+    <EOF>
