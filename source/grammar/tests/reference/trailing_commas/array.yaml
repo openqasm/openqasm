@@ -1,0 +1,30 @@
+# indent w/ 2 spaces
+source: |
+  array[int[8], 4, 3,] bb;
+reference: |
+  program
+    statementOrScope
+      statement
+        classicalDeclarationStatement
+          arrayType
+            array
+            [
+            scalarType
+              int
+              designator
+                [
+                expression
+                  8
+                ]
+            ,
+            expressionList
+              expression
+                4
+              ,
+              expression
+                3
+              ,
+            ]
+          bb
+          ;
+    <EOF>

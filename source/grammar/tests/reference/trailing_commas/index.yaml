@@ -1,0 +1,32 @@
+# indent w/ 2 spaces
+source: |
+  let qubit_selection = two[{0, 3, 5, }];
+reference: |
+  program
+    statementOrScope
+      statement
+        aliasDeclarationStatement
+          let
+          qubit_selection
+          =
+          aliasExpression
+            expression
+              expression
+                two
+              indexOperator
+                [
+                setExpression
+                  {
+                  expression
+                    0
+                  ,
+                  expression
+                    3
+                  ,
+                  expression
+                    5
+                  ,
+                  }
+                ]
+          ;
+    <EOF>

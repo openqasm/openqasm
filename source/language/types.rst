@@ -430,10 +430,10 @@ type).  All scalar literals are ``const`` types.
 .. code-block::
 
    // Valid statements
-   
+
    const uint SIZE = 32;  // Declares a compile-time unsigned integer.
 
-   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`. 
+   qubit[SIZE] q1;  // Declares a 32-qubit register called `q1`.
    int[SIZE] i1;    // Declares a signed integer called `i1` with 32 bits.
 
 
@@ -792,7 +792,7 @@ last, and so on, with ``-n`` being the first element of an n-element array.
 Multi-dimensional arrays (as in the example above) are allowed, with a maximum
 of 7 total dimensions. The subscript operator ``[]`` is used for element access,
 and for multi-dimensional arrays subarray accesses can be specified using a
-comma-delimited list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
+comma-separated list of indices (*e.g.* ``myArr[1, 2, 3]``), with the outer
 dimension specified first.
 
 One or more dimension(s) of an array can be zero, in which case the array has size zero.  An array of size zero cannot be indexed, e.g. given ``array[float[32], 0] myArray;``, it is an error to access either ``myArray[0]`` or ``myArray[-1]``.
@@ -935,7 +935,7 @@ always returns a bit array of size equal to the size of the index set.
    myInt[4:7] = "1010"; // myInt == 0xAF
 
 Bit-level access is still possible with elements of arrays. It is suggested that
-multi-dimensional access be done using the comma-delimited version of the
+multi-dimensional access be done using the comma-separated version of the
 subscript operator to reduce confusion. With this convention nearly all
 instances of multiple subscripts ``[][]`` will be bit-level accesses of array
 elements.
@@ -983,8 +983,8 @@ should be explicitly declared and assigned the concatenation.
    subroutine_call(first ++ third) // forbidden
    subroutine_call(selfConcat) // allowed
 
-Arrays can be sliced just like quantum registers using a range ``a:b:c`` 
-and can be indexed using an integer but cannot be indexed by a a comma-separated 
+Arrays can be sliced just like quantum registers using a range ``a:b:c``
+and can be indexed using an integer but cannot be indexed by a comma-separated
 list of integers contained in braces ``{a,b,c,…}``. Slicing uses
 the subscript operator ``[]``, but produces an array (or reference in the case
 of assignment) with the same number of dimensions as the given identifier.
@@ -1182,4 +1182,3 @@ dividing a duration by a duration produces a machine-precision ``float``.
 
    duration one_s = 1s;
    float a_in_s = a / one_s; // 5e-7
-
