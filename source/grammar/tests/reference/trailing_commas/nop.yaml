@@ -1,0 +1,20 @@
+# indent w/ 2 spaces
+source: |
+  nop q1, q2,;
+reference: |
+  program
+    statementOrScope
+      statement
+        nopStatement
+          nop
+          gateOperandList
+            gateOperand
+              indexedIdentifier
+                q1
+            ,
+            gateOperand
+              indexedIdentifier
+                q2
+            ,
+          ;
+    <EOF>
