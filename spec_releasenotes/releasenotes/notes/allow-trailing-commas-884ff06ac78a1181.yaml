@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Trailing commas are now explicitly allowed in comma-separated lists. The reference
+    parser already allows trailing commas. Previously, the specification was silent on
+    trailing commas.

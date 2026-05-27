@@ -8,6 +8,7 @@ OpenQASM Version 3.0.
 
 The human-readable form of OpenQASM is a simple, case-sensitive textual language.
 Statements are separated by semicolons and whitespace is ignored.
+A non-empty comma-separated list may end with a single trailing comma.
 
 In other respects, OpenQASM possesses a dual nature as an assembly language and
 as a hardware description language.
