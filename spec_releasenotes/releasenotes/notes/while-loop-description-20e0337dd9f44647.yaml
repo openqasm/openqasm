@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Clarified the description of the ``while`` loop semantics in the classical
+    language specification.  The condition is now consistently referred to as
+    ``<condition>`` and the description states that ``<body>`` is repeatedly
+    executed as long as the condition evaluates to ``true``, matching the
+    standard pre-check semantics.  See :ref:`while-loops` for details.

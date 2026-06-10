@@ -355,8 +355,8 @@ accessible after the loop.
 While loops
 ~~~~~~~~~~~
 
-The statement ``while ( bool ) <body>`` executes program until the Boolean evaluates to
-false [3]_. Variables in the loop condition statement may be modified
+The statement ``while ( <condition> ) <body>`` repeatedly executes ``<body>`` as long as
+the condition evaluates to true [3]_. Variables in the loop condition statement may be modified
 within the while loop body.  The ``body`` can be either a single statement
 terminated by a semicolon, or a program block in curly braces ``{}`` of several
 statements:
