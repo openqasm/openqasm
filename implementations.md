@@ -10,11 +10,11 @@ you have corrections, please
 ## Feature Comparison
 
 * **function**
-    * **parser** -- typically means that semantic analysis is not supported.
-    * **front end** -- some semantic analysis or compilation is done.
+  * **parser** -- typically means that semantic analysis is not supported.
+  * **front end** -- some semantic analysis or compilation is done.
       Examples of semantic analysis are type checking and constant folding.
 * **status**
-    * **incomplete** This sometimes means WIP and sometimes that not all of OQ3 is supported.
+  * **incomplete** This sometimes means WIP and sometimes that not all of OQ3 is supported.
 
 | Name                                                        | API language | impl language | function             | status     | license |
 |-------------------------------------------------------------|--------------|---------------|----------------------|------------|---------|
@@ -38,41 +38,51 @@ Meant to completely implement the OpenQASM 3 spec. It does no semantic analysis.
 It is based on [ANTLR](https://www.antlr.org/).
 
 ### [openqasm3_parser](https://github.com/Qiskit/openqasm3_parser)
+
 Compiler front end for OpenQASM 3. Lexing, parsing, and semantic analysis.
 
 ### [Quasar](https://github.com/kshyatt-aws/Quasar.jl)
+
 The Qu(antum) as(sembly) (lex/pars)er
 Compiler front end for OpenQASM 3. Lexing, parsing, and semantic analysis.
 
 ### [qasm3tools](https://github.com/softwareQinc/qasm3tools)
+
 Unknown
 
 ### [Amazon Braket](https://docs.aws.amazon.com/braket/latest/developerguide/braket-openqasm.html)
+
 Cloud quantum computing service
 
 ### [LabOne Q](https://www.zhinst.com/americas/en/quantum-computing-systems/labone-q)
+
 SDK and front end for performing experiments on the Zurich Instruments QCCS together with third party control hardware.
 [github](https://github.com/zhinst/laboneq).
+
 * [Imports OQ3](https://docs.zhinst.com/labone_q_user_manual/core/reference/openqasm3.html)
 
 ### [Munich Quantum Toolkit (MQT)](https://mqt.readthedocs.org)
+
 * [Exports circuits as OQ3](https://mqt.readthedocs.io/projects/core/en/latest/quickstart.html)
 * [Imports OQ3](https://mqt.readthedocs.io/projects/core/en/latest/api/mqt/core/index.html#mqt.core.load)
 
 ### [Qiskit](https://github.com/qiskit)
+
 Quantum software development kit (SDK)
 
 ### [js-quantum](https://github.com/hviana/js-quantum)
+
 js-quantum is a self-contained TypeScript quantum SDK for building, simulating,
 and serializing quantum circuits, with real state-vector simulation and Born-rule measurement sampling.
 Its main advantages are a clean declarative API, zero native or WebAssembly dependencies, and broad
 runtime compatibility across browsers, Node.js, Deno, Bun, and Cloudflare Workers.
 
 ### [Feynman](https://github.com/meamy/feynman)
-Toolkit for quantum circuit analysis in the path integral model of quantum mechanics.
-The OpenQASM 3 frontend is [here](https://github.com/meamy/feynman/tree/master/src/Feynman/Frontend/OpenQASM3)
+
+Toolkit for quantum circuit analysis in the path integral model of quantum mechanics. The [OpenQASM 3 frontend is here](https://github.com/meamy/feynman/tree/master/src/Feynman/Frontend/OpenQASM3).
 
 ### [AutoQASM](https://github.com/amazon-braket/autoqasm)
+
 Although it is still a work in progress, the intent is that AutoQASM will support any
 quantum programming paradigm which falls into the OpenQASM 3.0 language scope. AutoQASM
 supports serializing quantum programs to OpenQASM, which allows the programs to interoperate
@@ -81,14 +91,22 @@ with any library or service that supports OpenQASM programs, such as Amazon Brak
 AutoQASM is pure Python but includes dependencies with statically compiled extensions.
 
 ### [OQpy](https://github.com/openqasm/oqpy)
+
 The goal of oqpy ("ock-pie") is to make it easy to generate OpenQASM 3 + OpenPulse in Python.
 
 Support is marked "complete" because OQpy depends on the reference parser.
 
-### [MATLAB](https://www.mathworks.com/products/quantum-computing.html) Support Package for Quantum Computing
+### [MATLAB](https://www.mathworks.com/products/quantum-computing.html)
 
-Here is a function for [exporting to OpenQASM 3](https://www.mathworks.com/help/matlab/ref/quantumcircuit.generateqasm.html).
-We don't know if it can import OpenQASM 3
+The MATLAB Support Package for Quantum Computing has a function for [exporting to OpenQASM 3](https://www.mathworks.com/help/matlab/ref/quantumcircuit.generateqasm.html). We don't know if it can import OpenQASM 3
+
+### [gopenqasm](https://github.com/jwoehr/gopenqasm3)
+
+Golang parser for OpenQASM 3 based on the reference grammar.
+
+### [Microsoft QDK](https://github.com/microsoft/qdk/)
+
+A full development kit that supports OpenQASM 3 and features a [Visual Studio Code extension](https://github.com/microsoft/qdk/tree/main/source/vscode) for OpenQASM 3 syntax.
 
 ## OpenQASM 2 Implementations
 

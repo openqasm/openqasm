@@ -53,6 +53,12 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
 
 ### TSC Membership History
 
+#### June 10, 2026
+
+Serwan Assad is changing employers and resigned from the TSC.
+
+The TSC is considering candidates to fulfill the unexpired term.
+
 #### January 2026
 
 The following members' terms were to expire:
