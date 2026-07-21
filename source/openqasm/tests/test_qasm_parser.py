@@ -1157,6 +1157,76 @@ def test_alias_assignment():
     SpanGuard().visit(program)
 
 
+def test_array_concatenation_declaration():
+    source = """
+    array[int[8], 3] first = {0, 1, 2};
+    array[int[8], 3] second = {3, 4, 5};
+    array[int[8], 3] third = {6, 7, 8};
+    array[int[8], 6] concat = first[0:1] ++ second[1:2] ++ third[0:1];
+    """.strip()
+
+    program = parse(source)
+
+    declaration = program.statements[-1]
+    assert isinstance(declaration, ClassicalDeclaration)
+    assert _remove_spans(declaration.init_expression) == Concatenation(
+        lhs=Concatenation(
+            lhs=IndexExpression(
+                collection=Identifier("first"),
+                index=[
+                    RangeDefinition(
+                        start=IntegerLiteral(0),
+                        end=IntegerLiteral(1),
+                        step=None,
+                    )
+                ],
+            ),
+            rhs=IndexExpression(
+                collection=Identifier("second"),
+                index=[
+                    RangeDefinition(
+                        start=IntegerLiteral(1),
+                        end=IntegerLiteral(2),
+                        step=None,
+                    )
+                ],
+            ),
+        ),
+        rhs=IndexExpression(
+            collection=Identifier("third"),
+            index=[
+                RangeDefinition(
+                    start=IntegerLiteral(0),
+                    end=IntegerLiteral(1),
+                    step=None,
+                )
+            ],
+        ),
+    )
+    SpanGuard().visit(program)
+
+
+def test_array_concatenation_declaration_long_chain():
+    names = [f"operand_{index}" for index in range(1101)]
+    source = "array[int[8], 1101] concat = " + " ++ ".join(names) + ";"
+
+    program = parse(source)
+
+    declaration = program.statements[0]
+    assert isinstance(declaration, ClassicalDeclaration)
+    expression = declaration.init_expression
+    for expected_name in reversed(names[1:]):
+        assert isinstance(expression, Concatenation)
+        assert expression.span is not None
+        assert isinstance(expression.rhs, Identifier)
+        assert expression.rhs.name == expected_name
+        assert expression.rhs.span is not None
+        expression = expression.lhs
+    assert isinstance(expression, Identifier)
+    assert expression.name == names[0]
+    assert expression.span is not None
+
+
 def test_measurement():
     p = """
     measure q;
