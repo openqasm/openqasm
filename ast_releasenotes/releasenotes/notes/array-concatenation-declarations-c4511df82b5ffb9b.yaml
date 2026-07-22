@@ -3,4 +3,4 @@ fixes:
   - |
     The reference grammar and Python parser now accept array concatenation with
     ``++`` as the initializer of a classical declaration, as specified by
-    OpenQASM.
+    OpenQASM (fixes :issue:`620`, :issue:`432`).
