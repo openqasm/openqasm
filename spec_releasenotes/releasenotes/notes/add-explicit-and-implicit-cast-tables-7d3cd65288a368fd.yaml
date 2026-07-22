@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    Improve type casting documentation. Substitute the **Allowed casts**
+    table under **Types and Casting** -> **Casting Specifics** by two
+    tables: **Explicit cast table** and **Implicit cast table**. These
+    tables bring two improvements: separate tables for explicit and
+    implicit casts; and casting specifics for sized types (e.g. bit[n]).
