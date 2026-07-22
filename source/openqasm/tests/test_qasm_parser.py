@@ -1158,6 +1158,7 @@ def test_alias_assignment():
 
 
 def test_array_concatenation_declaration():
+    """Declaration concatenations parse and are left-associative."""
     source = """
     array[int[8], 3] first = {0, 1, 2};
     array[int[8], 3] second = {3, 4, 5};
@@ -1169,6 +1170,7 @@ def test_array_concatenation_declaration():
 
     declaration = program.statements[-1]
     assert isinstance(declaration, ClassicalDeclaration)
+    # (first[0:1] ++ second[1:2]) ++ third[0:1]
     assert _remove_spans(declaration.init_expression) == Concatenation(
         lhs=Concatenation(
             lhs=IndexExpression(
@@ -1206,7 +1208,25 @@ def test_array_concatenation_declaration():
     SpanGuard().visit(program)
 
 
+def test_array_concatenation_declaration_and_alias_associativity():
+    """Alias and declaration concatenation share left-associative AST shape."""
+    a, b, c = Identifier(name="a"), Identifier(name="b"), Identifier(name="c")
+    left_assoc = Concatenation(lhs=Concatenation(lhs=a, rhs=b), rhs=c)
+
+    alias_program = parse("let target = a ++ b ++ c;")
+    assert _remove_spans(alias_program.statements[0].value) == left_assoc
+
+    declaration_program = parse("array[int[8], 3] target = a ++ b ++ c;")
+    declaration = declaration_program.statements[0]
+    assert isinstance(declaration, ClassicalDeclaration)
+    assert _remove_spans(declaration.init_expression) == left_assoc
+
+    SpanGuard().visit(alias_program)
+    SpanGuard().visit(declaration_program)
+
+
 def test_array_concatenation_declaration_long_chain():
+    """Long left-associative chains stay within the Python recursion limit."""
     names = [f"operand_{index}" for index in range(1101)]
     source = "array[int[8], 1101] concat = " + " ++ ".join(names) + ";"
 
@@ -1215,6 +1235,7 @@ def test_array_concatenation_declaration_long_chain():
     declaration = program.statements[0]
     assert isinstance(declaration, ClassicalDeclaration)
     expression = declaration.init_expression
+    # Walk the left spine: (((op0 ++ op1) ++ op2) ++ ... ++ op1100)
     for expected_name in reversed(names[1:]):
         assert isinstance(expression, Concatenation)
         assert expression.span is not None

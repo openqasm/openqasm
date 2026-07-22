@@ -900,6 +900,16 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return self._visit_concatenation(ctx.expression())
 
     def _visit_concatenation(self, expressions):
+        # Build a left-associative Concatenation tree.  Concatenation is
+        # arbitrarily associative, but the AST needs a fixed shape, and we
+        # choose left-associativity: a ++ b ++ c => (a ++ b) ++ c.
+        #
+        # The previous recursive implementation walked expressions with a
+        # *reversed* iterator so that recursion could assemble that same
+        # left-associative tree.  An iterative left fold walks *forward* and
+        # produces the identical tree without depending on Python's recursion
+        # limit, which matters for long declaration initializers.
+        #
         # This iterator should always be non-empty if ANTLR did its job right.
         iterator = iter(expressions)
         lhs = self.visit(next(iterator))
