@@ -23,7 +23,7 @@ Duration and stretch types
 ---------------------------
 
 The ``duration`` type is used denote increments of time. Durations are real numbers
-that are manipulated at compile time. Durations must be followed by time units which can be
+that are manipulated at compile or run time. Durations must be followed by time units which can be
 any of the following:
 
 -  SI units of time: ``ns, µs or us, ms, s``
@@ -38,7 +38,7 @@ It is often useful to reference the duration of other parts of the
 circuit. For example, we may want to delay a gate for twice the duration
 of a particular sub-circuit, without knowing the exact value to which
 that duration will resolve. Alternatively, we may want to calibrate a
-gate using some pulses, and use its duration as a new ``duration`` in order to delay
+gate using some pulses, and use its duration as a new ``const duration`` in order to delay
 other parts of the circuit. The ``durationof()`` intrinsic function can be used for this
 type of referential timing.
 
@@ -47,16 +47,17 @@ Below are some examples of values of type ``duration``.
 .. code-block::
 
        // fixed duration, in standard units
-       duration a = 300ns;
+       const duration a = 300ns;
        // fixed duration, backend dependent
-       duration b = 800dt;
+       const duration b = 800dt;
        // fixed duration, referencing the duration of a calibrated gate
-       duration c = durationof({x $3;});
+       const duration c = durationof({x $3;});
 
-We further introduce a ``stretch`` type which is a sub-type of ``duration``. Stretchable durations
-have variable non-negative duration that are permitted to grow as necessary
-to satisfy constraints. Stretch variables are resolved at compile time
-into target-appropriate durations that satisfy a user’s specified design
+We further introduce a ``stretch`` declaration, which is a special
+syntax for introducing a ``const duration`` with an unspecified,
+non-negative duration value determined by constraints in the
+program. Stretch variables are resolved at compile time into
+target-appropriate durations that satisfy a user’s specified design
 intent.
 
 Instructions whose duration are specified in this way become “stretchy",
@@ -127,22 +128,42 @@ these side effects. Also contrary to TeX, we prohibit overlapping gates.
 Operations on durations
 -----------------------
 
-We can add/subtract two durations, or multiply or divide them by a constant, to get a new
-duration. Division of two durations results in a machine-precision float 
-(see :ref:`divideDuration`). Negative durations are allowed, however
-passing a negative duration to a ``gate[duration]`` or ``box[duration]`` expression will result in an error.
-All operations on durations happen at compile time since ultimately all
-durations, including stretches, will be resolved to constants.
+We can add/subtract two durations, or multiply or divide them by a
+constant, to get a new duration. Division of two durations results in
+a machine-precision float (see :ref:`divideDuration`). Negative
+durations are allowed, however passing a negative duration to a
+``gate[duration]`` or ``box[duration]`` expression will result in an
+error.  All operations on ``const`` durations, including stretches,
+can happen at compile time. Note that some programs may make use of
+non-const duration (e.g. as ``input`` parameters or in
+backend-specific externs).
 
 .. code-block::
 
-       duration a = 300ns;
-       duration b = durationof({x $0;});
+       const duration a = 300ns;
+       const duration b = durationof({x $0;});
        stretch c;
        // stretchy duration with min=300ns
        stretch d = a + 2 * c;
        // stretchy duration with backtracking by up to half b
        stretch e = -0.5 * b + c;
+
+Because `stretch` introduces a `const duration`, initialization with a non-`const` expression are a type error. On the other hand, because stretch resolution requires solving a system of constraints, a compiler may reject a well-typed program involving stretch durations due to a failure to resolve the constraint system.
+
+.. code-block::
+
+       input duration a; // not const
+       const duration b = 300ns;
+       stretch c;
+
+       // type error: const initializer expected
+       stretch d = c + a;
+
+       // stretch resolution error: 'e' resolved to -200ns
+       stretch e = b - 500ns;
+       delay[e] q0;
+
+
 
 Delays (and other duration-based instructions)
 ----------------------------------------------
@@ -246,9 +267,9 @@ to properly take into account the finite duration of each gate.
 
    stretch a;
    stretch b;
-   duration start_stretch = a - .5 * durationof({x $0;});
-   duration middle_stretch = a - .5 * durationof({x $0;}) - .5 * durationof({y $0;});
-   duration end_stretch = a - .5 * durationof({y $0;});
+   const duration start_stretch = a - .5 * durationof({x $0;});
+   const duration middle_stretch = a - .5 * durationof({x $0;}) - .5 * durationof({y $0;});
+   const duration end_stretch = a - .5 * durationof({y $0;});
 
    delay[start_stretch] $0;
    x $0;
