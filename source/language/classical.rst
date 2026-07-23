@@ -47,7 +47,7 @@ and ``&``, or ``|``, xor ``^``. They support left shift ``<<`` and right shift
 ``>>`` by an unsigned integer, and the corresponding assignment operators. The
 shift operators shift bits off the end. They also support bitwise negation ``~``,
 ``popcount`` [1]_, and left and right circular shift, ``rotl`` and ``rotr``,
-respectively.
+respectively. 
 
 .. code-block::
 
