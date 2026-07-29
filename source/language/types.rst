@@ -812,6 +812,17 @@ the shape and type of the assigned value must match that of the reference.
 
    bb[0] = 1 // error - shape mismatch
 
+The dimensions of arrays can be queried using the built-in ``sizeof()`` 
+function, which takes two parameters: the array being queried, and the 
+zero-based dimension number requested. If the second parameter is omitted, 
+it defaults to ``0``, i.e., ``sizeof(arr) == sizeof(arr, 0)``. 
+
+.. code-block::
+
+   array[int[8], 3, 4] twoD;
+   const uint firstDim = sizeof(twoD);      // 3
+   const uint secondDim = sizeof(twoD, 1);  // 4
+   
 Arrays may be passed to subroutines and externs. For more details, see
 :any:`arrays-in-subroutines`.
 
