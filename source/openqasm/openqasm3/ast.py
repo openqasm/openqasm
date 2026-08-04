@@ -86,6 +86,7 @@ __all__ = [
     "RangeDefinition",
     "ReturnStatement",
     "SizeOf",
+    "SourceUnit",
     "Span",
     "Statement",
     "SwitchStatement",
@@ -119,6 +120,39 @@ class Span:
     start_column: int
     end_line: int
     end_column: int
+    source: int = 0
+    """
+    Index into :attr:`Program.sources` of the source unit this span refers to.
+    Index 0 is the source that was passed to the parser, so spans of programs parsed without
+    include resolution always refer to source 0.
+    """
+
+
+@dataclass
+class SourceUnit:
+    """
+    One resolved source unit of a program, identified by its canonical name.
+
+    This is deliberately not a :class:`QASMNode`.  Generic AST visitors traverse child nodes by
+    inspecting a node's attributes, so keeping source units outside the node hierarchy means that
+    resolving includes does not silently change the behaviour of existing visitors.  Use
+    :func:`openqasm3.resolver.flatten_includes` to obtain the spliced view of a program.
+    """
+
+    canonical_name: str
+    """The identity this source unit resolved to."""
+
+    statements: Optional[List[Union["Statement", "Pragma"]]] = None
+    """
+    The statements of this source unit.  This is ``None`` for the source passed directly to the
+    parser, whose statements are held by :attr:`Program.statements`.
+    """
+
+    version: Optional[str] = None
+    """
+    The version statement found in this source unit, if any.  A version statement in an included
+    source unit is retained here and is not applied to the program as a whole.
+    """
 
 
 @dataclass
@@ -141,6 +175,12 @@ class Program(QASMNode):
 
     statements: List[Union[Statement, Pragma]]
     version: Optional[str] = None
+    sources: List[SourceUnit] = field(default_factory=list, compare=False)
+    """
+    The source units of this program, in the order they were incorporated.  Index 0 is always the
+    source passed to the parser.  This is empty when the program was parsed without include
+    resolution.
+    """
 
 
 @dataclass
@@ -172,6 +212,15 @@ class Include(Statement):
     """
 
     filename: str
+    canonical_name: Optional[str] = field(default=None, compare=False)
+    """
+    The canonical name this include target resolved to, or ``None`` if it was not resolved.
+    Like :attr:`QASMNode.span`, this records where content came from rather than what the program
+    says, so it is excluded from equality and resolving a program does not change its identity.
+    """
+
+    source: Optional[int] = field(default=None, compare=False)
+    """Index into :attr:`Program.sources` of the resolved source unit, or ``None``."""
 
 
 @dataclass

@@ -51,6 +51,10 @@ intact for future passes.  Pragmas should avoid stateful or positional
 interactions to avoid unexpected behaviors between included source files. If the
 position is relevant to a pragma, an annotation should be used instead.
 
+A pragma contained in an included source unit is processed when that source
+unit is incorporated into the program, which happens at most once however many
+``include`` statements resolve to it.  See :ref:`include-once`.
+
 Pragmas are useful for extending OpenQASM functionality that is not described in
 this specification, such as adding directives to a simulator.
 

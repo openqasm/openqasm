@@ -1,0 +1,46 @@
+---
+features:
+  - |
+    Defined how an ``include`` statement's target is resolved to source, which the specification
+    previously left entirely undefined.  An include target is now an opaque logical name that an
+    implementation maps to a *canonical name* and source text.  The mapping itself remains
+    implementation defined, but its observable behaviour is now specified: resolution is stable
+    within a compilation, a relative target resolves with respect to the canonical name of the
+    including source unit rather than any ambient state such as a process working directory,
+    inclusion cycles must be diagnosed, and an inclusion depth of at least 15 must be supported.
+    A ``.`` or ``..`` path component is not permitted in an include target.  See :ref:`includes`.
+  - |
+    A source unit is now incorporated into a program at most once per canonical name.  Two source
+    units that each contain ``include "stdgates.inc";`` can therefore be used together without
+    the standard gates being redeclared, which was previously ill formed with no workaround
+    available in the language.  The rule applies to the whole source unit, including pragmas and
+    calibration blocks, and requires no new syntax.  ``defcal`` statements are exempt from the
+    resulting collision rule, so calibration definitions continue to overload across source
+    units.  See :ref:`include-once`.
+  - |
+    Reserved ``stdgates.inc`` as the canonical name of the standard library, independent of
+    whether an implementation supplies a literal file for it.  The standard library is therefore
+    incorporated into a program at most once, however many times it is included.
+  - |
+    Added a non-normative note describing four load behaviours for hosts that embed an OpenQASM
+    implementation, so that in-memory, notebook, editor and sandboxed environments have a
+    portable integration shape.  See :ref:`include-host-integration`.
+upgrade:
+  - |
+    A program that reaches the same source unit through more than one ``include`` statement is
+    now well formed where it was previously an error.  This change only widens the set of valid
+    programs.
+  - |
+    The specification now states explicitly that it makes no promise about physical file identity.
+    Two distinct canonical names are two distinct source units even if an implementation would
+    resolve both to the same underlying storage, because portable detection of file identity
+    through symbolic links, aliased mount points, case-insensitive filesystems or identical
+    content is not available across the environments implementations run in.
+  - |
+    A source unit that refers to identifiers declared by the source unit that included it is
+    incorporated at the first ``include`` statement that resolves to it.  Such a source unit is
+    not suitable for inclusion from more than one place, and source units intended to be widely
+    included should be self-contained.
+  - |
+    The material describing ``include`` has moved out of the "Comments" chapter into a chapter of
+    its own.

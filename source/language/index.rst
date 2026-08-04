@@ -24,6 +24,7 @@ The OpenQASM grammar specifications can be found at `[OpenQASM 3.0 Grammar] <..
    classical
    subroutines
    scope
+   includes
    directives
    standard_library
    delays

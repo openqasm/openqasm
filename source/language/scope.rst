@@ -49,7 +49,10 @@ file it is contained within; all variables that are in scope at the time of the
 ``include`` statement are also in scope while the included file is being parsed,
 and variables defined in that file will be available in the containing file's
 scope once the inclusion has been parsed.  There is no separate namespacing
-defined in OpenQASM 3.0.
+defined in OpenQASM 3.0.  How an ``include`` statement's target is resolved to
+a source unit, and the circumstances under which a source unit is incorporated
+into the program, are described in :ref:`the section on included files
+<includes>`.
 
 
 .. _scope-global:
@@ -95,6 +98,15 @@ A simple example of scoping between a main program file and an included file:
    // This usage of `i` is valid because the scope inside the `include`
    // inherits all definitions from the scope that did the including.
 
+.. note::
+
+   Because ``my_definitions.qasm`` refers to ``i``, which is declared by the
+   file that included it, it is not self-contained.  A source unit is
+   incorporated into a program at most once, at the first ``include``
+   statement that resolves to it, so a source unit written this way is not
+   suitable for inclusion from more than one place.  See
+   :ref:`include-once`.
+
 
 Within the global scope, identifiers declared by ``gate``, ``def`` and
 ``defcal`` statements may not be shadowed or otherwise redeclared.  As described
@@ -102,6 +114,10 @@ in the :ref:`section on pulse-level descriptions of quantum operations
 <pulse-gates>`, multiple ``defcal`` statements may affect the same operation;
 this is not an instance of shadowing, but a form of overloading, extending the
 calibration definitions for different qubits.
+
+A declaration reached by way of two ``include`` statements that resolve to the
+same source unit is a single declaration rather than a redeclaration, and is
+not an error.  See :ref:`include-once`.
 
 .. warning::
 

@@ -27,6 +27,13 @@ QPU.  The rest of this section concerns only situations where the library is con
 Implementations should consider the ``stdgates.inc`` file to be locatable, regardless of any other
 settings that they might apply around include search paths.
 
+The name ``stdgates.inc`` is reserved as the canonical name of the standard library.  An
+``include`` statement whose target resolves to the standard library shall resolve to that canonical
+name, whether the implementation supplies the library as a literal file or synthesizes it.  It
+follows from :ref:`include-once` that the standard library is incorporated into a program at most
+once, however many ``include "stdgates.inc";`` statements a program and its included source units
+contain.
+
 Upon interpreting an ``include "stdgates.inc";`` statement, implementations should make available
 exactly the set of gates defined in the standard library for the language version that matches the
 :ref:`version-string statement <version-string>`, if present.  If the version statement is not

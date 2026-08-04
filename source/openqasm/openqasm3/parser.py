@@ -31,6 +31,7 @@ __all__ = [
     "QASMNodeVisitor",
     "QASM3ParsingError",
     "get_comments",
+    "DEFAULT_SOURCE_NAME",
 ]
 
 import re
@@ -58,6 +59,17 @@ from ._antlr.qasm3Lexer import qasm3Lexer  # type: ignore[import-not-found]
 from ._antlr.qasm3Parser import qasm3Parser  # type: ignore[import-not-found]
 from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor  # type: ignore[import-not-found]
 from . import ast
+from .resolver import (
+    ChoiceResolver,
+    CyclicIncludeError,
+    DEFAULT_MAX_INCLUDE_DEPTH,
+    IncludeDepthExceededError,
+    IncludeNotFoundError,
+    StandardLibraryResolver,
+    as_resolver,
+    candidate_names,
+    validate_include_target,
+)
 
 _TYPE_NODE_INIT = {
     "int": ast.IntType,
@@ -181,32 +193,12 @@ def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
 MIN_SUPPORTED_VERSION = (3,)
 MAX_SUPPORTED_VERSION = (3, 1)
 
+DEFAULT_SOURCE_NAME = "<input>"
+"""Canonical name given to a program parsed from a string when the caller supplies no name."""
 
-def parse(input_: str, *, permissive=False, ignore_version=False) -> ast.Program:
-    """
-    Parse a complete OpenQASM 3 program from a string.
 
-    :param input_: A string containing a complete OpenQASM 3 program.
-    :param permissive: A Boolean controlling whether ANTLR should attempt to
-        recover from incorrect input or not.  Defaults to ``False``; if set to
-        ``True``, the reference AST produced may be invalid if ANTLR emits any
-        warning messages during its parsing phase.
-    :param ignore_version: If true, ignore the specified version of the OpenQASM program, and
-        attempt to parse it anyway.  There is no guarantee that the output was syntactically or
-        semantically valid for the given version if this is set.
-    :return: A complete :obj:`~ast.Program` node.
-    """
-    version = parse_version(input_)
-    if version is None:
-        version = MIN_SUPPORTED_VERSION
-    if not ignore_version:
-        version_str = ".".join(str(part) for part in version)
-        if len(version) > 2:
-            raise QASM3ParsingError(
-                f"version can only be `<major>` or `<major>.<minor>`, but got '{version_str}'"
-            )
-        if not MIN_SUPPORTED_VERSION <= version <= MAX_SUPPORTED_VERSION:
-            raise QASM3ParsingError(f"program reports being unsupported version '{version_str}'")
+def _parse_to_program(input_: str, permissive: bool) -> ast.Program:
+    """Run the ANTLR parser over ``input_`` and build a :obj:`~ast.Program`, without resolution."""
     lexer = qasm3Lexer(InputStream(input_))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
@@ -224,6 +216,162 @@ def parse(input_: str, *, permissive=False, ignore_version=False) -> ast.Program
     except ParseCancellationException as exc:
         raise QASM3ParsingError("parse failed") from exc
     return QASMNodeVisitor().visitProgram(tree)
+
+
+def _rebase_spans(node, source_index: int) -> None:
+    """Reassign span provenance for an AST subgraph.
+
+    Starting from ``node``, this walks every reachable :class:`ast.QASMNode` and rewrites
+    ``current.span.source`` to ``source_index`` when a span is present.  Traversal follows:
+
+    - attributes of AST nodes via ``__dict__.values()``
+    - nested ``list`` and ``tuple`` containers
+
+    A visited-ID set avoids revisiting the same object, so shared references and accidental
+    cycles are handled safely.
+    """
+    stack = [node]
+    seen = set()
+    while stack:
+        current = stack.pop()
+        if id(current) in seen:
+            continue
+        seen.add(id(current))
+        if isinstance(current, ast.QASMNode):
+            if current.span is not None:
+                current.span.source = source_index
+            stack.extend(current.__dict__.values())
+        elif isinstance(current, (list, tuple)):
+            stack.extend(current)
+
+
+def _resolve_includes(
+    statements,
+    includer: str,
+    resolver,
+    permissive: bool,
+    sources: List[ast.SourceUnit],
+    indices: dict,
+    stack: List[str],
+    max_depth: int,
+) -> None:
+    """Resolve every ``include`` statement reachable from ``statements``, in place."""
+    for statement in statements:
+        if not isinstance(statement, ast.Include):
+            continue
+        target = statement.filename
+        validate_include_target(target, includer)
+        resolved = resolver.resolve(target, includer)
+        if resolved is None:
+            message = f"could not resolve include target '{target}' from '{includer}'"
+            if len(candidate_names(target, includer)) == 1:
+                message += (
+                    f"; '{includer}' has no name prefix, so only '{target}' itself was tried."
+                    " Pass name= to give the source a canonical name that include targets can be"
+                    " resolved with respect to"
+                )
+            raise IncludeNotFoundError(message)
+        statement.canonical_name = resolved.canonical_name
+        if resolved.canonical_name in stack:
+            chain = " -> ".join(stack + [resolved.canonical_name])
+            raise CyclicIncludeError(f"inclusion cycle detected: {chain}")
+        existing = indices.get(resolved.canonical_name)
+        if existing is not None:
+            # The source unit is already incorporated, so this statement contributes nothing.
+            statement.source = existing
+            continue
+        if len(stack) >= max_depth:
+            raise IncludeDepthExceededError(
+                f"inclusion of '{resolved.canonical_name}' from '{includer}' exceeds the"
+                f" supported inclusion depth of {max_depth}"
+            )
+        index = len(sources)
+        unit = ast.SourceUnit(canonical_name=resolved.canonical_name)
+        sources.append(unit)
+        indices[resolved.canonical_name] = index
+        statement.source = index
+
+        if not resolved.source:
+            # Virtual sources such as stdgates.inc have no parser-owned text; ANTLR cannot visit
+            # an empty program, so represent their resolved source unit directly.
+            unit.statements = []
+            continue
+        included = _parse_to_program(resolved.source, permissive)
+        _rebase_spans(included, index)
+        unit.statements = included.statements
+        version = included.version
+        unit.version = version
+        _resolve_includes(
+            included.statements,
+            resolved.canonical_name,
+            resolver,
+            permissive,
+            sources,
+            indices,
+            stack + [resolved.canonical_name],
+            max_depth,
+        )
+
+
+def parse(
+    input_: str,
+    *,
+    permissive=False,
+    ignore_version=False,
+    includes=None,
+    name: Optional[str] = None,
+) -> ast.Program:
+    """
+    Parse a complete OpenQASM 3 program from a string.
+
+    :param input_: A string containing a complete OpenQASM 3 program.
+    :param permissive: A Boolean controlling whether ANTLR should attempt to
+        recover from incorrect input or not.  Defaults to ``False``; if set to
+        ``True``, the reference AST produced may be invalid if ANTLR emits any
+        warning messages during its parsing phase.
+    :param ignore_version: If true, ignore the specified version of the OpenQASM program, and
+        attempt to parse it anyway.  There is no guarantee that the output was syntactically or
+        semantically valid for the given version if this is set.
+    :param includes: How to resolve ``include`` statements.  This accepts any of the four
+        supported load behaviours: ``None`` (the default) to leave includes unresolved, a mapping
+        of canonical name to source text, a callable taking ``(target, includer)``, or an
+        :class:`~openqasm3.resolver.IncludeResolver`.  No file system access is performed unless
+        the caller supplies a resolver that performs it, such as
+        :class:`~openqasm3.filesystem.FileSystemResolver`.
+    :param name: The canonical name of ``input_``.  This is the name that relative include targets
+        are resolved with respect to.  Defaults to ``"<input>"``, which has no name prefix.
+    :return: A complete :obj:`~ast.Program` node.
+    """
+    version = parse_version(input_)
+    if version is None:
+        version = MIN_SUPPORTED_VERSION
+    if not ignore_version:
+        version_str = ".".join(str(part) for part in version)
+        if len(version) > 2:
+            raise QASM3ParsingError(
+                f"version can only be `<major>` or `<major>.<minor>`, but got '{version_str}'"
+            )
+        if not MIN_SUPPORTED_VERSION <= version <= MAX_SUPPORTED_VERSION:
+            raise QASM3ParsingError(f"program reports being unsupported version '{version_str}'")
+    program = _parse_to_program(input_, permissive)
+    resolver = as_resolver(includes)
+    if resolver is None:
+        return program
+    resolver = ChoiceResolver([StandardLibraryResolver(), resolver])
+    root_name = DEFAULT_SOURCE_NAME if name is None else name
+    sources = [ast.SourceUnit(canonical_name=root_name, version=program.version)]
+    _resolve_includes(
+        program.statements,
+        root_name,
+        resolver,
+        permissive,
+        sources,
+        {root_name: 0},
+        [root_name],
+        DEFAULT_MAX_INCLUDE_DEPTH,
+    )
+    program.sources = sources
+    return program
 
 
 def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:

@@ -1,0 +1,65 @@
+---
+features:
+  - |
+    :func:`openqasm3.parse` can now resolve ``include`` statements.  Pass ``includes=`` in any of
+    four forms: ``None`` (the default) to leave includes unresolved, a mapping of canonical name
+    to source text, a callable taking ``(target, includer)``, or an
+    :class:`~openqasm3.resolver.IncludeResolver`.  All four are normalised internally by
+    :func:`~openqasm3.resolver.as_resolver`, so they are interchangeable at the call site.  Pass
+    ``name=`` to give the parsed source its canonical name, which is what include targets are
+    resolved with respect to; it defaults to ``"<input>"``.
+  - |
+    Added the :mod:`openqasm3.resolver` module, providing
+    :class:`~openqasm3.resolver.IncludeResolver`, :class:`~openqasm3.resolver.DictResolver`,
+    :class:`~openqasm3.resolver.FunctionResolver`, :class:`~openqasm3.resolver.ChoiceResolver`,
+    :func:`~openqasm3.resolver.flatten_includes`, and dedicated error types for unresolvable
+    targets, inclusion cycles, excessive inclusion depth and malformed include targets.  A
+    resolver returns ``None`` to indicate that a target is not one it handles, which allows
+    resolvers to be composed.
+  - |
+    Added the opt-in :class:`openqasm3.filesystem.FileSystemResolver`, which loads source units
+    from an explicit list of search roots and refuses candidates that escape them.  This is the
+    only part of the package that touches the file system, and :func:`openqasm3.parse` performs
+    no file-system access unless a caller supplies a resolver that does.
+  - |
+    The AST now carries source identity.  :class:`~openqasm3.ast.Span` gained a ``source``
+    attribute indexing :attr:`openqasm3.ast.Program.sources`, a new list of
+    :class:`~openqasm3.ast.SourceUnit` entries, and :class:`~openqasm3.ast.Include` gained
+    ``canonical_name`` and ``source`` attributes recording what it resolved to.  Diagnostics
+    originating in an included source unit can therefore be attributed to it.
+  - |
+    When callers enable include resolution with ``includes=``,
+    :func:`openqasm3.parse` resolves exact ``"stdgates.inc"`` to an empty
+    :class:`~openqasm3.ast.SourceUnit` with the reserved canonical name. The parser does not
+    ship, load, or synthesize standard-gate declarations; downstream compiler tooling remains
+    responsible for standard-gate symbol resolution, type checking, and implementation selection.
+upgrade:
+  - |
+    All new attributes have defaults, so existing code that constructs AST nodes positionally is
+    unaffected, and a program parsed without ``includes=`` produces the same AST as before.
+  - |
+    Resolution does not change a program's identity.  :attr:`openqasm3.ast.Include.canonical_name`
+    and :attr:`openqasm3.ast.Include.source` are declared ``compare=False``, matching the existing
+    treatment of :attr:`openqasm3.ast.QASMNode.span`, so a program parsed with ``includes=``
+    compares equal to the same source parsed without it.  :attr:`openqasm3.ast.Span.source` does
+    participate in equality, because a span identifies a location and the same line and column in
+    two different source units are two different locations.
+  - |
+    :class:`~openqasm3.ast.SourceUnit` is deliberately not a :class:`~openqasm3.ast.QASMNode`, so
+    existing :class:`~openqasm3.visitor.QASMVisitor` and
+    :class:`~openqasm3.visitor.QASMTransformer` subclasses do not traverse resolved include
+    content and are unaffected by enabling resolution.  Call
+    :func:`~openqasm3.resolver.flatten_includes` to obtain the spliced view of a program.
+  - |
+    Printing is unaffected by resolution.  :func:`openqasm3.dumps` emits the ``include``
+    statement and never the source it resolved to.
+  - |
+    A version statement inside an included source unit is retained on its
+    :class:`~openqasm3.ast.SourceUnit` and is not applied to the program as a whole.  The
+    specification has not yet settled what such a statement means, so the parser preserves the
+    information without acting on it.
+  - |
+    Exact ``"stdgates.inc"`` is parser-owned during explicit include resolution and takes
+    precedence over caller-supplied mappings, callables, and resolver objects. With
+    ``includes=None``, it remains unresolved as before. Other include targets remain
+    caller-resolved.
