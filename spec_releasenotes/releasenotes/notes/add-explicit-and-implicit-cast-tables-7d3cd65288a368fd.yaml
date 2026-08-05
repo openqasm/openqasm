@@ -1,0 +1,12 @@
+---
+upgrade:
+  - |
+    Improve type casting documentation. Substitute the **Allowed casts**
+    table under **Types and Casting** -> **Casting Specifics** by two
+    tables: **Explicit cast table** and **Implicit cast table**, together
+    with a **Legend for the explicit and implicit cast tables** section.
+    These tables bring three improvements: separate tables for explicit
+    and implicit casts; casting specifics for sized types (e.g. bit[n]);
+    and a named rule per cell (R1 to R7) that documents the semantics of
+    each allowed cast with examples. The per-type **Casting from ...**
+    subsections were merged into these rules and removed.
