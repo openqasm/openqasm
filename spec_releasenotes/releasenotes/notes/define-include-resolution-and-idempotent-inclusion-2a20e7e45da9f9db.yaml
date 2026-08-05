@@ -12,11 +12,10 @@ features:
   - |
     A source unit is now incorporated into a program at most once per canonical name.  Two source
     units that each contain ``include "stdgates.inc";`` can therefore be used together without
-    the standard gates being redeclared, which was previously ill formed with no workaround
-    available in the language.  The rule applies to the whole source unit, including pragmas and
-    calibration blocks, and requires no new syntax.  ``defcal`` statements are exempt from the
-    resulting collision rule, so calibration definitions continue to overload across source
-    units.  See :ref:`include-once`.
+    incorporating the standard library more than once.  The rule applies to the whole source unit,
+    including pragmas and calibration blocks, and requires no new syntax.  It does not add a new
+    declaration-collision rule beyond the ordinary name, scope and overloading rules of the
+    language.  See :ref:`include-once`.
   - |
     Reserved ``stdgates.inc`` as the canonical name of the standard library, independent of
     whether an implementation supplies a literal file for it.  The standard library is therefore

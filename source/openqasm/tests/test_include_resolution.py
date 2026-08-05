@@ -21,7 +21,7 @@ No ``.`` or ``..`` path component in an include target           ``test_dot_path
 Source unit incorporated at most once per canonical name         ``test_diamond_incorporates_once``
 Rule applies to the whole unit, not only declarations            ``test_once_rule_covers_non_declarations``
 Different canonical names are different source units             ``test_two_names_for_same_source_are_two_units``
-``defcal`` exempt from the collision rule                        ``test_defcal_overloads_across_source_units``
+``defcal`` overloads work across source units                    ``test_defcal_overloads_across_source_units``
 Standard library reserved canonical name, no literal file        ``test_standard_library_is_metadata_only``
 Non-self-contained units incorporated at first include site      ``test_unit_reading_includer_scope``
 ===============================================================  ==========================================
@@ -34,6 +34,7 @@ import pytest
 import openqasm3
 from openqasm3 import ast
 from openqasm3.ast import Include, QASMNode, QuantumGateDefinition
+from openqasm3.filesystem import FileSystemResolver
 from openqasm3.parser import DEFAULT_SOURCE_NAME
 from openqasm3.resolver import (
     ChoiceResolver,
@@ -42,6 +43,7 @@ from openqasm3.resolver import (
     DictResolver,
     FunctionResolver,
     IncludeDepthExceededError,
+    IncludeError,
     IncludeNotFoundError,
     IncludeResolver,
     InvalidIncludeTargetError,
@@ -83,6 +85,21 @@ def test_default_behaviour_does_not_resolve():
     program = openqasm3.parse('OPENQASM 3.0;\ninclude "stdgates.inc";')
     (include,) = includes(program)
     assert include.filename == "stdgates.inc"
+    assert include.canonical_name is None
+    assert include.source is None
+    assert program.sources == []
+
+
+def test_default_behaviour_validates_include_targets():
+    """Target validity is independent of whether a resolver is supplied."""
+    with pytest.raises(InvalidIncludeTargetError, match="path component"):
+        openqasm3.parse('include "../g.inc";')
+
+
+def test_default_behaviour_allows_valid_unresolved_targets():
+    program = openqasm3.parse('include "lib/g.inc";')
+    (include,) = includes(program)
+    assert include.filename == "lib/g.inc"
     assert include.canonical_name is None
     assert include.source is None
     assert program.sources == []
@@ -204,6 +221,27 @@ def test_repeated_target_is_stable():
     assert first.source == second.source
 
 
+def test_repeated_target_cannot_change_resolution():
+    calls = 0
+
+    def resolve(target, includer):
+        nonlocal calls
+        calls += 1
+        return f"gate g{calls} q {{ U(0, 0, 0) q; }}\n", f"lib{calls}.inc"
+
+    with pytest.raises(IncludeError, match="inconsistent include resolution"):
+        openqasm3.parse('include "lib.inc";\ninclude "lib.inc";', includes=resolve)
+
+
+def test_canonical_name_cannot_change_source_text():
+    def resolve(target, includer):
+        name = target.removesuffix(".inc")
+        return f"gate {name} q {{ U(0, 0, 0) q; }}\n", "lib.inc"
+
+    with pytest.raises(IncludeError, match="canonical name 'lib.inc'"):
+        openqasm3.parse('include "a.inc";\ninclude "b.inc";', includes=resolve)
+
+
 def test_standard_library_is_metadata_only():
     """Explicit resolution records the reserved source identity without gate declarations."""
     calls = []
@@ -290,6 +328,37 @@ def test_no_filesystem_access_by_default(monkeypatch, tmp_path):
     openqasm3.parse('include "helpers.inc";')
     with pytest.raises(IncludeNotFoundError):
         openqasm3.parse('include "helpers.inc";', includes={})
+
+
+def test_filesystem_resolver_rejects_symlink_escape(tmp_path):
+    root = tmp_path / "root"
+    outside = tmp_path / "outside"
+    root.mkdir()
+    outside.mkdir()
+    (outside / "escaped.inc").write_text("gate escaped q { U(0, 0, 0) q; }\n")
+    try:
+        (root / "escaped.inc").symlink_to(outside / "escaped.inc")
+    except OSError as exc:
+        pytest.skip(f"could not create symlink fixture: {exc}")
+
+    with pytest.raises(IncludeNotFoundError, match="escaped.inc"):
+        openqasm3.parse('include "escaped.inc";', includes=FileSystemResolver([root]))
+
+
+def test_filesystem_resolver_keeps_nested_includes_in_selected_root(tmp_path):
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    (first / "dir").mkdir(parents=True)
+    (second / "dir").mkdir(parents=True)
+    (first / "dir" / "child.inc").write_text("gate from_first q { U(0, 0, 0) q; }\n")
+    (second / "dir" / "parent.inc").write_text('include "child.inc";\n')
+    (second / "dir" / "child.inc").write_text("gate from_second q { U(0, 0, 0) q; }\n")
+
+    program = openqasm3.parse(
+        'include "dir/parent.inc";', includes=FileSystemResolver([first, second])
+    )
+
+    assert gate_names(openqasm3.flatten_includes(program)) == ["from_second"]
 
 
 def test_self_inclusion_is_a_cycle():
@@ -388,7 +457,7 @@ def test_two_names_for_same_source_are_two_units():
 
 
 def test_defcal_overloads_across_source_units():
-    """``defcal`` statements from different source units overload rather than collide."""
+    """``defcal`` statements from different source units overload normally."""
     sources = {
         "cal_q0.inc": "defcal rx $0 {}\n",
         "cal_q1.inc": "defcal rx $1 {}\n",

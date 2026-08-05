@@ -15,12 +15,15 @@ features:
     :func:`~openqasm3.resolver.flatten_includes`, and dedicated error types for unresolvable
     targets, inclusion cycles, excessive inclusion depth and malformed include targets.  A
     resolver returns ``None`` to indicate that a target is not one it handles, which allows
-    resolvers to be composed.
+    resolvers to be composed.  Resolver results are checked for consistency within a parse, and
+    malformed include targets are rejected even when includes are left unresolved.
   - |
     Added the opt-in :class:`openqasm3.filesystem.FileSystemResolver`, which loads source units
-    from an explicit list of search roots and refuses candidates that escape them.  This is the
-    only part of the package that touches the file system, and :func:`openqasm3.parse` performs
-    no file-system access unless a caller supplies a resolver that does.
+    from an explicit list of search roots and refuses candidates whose resolved file path escapes
+    them.  File-system canonical names are resolved file paths, so nested relative includes retain
+    the root that supplied their containing source unit.  This is the only part of the package
+    that touches the file system, and :func:`openqasm3.parse` performs no file-system access unless
+    a caller supplies a resolver that does.
   - |
     The AST now carries source identity.  :class:`~openqasm3.ast.Span` gained a ``source``
     attribute indexing :attr:`openqasm3.ast.Program.sources`, a new list of

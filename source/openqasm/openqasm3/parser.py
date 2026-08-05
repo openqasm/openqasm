@@ -36,7 +36,8 @@ __all__ = [
 
 import re
 from contextlib import contextmanager
-from typing import Union, TypeVar, List, Optional, Protocol, Tuple, cast
+from dataclasses import dataclass
+from typing import Dict, Union, TypeVar, List, Optional, Protocol, Tuple, cast
 
 try:
     from antlr4 import (
@@ -64,7 +65,10 @@ from .resolver import (
     CyclicIncludeError,
     DEFAULT_MAX_INCLUDE_DEPTH,
     IncludeDepthExceededError,
+    IncludeError,
     IncludeNotFoundError,
+    IncludeResolver,
+    ResolvedSource,
     StandardLibraryResolver,
     as_resolver,
     candidate_names,
@@ -245,23 +249,70 @@ def _rebase_spans(node, source_index: int) -> None:
             stack.extend(current)
 
 
-def _resolve_includes(
-    statements,
-    includer: str,
-    resolver,
-    permissive: bool,
-    sources: List[ast.SourceUnit],
-    indices: dict,
-    stack: List[str],
-    max_depth: int,
-) -> None:
-    """Resolve every ``include`` statement reachable from ``statements``, in place."""
-    for statement in statements:
-        if not isinstance(statement, ast.Include):
-            continue
+@dataclass
+class _IncludeResolutionContext:
+    """Per-parse state and helpers for resolving ``include`` statements.
+
+    The context owns the resolver, source-unit table, canonical-name indices, and consistency
+    checks that must be shared across recursive include resolution.
+    """
+
+    resolver: IncludeResolver
+    permissive: bool
+    sources: List[ast.SourceUnit]
+    indices: Dict[str, int]
+    resolved_targets: Dict[Tuple[str, str], ResolvedSource]
+    canonical_sources: Dict[str, str]
+    max_depth: int = DEFAULT_MAX_INCLUDE_DEPTH
+
+    @classmethod
+    def for_root(
+        cls, resolver: IncludeResolver, permissive: bool, root_name: str, version: Optional[str]
+    ) -> "_IncludeResolutionContext":
+        return cls(
+            resolver=ChoiceResolver([StandardLibraryResolver(), resolver]),
+            permissive=permissive,
+            sources=[ast.SourceUnit(canonical_name=root_name, version=version)],
+            indices={root_name: 0},
+            resolved_targets={},
+            canonical_sources={},
+        )
+
+    def resolve_statements(self, statements, includer: str, stack: List[str]) -> None:
+        """Resolve every ``include`` statement reachable from ``statements``, in place."""
+        for statement in statements:
+            if isinstance(statement, ast.Include):
+                self.resolve_include(statement, includer, stack)
+
+    def resolve_include(self, statement: ast.Include, includer: str, stack: List[str]) -> None:
+        """Resolve one ``include`` statement and incorporate its source unit if needed.
+
+        This validates the target, checks resolver consistency, annotates the include statement
+        with its resolved canonical name and source index, and enforces cycle, depth and
+        incorporate-once rules before parsing any newly reached source text.
+        """
         target = statement.filename
         validate_include_target(target, includer)
-        resolved = resolver.resolve(target, includer)
+        resolved = self._resolve_target(target, includer)
+        self._check_consistency(target, includer, resolved)
+        statement.canonical_name = resolved.canonical_name
+        if resolved.canonical_name in stack:
+            chain = " -> ".join(stack + [resolved.canonical_name])
+            raise CyclicIncludeError(f"inclusion cycle detected: {chain}")
+        existing = self.indices.get(resolved.canonical_name)
+        if existing is not None:
+            # The source unit is already incorporated, so this statement contributes nothing.
+            statement.source = existing
+            return
+        if len(stack) >= self.max_depth:
+            raise IncludeDepthExceededError(
+                f"inclusion of '{resolved.canonical_name}' from '{includer}' exceeds the"
+                f" supported inclusion depth of {self.max_depth}"
+            )
+        self._incorporate_source(statement, resolved, stack)
+
+    def _resolve_target(self, target: str, includer: str) -> ResolvedSource:
+        resolved = self.resolver.resolve(target, includer)
         if resolved is None:
             message = f"could not resolve include target '{target}' from '{includer}'"
             if len(candidate_names(target, includer)) == 1:
@@ -271,46 +322,52 @@ def _resolve_includes(
                     " resolved with respect to"
                 )
             raise IncludeNotFoundError(message)
-        statement.canonical_name = resolved.canonical_name
-        if resolved.canonical_name in stack:
-            chain = " -> ".join(stack + [resolved.canonical_name])
-            raise CyclicIncludeError(f"inclusion cycle detected: {chain}")
-        existing = indices.get(resolved.canonical_name)
-        if existing is not None:
-            # The source unit is already incorporated, so this statement contributes nothing.
-            statement.source = existing
-            continue
-        if len(stack) >= max_depth:
-            raise IncludeDepthExceededError(
-                f"inclusion of '{resolved.canonical_name}' from '{includer}' exceeds the"
-                f" supported inclusion depth of {max_depth}"
+        return resolved
+
+    def _check_consistency(self, target: str, includer: str, resolved: ResolvedSource) -> None:
+        previous = self.resolved_targets.get((target, includer))
+        if previous is None:
+            self.resolved_targets[(target, includer)] = resolved
+        elif previous != resolved:
+            raise IncludeError(
+                f"inconsistent include resolution for target '{target}' from '{includer}'"
             )
-        index = len(sources)
+        previous_source = self.canonical_sources.get(resolved.canonical_name)
+        if previous_source is None:
+            self.canonical_sources[resolved.canonical_name] = resolved.source
+        elif previous_source != resolved.source:
+            raise IncludeError(
+                f"inconsistent include resolution for canonical name '{resolved.canonical_name}'"
+            )
+
+    def _incorporate_source(
+        self, statement: ast.Include, resolved: ResolvedSource, stack: List[str]
+    ) -> None:
+        index = len(self.sources)
         unit = ast.SourceUnit(canonical_name=resolved.canonical_name)
-        sources.append(unit)
-        indices[resolved.canonical_name] = index
+        self.sources.append(unit)
+        self.indices[resolved.canonical_name] = index
         statement.source = index
 
         if not resolved.source:
             # Virtual sources such as stdgates.inc have no parser-owned text; ANTLR cannot visit
             # an empty program, so represent their resolved source unit directly.
             unit.statements = []
-            continue
-        included = _parse_to_program(resolved.source, permissive)
+            return
+        included = _parse_to_program(resolved.source, self.permissive)
         _rebase_spans(included, index)
         unit.statements = included.statements
         version = included.version
         unit.version = version
-        _resolve_includes(
-            included.statements,
-            resolved.canonical_name,
-            resolver,
-            permissive,
-            sources,
-            indices,
-            stack + [resolved.canonical_name],
-            max_depth,
+        self.resolve_statements(
+            included.statements, resolved.canonical_name, stack + [resolved.canonical_name]
         )
+
+
+def _validate_include_targets(statements, includer: str) -> None:
+    for statement in statements:
+        if isinstance(statement, ast.Include):
+            validate_include_target(statement.filename, includer)
 
 
 def parse(
@@ -354,23 +411,14 @@ def parse(
         if not MIN_SUPPORTED_VERSION <= version <= MAX_SUPPORTED_VERSION:
             raise QASM3ParsingError(f"program reports being unsupported version '{version_str}'")
     program = _parse_to_program(input_, permissive)
+    root_name = DEFAULT_SOURCE_NAME if name is None else name
+    _validate_include_targets(program.statements, root_name)
     resolver = as_resolver(includes)
     if resolver is None:
         return program
-    resolver = ChoiceResolver([StandardLibraryResolver(), resolver])
-    root_name = DEFAULT_SOURCE_NAME if name is None else name
-    sources = [ast.SourceUnit(canonical_name=root_name, version=program.version)]
-    _resolve_includes(
-        program.statements,
-        root_name,
-        resolver,
-        permissive,
-        sources,
-        {root_name: 0},
-        [root_name],
-        DEFAULT_MAX_INCLUDE_DEPTH,
-    )
-    program.sources = sources
+    context = _IncludeResolutionContext.for_root(resolver, permissive, root_name, program.version)
+    context.resolve_statements(program.statements, root_name, [root_name])
+    program.sources = context.sources
     return program
 
 

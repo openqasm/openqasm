@@ -100,8 +100,7 @@ aliased mount points, or identical content.
    environments OpenQASM implementations run in, so requiring it would make
    conformance unattainable for some hosts.  A consequence is that a program
    which reaches the same underlying source through two different canonical
-   names will incorporate it twice, and will be diagnosed accordingly under
-   :ref:`include-once`.
+   names will incorporate it twice as two distinct source units.
 
 
 .. _include-once:
@@ -119,11 +118,11 @@ declarations: pragmas, calibration blocks and any other content of a source
 unit are incorporated exactly once along with it.
 
 A declaration reached by way of two different ``include`` statements that
-resolve to the same canonical name is a single declaration, not a
-redeclaration.  A declaration whose identifier collides with a declaration
-originating from a *different* canonical name is an error, subject to the
-exemption below, and must be diagnosed at the point at which the second source
-unit is incorporated.
+resolve to the same canonical name is incorporated once.  A declaration reached
+through a different canonical name is incorporated as part of a distinct source
+unit.  The include mechanism does not itself define any additional declaration
+collision rule beyond the ordinary name, scope and overloading rules of the
+language.
 
 .. code-block::
    :caption: File ``a.inc``
@@ -153,12 +152,11 @@ unit is incorporated.
 Calibration definitions
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-``defcal`` statements are exempt from the collision rule above.  As described
-in :ref:`the section on scoping <scope-global>`, multiple ``defcal``
-statements may affect the same operation; this is overloading rather than
-redeclaration.  ``defcal`` statements originating from different source units
-overload one another in exactly the same way as ``defcal`` statements written
-in a single source unit.
+As described in :ref:`the section on scoping <scope-global>`, multiple
+``defcal`` statements may affect the same operation; this is overloading rather
+than redeclaration.  ``defcal`` statements originating from different source
+units overload one another in exactly the same way as ``defcal`` statements
+written in a single source unit.
 
 Repeated inclusion
 ~~~~~~~~~~~~~~~~~~

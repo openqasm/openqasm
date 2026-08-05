@@ -29,7 +29,9 @@ defaults to ``"<input>"``, which has no name prefix.
 
 The default.  ``include`` statements are parsed and retained, but no source is
 loaded, and :attr:`~openqasm3.ast.Include.canonical_name` stays ``None``.  This
-is the right choice for a tool that only parses or formats one source unit::
+is the right choice for a tool that only parses or formats one source unit.
+Include targets are still validated, so targets containing a ``.`` or ``..``
+path component are rejected even though no source is loaded::
 
    import openqasm3
 
@@ -82,7 +84,10 @@ should also serve as the canonical name::
 
 Raise an :class:`~openqasm3.resolver.IncludeError` rather than returning
 ``None`` when you do handle a target but cannot load it, so that a real failure
-is not mistaken for a miss.
+is not mistaken for a miss.  During one parse, the same target from the same
+source unit must resolve consistently, and a canonical name must identify one
+source text.  The parser raises :class:`~openqasm3.resolver.IncludeError` if a
+resolver produces inconsistent results.
 
 
 4. A resolver object
@@ -102,6 +107,22 @@ need composition, or when your resolution logic carries state::
 
 :class:`~openqasm3.resolver.ChoiceResolver` consults each resolver in order and
 takes the first that does not return ``None``.
+
+
+File-system canonical names
+===========================
+
+:class:`openqasm3.filesystem.FileSystemResolver` resolves candidates against
+explicit search roots.  A candidate is accepted only if the resolved path of
+the file that would be opened is inside the matching root, so symbolic links
+cannot escape the configured search path.  The source unit's canonical name is
+the resolved file path, written with forward slashes.
+
+Using the resolved path as the canonical name also preserves root provenance for
+nested includes.  If two search roots contain similar relative layouts and a
+parent source unit is found in the second root, a later ``include`` inside that
+parent resolves relative to the second root rather than drifting back to an
+earlier root.
 
 
 The standard library
