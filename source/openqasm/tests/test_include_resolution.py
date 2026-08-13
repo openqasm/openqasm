@@ -28,6 +28,7 @@ Non-self-contained units incorporated at first include site      ``test_unit_rea
 """
 
 import dataclasses
+import unicodedata
 
 import pytest
 
@@ -50,6 +51,7 @@ from openqasm3.resolver import (
     MINIMUM_INCLUDE_DEPTH,
     ResolvedSource,
     as_resolver,
+    validate_include_target,
 )
 
 STDGATES = "gate h q { U(pi/2, 0, pi) q; }\ngate x q { U(pi, 0, pi) q; }\n"
@@ -396,6 +398,38 @@ def test_dot_path_components_rejected(target):
         openqasm3.parse(f'include "{target}";', includes={target: ""})
 
 
+@pytest.mark.parametrize(
+    "target,reason",
+    [
+        ("/etc/passwd", "absolute"),
+        ("/g.inc", "absolute"),
+        (r"lib\g.inc", r"'\\' character"),
+        (r"\\server\share\g.inc", r"'\\' character"),
+        ("C:/lib/g.inc", "drive specifier"),
+        ("c:g.inc", "drive specifier"),
+        ("lib//g.inc", "empty path component"),
+    ],
+)
+def test_non_portable_targets_rejected(target, reason):
+    """Forms whose meaning differs between host systems are rejected, not merely unresolved."""
+    with pytest.raises(InvalidIncludeTargetError, match=reason):
+        openqasm3.parse(f'include "{target}";', includes={target: ""})
+
+
+def test_empty_target_rejected():
+    """Unreachable from source, since the grammar's string literal needs one character."""
+    with pytest.raises(InvalidIncludeTargetError, match="is empty"):
+        validate_include_target("")
+    with pytest.raises(openqasm3.parser.QASM3ParsingError):
+        openqasm3.parse('include "";')
+
+
+def test_a_backslash_target_is_a_literal_backslash():
+    """OpenQASM strings have no escape sequences, so this is a well-formed token."""
+    with pytest.raises(InvalidIncludeTargetError):
+        openqasm3.parse(r'include "a\tb.inc";')
+
+
 def test_dot_check_precedes_the_resolver():
     """The prohibition is enforced centrally, so a host resolver cannot bypass it."""
 
@@ -404,6 +438,45 @@ def test_dot_check_precedes_the_resolver():
 
     with pytest.raises(InvalidIncludeTargetError):
         openqasm3.parse('include "../g.inc";', includes=explode)
+
+
+def test_absolute_target_never_reaches_the_resolver():
+    """A resolver that would happily open an absolute path is never given the chance."""
+
+    def explode(target, includer):
+        raise AssertionError("resolver must not be consulted for an invalid target")
+
+    with pytest.raises(InvalidIncludeTargetError):
+        openqasm3.parse('include "/etc/passwd";', includes=explode)
+
+
+def test_mapping_matches_a_target_under_nfc():
+    """A decomposed target reaches a precomposed name, so hosts agree across file systems."""
+    precomposed = unicodedata.normalize("NFC", "caf\u00e9.inc")
+    decomposed = unicodedata.normalize("NFD", precomposed)
+    assert precomposed != decomposed
+
+    program = openqasm3.parse(
+        f'OPENQASM 3.0;\ninclude "{decomposed}";',
+        includes={precomposed: "gate cafe q { U(0, 0, 0) q; }"},
+        name="main.qasm",
+    )
+    assert [unit.canonical_name for unit in program.sources] == ["main.qasm", precomposed]
+
+
+def test_mapping_prefers_an_exact_match_over_a_normalised_one():
+    precomposed = unicodedata.normalize("NFC", "caf\u00e9.inc")
+    decomposed = unicodedata.normalize("NFD", precomposed)
+
+    program = openqasm3.parse(
+        f'OPENQASM 3.0;\ninclude "{decomposed}";',
+        includes={
+            precomposed: "gate a q { U(0, 0, 0) q; }",
+            decomposed: "gate b q { U(0,0,0) q; }",
+        },
+        name="main.qasm",
+    )
+    assert [unit.canonical_name for unit in program.sources] == ["main.qasm", decomposed]
 
 
 # --------------------------------------------------------------------------------------

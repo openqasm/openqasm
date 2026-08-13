@@ -59,6 +59,8 @@ __all__ = [
 ]
 
 import abc
+import re
+import unicodedata
 from collections.abc import Mapping as _AbcMapping
 from typing import Callable, Iterable, List, NamedTuple, Optional, Sequence, Tuple, Union
 
@@ -137,19 +139,50 @@ def candidate_names(target: str, includer: Optional[str]) -> List[str]:
     return candidates
 
 
+_DRIVE_QUALIFIED = re.compile(r"^[A-Za-z]:")
+
+
+def _invalid_target(target: str, includer: Optional[str], reason: str) -> InvalidIncludeTargetError:
+    location = f" in '{includer}'" if includer else ""
+    return InvalidIncludeTargetError(f"include target '{target}'{location} {reason}")
+
+
 def validate_include_target(target: str, includer: Optional[str] = None) -> None:
     """Raise :class:`InvalidIncludeTargetError` if ``target`` is not a well-formed include target.
 
-    The specification forbids a path component consisting of a single or double period.
+    An include target is an opaque logical name rather than a file-system path, but a program is
+    portable only when the same target names the same source unit on every host.  The forms
+    rejected here are exactly those the environments implementations run in interpret differently,
+    so accepting them would make a program's meaning depend on the machine compiling it.
+
+    OpenQASM string literals have no escape sequences, so a backslash written in an include target
+    reaches this function as a literal backslash and is rejected rather than read as a separator.
     """
-    components = target.replace("\\", "/").split("/")
-    for component in components:
+    if not target:
+        raise _invalid_target(target, includer, "is empty")
+    if "\\" in target:
+        raise _invalid_target(
+            target,
+            includer,
+            "contains a '\\' character; components of an include target are separated by '/'",
+        )
+    if target.startswith("/"):
+        raise _invalid_target(
+            target,
+            includer,
+            "is absolute; an include target is resolved with respect to its includer",
+        )
+    if _DRIVE_QUALIFIED.match(target):
+        raise _invalid_target(
+            target, includer, "begins with a drive specifier, which is not portable"
+        )
+    for component in target.split("/"):
         if component in (".", ".."):
-            location = f" in '{includer}'" if includer else ""
-            raise InvalidIncludeTargetError(
-                f"include target '{target}'{location} contains a '{component}' path component,"
-                " which is not permitted"
+            raise _invalid_target(
+                target, includer, f"contains a '{component}' path component, which is not permitted"
             )
+        if not component:
+            raise _invalid_target(target, includer, "contains an empty path component")
 
 
 class DictResolver(IncludeResolver):
@@ -157,15 +190,25 @@ class DictResolver(IncludeResolver):
 
     This is the appropriate resolver for notebooks, test harnesses, language servers holding
     unsaved buffers, and any other host that already has its sources in memory.
+
+    A target that does not match a key exactly is matched again under Unicode Normalization Form
+    C, so that a host whose file system stores names decomposed reaches the same source unit as
+    one whose file system does not.  The mapping's own key is returned as the canonical name.
     """
 
     def __init__(self, mapping: _AbcMapping):
         self._mapping = dict(mapping)
+        self._normalised: dict = {}
+        for name in self._mapping:
+            self._normalised.setdefault(unicodedata.normalize("NFC", name), name)
 
     def resolve(self, target: str, includer: str) -> Optional[ResolvedSource]:
         for candidate in candidate_names(target, includer):
             if candidate in self._mapping:
                 return ResolvedSource(self._mapping[candidate], candidate)
+            name = self._normalised.get(unicodedata.normalize("NFC", candidate))
+            if name is not None:
+                return ResolvedSource(self._mapping[name], name)
         return None
 
     def __repr__(self):

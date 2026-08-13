@@ -16,7 +16,14 @@ features:
     targets, inclusion cycles, excessive inclusion depth and malformed include targets.  A
     resolver returns ``None`` to indicate that a target is not one it handles, which allows
     resolvers to be composed.  Resolver results are checked for consistency within a parse, and
-    malformed include targets are rejected even when includes are left unresolved.
+    malformed include targets are rejected even when includes are left unresolved.  A target that
+    is absolute, drive-qualified, or contains a ``\`` character is rejected before any resolver is
+    consulted, so a permissive host resolver cannot be induced to read it.
+  - |
+    :class:`~openqasm3.resolver.DictResolver` matches an include target against its keys under
+    Unicode Normalization Form C when an exact match fails, so a host whose file system stores
+    names decomposed reaches the same source unit as one whose file system does not.  An exact
+    match still wins, and the mapping's own key is reported as the canonical name.
   - |
     Added the opt-in :class:`openqasm3.filesystem.FileSystemResolver`, which loads source units
     from an explicit list of search roots and refuses candidates whose resolved file path escapes

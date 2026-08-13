@@ -68,9 +68,30 @@ These requirements are scoped to a single compilation.  An implementation is
 not required to produce the same resolution results across separate
 compilations, since the underlying sources may change between them.
 
-An include target must not contain a path component consisting of a single
-period ``.`` or a pair of periods ``..``.  An implementation must reject such
-an include target.
+An implementation must reject an include target that
+
+* is empty;
+* contains a path component consisting of a single period ``.`` or a pair of
+  periods ``..``;
+* contains an empty path component, as in ``a//b``;
+* begins with ``/``;
+* contains a ``\`` character; or
+* begins with a drive specifier, such as ``C:``.
+
+.. note::
+
+   An include target is an opaque logical name, so these forms are not rejected
+   because they are bad paths.  They are rejected because they are the forms
+   whose meaning differs between the environments implementations run in: ``\``
+   separates components on one family of systems and is an ordinary filename
+   character on another, ``C:rel`` is resolved against a per-drive working
+   directory, and an absolute target names a location that cannot exist on
+   another machine.  Accepting them would make a program's meaning depend on
+   the system compiling it.
+
+   OpenQASM string literals have no escape sequences, so a backslash written in
+   an include target is a literal backslash.  ``include "lib\gates.inc";`` is
+   well-formed as a token and is rejected at resolution.
 
 .. note::
 

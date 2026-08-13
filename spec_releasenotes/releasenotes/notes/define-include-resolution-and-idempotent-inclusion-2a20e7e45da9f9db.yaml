@@ -8,7 +8,11 @@ features:
     within a compilation, a relative target resolves with respect to the canonical name of the
     including source unit rather than any ambient state such as a process working directory,
     inclusion cycles must be diagnosed, and an inclusion depth of at least 15 must be supported.
-    A ``.`` or ``..`` path component is not permitted in an include target.  See :ref:`includes`.
+    An include target must also be portable, so an implementation rejects one that is empty, that
+    contains a ``.``, ``..`` or empty path component, that begins with ``/``, that contains a
+    ``\`` character, or that begins with a drive specifier such as ``C:``.  These are the forms
+    the environments implementations run in interpret differently, so accepting them would let a
+    program's meaning depend on the system compiling it.  See :ref:`includes`.
   - |
     A source unit is now incorporated into a program at most once per canonical name.  Two source
     units that each contain ``include "stdgates.inc";`` can therefore be used together without
