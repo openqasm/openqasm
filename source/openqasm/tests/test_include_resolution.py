@@ -450,7 +450,10 @@ def test_standard_library_is_metadata_only():
     assert unit.canonical_name == "stdgates.inc"
     assert unit.statements == []
     assert unit.version is None
-    assert gate_names(openqasm3.flatten_includes(program)) == []
+    assert unit.effective_version == program.effective_version == "3.1"
+    flattened = openqasm3.flatten_includes(program)
+    assert gate_names(flattened) == []
+    assert flattened.effective_version == "3.1"
 
 
 def test_standard_library_does_not_override_other_targets():
@@ -1349,10 +1352,14 @@ def test_mapping_rejects_ambiguous_normalized_fallback():
 def test_diamond_incorporates_once():
     """Two libraries that each include the standard library can be combined."""
     program = openqasm3.parse(DIAMOND, includes=DIAMOND_SOURCES, name="main.qasm")
+    program.effective_version = "3.1"
     flattened = openqasm3.flatten_includes(program)
     names = gate_names(flattened)
     assert names == ["my_a", "my_b"]
     assert canonical_names(program).count("stdgates.inc") == 1
+    assert flattened.effective_version == program.effective_version
+    assert flattened == ast.Program(statements=flattened.statements, version=program.version)
+    assert [unit.effective_version for unit in program.sources] == ["3.0"] * 4
 
 
 def test_second_include_points_at_the_same_source_unit():
@@ -1418,7 +1425,25 @@ def test_standard_library_is_incorporated_once():
     )
     program = openqasm3.parse(DIAMOND, includes=resolver, name="main.qasm")
     assert canonical_names(program).count("stdgates.inc") == 1
-    assert program.sources[canonical_names(program).index("stdgates.inc")].statements == []
+    unit = program.sources[canonical_names(program).index("stdgates.inc")]
+    assert unit.statements == []
+    assert unit.version is None
+    assert unit.effective_version == program.effective_version == "3.0"
+
+
+def test_ignored_patch_version_is_inherited_by_headerless_and_virtual_sources():
+    sources = {"library.inc": 'include "stdgates.inc";'}
+    program = openqasm3.parse(
+        'OPENQASM 3.0.1; include "library.inc";',
+        includes=sources,
+        name="main.qasm",
+        ignore_version=True,
+    )
+
+    assert program.version == "3.0.1"
+    assert program.effective_version == "3.0.1"
+    assert [unit.effective_version for unit in program.sources] == ["3.0.1"] * 3
+    assert [unit.version for unit in program.sources] == ["3.0.1", None, None]
 
 
 def test_unit_reading_includer_scope():
@@ -1534,6 +1559,7 @@ def test_included_version_statement_is_retained_not_applied():
     assert program.version == "3.1"
     unit = program.sources[canonical_names(program).index("versioned.inc")]
     assert unit.version == "3.0"
+    assert unit.effective_version == program.effective_version == "3.1"
 
 
 def _remove_spans(node):
@@ -1667,7 +1693,7 @@ def test_flattening_keeps_an_include_whose_source_index_names_nothing():
     statement = openqasm3.ast.Include(target="ghost.inc")
     statement.source = 99
     program = openqasm3.ast.Program(statements=[statement], version="3.0")
-    program.sources = [openqasm3.ast.SourceUnit(canonical_name="<input>")]
+    program.sources = [openqasm3.ast.SourceUnit(canonical_name="<input>", effective_version="3.0")]
 
     flattened = openqasm3.flatten_includes(program)
     assert [type(node) for node in flattened.statements] == [openqasm3.ast.Include]
