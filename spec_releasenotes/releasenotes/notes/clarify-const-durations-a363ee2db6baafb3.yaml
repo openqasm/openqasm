@@ -1,4 +1,4 @@
 ---
 issues:
   - |
-    Updated the spec to indicate that `durationof` returns a `const duration`.
+    Updated the spec to clarify that `durationof` returns a `const duration`.
