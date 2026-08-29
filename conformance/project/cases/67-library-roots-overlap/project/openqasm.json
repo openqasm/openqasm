@@ -1,0 +1,1 @@
+{"libraries": {"inner": {"path": "../outer/inner"}, "outer": {"path": "../outer"}}}

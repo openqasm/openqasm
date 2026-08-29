@@ -1,0 +1,10 @@
+{
+  "description": "Ordered project-relative source names offered for compilation are reported exactly as declared.",
+  "class": "loader",
+  "subject": "a.qasm",
+  "expect": {
+    "canonical_names": ["a.qasm", "b.qasm", "lib/helper.inc"],
+    "root_canonical_name": "a.qasm",
+    "programs": ["b.qasm", "a.qasm"]
+  }
+}

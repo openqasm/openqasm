@@ -1,0 +1,6 @@
+{
+  "description": "A file at lib/stdgates.inc does not take the reserved name, and a bare stdgates.inc target still reaches the standard library.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": { "canonical_names": ["lib/stdgates.inc", "main.qasm"], "root_canonical_name": "main.qasm", "programs": null }
+}

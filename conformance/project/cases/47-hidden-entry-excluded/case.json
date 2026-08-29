@@ -1,0 +1,12 @@
+{
+  "description": "The default file walk skips hidden entries, so dotfiles and dot-directories are not treated as source files.",
+  "class": "loader",
+  "subject": "visible/main.qasm",
+  "expect": {
+    "canonical_names": [
+      "visible/main.qasm"
+    ],
+    "root_canonical_name": "visible/main.qasm",
+    "programs": null
+  }
+}

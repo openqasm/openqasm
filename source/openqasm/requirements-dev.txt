@@ -9,3 +9,8 @@ black~=24.10
 
 # MyPy for type checking
 mypy~=1.18
+
+# Validates the published project-manifest schema against the conformance
+# corpus.  The package itself never reads the schema, so this is dev-only,
+# and the test skips when it is absent.
+jsonschema>=4.0

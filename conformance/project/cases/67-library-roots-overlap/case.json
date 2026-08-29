@@ -1,0 +1,7 @@
+{
+  "description": "Two library roots where one contains the other are diagnosed. The roots of one load are disjoint trees, checked against every root already bound rather than only against the project that declares them.",
+  "class": "loader",
+  "expect": {
+    "error": "library-root-overlap"
+  }
+}

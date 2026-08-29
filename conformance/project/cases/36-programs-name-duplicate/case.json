@@ -1,0 +1,5 @@
+{
+  "description": "A canonical root may be declared only once.",
+  "class": "loader",
+  "expect": {"error": "programs-name-duplicate"}
+}

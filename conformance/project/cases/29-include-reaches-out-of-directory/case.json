@@ -1,0 +1,6 @@
+{
+  "description": "A source unit in a subdirectory reaches the project root and a sibling directory by naming the target from the project root, because the includer-prefixed candidate does not exist.",
+  "class": "parser",
+  "subject": "lib/main.qasm",
+  "expect": { "sources": ["lib/main.qasm", "root.inc", "common/shared.inc"] }
+}

@@ -1,0 +1,12 @@
+{
+  "description": "The default file walk does not descend into a directory that is a repository of its own. A vendored checkout is not part of the project containing it.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": [
+      "main.qasm"
+    ],
+    "root_canonical_name": "main.qasm",
+    "programs": null
+  }
+}

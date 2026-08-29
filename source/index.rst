@@ -7,6 +7,7 @@ OpenQASM |version| Specification
   intro
   language/index
   grammar/index
+  project
   release_notes
   GitHub <https://github.com/openqasm/openqasm/>
 

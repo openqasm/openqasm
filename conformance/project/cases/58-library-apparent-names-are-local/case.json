@@ -1,0 +1,12 @@
+{
+  "description": "An apparent name is local to the project that writes it, so two projects may each write one word for a different library and both resolve.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": {
+    "sources": [
+      "main.qasm",
+      "@first/a.inc",
+      "@second/b.inc"
+    ]
+  }
+}
