@@ -20,8 +20,11 @@ The rest of this module provides some lower-level internals of the parser.
 .. autofunction:: get_comments
 .. autoclass:: QASMNodeVisitor
 .. autoexception:: QASM3ParsingError
+.. autoexception:: MissingVersionWarning
 
 .. autodata:: DEFAULT_SOURCE_NAME
+.. autodata:: DEFAULT_VERSION
+.. autodata:: FEATURE_MIN_VERSION
 """
 
 # pylint: disable=wrong-import-order
@@ -34,11 +37,13 @@ __all__ = [
     "span",
     "QASMNodeVisitor",
     "QASM3ParsingError",
+    "MissingVersionWarning",
     "get_comments",
     "DEFAULT_SOURCE_NAME",
 ]
 
 import re
+import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Dict, Union, TypeVar, List, Optional, Protocol, Tuple, cast
@@ -63,7 +68,7 @@ except ImportError as exc:
 from ._antlr.qasm3Lexer import qasm3Lexer  # type: ignore[import-not-found]
 from ._antlr.qasm3Parser import qasm3Parser  # type: ignore[import-not-found]
 from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor  # type: ignore[import-not-found]
-from . import ast
+from . import ast, spec
 from .resolver import (
     CyclicIncludeError,
     DEFAULT_MAX_INCLUDE_DEPTH,
@@ -84,12 +89,37 @@ _TYPE_NODE_INIT = {
 }
 
 
+class MissingVersionWarning(UserWarning):
+    """Warned when the root source unit has no ``OPENQASM`` version header and
+    OpenQASM 3.0 is assumed in its place.
+
+    The version statement is optional, so this is not an error.  It has its own
+    category so that callers who deliberately parse headerless fragments can
+    silence just this diagnostic::
+
+        warnings.filterwarnings("ignore", category=MissingVersionWarning)
+    """
+
+
 class QASM3ParsingError(Exception):
-    """An error raised by the AST visitor during the AST-generation phase.  This is raised in cases where the
-    given program could not be correctly parsed."""
+    """An error raised while parsing a program into the reference AST.
+
+    ``identity`` optionally names a fault with a stable code that a caller can branch on.
+    Prefer it to matching the diagnostic message, which may be reworded.  A fault with no
+    agreed identity leaves the attribute ``None``.
+    """
+
+    identity: Optional[str] = None
+    """Stable machine-readable code naming the fault, or ``None`` when the condition has no
+    agreed identity."""
 
     def __init__(
-        self, message: str, line: Optional[int] = None, column: Optional[int] = None
+        self,
+        message: str,
+        line: Optional[int] = None,
+        column: Optional[int] = None,
+        *,
+        identity: Optional[str] = None,
     ) -> None:
         if line is not None and column is not None:
             prefix = f"L{line}:C{column}: "
@@ -101,6 +131,8 @@ class QASM3ParsingError(Exception):
         super().__init__(f"{prefix}{message}")
         self.line = line
         self.column = column
+        if identity is not None:
+            self.identity = identity
 
 
 class _RaiseOnErrorListener(ErrorListener):
@@ -147,6 +179,14 @@ class _TerminalNodeWithSymbol(Protocol):
 
 
 _VERSION_NUM = re.compile(r"\d+(\.\d+)*")
+_VERSION_KEYWORD = re.compile(
+    r"\A(?:(?:\s+)|(?://[^\n]*(?:\n|\Z))|(?:/\*.*?\*/))*OPENQASM\b",
+    re.DOTALL,
+)
+_VERSION_HEADER = re.compile(
+    r"\A(?:(?:\s+)|(?://[^\n]*(?:\n|\Z))|(?:/\*.*?\*/))*" r"OPENQASM\s+(?P<version>\d+(?:\.\d+)*)",
+    re.DOTALL,
+)
 
 
 def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
@@ -195,17 +235,150 @@ def parse_version(prog: str) -> Optional[Tuple[int, ...]]:
     return None
 
 
-MIN_SUPPORTED_VERSION = (3,)
-MAX_SUPPORTED_VERSION = (3, 1)
+def _parse_spec_version(version: str) -> Tuple[int, ...]:
+    """Convert a version string such as ``3.1`` to a tuple."""
+    return tuple(int(part) for part in version.split("."))
+
+
+def _normalize_version(version: Tuple[int, ...]) -> Tuple[int, ...]:
+    """Return a version tuple with an explicit minor component.
+
+    A major-only declaration such as ``OPENQASM 3;`` parses as ``(3,)``.
+    Appending ``0`` makes it ``(3, 0)``, so tuple comparisons treat it the
+    same as ``OPENQASM 3.0;``. Versions that already have a minor component
+    are returned unchanged.
+    """
+    if len(version) == 1:
+        return version + (0,)
+    return version
+
+
+def _format_version(version: Tuple[int, ...]) -> str:
+    """Return integer version components in dotted OpenQASM notation."""
+    return ".".join(str(part) for part in version)
+
+
+def _normalized_version_string(version: Tuple[int, ...]) -> str:
+    """Return a version tuple as normalized public AST metadata."""
+    return _format_version(_normalize_version(version))
+
+
+def _mask_ignored_version_suffix(input_: str, version: Tuple[int, ...]) -> str:
+    """Hide unsupported extra components from ANTLR without shifting source positions.
+
+    The lexer's ``VersionSpecifier`` is ``[0-9]+ ('.' [0-9]+)?``, so it stops after the minor
+    component and the remaining ``.1`` of a header like ``OPENQASM 3.0.1;`` becomes a syntax
+    error.  Rewriting the header to ``3.0`` is what lets ``ignore_version`` reach the body.
+    """
+    # Only three or more components can trip the lexer; anything shorter is already valid.
+    if len(version) <= 2:
+        return input_
+    # `parse_version` scans leniently and accepts headers this regex does not, such as one
+    # preceded by an unterminated block comment.  Passing those through unchanged keeps ANTLR's
+    # diagnostic pointing at the real defect instead of at text this function invented.
+    match = _VERSION_HEADER.match(input_)
+    if match is None:
+        return input_
+    # Span of the digits alone, so the `OPENQASM` keyword, any leading comments and everything
+    # after the header are copied through verbatim.
+    start, end = match.span("version")
+    accepted = ".".join(match.group("version").split(".")[:2])
+    # Dropping components always shortens the text, so pad the difference back with spaces: the
+    # lexer skips whitespace before the `;`, and holding the total width constant keeps every
+    # later token at the offset, line and column it has in `input_`, which is what the spans on
+    # the returned AST refer to.
+    return input_[:start] + accepted.ljust(end - start) + input_[end:]
+
+
+DEFAULT_VERSION = (3, 0)
+"""The language-defined effective version of a root source unit without a version header."""
+
+_SUPPORTED_VERSIONS = frozenset(
+    _normalize_version(_parse_spec_version(version)) for version in spec.supported_versions
+)
+
+FEATURE_MIN_VERSION: Dict[str, Tuple[int, ...]] = {
+    "switch": (3, 1),
+    "anonymous_scope": (3, 1),
+    "nop": (3, 2),
+}
+"""The specification version that introduced each version-gated language feature.
+
+A feature appearing in a source unit whose effective version is earlier than its
+entry here is rejected where it appears.  Features absent from this mapping are
+available at every supported version.
+"""
+
+
+def _validate_supported_version(version: Tuple[int, ...]) -> None:
+    """Reject headers this parser cannot interpret under the published specification."""
+    version_str = _format_version(version)
+    if len(version) > 2:
+        raise QASM3ParsingError(
+            f"version must be '<major>' or '<major>.<minor>', not '{version_str}'",
+            identity="version-malformed",
+        )
+    normalized = _normalize_version(version)
+    if normalized in _SUPPORTED_VERSIONS:
+        return
+    major = normalized[0]
+    if major == 2:
+        raise QASM3ParsingError(
+            f"OpenQASM 2 is not supported by this parser; found version '{version_str}'",
+            identity="version-openqasm2",
+        )
+    supported_majors = sorted({supported[0] for supported in _SUPPORTED_VERSIONS})
+    if major not in supported_majors:
+        supported = ", ".join(f"{supported}.x" for supported in supported_majors)
+        raise QASM3ParsingError(
+            f"major version {major} is not supported; this parser supports OpenQASM "
+            f"{supported} (found '{version_str}')",
+            identity="version-major-unsupported",
+        )
+    minimum = min(_SUPPORTED_VERSIONS)
+    maximum = max(_SUPPORTED_VERSIONS)
+    if normalized < minimum:
+        raise QASM3ParsingError(
+            f"version '{version_str}' precedes the minimum supported version "
+            f"'{_format_version(minimum)}'",
+            identity="version-below-minimum",
+        )
+    if normalized > maximum:
+        raise QASM3ParsingError(
+            f"version '{version_str}' exceeds the maximum supported version "
+            f"'{_format_version(maximum)}'",
+            identity="version-above-maximum",
+        )
+    supported = ", ".join(_format_version(supported) for supported in sorted(_SUPPORTED_VERSIONS))
+    raise QASM3ParsingError(
+        f"version '{version_str}' is not supported; this parser supports {supported}",
+        identity="version-unsupported",
+    )
+
 
 DEFAULT_SOURCE_NAME = "<input>"
 """Canonical name given to a source unit parsed from a string when the caller supplies no
 name.  Include targets in that source unit are resolved with respect to this name."""
 
 
-def _parse_to_program(input_: str, permissive: bool) -> ast.Program:
-    """Run the ANTLR parser over ``input_`` and build a :obj:`~ast.Program`, without resolution."""
-    lexer = qasm3Lexer(InputStream(input_))
+def _parse_to_program(
+    input_: str,
+    permissive: bool,
+    effective_version: Optional[Tuple[int, ...]] = None,
+    declared_version: Optional[Tuple[int, ...]] = None,
+    ignore_version: bool = False,
+) -> ast.Program:
+    """Build a program using one version for feature gates and one for header metadata."""
+    # The grammar's VersionSpecifier only matches `<major>[.<minor>]`, so a longer header such as
+    # `OPENQASM 3.0.1;` is a syntax error before any version check runs; masking the extra
+    # components is what lets `ignore_version` parse it at all.  The declaration is put back on
+    # `program.version` below, so the masking is invisible in the returned AST.
+    parser_input = (
+        _mask_ignored_version_suffix(input_, declared_version)
+        if ignore_version and declared_version is not None
+        else input_
+    )
+    lexer = qasm3Lexer(InputStream(parser_input))
     stream = CommonTokenStream(lexer)
     parser = qasm3Parser(stream)
     if not permissive:
@@ -221,7 +394,12 @@ def _parse_to_program(input_: str, permissive: bool) -> ast.Program:
         raise QASM3ParsingError(exc.message) from exc
     except ParseCancellationException as exc:
         raise QASM3ParsingError("parse failed") from exc
-    return QASMNodeVisitor().visitProgram(tree)
+    program = QASMNodeVisitor(
+        version=effective_version, ignore_version=ignore_version
+    ).visitProgram(tree)
+    if ignore_version and declared_version is not None:
+        program.version = _format_version(declared_version)
+    return program
 
 
 def _rebase_spans(node, source_index: int) -> None:
@@ -265,6 +443,8 @@ class _IncludeResolutionContext:
     indices: Dict[str, int]
     resolved_targets: Dict[Tuple[str, str], ResolvedSource]
     canonical_sources: Dict[str, str]
+    root_version: Tuple[int, ...]
+    ignore_version: bool
     max_depth: int = DEFAULT_MAX_INCLUDE_DEPTH
 
     @classmethod
@@ -273,15 +453,25 @@ class _IncludeResolutionContext:
         environment: IncludeEnvironment,
         permissive: bool,
         root_name: str,
-        version: Optional[str],
+        root_ast_version: Optional[str],
+        root_version: Tuple[int, ...],
+        ignore_version: bool,
     ) -> "_IncludeResolutionContext":
         return cls(
             environment=environment,
             permissive=permissive,
-            sources=[ast.SourceUnit(canonical_name=root_name, version=version)],
+            sources=[
+                ast.SourceUnit(
+                    canonical_name=root_name,
+                    version=root_ast_version,
+                    effective_version=_normalized_version_string(root_version),
+                )
+            ],
             indices={root_name: 0},
             resolved_targets={},
             canonical_sources={},
+            root_version=root_version,
+            ignore_version=ignore_version,
         )
 
     def resolve_statements(self, statements, includer: str, stack: List[str]) -> None:
@@ -339,7 +529,10 @@ class _IncludeResolutionContext:
         self, statement: ast.Include, resolved: ResolvedSource, stack: List[str]
     ) -> None:
         index = len(self.sources)
-        unit = ast.SourceUnit(canonical_name=resolved.canonical_name)
+        unit = ast.SourceUnit(
+            canonical_name=resolved.canonical_name,
+            effective_version=_normalized_version_string(self.root_version),
+        )
         self.sources.append(unit)
         self.indices[resolved.canonical_name] = index
         statement.source = index
@@ -349,7 +542,30 @@ class _IncludeResolutionContext:
             # an empty program, so represent their resolved source unit directly.
             unit.statements = []
             return
-        included = _parse_to_program(resolved.source, self.permissive)
+
+        declared_version = parse_version(resolved.source)
+        if declared_version is not None and not self.ignore_version:
+            _validate_supported_version(declared_version)
+            normalized_declared = _normalize_version(declared_version)
+            normalized_root = _normalize_version(self.root_version)
+            if normalized_declared > normalized_root:
+                root_str = _format_version(self.root_version)
+                declared_str = _format_version(declared_version)
+                raise QASM3ParsingError(
+                    f"included file '{resolved.canonical_name}' declares version "
+                    f"'{declared_str}' which exceeds root version '{root_str}'",
+                    identity="include-version-exceeds-root",
+                )
+        effective_version = self.root_version
+        unit.effective_version = _normalized_version_string(effective_version)
+        included = _parse_to_program(
+            resolved.source,
+            self.permissive,
+            effective_version=effective_version,
+            declared_version=declared_version,
+            ignore_version=self.ignore_version,
+        )
+        included.effective_version = unit.effective_version
         _rebase_spans(included, index)
         unit.statements = included.statements
         version = included.version
@@ -383,7 +599,10 @@ def parse(
         warning messages during its parsing phase.
     :param ignore_version: If true, ignore the specified version of the OpenQASM program, and
         attempt to parse it anyway.  There is no guarantee that the output was syntactically or
-        semantically valid for the given version if this is set.
+        semantically valid for the given version if this is set.  Declared, defaulted, and
+        inherited effective-version metadata is still retained, while support validation,
+        included-declaration ceiling validation, missing-header warnings, and version feature
+        gates are bypassed.
     :param includes: How to resolve ``include`` statements.  Pass ``None`` (the default) to leave
         includes unresolved, a complete :class:`~openqasm3.resolver.IncludeEnvironment`, or a raw
         source backend: a mapping of canonical name to source text, a callable taking
@@ -395,23 +614,43 @@ def parse(
         targets are resolved with respect to.  Defaults to ``"<input>"``, which has no name
         prefix.  A source identity is any nonempty string; its spelling and interpretation belong
         to the host or resolver that owns it.
-    :return: A complete :obj:`~ast.Program` node.
+    :return: A complete :obj:`~ast.Program` node.  Its ``version`` retains the declared root
+        header, while ``effective_version`` records the normalized version used for parsing.
+        A root without a header has the language-defined effective version ``3.0``.
     """
     root_name = DEFAULT_SOURCE_NAME if name is None else validate_source_identity(name)
-    version = parse_version(input_)
-    if version is None:
-        version = MIN_SUPPORTED_VERSION
-    if not ignore_version:
-        version_str = ".".join(str(part) for part in version)
-        if len(version) > 2:
-            raise QASM3ParsingError(
-                f"version can only be `<major>` or `<major>.<minor>`, but got '{version_str}'"
+    declared_version = parse_version(input_)
+    version: Tuple[int, ...]
+    if declared_version is None:
+        version = DEFAULT_VERSION
+        if not ignore_version and _VERSION_KEYWORD.match(input_) is None:
+            version_str = _format_version(version)
+            warnings.warn(
+                f"no version header found; defaulting to OpenQASM {version_str}. "
+                f"Consider adding 'OPENQASM {version_str};' as the first non-comment line.",
+                MissingVersionWarning,
+                stacklevel=2,
             )
-        if not MIN_SUPPORTED_VERSION <= version <= MAX_SUPPORTED_VERSION:
-            raise QASM3ParsingError(f"program reports being unsupported version '{version_str}'")
-    program = _parse_to_program(input_, permissive)
+    else:
+        version = declared_version
+    if not ignore_version:
+        _validate_supported_version(version)
+    program = _parse_to_program(
+        input_,
+        permissive,
+        effective_version=version,
+        declared_version=declared_version,
+        ignore_version=ignore_version,
+    )
+    program.effective_version = _normalized_version_string(version)
     _validate_include_targets(program.statements, root_name)
-    program.sources = [ast.SourceUnit(canonical_name=root_name, version=program.version)]
+    program.sources = [
+        ast.SourceUnit(
+            canonical_name=root_name,
+            version=program.version,
+            effective_version=program.effective_version,
+        )
+    ]
     if includes is None:
         return program
     environment = (
@@ -420,7 +659,7 @@ def parse(
         else IncludeEnvironment.unscoped(includes)
     )
     context = _IncludeResolutionContext.for_root(
-        environment, permissive, root_name, program.version
+        environment, permissive, root_name, program.version, version, ignore_version
     )
     context.resolve_statements(program.statements, root_name, [root_name])
     program.sources = context.sources
@@ -522,13 +761,16 @@ def _raise_from_context(ctx: ParserRuleContext, message: str):
 
 
 class QASMNodeVisitor(qasm3ParserVisitor):
-    def __init__(self):
+    def __init__(self, version: Optional[Tuple[int, ...]] = None, ignore_version: bool = False):
         # A stack of "contexts", each of which is a stack of "scopes".  Contexts
         # are for the main program, gates and subroutines, while scopes are
         # loops, if/else and manual scoping constructs.  Each "context" always
         # contains at least one scope: the base ``ParserRuleContext`` that
         # opened it.
         self._contexts: List[List[ParserRuleContext]] = []
+        self._ignore_version = ignore_version
+        self._version = _normalize_version(version) if version else None
+        self._has_version_declaration = False
 
     @contextmanager
     def _push_context(self, ctx: ParserRuleContext):
@@ -569,6 +811,25 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             for scope in reversed(self._current_context())
         )
 
+    def _check_feature_version(self, ctx, feature_name: str) -> None:
+        """Raise when a feature is used below its minimum effective version."""
+        if self._ignore_version or self._version is None:
+            return
+        minimum_version = FEATURE_MIN_VERSION.get(feature_name)
+        if minimum_version and self._version < minimum_version:
+            version_str = _format_version(self._version)
+            minimum_str = _format_version(minimum_version)
+            version_source = (
+                f"version {version_str} was declared"
+                if self._has_version_declaration
+                else f"the effective version is {version_str}"
+            )
+            _raise_from_context(
+                ctx,
+                f"'{feature_name}' requires OpenQASM {minimum_str} or later, "
+                f"but {version_source}",
+            )
+
     def _parse_scoped_statements(
         self, node: Union[qasm3Parser.ScopeContext, qasm3Parser.StatementOrScopeContext]
     ) -> List[ast.Statement]:
@@ -579,6 +840,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
     @span
     def visitProgram(self, ctx: qasm3Parser.ProgramContext):
         with self._push_context(ctx):
+            self._has_version_declaration = ctx.version() is not None
             version = ctx.version().VersionSpecifier().getText() if ctx.version() else None
             statements = [self.visit(statement) for statement in ctx.statementOrScope()]
             return ast.Program(statements=statements, version=version)
@@ -863,6 +1125,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitNopStatement(self, ctx: qasm3Parser.NopStatementContext):
+        self._check_feature_version(ctx, "nop")
         if (operands := ctx.gateOperandList()) is None:
             return ast.QuantumNop(operands=[])
         return ast.QuantumNop(operands=[self.visit(operand) for operand in operands.gateOperand()])
@@ -939,6 +1202,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitSwitchStatement(self, ctx: qasm3Parser.SwitchStatementContext):
+        self._check_feature_version(ctx, "switch")
         target = self.visit(ctx.expression())
         cases = []
         default = None
@@ -1348,4 +1612,22 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return _visit_identifier(ctx.Identifier())
 
     def visitStatementOrScope(self, ctx: qasm3Parser.StatementOrScopeContext) -> ast.Statement:
-        return self.visit(ctx.scope()) if ctx.scope() else self.visit(ctx.statement())
+        """Visit one ``statementOrScope``, version-gating a braces block used as a statement.
+
+        ``{...}`` as the body of ``if``, ``for`` or ``while`` has been legal since 3.0, whereas
+        ``{...}`` standing where a statement is expected is the anonymous scope that 3.1
+        introduced.  Both parse to the same ``scope`` rule, so only the parent separates them.
+        """
+        # Only the `scope` alternative can be a bare block; `statement` never is.
+        if ctx.scope():
+            # `program` and `scope` are the only rules with a `statementOrScope*` list, so a block
+            # reached from either fills a statement slot and is anonymous, even when that list is
+            # itself some construct's body.  The other three parents, `for`, `if` and `while`,
+            # arrive through a single `body=`/`if_body=`/`else_body=`, where the block *is* the
+            # body.  `box`, `def`, `gate`, `durationof` and `switch` case/default take `scope`
+            # directly instead of through `statementOrScope`, so they never reach this method.
+            parent = ctx.parentCtx
+            if isinstance(parent, (qasm3Parser.ProgramContext, qasm3Parser.ScopeContext)):
+                self._check_feature_version(ctx, "anonymous_scope")
+            return self.visit(ctx.scope())
+        return self.visit(ctx.statement())

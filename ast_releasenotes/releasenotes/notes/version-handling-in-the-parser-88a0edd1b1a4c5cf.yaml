@@ -1,0 +1,21 @@
+---
+features:
+  - |
+    :func:`openqasm3.parse` now validates a program against one effective
+    OpenQASM version. :data:`openqasm3.spec.supported_versions` now includes
+    ``"3.2"``. Every explicit header must name an entry in that set; a
+    headerless root defaults to
+    OpenQASM 3.0 and emits :class:`openqasm3.parser.MissingVersionWarning`.
+    Language features used before their introduction version are rejected.
+  - |
+    The root effective version governs the complete include graph. Included
+    headers remain author-intent metadata and cannot exceed the root;
+    headerless includes inherit it. :class:`openqasm3.ast.Program` and
+    :class:`openqasm3.ast.SourceUnit` expose ``effective_version`` separately
+    from explicit ``version`` metadata.
+  - |
+    Version-validation failures expose optional
+    :attr:`openqasm3.parser.QASM3ParsingError.identity` codes. Callers that
+    deliberately bypass version checks, missing-header warnings, and feature
+    gates may continue to pass ``ignore_version=True``. See
+    :mod:`openqasm3.parser` and :mod:`openqasm3.resolver` for details.

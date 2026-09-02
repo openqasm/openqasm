@@ -5,6 +5,11 @@ requires = ["setuptools", "wheel"]
 line-length = 100
 target-version = ["py37", "py38", "py39", "py310", "py311", "py312", "py313"]
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:no version header found; defaulting to OpenQASM 3.0.*:openqasm3.parser.MissingVersionWarning",
+]
+
 [tool.mypy]
 exclude = [
     "^openqasm3/_antlr/",

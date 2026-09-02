@@ -35,10 +35,11 @@ once, however many ``include "stdgates.inc";`` statements a program and its incl
 contain.
 
 Upon interpreting an ``include "stdgates.inc";`` statement, implementations should make available
-exactly the set of gates defined in the standard library for the language version that matches the
-:ref:`version-string statement <version-string>`, if present.  If the version statement is not
-present, the implementation should make available the gates from the language version it is parsing
-the rest of the program under.
+exactly the set of gates defined in the standard library for the root source unit's
+:ref:`effective version <version-string>`.  This program-wide selection applies whether the
+statement occurs in the root or in an included source unit, and does not change when another source
+unit declares a different version.  If the root has no version statement, its effective version is
+OpenQASM 3.0 as defined in :ref:`version-string`.
 
 Implementations must not define gates that are not present in the chosen OpenQASM 3 version, where
 doing so could cause a user program to be ill formed (for example due to a user attempting to define

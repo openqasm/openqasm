@@ -154,6 +154,9 @@ class SourceUnit:
     source unit is retained here and is not applied to the program as a whole.
     """
 
+    effective_version: Optional[str] = field(default=None, compare=False)
+    """The normalized OpenQASM version used to parse this source unit, if known."""
+
 
 @dataclass
 class QASMNode:
@@ -180,6 +183,8 @@ class Program(QASMNode):
     The source units of this program, in the order they were incorporated.  Index 0 is always the
     source passed to the parser.
     """
+    effective_version: Optional[str] = field(default=None, compare=False)
+    """The normalized OpenQASM version used to parse the root source, if known."""
 
 
 @dataclass

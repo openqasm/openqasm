@@ -278,8 +278,12 @@ implementation.
 
 The OpenQASM specification defines the standard library.  Downstream compiler
 tooling is responsible for resolving standard-gate symbols, type checking their
-uses, and selecting language-version-specific implementations.  All other
-include targets remain the caller resolver's responsibility.
+uses, and selecting language-version-specific implementations.  The root
+program's :attr:`~openqasm3.ast.Program.effective_version` governs this one
+program-wide selection, including when ``stdgates.inc`` is first included by a
+nested source with a different declared version.  The synthetic source unit's
+:attr:`~openqasm3.ast.SourceUnit.effective_version` records the same value.  All
+other include targets remain the caller resolver's responsibility.
 
 
 Working with a resolved program
@@ -290,6 +294,20 @@ so a library included from two places contributes its declarations only once.
 Resolved statements are held on :class:`~openqasm3.ast.SourceUnit` objects in
 :attr:`~openqasm3.ast.Program.sources`, and each :class:`~openqasm3.ast.Include`
 records the index of the unit it resolved to.
+
+``Program.version`` and :attr:`~openqasm3.ast.SourceUnit.version` retain only
+explicit header values.
+Their ``effective_version`` fields record the normalized version used to parse
+the corresponding source, including root defaults and inherited values.  The
+root effective version is preserved by
+:func:`~openqasm3.resolver.flatten_includes`.
+
+Version-support and declaration failures expose stable machine-readable codes
+through :attr:`openqasm3.parser.QASM3ParsingError.identity`.  In particular,
+an included source whose declared version exceeds the root reports
+``"include-version-exceeds-root"``.  Parsing errors without an agreed identity
+leave the attribute ``None``, so callers should test for the codes they handle
+rather than assuming every parsing error has one.
 
 Source units are deliberately not AST nodes, so enabling resolution does not
 change what an existing :class:`~openqasm3.visitor.QASMVisitor` traverses.  Call
