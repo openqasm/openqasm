@@ -2599,6 +2599,28 @@ def test_combine_span():
     assert combine_span(a, b) == Span(start_line=1, start_column=2, end_line=7, end_column=8)
 
 
+@pytest.mark.parametrize(
+    "source", ["", "\n", "   \n\t\n", "// only a line comment\n", "/* only a block comment */\n"]
+)
+def test_a_program_with_no_statements_parses(source):
+    """A source unit may hold no statements at all.
+
+    A rule that matches no tokens has no ANTLR stop token, which previously
+    raised an ``AttributeError`` from span construction. Include resolution
+    makes this reachable with an ordinary comment-only include file.
+    """
+    program = parse(source, ignore_version=True)
+    assert program.statements == []
+
+
+def test_a_comment_only_include_resolves():
+    source = 'OPENQASM 3.0;\ninclude "notes.inc";\n'
+    program = parse(
+        source, includes={"main.qasm": source, "notes.inc": "// nothing yet\n"}, name="main.qasm"
+    )
+    assert [unit.canonical_name for unit in program.sources] == ["main.qasm", "notes.inc"]
+
+
 def test_comment_preservation():
     """Test that comments are preserved in HIDDEN channel."""
     # Simple test case focusing on comment preservation

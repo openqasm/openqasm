@@ -3,8 +3,8 @@
 Standard library
 ================
 
-The standard library for OpenQASM 3 consists of a single include file, called ``stdgates.inc``.
-This file can be included in an OpenQASM 3 program with the statement
+The standard library for OpenQASM 3 is a single source unit, whose canonical name is
+``stdgates.inc``.  It can be included in an OpenQASM 3 program with the statement
 
 .. code-block::
 
@@ -24,8 +24,15 @@ An implementation is not required to make the standard library available in situ
 OpenQASM 3 program is being interpreted in terms of the instruction set architecture of a particular
 QPU.  The rest of this section concerns only situations where the library is considered available.
 
-Implementations should consider the ``stdgates.inc`` file to be locatable, regardless of any other
-settings that they might apply around include search paths.
+Implementations should consider ``stdgates.inc`` to be resolvable, regardless of any other
+settings that they might apply around how include targets are resolved.
+
+The name ``stdgates.inc`` is reserved as the canonical name of the standard library.  An
+``include`` statement whose target resolves to the standard library shall resolve to that canonical
+name, whether the implementation supplies the library as a literal file or synthesizes it.  It
+follows from :ref:`include-once` that the standard library is incorporated into a program at most
+once, however many ``include "stdgates.inc";`` statements a program and its included source units
+contain.
 
 Upon interpreting an ``include "stdgates.inc";`` statement, implementations should make available
 exactly the set of gates defined in the standard library for the language version that matches the
