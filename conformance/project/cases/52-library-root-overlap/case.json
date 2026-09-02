@@ -1,0 +1,5 @@
+{
+  "description": "A library root inside the project that references it is diagnosed, because a library is a separate project rather than a directory within one.",
+  "class": "loader",
+  "expect": { "error": "library-root-overlap" }
+}

@@ -9,6 +9,8 @@ The quick-start interface is simply to call ``openqasm3.parse``:
 
 .. currentmodule:: openqasm3
 .. autofunction:: openqasm3.parse
+.. autofunction:: parse_project
+.. autofunction:: derive_programs
 
 The rest of this module provides some lower-level internals of the parser.
 
@@ -31,6 +33,8 @@ The rest of this module provides some lower-level internals of the parser.
 
 __all__ = [
     "parse",
+    "parse_project",
+    "derive_programs",
     "get_span",
     "add_span",
     "combine_span",
@@ -46,7 +50,7 @@ import re
 import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Dict, Union, TypeVar, List, Optional, Protocol, Tuple, cast
+from typing import Dict, Mapping, Union, TypeVar, List, Optional, Protocol, Tuple, cast
 
 try:
     from antlr4 import (
@@ -70,6 +74,8 @@ from ._antlr.qasm3Parser import qasm3Parser  # type: ignore[import-not-found]
 from ._antlr.qasm3ParserVisitor import qasm3ParserVisitor  # type: ignore[import-not-found]
 from . import ast, spec
 from .resolver import (
+    LIBRARY_PREFIX,
+    STANDARD_LIBRARY_NAME,
     CyclicIncludeError,
     DEFAULT_MAX_INCLUDE_DEPTH,
     IncludeDepthExceededError,
@@ -664,6 +670,101 @@ def parse(
     context.resolve_statements(program.statements, root_name, [root_name])
     program.sources = context.sources
     return program
+
+
+class _Project(Protocol):
+    sources: Mapping[str, str]
+    environment: IncludeEnvironment
+    compilation_root: Optional[str]
+
+
+def parse_project(
+    project: _Project,
+    name: Optional[str] = None,
+    *,
+    permissive: bool = False,
+    ignore_version: bool = False,
+) -> ast.Program:
+    """Parse one source unit from a loaded project and resolve its includes.
+
+    :param project: A project snapshot that supplies sources, an include environment, and an
+        optional compilation root.
+    :param name: The source to parse.  When omitted, the project's compilation root is used.
+    :param permissive: Forwarded to :func:`parse`.
+    :param ignore_version: Forwarded to :func:`parse`.
+    :return: The parsed program with its includes incorporated.
+    :raises ValueError: No source was selected, or the selected source is absent from the project.
+    :raises TypeError: An explicit source name is not a string.
+    """
+    if name is None:
+        selected = project.compilation_root
+        if selected is None:
+            raise ValueError("'name' is required when the project has no compilation root")
+    else:
+        selected = validate_source_identity(name)
+    if selected not in project.sources:
+        raise ValueError(f"source {selected!r} is not present in the project")
+    return parse(
+        project.sources[selected],
+        permissive=permissive,
+        ignore_version=ignore_version,
+        includes=project.environment,
+        name=selected,
+    )
+
+
+def _include_targets(source: str) -> Tuple[str, ...]:
+    """Return the unresolved include targets one source unit writes, in order."""
+    program = _parse_to_program(source, permissive=False)
+    return tuple(
+        statement.target for statement in program.statements if isinstance(statement, ast.Include)
+    )
+
+
+def derive_programs(
+    project: _Project,
+) -> Tuple[str, ...]:
+    """The source units of a project that no other source unit in it includes.
+
+    This answers the question a project manifest's ``programs`` key answers when it is
+    declared: which source units are meant to be compiled.  It is deliberately separate from
+    :func:`openqasm3.project.load_project`, which reports only what a manifest declared and
+    needs no parser, so that a project holding one unparseable file still loads.
+
+    :param project: A project snapshot that supplies source text and its include environment.
+        A source name beginning with
+        ``@`` belongs to a library rather than to the project, so it is neither a candidate
+        program nor a source of inclusions: a source unit that only something outside the
+        project includes is not a program, because compiling it alone loses everything its
+        includer had established.
+    :return: The derived programs, in file-set order.  When every source unit is included by
+        another, which is what a cycle of inclusions produces, every source unit is returned;
+        that is a rule rather than a permission, so two hosts derive the same set.
+    :raises QASM3ParsingError: A source unit could not be parsed.
+
+    Include targets are formed through the project's environment rather than matched as text,
+    because one candidate carries the including unit's name prefix; matching text derives the
+    wrong edges whenever two source units share a base name, and no edge at all for a ``//`` or
+    library target.  A target with more than one candidate present contributes an edge to each,
+    which can only widen the set of units considered included.  The reserved standard-library
+    name resolves outside the project and is not an inclusion for this purpose.
+
+    The derivation is a heuristic.  A library in which no source unit includes another derives
+    every source unit as a program, which is the opposite of what its author meant; declaring
+    ``"programs": []`` is how the author says so.
+    """
+    sources = project.sources
+    own = [name for name in sources if not name.startswith(LIBRARY_PREFIX)]
+    included = set()
+    for includer in own:
+        for target in _include_targets(sources[includer]):
+            if target == STANDARD_LIBRARY_NAME:
+                continue
+            for candidate in project.environment.candidates(target, includer):
+                if candidate in sources:
+                    included.add(candidate)
+    derived = tuple(name for name in own if name not in included)
+    return derived or tuple(own)
 
 
 def get_span(node: Union[ParserRuleContext, TerminalNode]) -> ast.Span:

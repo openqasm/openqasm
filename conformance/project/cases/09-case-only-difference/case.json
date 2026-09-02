@@ -1,0 +1,5 @@
+{
+  "description": "Two canonical names differing only by case are refused, on every file system.",
+  "class": "loader",
+  "expect": { "error": "canonical-name-case-collision" }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "A caller-supplied manifest path is loaded directly instead of discovering a parent manifest.",
+  "class": "loader",
+  "subject": "sub/b.qasm",
+  "manifest_path": "project/dir/openqasm.json",
+  "expect": {
+    "canonical_names": [
+      "sub/b.qasm"
+    ],
+    "root_canonical_name": "sub/b.qasm",
+    "programs": null
+  }
+}

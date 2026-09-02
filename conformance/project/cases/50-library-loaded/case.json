@@ -1,0 +1,10 @@
+{
+  "description": "A declared library is loaded from a root outside the project, and its files take canonical names under the library prefix.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": ["@vendor/gates.inc", "main.qasm"],
+    "root_canonical_name": "main.qasm",
+    "programs": null
+  }
+}

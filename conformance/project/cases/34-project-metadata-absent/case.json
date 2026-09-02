@@ -1,0 +1,10 @@
+{
+  "description": "An absent programs declaration is reported as null.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": ["main.qasm"],
+    "root_canonical_name": "main.qasm",
+    "programs": null
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "Mutual inclusion is diagnosed as a cycle.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "error": "include-cycle" }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Two different library roots that declare the same name are diagnosed, because their files would take the same canonical names and a canonical name identifies one source unit.",
+  "class": "loader",
+  "expect": {
+    "error": "library-binding-conflict"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "A root-relative target resolves the ambiguity of case 30: writing the target from the root of the includer's library selects the source unit at the project root, and the one beside the includer is not incorporated.",
+  "class": "parser",
+  "subject": "lib/main.qasm",
+  "expect": { "sources": ["lib/main.qasm", "helper.inc"] }
+}

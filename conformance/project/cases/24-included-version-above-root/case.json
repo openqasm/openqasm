@@ -1,0 +1,6 @@
+{
+  "description": "An included source unit declaring a version above the root is an error.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "error": "include-version-exceeds-root" }
+}

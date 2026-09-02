@@ -1,0 +1,22 @@
+---
+features:
+  - |
+        Errors raised while loading projects now expose optional, stable, machine-readable identities.
+        :class:`openqasm3.project.ProjectError` and its subclasses carry an ``identity`` attribute
+        naming selected faults such as ``"manifest-key-duplicate"``, ``"files-missing"``, and
+        ``"canonical-name-case-collision"``.
+
+        Several distinct faults share one exception class, so the class alone does not say what went
+        wrong.  A caller that needed to tell them apart previously had to match diagnostic message
+        text, which is not stable and is not intended to be.  Branch on ``identity`` instead::
+
+            try:
+                loaded = load_project(root)
+            except ProjectError as error:
+                if error.identity == "canonical-name-case-collision":
+                    ...
+
+        A condition with no agreed identity leaves the attribute ``None``, so test for the identities
+        you handle rather than assuming one is present.  The attribute is additive and no existing
+        behavior changed: the same exceptions are raised in the same situations with the same
+        messages.
