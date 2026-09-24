@@ -2,7 +2,7 @@
 include "stdgates.inc";
 
 qubit[4] q;
-bit[4] c;
+bit[4] c = "0000";
 reset q;
 h q;
 barrier q;
