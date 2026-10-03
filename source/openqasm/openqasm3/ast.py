@@ -105,7 +105,7 @@ BinaryOperator = Enum("BinaryOperator", "> < >= <= == != && || | ^ & << >> + - *
 GateModifierName = Enum("GateModifierName", "inv pow ctrl negctrl")
 IOKeyword = Enum("IOKeyword", "input output")
 TimeUnit = Enum("TimeUnit", "dt ns us ms s")
-UnaryOperator = Enum("UnaryOperator", "~ ! -")
+UnaryOperator = Enum("UnaryOperator", "~ ! - +")
 
 
 @dataclass
@@ -273,6 +273,7 @@ class UnaryExpression(Expression):
         ~b
         !bool
         -i
+        +i
 
     """
 

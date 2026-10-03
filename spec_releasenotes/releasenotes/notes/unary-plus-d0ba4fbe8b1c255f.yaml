@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Added the unary plus operator ``+``, which returns its operand unchanged and is valid on any
+    operand that supports unary negation ``-``.  It has the same precedence and associativity as
+    the other unary operators, so ``rz(+pi / 2) q;`` and ``-+a`` are now valid.  Because ``++`` is
+    lexed as the alias concatenation operator, repeated unary plus operators must be separated by
+    whitespace or parentheses, for example ``+ +a`` or ``+(+a)``.

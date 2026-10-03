@@ -135,6 +135,7 @@ In addition to the bitwise operations mentioned above, angles support:
   the same size.
 - Unary negation ``-``, which represents the mathematical operation :math:`-a
   \equiv 2\pi - a`.
+- Unary plus ``+``, which returns the angle unchanged.
 - Compound assignment operators ``+=``, ``-=`` and ``/=`` with angles of the
   same size as both left- and right operands.  These have the same effect as if
   the equivalent binary operation had been written out in full.
@@ -237,7 +238,7 @@ is set by the associativity: left-associative operators evaluate from left to ri
    ===============================  ===================  =============
    ``()``, ``[]``, ``(type)(x)``    Call, index, cast    left
    ``**``                           Power                right
-   ``!``, ``-``, ``~``              Unary                right
+   ``!``, ``-``, ``+``, ``~``       Unary                right
    ``*``, ``/``, ``%``              Multiplicative       left
    ``+``, ``-``                     Additive             left
    ``<<``, ``>>``                   Bit Shift            left
@@ -249,6 +250,13 @@ is set by the associativity: left-associative operators evaluate from left to ri
    ``&&``                           Logical AND          left
    ``||``                           Logical OR           left
    ===============================  ===================  =============
+
+The unary plus operator ``+`` returns its operand unchanged, and is valid on any
+operand that supports unary negation ``-``.  Like the other unary operators, it
+can be applied repeatedly, so ``-+a`` is equivalent to ``-a``.  Note that ``++``
+is lexed as a single token (the alias concatenation operator), so repeated unary
+plus operators must be separated by whitespace or parentheses, as in ``+ +a`` or
+``+(+a)``.
 
 
 Looping and branching

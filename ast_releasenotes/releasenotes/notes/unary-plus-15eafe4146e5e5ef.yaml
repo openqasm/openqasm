@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    ``UnaryOperator`` has a new member ``+`` for the unary plus operator, and the parser now
+    produces :class:`.UnaryExpression` nodes with this operator for expressions such as ``+a``.
+    The existing members keep their values.
