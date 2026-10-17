@@ -919,7 +919,7 @@ class QASMNodeVisitor(qasm3ParserVisitor):
         return self._recurse_concatenation(previous, iterator)
 
     @span
-    def visitConcatenationExpression(self, ctx: qasm3Parse.ConcatenationExpressionContext):
+    def visitConcatenationExpression(self, ctx: qasm3Parser.ConcatenationExpressionContext):
         # This iterator should always be non-empty if ANTLR did its job right.
         iterator = reversed(ctx.expression())
         previous = next(iterator)
