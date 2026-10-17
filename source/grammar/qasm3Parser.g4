@@ -111,7 +111,7 @@ externStatement: EXTERN Identifier LPAREN externArgumentList? RPAREN returnSigna
 gateStatement: GATE Identifier (LPAREN params=identifierList? RPAREN)? qubits=identifierList scope;
 
 // Non-declaration assignments and calculations.
-assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | measureExpression | quantumCallExpression) SEMICOLON;
+assignmentStatement: indexedIdentifier op=(EQUALS | CompoundAssignmentOperator) (expression | concatenationExpression | measureExpression | quantumCallExpression) SEMICOLON;
 expressionStatement: expression SEMICOLON;
 
 // Statements where the bulk is in the calibration language.
@@ -162,7 +162,8 @@ expression:
 // Special-case expressions that are only valid in certain contexts.  These are
 // not in the expression tree, but can contain elements that are within it.
 aliasExpression: expression (DOUBLE_PLUS expression)*;
-declarationExpression: arrayLiteral | expression | measureExpression | quantumCallExpression;
+declarationExpression: arrayLiteral | expression | concatenationExpression | measureExpression | quantumCallExpression;
+concatenationExpression: expression (DOUBLE_PLUS expression)*;
 measureExpression: MEASURE gateOperand;
 quantumCallExpression: Identifier (LPAREN expressionList? RPAREN)? gateOperandList;
 rangeExpression: expression? COLON expression? (COLON expression)?;
