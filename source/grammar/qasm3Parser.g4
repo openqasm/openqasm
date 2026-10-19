@@ -161,7 +161,7 @@ expression:
 
 // Special-case expressions that are only valid in certain contexts.  These are
 // not in the expression tree, but can contain elements that are within it.
-aliasExpression: expression (DOUBLE_PLUS expression)*;
+aliasExpression: expression | concatenationExpression;
 declarationExpression: arrayLiteral | expression | concatenationExpression | measureExpression | quantumCallExpression;
 concatenationExpression: expression (DOUBLE_PLUS expression)*;
 measureExpression: MEASURE gateOperand;
