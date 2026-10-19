@@ -896,6 +896,10 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return ast.Identifier(ctx.HardwareQubit().getText())
         raise _raise_from_context(ctx, "unknown literal type")
 
+    @span
+    def visitAliasExpression(self, ctx: qasm3Parser.AliasExpressionContext):
+        return self.visit(ctx.getChild(0))
+
     def _recurse_concatenation(self, previous, iterator):
         # Recurse the grammar rule rhs: expression (DOUBLE_PLUS expression)*
         #
@@ -910,13 +914,6 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             return self.visit(previous)
         lhs = self._recurse_concatenation(current, iterator)
         return add_span(ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
-
-    @span
-    def visitAliasExpression(self, ctx: qasm3Parser.AliasExpressionContext):
-        # This iterator should always be non-empty if ANTLR did its job right.
-        iterator = reversed(ctx.expression())
-        previous = next(iterator)
-        return self._recurse_concatenation(previous, iterator)
 
     @span
     def visitConcatenationExpression(self, ctx: qasm3Parser.ConcatenationExpressionContext):
