@@ -393,9 +393,10 @@ def test_array_declaration():
     array[int, 0] a = {};
     array[int, 2, 0] a = {{}, {}};
     array[int, 0, 2] a = {};
+    array[int, 8] a = b ++ c;
     """.strip()
     program = parse(p)
-    a, b = Identifier("a"), Identifier("b")
+    a, b, c = Identifier("a"), Identifier("b"), Identifier("c")
     zero = IntegerLiteral(0)
     one, two, eight = IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(8)
     SpanGuard().visit(program)
@@ -475,6 +476,14 @@ def test_array_declaration():
                 type=ArrayType(base_type=IntType(size=None), dimensions=[zero, two]),
                 identifier=a,
                 init_expression=ArrayLiteral([]),
+            ),
+            ClassicalDeclaration(
+                type=ArrayType(base_type=IntType(size=None), dimensions=[eight]),
+                identifier=a,
+                init_expression=Concatenation(
+                    lhs=b,
+                    rhs=c,
+                ),
             ),
         ],
     )
@@ -2215,6 +2224,7 @@ def test_durationof():
 def test_classical_assignment():
     p = """
     a[0] = 1;
+    a = b ++ c;
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
@@ -2226,7 +2236,15 @@ def test_classical_assignment():
                 ),
                 op=AssignmentOperator["="],
                 rvalue=IntegerLiteral(1),
-            )
+            ),
+            ClassicalAssignment(
+                lvalue=Identifier("a"),
+                op=AssignmentOperator["="],
+                rvalue=Concatenation(
+                    lhs=Identifier("b"),
+                    rhs=Identifier("c"),
+                ),
+            ),
         ]
     )
     SpanGuard().visit(program)
