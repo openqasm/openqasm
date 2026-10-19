@@ -1,0 +1,14 @@
+---
+upgrade:
+  - |
+    Libraries that walk the AST produced by the parser will need to be updated
+    to add support for the new AST node, `ConcatenationExpression`. The new
+    node should be handled exactly as `AliasExpression`.
+fixes:
+  - |
+    The language specification allows the array concatenation operator, `++`,
+    to occur on the right hand side of classical alias, declaration and
+    assignment statements. Previously the reference grammar and parse only
+    supported the first case, alias statements. This release adds
+    support for the remaining two cases by adding a new grammar production
+    and corresponding AST node, `ConcatenationExpression`.
