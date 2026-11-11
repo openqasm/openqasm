@@ -45,14 +45,6 @@ and to declare a set of classical variables
    bit[3] c;
    bool my_bool = false;
 
-We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers,
-where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the
-number of fractional bits. It is necessary to specify low-level
-classical representations since OpenQASM operates at the intersection of
-gates/analog control and digital feedback and we need to be able to
-explicitly transform types to cross these boundaries. Classical types
-are scoped to the braces within which they are declared.
-
 Quantum types
 -------------
 
@@ -183,6 +175,15 @@ hardware providers.
 
 Classical scalar types
 ----------------------
+
+ We use the notation ``s:m:f`` to denote the width and precision of fixed point numbers, 
+ where ``s`` is the number of sign bits, ``m`` is the number of integer bits, and ``f`` is the 
+ number of fractional bits. It is necessary to specify low-level 
+ classical representations since OpenQASM operates at the intersection of 
+ gates/analog control and digital feedback and we need to be able to 
+ explicitly transform types to cross these boundaries. Classical types 
+ are scoped to the braces within which they are declared. 
+
 
 Classical bits and registers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
