@@ -53,6 +53,10 @@ The TSC will, from time to time, elect to create **Working Groups** to study iss
 
 ### TSC Membership History
 
+#### November 11, 2026
+
+Uri Goldblatt of Quantum Machines has been nominated to the TSC to fulfill Serwan Asaad's unexpired term.
+
 #### June 10, 2026
 
 Serwan Assad is changing employers and resigned from the TSC.
