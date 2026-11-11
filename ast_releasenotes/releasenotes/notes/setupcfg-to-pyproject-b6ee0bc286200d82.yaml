@@ -1,0 +1,13 @@
+---
+fixes:
+  - |
+    Migrates optional dependency specification from setup.cfg to pyproject.toml for both
+    the python AST package as well as the reference parser. This is primarily intended
+    to fix dependency parsing by GitHub's Dependabot.
+upgrade:
+  - |
+    Both packages now declare their license as an SPDX expression (``Apache-2.0``) in
+    pyproject.toml, which requires setuptools 77 or newer to build. Since setuptools 77
+    requires Python 3.9 or newer, building these packages from source (an sdist or an
+    editable install) on Python 3.7 or 3.8 is no longer supported. Installing prebuilt
+    wheels on those older Python versions is unaffected.
