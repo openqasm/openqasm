@@ -200,6 +200,13 @@ a &= "101001";
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
 
+    def test_array_assignment_with_concatenation(self):
+        input_ = """
+a = b ++ c;
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
+        assert output == input_
+
     def test_index_expression(self):
         input_ = """
 a[0];
@@ -245,6 +252,13 @@ complex[float[64]] x;
 complex z;
 duration a = 1.0us;
 stretch b;
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
+        assert output == input_
+
+    def test_array_declaration_with_concatenation(self):
+        input_ = """
+array[int, 5] concat = first ++ second;
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_

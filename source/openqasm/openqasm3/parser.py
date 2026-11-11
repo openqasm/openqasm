@@ -429,10 +429,15 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                 measure=self.visit(measure),
                 target=self.visit(ctx.indexedIdentifier()),
             )
+        concatenation = ctx.concatenationExpression()
+        if concatenation:
+            rvalue_expression = concatenation
+        else:
+            rvalue_expression = ctx.expression()
         return ast.ClassicalAssignment(
             lvalue=self.visit(ctx.indexedIdentifier()),
             op=ast.AssignmentOperator[ctx.op.text],
-            rvalue=self.visit(ctx.expression()),
+            rvalue=self.visit(rvalue_expression),
         )
 
     @span
@@ -893,21 +898,29 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitAliasExpression(self, ctx: qasm3Parser.AliasExpressionContext):
-        # This choice in the recursion and the accompanying reversal of the
-        # iterator builds the tree as left-associative.  The logical operation
-        # is arbitrarily associative, but the AST needs us to make a choice.
-        def recurse(previous, iterator):
-            rhs = self.visit(previous)
-            try:
-                current = next(iterator)
-            except StopIteration:
-                return self.visit(previous)
-            lhs = recurse(current, iterator)
-            return add_span(ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
+        return self.visit(ctx.getChild(0))
 
+    def _recurse_concatenation(self, previous, iterator):
+        # Recurse the grammar rule rhs: expression (DOUBLE_PLUS expression)*
+        #
+        # This choice in the recursion and the accompanying reversal of the
+        # iterator in the calling functions builds the tree as left-associative.
+        # The logical operation is arbitrarily associative, but the AST needs us
+        # to make a choice.
+        rhs = self.visit(previous)
+        try:
+            current = next(iterator)
+        except StopIteration:
+            return self.visit(previous)
+        lhs = self._recurse_concatenation(current, iterator)
+        return add_span(ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
+
+    @span
+    def visitConcatenationExpression(self, ctx: qasm3Parser.ConcatenationExpressionContext):
         # This iterator should always be non-empty if ANTLR did its job right.
         iterator = reversed(ctx.expression())
-        return recurse(next(iterator), iterator)
+        previous = next(iterator)
+        return self._recurse_concatenation(previous, iterator)
 
     @span
     def visitDeclarationExpression(self, ctx: qasm3Parser.DeclarationExpressionContext):

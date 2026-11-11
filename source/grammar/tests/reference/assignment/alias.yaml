@@ -65,11 +65,12 @@ reference: |
           q
           =
           aliasExpression
-            expression
-              q1
-            ++
-            expression
-              q2
+            concatenationExpression
+              expression
+                q1
+              ++
+              expression
+                q2
           ;
     statementOrScope
       statement
@@ -78,33 +79,34 @@ reference: |
           c
           =
           aliasExpression
-            expression
+            concatenationExpression
               expression
-                a
-              indexOperator
-                [
-                setExpression
-                  {
-                  expression
-                    0
-                  ,
-                  expression
-                    1
-                  }
-                ]
-            ++
-            expression
+                expression
+                  a
+                indexOperator
+                  [
+                  setExpression
+                    {
+                    expression
+                      0
+                    ,
+                    expression
+                      1
+                    }
+                  ]
+              ++
               expression
-                b
-              indexOperator
-                [
-                rangeExpression
-                  expression
-                    1
-                  :
-                  expression
-                    2
-                ]
+                expression
+                  b
+                indexOperator
+                  [
+                  rangeExpression
+                    expression
+                      1
+                    :
+                    expression
+                      2
+                  ]
           ;
     statementOrScope
       statement
@@ -138,24 +140,25 @@ reference: |
           qqq
           =
           aliasExpression
-            expression
-              qq
-            ++
-            expression
+            concatenationExpression
               expression
-                q2
-              indexOperator
-                [
-                rangeExpression
-                  expression
-                    1
-                  :
-                  expression
-                    2
-                  :
-                  expression
-                    6
-                ]
+                qq
+              ++
+              expression
+                expression
+                  q2
+                indexOperator
+                  [
+                  rangeExpression
+                    expression
+                      1
+                    :
+                    expression
+                      2
+                    :
+                    expression
+                      6
+                  ]
           ;
     statementOrScope
       statement
