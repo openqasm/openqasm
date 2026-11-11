@@ -10,7 +10,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        antlr-version: ['4.9.2']
+        include:
+            # Build on the oldest and latest supported Pythons
+            # and on the oldest and latest ANTLR version supported
+            # by each of those Pythons:
+            - python-version: '3.9'
+              antlr-version: '4.7.2'
+            - python-version: '3.9'
+              antlr-version: '4.13.2'
+            - python-version: '3.15'
+              antlr-version: '4.9.3'
+            - python-version: '3.15'
+              antlr-version: '4.13.2'
     defaults:
       run:
         working-directory: source/grammar
@@ -20,7 +31,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
 
       - uses: actions/setup-java@v5
         with:

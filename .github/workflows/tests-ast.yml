@@ -22,9 +22,9 @@ jobs:
               antlr-version: '4.7'
             - python-version: '3.9'
               antlr-version: '4.13'
-            - python-version: '3.13'
+            - python-version: '3.15'
               antlr-version: '4.9'
-            - python-version: '3.13'
+            - python-version: '3.15'
               antlr-version: '4.13'
     defaults:
       run:
