@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Migrates optional dependency specification from setup.cfg to pyproject.toml for both
+    the python AST package as well as the reference parser. This is primarily intended
+    to fix dependency parsing by GitHub's Dependabot.
