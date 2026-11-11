@@ -20,13 +20,13 @@ This governance structure is scoped to just OpenQASM itself and not Qiskit as a 
 
 We will form a **Technical Steering Committee**. The TSC shall be composed of 6 Contributors.
 
-The current TSC members (as of February 4, 2026) are, in alphabetical order:
+The current TSC members (as of October 14, 2026) are, in alphabetical order:
 
-* [Serwan Asaad (Quantum Machines)](./tsc_statements_of_intent.md#serwan-asaad-quantum-machines)
 * [Lev S Bishop (IBM Quantum)](./tsc_statements_of_intent.md#lev-bishop-ibm-quantum)
 * [Simon Cross (Zurich Instruments)](./tsc_statements_of_intent.md#simon-cross-zurich-instruments)
 * [Ian Davis (Microsoft)](./tsc_statements_of_intent.md#ian-davis-microsoft)
 * [Aniket Dalvi (Amazon Braket)](./tsc_statements_of_intent.md#aniket-dalvi-amazon-braket)
+* [Uri Goldblatt (Quantum Machines)](./tsc_statements_of_intent.md#uri-goldblatt-quantum-machines)
 * [Blake Johnson (IBM Quantum)](./tsc_statements_of_intent.md#blake-johnson-ibm-quantum)
 
 **TSC Members** will serve a 2-year term, with the exception of the founding TSC which will have staggered terms to avoid an election of an entire TSC all at once. New **TSC Members** will be selected by nomination of the TSC, followed by a vote which is open to all **Contributors**. Outgoing **TSC Members** participate in the nomination process which selects their successors. Note that **TSC Members** may be re-elected to serve additional 2-year terms. The same process will be used in the event that a **TSC Member** resigns prior to the end of their term. The TSC may also appoint an individual to fulfill the balance of a resigning **TSC Member's** term.
@@ -52,6 +52,10 @@ The responsibility of the TSC **Secretary** include:
 The TSC will, from time to time, elect to create **Working Groups** to study issues. The TSC will appoint a **Contributor** as chair for each WG. These WGs should come back to the TSC with a proposal in the form of a language RFC or pull request to the OpenQASM specification. A WG will be automatically disbanded upon acceptance or (final) rejection of an RFC.
 
 ### TSC Membership History
+
+#### October 14, 2026
+
+Uri Goldblatt of Quantum Machines has been nominated to the TSC to fulfill Serwan Asaad's unexpired term.
 
 #### June 10, 2026
 
