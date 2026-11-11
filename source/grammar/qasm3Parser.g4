@@ -130,7 +130,7 @@ expression:
     LPAREN expression RPAREN                                  # parenthesisExpression
     | expression indexOperator                                # indexExpression
     | <assoc=right> expression op=DOUBLE_ASTERISK expression  # powerExpression
-    | op=(TILDE | EXCLAMATION_POINT | MINUS) expression       # unaryExpression
+    | op=(TILDE | EXCLAMATION_POINT | MINUS | PLUS) expression # unaryExpression
     | expression op=(ASTERISK | SLASH | PERCENT) expression   # multiplicativeExpression
     | expression op=(PLUS | MINUS) expression                 # additiveExpression
     | expression op=BitshiftOperator expression               # bitshiftExpression
