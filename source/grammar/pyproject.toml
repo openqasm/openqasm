@@ -1,3 +1,41 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "openqasm_reference_parser"
+# setup.cfg declared no version, so setuptools was defaulting to 0.0.0.
+version = "0.0.0"
+description = "Reference parser for OpenQASM files"
+readme = {file = "README.md", content-type = "text/markdown; variant=GFM"}
+license = {text = "Apache 2.0 Software License"}
+authors = [{name = "OpenQASM Contributors"}]
+keywords = ["openqasm", "quantum"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "antlr4-python3-runtime",
+]
+
+[project.urls]
+Homepage = "https://github.com/openqasm/openqasm"
+
+[project.optional-dependencies]
+tests = [
+    "pytest>=6.0",
+    "pyyaml",
+]
+all = [
+    "openqasm_reference_parser[tests]",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
