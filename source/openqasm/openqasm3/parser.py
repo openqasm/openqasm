@@ -893,21 +893,33 @@ class QASMNodeVisitor(qasm3ParserVisitor):
 
     @span
     def visitAliasExpression(self, ctx: qasm3Parser.AliasExpressionContext):
-        # This choice in the recursion and the accompanying reversal of the
-        # iterator builds the tree as left-associative.  The logical operation
-        # is arbitrarily associative, but the AST needs us to make a choice.
-        def recurse(previous, iterator):
-            rhs = self.visit(previous)
-            try:
-                current = next(iterator)
-            except StopIteration:
-                return self.visit(previous)
-            lhs = recurse(current, iterator)
-            return add_span(ast.Concatenation(lhs=lhs, rhs=rhs), combine_span(lhs.span, rhs.span))
+        return self._visit_concatenation(ctx.expression())
 
+    @span
+    def visitConcatenationExpression(self, ctx: qasm3Parser.ConcatenationExpressionContext):
+        return self._visit_concatenation(ctx.expression())
+
+    def _visit_concatenation(self, expressions):
+        # Build a left-associative Concatenation tree.  Concatenation is
+        # arbitrarily associative, but the AST needs a fixed shape, and we
+        # choose left-associativity: a ++ b ++ c => (a ++ b) ++ c.
+        #
+        # The previous recursive implementation walked expressions with a
+        # *reversed* iterator so that recursion could assemble that same
+        # left-associative tree.  An iterative left fold walks *forward* and
+        # produces the identical tree without depending on Python's recursion
+        # limit, which matters for long declaration initializers.
+        #
         # This iterator should always be non-empty if ANTLR did its job right.
-        iterator = reversed(ctx.expression())
-        return recurse(next(iterator), iterator)
+        iterator = iter(expressions)
+        lhs = self.visit(next(iterator))
+        for expression in iterator:
+            rhs = self.visit(expression)
+            lhs = add_span(
+                ast.Concatenation(lhs=lhs, rhs=rhs),
+                combine_span(lhs.span, rhs.span),
+            )
+        return lhs
 
     @span
     def visitDeclarationExpression(self, ctx: qasm3Parser.DeclarationExpressionContext):
