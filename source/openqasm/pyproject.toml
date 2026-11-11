@@ -1,5 +1,48 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openqasm3"
+dynamic = ["version"]
+description = "Reference OpenQASM AST in Python"
+readme = {file = "README.md", content-type = "text/markdown; variant=GFM"}
+requires-python = ">=3.7"
+license = {text = "Apache 2.0 Software License"}
+authors = [{name = "OpenQASM Contributors"}]
+keywords = ["openqasm", "quantum"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.urls]
+Homepage = "https://github.com/openqasm/openqasm"
+
+[project.optional-dependencies]
+parser = [
+    "antlr4-python3-runtime",  # __ANTLR_VERSIONS__
+    "importlib_metadata; python_version<'3.10'",
+]
+tests = [
+    "pytest>=6.0",
+    "pyyaml",
+]
+all = [
+    "openqasm3[parser,tests]",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "openqasm3.__version__"}
+
+[tool.setuptools.packages.find]
+exclude = ["tests*"]
 
 [tool.black]
 line-length = 100

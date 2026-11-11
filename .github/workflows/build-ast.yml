@@ -66,8 +66,8 @@ jobs:
           done
           popd
 
-          # Replace version requirements in setup.cfg.
-          python tools/update_antlr_version_requirements.py setup.cfg ANTLR_VERSIONS.txt
+          # Replace version requirements in pyproject.toml.
+          python tools/update_antlr_version_requirements.py pyproject.toml ANTLR_VERSIONS.txt
 
       - name: Install Python build dependencies
         run: pip install --upgrade build

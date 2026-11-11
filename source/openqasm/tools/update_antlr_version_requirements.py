@@ -17,7 +17,7 @@ def parse_versions():
 
 def main():
     if len(sys.argv) != 3:
-        print(f"Usage: {__file__} path/to/setup.cfg path/to/antlr_versions.txt", file=sys.stderr)
+        print(f"Usage: {__file__} path/to/pyproject.toml path/to/antlr_versions.txt", file=sys.stderr)
         sys.exit(1)
 
     versions = sorted(parse_versions())
@@ -36,10 +36,10 @@ def main():
     with open(sys.argv[1], "r") as setup_file:
         contents = setup_file.read()
     new_contents, count = re.subn(
-        r"antlr4-python3-runtime\s*#\s*__ANTLR_VERSIONS__", constraint, contents
+        r'"antlr4-python3-runtime",\s*#\s*__ANTLR_VERSIONS__', f'"{constraint}",', contents
     )
     if not count:
-        print("given setup.cfg file did not seem to contain an antlr4 dependency", file=sys.stderr)
+        print("given pyproject.toml file did not seem to contain an antlr4 dependency", file=sys.stderr)
         sys.exit(16)
     with open(sys.argv[1], "w") as setup_file:
         setup_file.write(new_contents)
