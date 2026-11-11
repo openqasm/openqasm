@@ -1,0 +1,8 @@
+---
+other:
+  - |
+    Added documentation on the `sizeof()` built-in function for querying array dimensions in two sections:
+
+    - **Classical instructions** -> *Classical bits and registers*
+    - **Types and casting** -> *Arrays*
+
