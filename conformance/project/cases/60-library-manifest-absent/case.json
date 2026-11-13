@@ -1,0 +1,7 @@
+{
+  "description": "A declared library with no manifest is diagnosed, because it declares no name to be known by and its identity cannot come from the project referencing it.",
+  "class": "loader",
+  "expect": {
+    "error": "library-name-undeclared"
+  }
+}

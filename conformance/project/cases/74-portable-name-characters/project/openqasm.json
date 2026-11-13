@@ -1,0 +1,6 @@
+{
+  "files": ["main[1]{stable}.qasm", "notes[1]{draft}.inc"],
+  "libraries": {
+    "v[1]{stable}": {"path": "../vendor"}
+  }
+}

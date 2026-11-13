@@ -1,0 +1,10 @@
+{
+  "description": "With no manifest anywhere, the file is compiled on its own and named by its base name.",
+  "class": "loader",
+  "subject": "a.qasm",
+  "expect": {
+    "canonical_names": ["a.qasm"],
+    "root_canonical_name": "a.qasm",
+    "programs": null
+  }
+}

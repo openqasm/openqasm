@@ -1,0 +1,23 @@
+---
+features:
+  - |
+    Added opt-in :mod:`openqasm3.project` support for discovering and loading
+    directory-based OpenQASM projects described by ``openqasm.json``. The
+    parser-independent loader returns an immutable
+    :class:`~openqasm3.project.LoadedProject` with canonical source names,
+    declared compilation roots, owner-local library bindings, and one
+    :class:`~openqasm3.resolver.IncludeEnvironment` for resolution.
+
+    Manifests can select files and programs and declare project identity and
+    libraries. Loading applies deterministic discovery, naming, containment,
+    collision, and library-graph rules.
+
+    When ``programs`` is absent and parser support is installed,
+    :func:`openqasm3.parse_project` parses a selected source through that
+    environment, and :func:`openqasm3.derive_programs` accepts the loaded project
+    to derive fallback roots in file-set order. These parser-extra operations
+    remain separate from loading: ``LoadedProject.programs`` is exactly the
+    manifest declaration, including the distinction between absent and empty.
+
+    See :ref:`project` and :mod:`openqasm3.project` for the complete profile and
+    API contract.

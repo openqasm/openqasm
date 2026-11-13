@@ -1,0 +1,13 @@
+{
+  "description": "One library reached under two apparent names is loaded once, under the single name it declares for itself.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": [
+      "@vendor/gates.inc",
+      "main.qasm"
+    ],
+    "root_canonical_name": "main.qasm",
+    "programs": null
+  }
+}

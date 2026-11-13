@@ -1,0 +1,5 @@
+{
+  "description": "A programs entry obeys the same name rules as a files entry, and raises the same identity.",
+  "class": "loader",
+  "expect": { "error": "files-name-invalid" }
+}

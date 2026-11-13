@@ -1,0 +1,6 @@
+{
+  "description": "A target that matches both a source unit beside the includer and one at the project root is ambiguous, because the includer's name prefix and the bare target are consulted alike and neither outranks the other.",
+  "class": "parser",
+  "subject": "lib/main.qasm",
+  "expect": { "error": "include-target-ambiguous" }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "An integer of greater magnitude than 2^53-1 is diagnosed wherever it appears, including under a key the loader does not recognize, because a value ignored today is one a later loader reads.",
+  "class": "loader",
+  "expect": {
+    "error": "manifest-integer-too-large"
+  }
+}

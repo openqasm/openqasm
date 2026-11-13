@@ -1,0 +1,5 @@
+{
+  "name": "vendor[1]{stable}",
+  "files": ["gates{v2}[stable].inc"],
+  "programs": []
+}

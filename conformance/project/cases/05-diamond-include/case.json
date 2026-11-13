@@ -1,0 +1,6 @@
+{
+  "description": "A source unit reached through two include paths is incorporated once.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "sources": ["main.qasm", "a.inc", "c.inc", "b.inc"] }
+}

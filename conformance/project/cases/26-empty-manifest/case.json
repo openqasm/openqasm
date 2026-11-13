@@ -1,0 +1,6 @@
+{
+  "description": "An empty object is a valid manifest and means defaults for everything.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": { "canonical_names": ["main.qasm"], "root_canonical_name": "main.qasm", "programs": null }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "When the host supplies workspace roots, the search does not leave them.",
+  "class": "loader",
+  "subject": "a.qasm",
+  "discover_from": "project/work/a.qasm",
+  "workspace_roots": ["project/work"],
+  "expect": { "canonical_names": ["a.qasm"], "root_canonical_name": "a.qasm", "programs": null }
+}

@@ -1,10 +1,12 @@
 ..
-    Both module docstrings manually export their symbols so that the parser
-    inputs lead the page, so we don't specify "members" here.
+    Each module docstring manually exports its symbols with autodoc directives,
+    so "members" is not set here.
 
 .. automodule:: openqasm3.resolver
 
 .. automodule:: openqasm3.filesystem
+
+.. automodule:: openqasm3.project
 
 
 .. _load-behaviors:
@@ -265,6 +267,11 @@ Once a file is selected, failures to open or decode it are reported as
 the configured roots remains a resolver miss, allowing another resolver in a
 :class:`~openqasm3.resolver.ChoiceResolver` to supply it.
 
+By contrast, :mod:`openqasm3.project` assigns validated project-relative source
+names as canonical names, unchanged.  Both conventions satisfy the
+same resolver contract; they choose different identity strings for different
+host requirements.
+
 
 The standard library
 ====================
@@ -318,3 +325,42 @@ change what an existing :class:`~openqasm3.visitor.QASMVisitor` traverses.  Call
 Printing is unaffected by resolution.  :func:`openqasm3.dumps` emits the
 ``include`` statement and never the source it resolved to, so a program
 round-trips identically whether or not includes were resolved.
+
+
+Loading a project
+=================
+
+:mod:`openqasm3.project` builds an immutable :class:`~openqasm3.project.LoadedProject`
+snapshot from a directory.  Its :attr:`~openqasm3.project.LoadedProject.sources`
+and :attr:`~openqasm3.project.LoadedProject.library_bindings` are read-only
+mappings, and its :attr:`~openqasm3.project.LoadedProject.environment` binds
+those exact snapshots into one resolution context.  Mutating dictionaries used
+to construct the project afterward cannot change what it resolves.
+
+Use :func:`openqasm3.parse_project` to parse from that coherent context::
+
+    import openqasm3
+    from openqasm3.project import load_target
+
+    loaded = load_target("/work/proj/main.qasm")
+    program = openqasm3.parse_project(loaded)
+
+An explicit source name overrides the loaded compilation root.  If neither is
+available, or if the selected name is absent from ``sources``,
+:func:`~openqasm3.parse_project` raises :class:`ValueError` before parsing.
+Project loading itself remains parser-independent and can be used without the
+``[parser]`` extra.
+
+The loaded project is a finite inventory.  Generic resolver backends may be
+lazy or infinite and therefore expose no equivalent enumeration operation.
+See the specification's non-normative project definition for the loading rules.
+
+Deriving project programs
+=========================
+
+:attr:`openqasm3.project.LoadedProject.programs` preserves only the manifest's
+declaration.  When it is ``None``, pass the loaded project to
+:func:`openqasm3.derive_programs`.  Derivation parses only the project's own
+finite source inventory and uses its environment to form every candidate edge;
+it does not resolve includes or enumerate a generic resolver.  This explicit
+parser-extra step keeps project loading parser-independent.

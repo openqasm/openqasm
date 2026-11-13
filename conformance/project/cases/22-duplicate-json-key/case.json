@@ -1,0 +1,5 @@
+{
+  "description": "A repeated key in the manifest is an error rather than last-one-wins.",
+  "class": "loader",
+  "expect": { "error": "manifest-key-duplicate" }
+}

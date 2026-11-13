@@ -1,0 +1,4 @@
+{
+  "files": ["main.qasm"],
+  "programs": ["main.qasm", "main.qasm"]
+}

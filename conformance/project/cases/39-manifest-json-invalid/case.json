@@ -1,0 +1,5 @@
+{
+  "description": "A manifest that is not well-formed JSON is diagnosed rather than ignored.",
+  "class": "loader",
+  "expect": { "error": "manifest-json-invalid" }
+}

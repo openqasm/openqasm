@@ -1,0 +1,7 @@
+{
+  "description": "Absent program metadata derives unincluded project sources in file-set order.",
+  "class": "derivation",
+  "expect": {
+    "derived_programs": ["z-main.qasm", "a-independent.qasm"]
+  }
+}

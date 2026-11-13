@@ -1,0 +1,6 @@
+{
+  "description": "An include target that names nothing in the project is diagnosed rather than left unresolved.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "error": "include-not-found" }
+}

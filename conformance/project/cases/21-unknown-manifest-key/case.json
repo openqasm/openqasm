@@ -1,0 +1,6 @@
+{
+  "description": "An unrecognized manifest key is ignored and does not prevent loading.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": { "canonical_names": ["main.qasm"], "root_canonical_name": "main.qasm", "programs": null }
+}

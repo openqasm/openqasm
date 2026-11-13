@@ -1,0 +1,7 @@
+{
+  "description": "The nearest manifest wins, and a nested manifest ends the outer project.",
+  "class": "loader",
+  "subject": "a.qasm",
+  "discover_from": "project/inner/a.qasm",
+  "expect": { "canonical_names": ["a.qasm"], "root_canonical_name": "a.qasm", "programs": null }
+}

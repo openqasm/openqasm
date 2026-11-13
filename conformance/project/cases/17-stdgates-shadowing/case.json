@@ -1,0 +1,5 @@
+{
+  "description": "A project file whose canonical name is the reserved standard-library name is an error, because it could never be reached.",
+  "class": "loader",
+  "expect": { "error": "canonical-name-reserved" }
+}

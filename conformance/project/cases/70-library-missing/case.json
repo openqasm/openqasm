@@ -1,0 +1,7 @@
+{
+  "description": "A declared library whose root directory does not exist is diagnosed rather than ignored.",
+  "class": "loader",
+  "expect": {
+    "error": "library-missing"
+  }
+}

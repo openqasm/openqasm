@@ -1,0 +1,7 @@
+{
+  "description": "A library 'path' is relative to the declaring manifest, so an absolute path is refused.",
+  "class": "loader",
+  "expect": {
+    "error": "library-declaration-invalid"
+  }
+}

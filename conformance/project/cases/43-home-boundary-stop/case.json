@@ -1,0 +1,14 @@
+{
+  "description": "The user home directory is a search stop, so a manifest above it cannot capture a file below it.",
+  "class": "loader",
+  "subject": "a.qasm",
+  "discover_from": "project/home/nested/a.qasm",
+  "home_dir": "project/home",
+  "expect": {
+    "canonical_names": [
+      "a.qasm"
+    ],
+    "root_canonical_name": "a.qasm",
+    "programs": null
+  }
+}

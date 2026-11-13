@@ -1,0 +1,13 @@
+{
+  "description": "A caller-supplied project root is used directly and does not require discovery to find a manifest.",
+  "class": "loader",
+  "subject": "src/a.qasm",
+  "project_root": "project/pkg",
+  "expect": {
+    "canonical_names": [
+      "src/a.qasm"
+    ],
+    "root_canonical_name": "src/a.qasm",
+    "programs": null
+  }
+}

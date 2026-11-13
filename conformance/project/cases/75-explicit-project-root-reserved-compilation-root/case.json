@@ -1,0 +1,13 @@
+{
+  "description": "A selected compilation root may take the reserved standard-library name when the caller supplies the project root directly.",
+  "class": "loader",
+  "subject": "stdgates.inc",
+  "project_root": "project",
+  "expect": {
+    "canonical_names": [
+      "stdgates.inc"
+    ],
+    "root_canonical_name": "stdgates.inc",
+    "programs": null
+  }
+}
