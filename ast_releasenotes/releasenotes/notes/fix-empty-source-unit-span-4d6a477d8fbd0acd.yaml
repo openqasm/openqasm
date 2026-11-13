@@ -1,0 +1,10 @@
+fixes:
+  - |
+    Parsing a source unit that holds no statements no longer raises an
+    ``AttributeError``.  A program consisting only of comments or whitespace matched no tokens, so
+    the parse tree carried no stop token and span construction failed.  Such a program now parses
+    to a :class:`~openqasm3.ast.Program` with an empty statement list.
+
+    This is most easily reached through include resolution, where a comment-only ``.inc`` file is
+    an ordinary thing to have, but it also affected :func:`openqasm3.parse` called
+    directly on a comment-only or empty string.

@@ -1,0 +1,23 @@
+---
+features:
+  - |
+    :func:`openqasm3.parse` can now resolve ``include`` statements from caller-supplied mappings,
+    callables, :class:`~openqasm3.resolver.IncludeResolver` implementations, or a complete
+    :class:`~openqasm3.resolver.IncludeEnvironment`.  Raw source backends create an unscoped
+    environment.  Scoped environments bind source lookup to owner-local apparent-to-canonical
+    library names.  Resolution uses stable canonical source identities, diagnoses invalid,
+    missing, ambiguous, cyclic, or overly deep inclusion, and records source identity in
+    :attr:`openqasm3.ast.Program.sources` and source spans.  File-system access remains opt-in
+    through :mod:`openqasm3.filesystem`.  See :mod:`openqasm3.resolver` and :ref:`includes` for
+    the complete API and resolution contract.
+upgrade:
+  - |
+    Resolution is opt-in through ``includes=``.  Existing AST construction, program comparison,
+    visitor traversal, and printing remain compatible when callers do not enable it.  Callers that
+    enable resolution must provide logical source identities through a resolver rather than rely
+    on the process working directory.
+deprecations:
+  - |
+    :attr:`openqasm3.ast.Include.filename` is renamed to
+    :attr:`~openqasm3.ast.Include.target`.  ``filename`` remains a deprecated compatibility alias,
+    but callers should migrate construction and attribute access to ``target``.

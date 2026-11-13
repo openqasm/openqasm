@@ -10,6 +10,7 @@ The reference abstract syntax tree (AST) for OpenQASM 3 programs.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import List, Optional, Union, Tuple
 from enum import Enum
@@ -86,6 +87,7 @@ __all__ = [
     "RangeDefinition",
     "ReturnStatement",
     "SizeOf",
+    "SourceUnit",
     "Span",
     "Statement",
     "SwitchStatement",
@@ -119,6 +121,38 @@ class Span:
     start_column: int
     end_line: int
     end_column: int
+    source: int = 0
+    """
+    Index into :attr:`Program.sources` of the source unit this span refers to.
+    Index 0 is always the source that was passed to the parser.
+    """
+
+
+@dataclass
+class SourceUnit:
+    """
+    One resolved source unit of a program, identified by its canonical name.
+
+    This is deliberately not a :class:`QASMNode`.  Generic AST visitors traverse child nodes by
+    inspecting a node's attributes, so keeping source units outside the node hierarchy means that
+    resolving includes does not silently change the behavior of existing visitors.  Use
+    :func:`openqasm3.resolver.flatten_includes` to obtain the spliced view of a program.
+    """
+
+    canonical_name: str
+    """The identity this source unit resolved to."""
+
+    statements: Optional[List[Union["Statement", "Pragma"]]] = None
+    """
+    The statements of this source unit.  This is ``None`` for the source passed directly to the
+    parser, whose statements are held by :attr:`Program.statements`.
+    """
+
+    version: Optional[str] = None
+    """
+    The version statement found in this source unit, if any.  A version statement in an included
+    source unit is retained here and is not applied to the program as a whole.
+    """
 
 
 @dataclass
@@ -141,6 +175,11 @@ class Program(QASMNode):
 
     statements: List[Union[Statement, Pragma]]
     version: Optional[str] = None
+    sources: List[SourceUnit] = field(default_factory=list, compare=False)
+    """
+    The source units of this program, in the order they were incorporated.  Index 0 is always the
+    source passed to the parser.
+    """
 
 
 @dataclass
@@ -165,13 +204,75 @@ class CompoundStatement(Statement):
     statements: List[Statement]
 
 
-@dataclass
+@dataclass(init=False)
 class Include(Statement):
     """
     An include statement
     """
 
-    filename: str
+    target: str
+    """
+    The include target, as written in the statement.  It is an opaque logical name rather than a
+    file-system path.
+    """
+    canonical_name: Optional[str] = field(default=None, compare=False)
+    """
+    The canonical name this include target resolved to, or ``None`` if it was not resolved.
+    Like :attr:`QASMNode.span`, this records where content came from rather than what the program
+    says, so it is excluded from equality and resolving a program does not change its identity.
+    """
+
+    def __init__(
+        self,
+        target: Optional[str] = None,
+        canonical_name: Optional[str] = None,
+        source: Optional[int] = None,
+        *,
+        filename: Optional[str] = None,
+    ) -> None:
+        """Create an include statement.
+
+        ``filename`` is a deprecated alias of ``target``.  If both are supplied, ``filename``
+        takes precedence so :func:`dataclasses.replace` can update the deprecated spelling.
+        """
+        super().__init__()
+        if filename is not None:
+            warnings.warn(
+                "Include.filename is deprecated; use Include.target. An include target is an"
+                " opaque logical name, not a file name.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            target = filename
+        if target is None:
+            raise TypeError("Include requires either 'target' or deprecated 'filename'")
+        self.target = target
+        self.canonical_name = canonical_name
+        self.source = source
+
+    @property
+    def filename(self) -> str:
+        """Deprecated alias of :attr:`target`, retained for callers written before the rename."""
+        warnings.warn(
+            "Include.filename is deprecated; use Include.target. An include target is an opaque"
+            " logical name, not a file name.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.target
+
+    @filename.setter
+    def filename(self, value: str) -> None:
+        warnings.warn(
+            "Include.filename is deprecated; use Include.target. An include target is an opaque"
+            " logical name, not a file name.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.target = value
+
+    source: Optional[int] = field(default=None, compare=False)
+    """Index into :attr:`Program.sources` of the resolved source unit, or ``None``."""
 
 
 @dataclass

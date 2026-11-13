@@ -1,0 +1,13 @@
+features:
+  - |
+    Errors raised while resolving includes now expose optional, stable, machine-readable
+    identities through :attr:`openqasm3.resolver.IncludeError.identity`.  Resolver error
+    subclasses carry identities such as ``"include-not-found"``, ``"include-cycle"``, and
+    ``"include-target-invalid"``.  An error class covering several faults supplies the identity
+    that applies when it is raised.
+
+    Several distinct faults share one exception class, so the class alone does not always say
+    what went wrong.  Callers can branch on ``identity`` instead of matching diagnostic text,
+    which is not a stable interface.  A condition with no agreed identity leaves the attribute
+    ``None``, so callers should test for the identities they handle.  The attribute is additive:
+    the same exceptions retain the same messages and are raised in the same situations.

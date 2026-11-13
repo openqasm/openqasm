@@ -262,7 +262,7 @@ class Printer(QASMVisitor[PrinterState]):
 
     @_maybe_annotated
     def visit_Include(self, node: ast.Include, context: PrinterState) -> None:
-        self._write_statement(f'include "{node.filename}"', context)
+        self._write_statement(f'include "{node.target}"', context)
 
     @_maybe_annotated
     def visit_ExpressionStatement(
