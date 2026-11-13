@@ -11,7 +11,11 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 import openqasm3.project as project_module
-from openqasm3.resolver import IncludeNotFoundError, STANDARD_LIBRARY_NAME
+from openqasm3.resolver import (
+    IncludeNotFoundError,
+    InvalidIncludeTargetError,
+    STANDARD_LIBRARY_NAME,
+)
 from openqasm3.project import (
     MANIFEST_NAME,
     MAX_WALK_UP_STEPS,
@@ -1086,6 +1090,23 @@ class TestManifestSchema:
 
         assert all(not list(self._validator().iter_errors(item)) for item in documents)
 
+    @pytest.mark.parametrize("name", [None, "vendor"])
+    @pytest.mark.parametrize("explicit_files", [False, True])
+    @pytest.mark.parametrize("programs", [False, True])
+    def test_a_generated_manifest_validates(self, tmp_path, name, explicit_files, programs):
+        from openqasm3.manifest import generate_manifest  # pylint: disable=import-outside-toplevel
+
+        root = tmp_path / "project"
+        write(root, "main.qasm", 'OPENQASM 3.0;\ninclude "lib/gates.inc";\n')
+        write(root, "lib/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        write(tmp_path / "v", "gates.inc", "gate v q { U(0, 0, 0) q; }\n")
+        write(tmp_path / "v", MANIFEST_NAME, json.dumps({"name": "vendor"}))
+        write(root, MANIFEST_NAME, json.dumps({"libraries": {"v": {"path": "../v"}}}))
+        generated = generate_manifest(
+            root, name=name, explicit_files=explicit_files, programs=programs
+        )
+        assert not list(self._validator().iter_errors(generated.manifest))
+
     def test_the_name_key_keeps_its_description_despite_the_reference(self):
         # Draft 7 ignores keywords beside a $ref, so an annotated reference is
         # written as a single-element allOf.  A plain $ref here would silently
@@ -1146,6 +1167,375 @@ class TestLoadedProjectState:
             loaded.environment.resolve("@vendor/gates.inc", "main.qasm")
 
 
+class TestGeneratedManifests:
+    """The manifest generator, checked against the loader that consumes its output.
+
+    A generated manifest is only worth anything if loading it reproduces the tree it was
+    generated from, so these tests round-trip rather than compare dictionaries.
+    """
+
+    @staticmethod
+    def _generate(*args, **kwargs):
+        from openqasm3.manifest import generate_manifest  # pylint: disable=import-outside-toplevel
+
+        return generate_manifest(*args, **kwargs)
+
+    def test_an_invalid_explicit_name_is_rejected(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+
+        with pytest.raises(ProjectError) as caught:
+            self._generate(tmp_path, name="bad/name")
+
+        assert caught.value.identity == "library-declaration-invalid"
+
+    @pytest.mark.parametrize("programs", [False, True])
+    def test_an_invalid_include_target_is_rejected_before_library_reporting(
+        self, tmp_path, programs
+    ):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "@/g.inc";\n')
+
+        with pytest.raises(
+            InvalidIncludeTargetError,
+            match=r"include target '@/g[.]inc' in 'main[.]qasm' names a library",
+        ) as caught:
+            self._generate(tmp_path, programs=programs)
+
+        assert caught.value.identity == "include-target-invalid"
+
+    @pytest.mark.parametrize("programs", [False, True])
+    def test_generation_extracts_unsupported_version(self, tmp_path, programs):
+        from openqasm3.parser import (  # pylint: disable=import-outside-toplevel
+            QASM3ParsingError,
+            parse,
+        )
+
+        source = 'OPENQASM 4.0;\ninclude "@vendor/gates.inc";\n'
+        write(tmp_path, "main.qasm", source)
+
+        generated = self._generate(tmp_path, programs=programs)
+
+        assert generated.undeclared_libraries == ("vendor",)
+        with pytest.raises(QASM3ParsingError) as caught:
+            parse(source)
+        assert caught.value.identity == "version-major-unsupported"
+
+    @pytest.mark.parametrize("programs", [False, True])
+    def test_generation_extracts_version_gated_syntax(self, tmp_path, programs):
+        from openqasm3.parser import (  # pylint: disable=import-outside-toplevel
+            QASM3ParsingError,
+            parse,
+        )
+
+        source = 'OPENQASM 3.0;\ninclude "@vendor/gates.inc";\nswitch (0) { case 0 {} }\n'
+        write(tmp_path, "main.qasm", source)
+
+        generated = self._generate(tmp_path, programs=programs)
+
+        assert generated.undeclared_libraries == ("vendor",)
+        with pytest.raises(QASM3ParsingError, match="'switch' requires OpenQASM 3.1"):
+            parse(source)
+
+    def test_an_unavailable_preserved_library_is_rejected(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        write(
+            tmp_path,
+            MANIFEST_NAME,
+            json.dumps({"libraries": {"vendor": {"path": "../absent"}}}),
+        )
+
+        with pytest.raises(LibraryError) as caught:
+            self._generate(tmp_path)
+
+        assert caught.value.identity == "library-missing"
+
+    def test_an_unreadable_root_raises_a_project_error(self, tmp_path):
+        missing = tmp_path / "missing"
+
+        with pytest.raises(FileSetError, match="could not read project tree") as caught:
+            self._generate(missing)
+
+        assert isinstance(caught.value.__cause__, FileNotFoundError)
+
+    @pytest.mark.parametrize(
+        ("manifest", "identity"),
+        [
+            ({"name": 42}, "library-declaration-invalid"),
+            ({"name": None}, "library-declaration-invalid"),
+            ({"libraries": []}, "library-declaration-invalid"),
+        ],
+        ids=["name-type", "name-null", "libraries"],
+    )
+    def test_malformed_preserved_fields_are_rejected(self, tmp_path, manifest, identity):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        write(tmp_path, MANIFEST_NAME, json.dumps(manifest))
+
+        with pytest.raises(ProjectError) as caught:
+            self._generate(tmp_path)
+
+        assert caught.value.identity == identity
+
+    @pytest.mark.parametrize("name", [None, "vendor"])
+    @pytest.mark.parametrize("explicit_files", [False, True])
+    @pytest.mark.parametrize("programs", [False, True])
+    def test_every_option_combination_reloads(self, tmp_path, name, explicit_files, programs):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "lib/gates.inc";\n')
+        write(tmp_path, "lib/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+
+        generated = self._generate(
+            tmp_path, name=name, explicit_files=explicit_files, programs=programs
+        )
+        loaded = load_project(str(tmp_path), manifest=generated.manifest)
+
+        assert sorted(loaded.sources) == ["lib/gates.inc", "main.qasm"]
+        assert ("name" in generated.manifest) == (name is not None)
+        assert ("files" in generated.manifest) == explicit_files
+        assert loaded.programs == (("main.qasm",) if programs else None)
+
+    def test_explicit_empty_programs_round_trip(self, tmp_path):
+        generated = self._generate(tmp_path, programs=True)
+
+        assert generated.manifest["programs"] == []
+        assert load_project(str(tmp_path), manifest=generated.manifest).programs == ()
+
+    def test_replaced_fields_are_validated_only_after_generation(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        write(
+            tmp_path,
+            MANIFEST_NAME,
+            json.dumps({"name": None, "files": "stale", "programs": 42}),
+        )
+
+        generated = self._generate(tmp_path, name="vendor")
+        loaded = load_project(str(tmp_path), manifest=generated.manifest)
+
+        assert generated.manifest["name"] == "vendor"
+        assert "files" not in generated.manifest
+        assert "programs" not in generated.manifest
+        assert sorted(loaded.sources) == ["main.qasm"]
+        assert loaded.programs is None
+
+    @pytest.mark.parametrize("field", ["files", "programs"])
+    def test_malformed_final_derived_fields_are_rejected(self, tmp_path, monkeypatch, field):
+        import openqasm3.manifest as manifest_module  # pylint: disable=import-outside-toplevel
+
+        options = {}
+        if field == "files":
+            monkeypatch.setattr(
+                manifest_module, "collect_default_file_set", lambda _root: ("bad?.inc",)
+            )
+            options["explicit_files"] = True
+        else:
+            write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+            monkeypatch.setattr(manifest_module, "derive_programs", lambda _project: ("bad?.qasm",))
+            options["programs"] = True
+
+        with pytest.raises(ProjectError) as caught:
+            self._generate(tmp_path, **options)
+
+        assert caught.value.identity == "files-name-invalid"
+        assert str(caught.value).startswith("%s entry" % field)
+
+    @pytest.mark.parametrize(
+        ("entries", "identity"),
+        [
+            (("A.qasm", "a.qasm"), "canonical-name-case-collision"),
+            (("caf\u00e9.qasm", "cafe\u0301.qasm"), "canonical-name-normalization-collision"),
+        ],
+        ids=["case", "normalization"],
+    )
+    def test_file_set_collisions_are_rejected_before_return(
+        self, tmp_path, monkeypatch, entries, identity
+    ):
+        import openqasm3.manifest as manifest_module  # pylint: disable=import-outside-toplevel
+
+        monkeypatch.setattr(manifest_module, "collect_default_file_set", lambda _root: entries)
+
+        with pytest.raises(ProjectError) as caught:
+            self._generate(tmp_path)
+
+        assert caught.value.identity == identity
+
+    @pytest.mark.parametrize(
+        ("derived", "identity"),
+        [
+            (("missing.qasm",), "programs-name-unknown"),
+            (("main.qasm", "main.qasm"), "programs-name-duplicate"),
+        ],
+        ids=["unknown", "duplicate"],
+    )
+    def test_program_relationships_are_validated_before_return(
+        self, tmp_path, monkeypatch, derived, identity
+    ):
+        import openqasm3.manifest as manifest_module  # pylint: disable=import-outside-toplevel
+
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        monkeypatch.setattr(manifest_module, "derive_programs", lambda _project: derived)
+
+        with pytest.raises(ProjectError) as caught:
+            self._generate(tmp_path, programs=True)
+
+        assert caught.value.identity == identity
+
+    def test_an_implicit_manifest_loads_the_walk_it_described(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "lib/gates.inc";\n')
+        write(tmp_path, "lib/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        generated = self._generate(tmp_path)
+        assert "files" not in generated.manifest
+        loaded = load_project(str(tmp_path), manifest=generated.manifest)
+        assert sorted(loaded.sources) == ["lib/gates.inc", "main.qasm"]
+
+    def test_an_explicit_manifest_lists_the_same_file_set(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "lib/gates.inc";\n')
+        write(tmp_path, "lib/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        generated = self._generate(tmp_path, explicit_files=True)
+        assert generated.manifest["files"] == ["lib/gates.inc", "main.qasm"]
+        loaded = load_project(str(tmp_path), manifest=generated.manifest)
+        assert sorted(loaded.sources) == ["lib/gates.inc", "main.qasm"]
+
+    def test_derived_programs_match_what_a_host_would_derive(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "lib/gates.inc";\n')
+        write(tmp_path, "lib/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        from openqasm3.parser import derive_programs  # pylint: disable=import-outside-toplevel
+
+        generated = self._generate(tmp_path, programs=True)
+        loaded = load_project(str(tmp_path), manifest=generated.manifest)
+        assert generated.manifest["programs"] == ["main.qasm"]
+        assert tuple(loaded.programs) == derive_programs(loaded)
+
+    def test_programs_are_omitted_unless_asked_for(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        assert "programs" not in self._generate(tmp_path).manifest
+        assert (
+            load_project(str(tmp_path), manifest=self._generate(tmp_path).manifest).programs is None
+        )
+
+    def test_a_generated_library_manifest_loads_as_a_library(self, tmp_path):
+        write(tmp_path, "app/main.qasm", 'OPENQASM 3.0;\ninclude "@vendor/gates.inc";\n')
+        write(tmp_path, "app/openqasm.json", '{"libraries": {"v": {"path": "../vendor"}}}')
+        write(tmp_path, "vendor/gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        generated = self._generate(tmp_path / "vendor", name="vendor")
+        assert generated.manifest["name"] == "vendor"
+        write(tmp_path, "vendor/openqasm.json", json.dumps(generated.manifest))
+        loaded = load_project(str(tmp_path / "app"))
+        assert sorted(loaded.sources) == ["@vendor/gates.inc", "main.qasm"]
+
+    @schema_required
+    def test_regenerating_preserves_extensions_through_validation_and_reload(self, tmp_path):
+        # The profile tells authors to write '$schema' and tolerates keys from a later
+        # version, so a generator that keeps only what it recognizes silently edits them out.
+        root = tmp_path / "project"
+        write(root, "a.inc", "gate g q { U(0, 0, 0) q; }\n")
+        write(tmp_path / "v", "gates.inc", "gate v q { U(0, 0, 0) q; }\n")
+        write(tmp_path / "v", MANIFEST_NAME, json.dumps({"name": "vendor"}))
+        declared = {
+            "$schema": "https://openqasm.com/_static/schemas/openqasm-project-v1.schema.json",
+            "$comment": "why this project is arranged this way",
+            "libraries": {"v": {"path": "../v", "futureKey": {"kept": [1, {"nested": True}]}}},
+            "aKeyFromALaterVersion": {"kept": True},
+        }
+        write(root, MANIFEST_NAME, json.dumps(declared))
+
+        serialized = json.loads(json.dumps(self._generate(root).manifest))
+        before_load = json.dumps(serialized, sort_keys=True)
+        assert not list(TestManifestSchema._validator().iter_errors(serialized))
+        loaded = load_project(str(root), manifest=serialized)
+
+        assert json.dumps(serialized, sort_keys=True) == before_load
+        assert set(declared) - set(serialized) == set()
+        assert serialized["aKeyFromALaterVersion"] == {"kept": True}
+        assert serialized["libraries"] == declared["libraries"]
+        assert sorted(loaded.sources) == ["@vendor/gates.inc", "a.inc"]
+
+    def test_regenerating_preserves_a_declared_name(self, tmp_path):
+        # A library's name is its identity: discarding it renames every canonical name
+        # its consumers wrote.
+        write(tmp_path, "a.inc", "gate g q { U(0, 0, 0) q; }\n")
+        write(tmp_path, MANIFEST_NAME, json.dumps({"name": "keepme", "files": ["a.inc"]}))
+        assert self._generate(tmp_path).manifest["name"] == "keepme"
+
+    def test_an_explicit_name_overrides_a_declared_one(self, tmp_path):
+        write(tmp_path, "a.inc", "gate g q { U(0, 0, 0) q; }\n")
+        write(tmp_path, MANIFEST_NAME, json.dumps({"name": "keepme"}))
+        assert self._generate(tmp_path, name="other").manifest["name"] == "other"
+
+    def test_a_name_is_omitted_rather_than_taken_from_the_directory(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        assert "name" not in self._generate(tmp_path).manifest
+
+    def test_an_undeclared_library_is_reported_and_never_invented(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "@vendor/gates.inc";\n')
+        generated = self._generate(tmp_path)
+        assert generated.undeclared_libraries == ("vendor",)
+        # A guessed path would produce a manifest that looks complete and does not load.
+        assert "libraries" not in generated.manifest
+
+    def test_a_declared_library_is_not_reported_and_survives_regeneration(self, tmp_path):
+        root = tmp_path / "project"
+        write(root, "main.qasm", 'OPENQASM 3.0;\ninclude "@v/gates.inc";\n')
+        write(tmp_path / "vendor", "gates.inc", "gate g q { U(0, 0, 0) q; }\n")
+        write(tmp_path / "vendor", MANIFEST_NAME, json.dumps({"name": "vendor"}))
+        libraries = {"v": {"path": "../vendor"}}
+        write(root, MANIFEST_NAME, json.dumps({"libraries": libraries}))
+        generated = self._generate(root)
+        assert generated.undeclared_libraries == ()
+        assert generated.manifest["libraries"] == libraries
+
+    def test_a_librarys_private_dependency_is_not_reported_by_the_root(self, tmp_path):
+        root = tmp_path / "project"
+        write(root, "main.qasm", 'OPENQASM 3.0;\ninclude "@v/gates.inc";\n')
+        write(tmp_path / "vendor", "gates.inc", 'include "@d/helper.inc";\n')
+        write(
+            tmp_path / "vendor",
+            MANIFEST_NAME,
+            json.dumps(
+                {
+                    "name": "vendor",
+                    "libraries": {"d": {"path": "../dependency"}},
+                }
+            ),
+        )
+        write(tmp_path / "dependency", "helper.inc", "gate helper q { U(0, 0, 0) q; }\n")
+        write(
+            tmp_path / "dependency",
+            MANIFEST_NAME,
+            json.dumps({"name": "dependency"}),
+        )
+        write(root, MANIFEST_NAME, json.dumps({"libraries": {"v": {"path": "../vendor"}}}))
+
+        generated = self._generate(root)
+
+        assert generated.undeclared_libraries == ()
+
+    def test_the_standard_library_is_not_a_library_reference(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "stdgates.inc";\n')
+        assert self._generate(tmp_path).undeclared_libraries == ()
+
+    def test_a_file_that_does_not_parse_is_reported_rather_than_skipped(self, tmp_path):
+        from openqasm3.parser import QASM3ParsingError  # pylint: disable=import-outside-toplevel
+
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\nthis is not OpenQASM;\n")
+        with pytest.raises(QASM3ParsingError):
+            self._generate(tmp_path)
+
+    def test_generating_writes_nothing(self, tmp_path):
+        write(tmp_path, "main.qasm", "OPENQASM 3.0;\n")
+        before = sorted(os.listdir(str(tmp_path)))
+        self._generate(tmp_path, name="vendor", explicit_files=True, programs=True)
+        assert sorted(os.listdir(str(tmp_path))) == before
+
+    def test_the_command_line_writes_the_manifest_and_warns(self, tmp_path):
+        write(tmp_path, "main.qasm", 'OPENQASM 3.0;\ninclude "@vendor/gates.inc";\n')
+        result = subprocess.run(
+            [sys.executable, "-m", "openqasm3.manifest", str(tmp_path), "--explicit-files"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert result.returncode == 0
+        assert json.loads(result.stdout) == {"files": ["main.qasm"]}
+        assert "vendor" in result.stderr
+
+
 class TestOptInImport:
     def test_project_import_does_not_require_a_subscriptable_pathlike(self):
         script = (
@@ -1161,6 +1551,19 @@ class TestOptInImport:
         )
 
         assert result.returncode == 0, result.stderr
+
+    def test_importing_the_package_does_not_import_the_generator(self):
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import sys, openqasm3; "
+                "sys.exit(1 if 'openqasm3.manifest' in sys.modules else 0)",
+            ],
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0
 
     def test_importing_the_package_does_not_import_this_module(self):
         result = subprocess.run(

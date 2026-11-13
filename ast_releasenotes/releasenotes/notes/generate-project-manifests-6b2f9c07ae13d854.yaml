@@ -1,0 +1,18 @@
+---
+features:
+  - |
+    Added opt-in :mod:`openqasm3.manifest` tooling for generating a project
+    manifest from a directory tree. :func:`~openqasm3.manifest.generate_manifest`
+    can record the discovered file set, derived compilation roots, and an
+    explicitly supplied library name without writing a file.
+
+    Generation preserves existing manifest metadata and unknown extensions, then
+    loads the completed declaration through the project loader before returning.
+    Invalid include targets and unavailable declared libraries therefore fail
+    instead of producing a manifest that cannot be loaded.
+
+    References to libraries without declarations are reported in
+    :attr:`~openqasm3.manifest.GeneratedManifest.undeclared_libraries`; no path is
+    guessed. The command-line interface prints JSON to standard output and those
+    references to standard error. Review them, add each library's actual path,
+    and then redirect the JSON to ``openqasm.json``.

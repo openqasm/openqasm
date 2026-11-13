@@ -8,6 +8,8 @@
 
 .. automodule:: openqasm3.project
 
+.. automodule:: openqasm3.manifest
+
 
 .. _load-behaviors:
 
@@ -364,3 +366,10 @@ declaration.  When it is ``None``, pass the loaded project to
 finite source inventory and uses its environment to form every candidate edge;
 it does not resolve includes or enumerate a generic resolver.  This explicit
 parser-extra step keeps project loading parser-independent.
+
+Generating a manifest
+=====================
+
+:mod:`openqasm3.manifest` goes the other way, describing a directory tree as a
+new manifest or regenerating an existing one while preserving its declarations
+and extension keys.  See that module above.
