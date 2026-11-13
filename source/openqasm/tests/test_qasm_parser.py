@@ -1,9 +1,13 @@
 import dataclasses
+import inspect
+import re
 import textwrap
+import warnings
 from typing import Any, Optional
 
 import pytest
 
+import openqasm3.parser as parser
 from openqasm3.ast import (
     AccessControl,
     AliasStatement,
@@ -80,7 +84,13 @@ from openqasm3.ast import (
     UnaryExpression,
     UnaryOperator,
 )
-from openqasm3.parser import combine_span, parse, QASM3ParsingError, get_comments
+from openqasm3.parser import (
+    combine_span,
+    parse,
+    MissingVersionWarning,
+    QASM3ParsingError,
+    get_comments,
+)
 from openqasm3.visitor import QASMVisitor
 
 
@@ -781,6 +791,7 @@ def test_alias_statement():
 def test_anonymous_scope():
     p = textwrap.dedent(
         """
+    OPENQASM 3.1;
     {
       int i = 1;
       i = 2;
@@ -802,10 +813,11 @@ def test_anonymous_scope():
                     ),
                 ]
             )
-        ]
+        ],
+        version="3.1",
     )
     compound_statement = program.statements[0]
-    assert compound_statement.span == Span(1, 0, 4, 0)
+    assert compound_statement.span == Span(2, 0, 5, 0)
 
 
 def test_primary_expression():
@@ -1930,7 +1942,7 @@ def test_for_in_loop():
 
 
 def test_switch_simple_cases():
-    program = parse("switch (x) { case 0 {} case 1, 2 { z $0; }  }")
+    program = parse("OPENQASM 3.1; switch (x) { case 0 {} case 1, 2 { z $0; }  }")
     assert _remove_spans(program) == Program(
         statements=[
             SwitchStatement(
@@ -1953,13 +1965,14 @@ def test_switch_simple_cases():
                 ],
                 default=None,
             ),
-        ]
+        ],
+        version="3.1",
     )
     SpanGuard().visit(program)
 
 
 def test_switch_default_case():
-    program = parse("switch (x + 1) { case 0b00 {} default { z $0; }  }")
+    program = parse("OPENQASM 3.1; switch (x + 1) { case 0b00 {} default { z $0; }  }")
     assert _remove_spans(program) == Program(
         statements=[
             SwitchStatement(
@@ -1980,13 +1993,17 @@ def test_switch_default_case():
                     ]
                 ),
             ),
-        ]
+        ],
+        version="3.1",
     )
     SpanGuard().visit(program)
 
 
 def test_switch_cases_order():
-    program = parse("switch (i) { case 0 {} case 3, 2 {} case 1, 5 {} case 4, 8 {} case 7, 6 {}}")
+    program = parse(
+        "OPENQASM 3.1;"
+        " switch (i) { case 0 {} case 3, 2 {} case 1, 5 {} case 4, 8 {} case 7, 6 {}}",
+    )
     expected = [
         [IntegerLiteral(0)],
         [IntegerLiteral(3), IntegerLiteral(2)],
@@ -2000,9 +2017,10 @@ def test_switch_cases_order():
 
 
 def test_switch_no_cases():
-    program = parse("switch (x) {}")
+    program = parse("OPENQASM 3.1; switch (x) {}")
     assert _remove_spans(program) == Program(
-        statements=[SwitchStatement(target=Identifier("x"), cases=[], default=None)]
+        statements=[SwitchStatement(target=Identifier("x"), cases=[], default=None)],
+        version="3.1",
     )
     SpanGuard().visit(program)
 
@@ -2010,12 +2028,13 @@ def test_switch_no_cases():
 def test_switch_expression_cases():
     program = parse(
         """
+OPENQASM 3.1;
 switch (i) {
     case n {}
     case 1 + 1, n - 2 {}
     default {}
 }
-"""
+""",
     )
     assert _remove_spans(program) == Program(
         statements=[
@@ -2037,13 +2056,15 @@ switch (i) {
                 ],
                 default=CompoundStatement(statements=[]),
             )
-        ]
+        ],
+        version="3.1",
     )
     SpanGuard().visit(program)
 
 
 def test_switch_rejects_case_after_default():
     program = """
+OPENQASM 3.1;
 switch (5) {
     case 0 {
     }
@@ -2059,6 +2080,7 @@ switch (5) {
 
 def test_switch_rejects_multiple_default():
     program = """
+OPENQASM 3.1;
 switch (5) {
     case 0 {
     }
@@ -2234,6 +2256,7 @@ def test_classical_assignment():
 
 def test_nop():
     p = """
+    OPENQASM 3.2;
     nop;
     nop $0;
     nop qr1, qr2[2];
@@ -2243,6 +2266,7 @@ def test_nop():
     """.strip()
     program = parse(p)
     assert _remove_spans(program) == Program(
+        version="3.2",
         statements=[
             QuantumNop(operands=[]),
             QuantumNop(operands=[Identifier("$0")]),
@@ -2253,7 +2277,7 @@ def test_nop():
                 ]
             ),
             Box(duration=None, body=[QuantumNop(operands=[Identifier("$1")])]),
-        ]
+        ],
     )
 
 
@@ -2661,14 +2685,293 @@ def test_comment_preservation():
     assert len(program.statements) >= 2  # include, qubit declaration
 
 
-@pytest.mark.parametrize("version", ["2.0", "4.0"])
-def test_rejects_invalid_version(version):
+@pytest.mark.parametrize(
+    "version,pattern,identity",
+    [
+        ("2.0", "OpenQASM 2", "version-openqasm2"),
+        ("2.1", "OpenQASM 2", "version-openqasm2"),
+        ("4.0", "major version", "version-major-unsupported"),
+    ],
+)
+def test_rejects_invalid_version(version, pattern, identity):
     prog = f"OPENQASM {version};"
-    with pytest.raises(QASM3ParsingError, match="unsupported version"):
+    with pytest.raises(QASM3ParsingError, match=pattern) as caught:
         parse(prog)
+    assert caught.value.identity == identity
 
 
-@pytest.mark.parametrize("version", ["2.0", "4.0"])
+@pytest.mark.parametrize("version", ["2.0", "2.1", "3.0.1", "4.0"])
 def test_attempts_invalid_version_when_allowed(version):
     prog = f"OPENQASM {version};"
-    assert parse(prog, ignore_version=True) is not None
+    program = parse(prog, ignore_version=True)
+    assert program.effective_version == version
+    assert program.sources[0].effective_version == version
+
+
+class TestVersionParsingBehavior:
+    # Each gated feature, at the version that introduced it and at the version
+    # immediately below it.  Keep in step with ``parser.FEATURE_MIN_VERSION``.
+    GATED_FEATURES = [
+        ("switch", "3.1", "3.0", "switch (0) { case 0 {} }"),
+        ("anonymous_scope", "3.1", "3.0", "{ int i = 1; }"),
+        ("nop", "3.2", "3.1", "nop $0;"),
+    ]
+
+    def test_parsing_error_identity_is_optional_and_keyword_only(self):
+        assert QASM3ParsingError.identity is None
+        assert QASM3ParsingError("message").identity is None
+        assert QASM3ParsingError("message", identity="custom").identity == "custom"
+        identity = inspect.signature(QASM3ParsingError).parameters["identity"]
+        assert identity.kind is inspect.Parameter.KEYWORD_ONLY
+
+    @pytest.mark.parametrize(
+        "introduced,source",
+        [(introduced, source) for _, introduced, _, source in GATED_FEATURES],
+        ids=[name for name, _, _, _ in GATED_FEATURES],
+    )
+    def test_feature_is_accepted_at_the_version_that_introduced_it(self, introduced, source):
+        program = parse(f"OPENQASM {introduced}; {source}")
+        assert program.version == introduced
+        assert program.effective_version == introduced
+        assert program.sources[0].effective_version == introduced
+
+    @pytest.mark.parametrize(
+        "feature,introduced,below,source",
+        GATED_FEATURES,
+        ids=[name for name, _, _, _ in GATED_FEATURES],
+    )
+    def test_feature_is_rejected_below_the_version_that_introduced_it(
+        self, feature, introduced, below, source
+    ):
+        expected = f"'{feature}' requires OpenQASM {introduced} or later"
+        with pytest.raises(QASM3ParsingError, match=re.escape(expected)):
+            parse(f"OPENQASM {below}; {source}")
+
+    def test_major_only_version_enforces_3_0_rules(self):
+        assert parse("OPENQASM 3;").effective_version == "3.0"
+        source = "OPENQASM 3; switch (0) { case 0 {} }"
+        with pytest.raises(QASM3ParsingError, match="'switch' requires OpenQASM 3.1"):
+            parse(source)
+
+    def test_missing_version_header_warns(self):
+        with warnings.catch_warnings(record=True) as captured:
+            warnings.simplefilter("always")
+            program = parse('include "stdgates.inc";')
+        assert len(captured) == 1
+        assert captured[0].category is MissingVersionWarning
+        assert "no version header" in str(captured[0].message).lower()
+        assert program.version is None
+        assert program.effective_version == "3.0"
+        assert program.sources[0].effective_version == "3.0"
+
+    @pytest.mark.parametrize("source", ["OPENQASM invalid;", "OPENQASM;"])
+    def test_malformed_version_header_does_not_warn_that_header_is_missing(self, source):
+        with warnings.catch_warnings(record=True) as captured:
+            warnings.simplefilter("always")
+            with pytest.raises(QASM3ParsingError):
+                parse(source)
+        assert not [warning for warning in captured if warning.category is MissingVersionWarning]
+
+    def test_feature_error_describes_version_source(self):
+        with pytest.warns(MissingVersionWarning):
+            with pytest.raises(QASM3ParsingError) as caught:
+                parse("switch (0) { case 0 {} }")
+        message = str(caught.value)
+        assert "'switch' requires OpenQASM 3.1 or later" in message
+        assert "effective version is 3.0" in message
+        assert "was declared" not in message
+
+        with pytest.raises(QASM3ParsingError) as caught:
+            parse("OPENQASM 3.0; switch (0) { case 0 {} }")
+        assert "version 3.0 was declared" in str(caught.value)
+
+    def test_missing_version_warning_can_be_silenced_by_category(self):
+        with warnings.catch_warnings(record=True) as captured:
+            warnings.simplefilter("always")
+            warnings.filterwarnings("ignore", category=MissingVersionWarning)
+            parse('include "stdgates.inc";')
+        assert not captured
+
+    def test_missing_version_header_does_not_warn_when_ignored(self):
+        with warnings.catch_warnings(record=True) as captured:
+            warnings.simplefilter("always")
+            parse('include "stdgates.inc";', ignore_version=True)
+        assert not captured
+
+    def test_missing_version_header_is_not_reinterpreted_when_support_floor_moves(
+        self, monkeypatch
+    ):
+        monkeypatch.setattr(parser, "_SUPPORTED_VERSIONS", frozenset({(3, 1)}))
+        with pytest.warns(MissingVersionWarning):
+            with pytest.raises(QASM3ParsingError, match="precedes.*minimum.*3.1") as caught:
+                parse('include "stdgates.inc";')
+        assert caught.value.identity == "version-below-minimum"
+
+    def test_rejects_an_unlisted_minor_between_supported_versions(self, monkeypatch):
+        monkeypatch.setattr(parser, "_SUPPORTED_VERSIONS", frozenset({(3, 0), (3, 2)}))
+        with pytest.raises(QASM3ParsingError, match="not supported.*3.0, 3.2") as caught:
+            parse("OPENQASM 3.1;")
+        assert caught.value.identity == "version-unsupported"
+
+    def test_supports_exact_versions_across_multiple_majors(self, monkeypatch):
+        monkeypatch.setattr(parser, "_SUPPORTED_VERSIONS", frozenset({(3, 2), (4, 0)}))
+        assert parse("OPENQASM 3.2;").effective_version == "3.2"
+        assert parse("OPENQASM 4.0;").effective_version == "4.0"
+        with pytest.raises(QASM3ParsingError, match="exceeds.*maximum.*4.0") as caught:
+            parse("OPENQASM 4.1;")
+        assert caught.value.identity == "version-above-maximum"
+
+    def test_rejects_version_exceeding_parser_support(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds.*maximum") as caught:
+            parse("OPENQASM 3.99;")
+        assert caught.value.identity == "version-above-maximum"
+
+    def test_rejects_patch_version(self):
+        with pytest.raises(QASM3ParsingError, match="major.*minor") as caught:
+            parse("OPENQASM 3.0.1;")
+        assert caught.value.identity == "version-malformed"
+
+
+class TestIncludeVersionParsingBehavior:
+    @pytest.mark.parametrize(
+        ("root_version", "included_version"),
+        [("3.1", "3.1"), ("3", "3.0"), ("3.0", "3")],
+    )
+    def test_included_version_equal_to_root_is_accepted(self, root_version, included_version):
+        expected_effective_version = "3.0" if root_version == "3" else root_version
+        program = parse(
+            f'OPENQASM {root_version}; include "lib.qasm";',
+            includes={"lib.qasm": f"OPENQASM {included_version};"},
+            name="root.qasm",
+        )
+        assert program.sources[1].version == included_version
+        assert program.sources[1].effective_version == expected_effective_version
+
+    def test_included_version_lower_than_root_is_retained(self):
+        program = parse(
+            'OPENQASM 3.1; include "lib.qasm";',
+            includes={"lib.qasm": "OPENQASM 3.0;"},
+            name="root.qasm",
+        )
+        assert program.sources[1].version == "3.0"
+        assert program.sources[1].effective_version == "3.1"
+
+    def test_included_version_higher_than_root_is_rejected(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds root version") as caught:
+            parse(
+                'OPENQASM 3.0; include "lib.qasm";',
+                includes={"lib.qasm": "OPENQASM 3.1;"},
+                name="root.qasm",
+            )
+        assert caught.value.identity == "include-version-exceeds-root"
+
+    def test_headerless_include_inherits_root_effective_version(self):
+        program = parse(
+            'OPENQASM 3.1; include "lib.qasm";',
+            includes={"lib.qasm": "switch (0) { case 0 {} }"},
+            name="root.qasm",
+        )
+        assert program.sources[1].version is None
+        assert program.sources[1].effective_version == "3.1"
+
+    def test_ignored_included_declaration_is_metadata_not_effective_version(self):
+        program = parse(
+            'OPENQASM 3.1; include "lib.qasm";',
+            includes={"lib.qasm": "OPENQASM 3.0; switch (0) { case 0 {} }"},
+            name="root.qasm",
+            ignore_version=True,
+        )
+        assert program.sources[1].version == "3.0"
+        assert program.sources[1].effective_version == "3.1"
+
+    def test_nested_include_header_must_not_exceed_root_version(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds root version"):
+            parse(
+                'OPENQASM 3.0; include "outer.qasm";',
+                includes={
+                    "outer.qasm": 'OPENQASM 3.0; include "inner.qasm";',
+                    "inner.qasm": "OPENQASM 3.1;",
+                },
+                name="root.qasm",
+            )
+
+    def test_nested_increasing_declarations_below_root_use_root_version(self):
+        program = parse(
+            'OPENQASM 3.2; include "outer.qasm";',
+            includes={
+                "outer.qasm": 'OPENQASM 3.0; include "inner.qasm";',
+                "inner.qasm": "OPENQASM 3.1; nop $0;",
+            },
+            name="root.qasm",
+        )
+
+        assert [unit.version for unit in program.sources] == ["3.2", "3.0", "3.1"]
+        assert [unit.effective_version for unit in program.sources] == ["3.2"] * 3
+
+    def test_headerless_nested_include_inherits_root_version(self):
+        program = parse(
+            'OPENQASM 3.1; include "outer.qasm";',
+            includes={
+                "outer.qasm": 'OPENQASM 3.1; include "inner.qasm";',
+                "inner.qasm": "switch (0) { case 0 {} }",
+            },
+            name="root.qasm",
+        )
+        assert program.sources[2].version is None
+        assert program.sources[2].effective_version == "3.1"
+
+    @pytest.mark.parametrize(
+        "version,pattern,identity",
+        [
+            ("2.0", "OpenQASM 2", "version-openqasm2"),
+            ("3.99", "exceeds.*maximum", "version-above-maximum"),
+            ("3.0.1", "major.*minor", "version-malformed"),
+        ],
+    )
+    def test_rejects_unsupported_included_version(self, version, pattern, identity):
+        with pytest.raises(QASM3ParsingError, match=pattern) as caught:
+            parse(
+                'OPENQASM 3.1; include "lib.qasm";',
+                includes={"lib.qasm": f"OPENQASM {version};"},
+                name="root.qasm",
+            )
+        assert caught.value.identity == identity
+
+    def test_ignore_version_bypasses_included_version_ceiling(self):
+        root = 'OPENQASM 3.0; include "lib.qasm";'
+        child = "OPENQASM 3.1; switch (0) { case 0 {} }"
+        with pytest.raises(QASM3ParsingError, match="exceeds root version"):
+            parse(root, includes={"lib.qasm": child}, name="root.qasm")
+        program = parse(
+            root,
+            includes={"lib.qasm": child},
+            name="root.qasm",
+            ignore_version=True,
+        )
+        assert program.sources[1].version == "3.1"
+        assert program.sources[1].effective_version == "3.0"
+
+    def test_library_version_is_constrained_by_the_root_version(self):
+        with pytest.raises(QASM3ParsingError, match="exceeds root version"):
+            parse(
+                'OPENQASM 3.0; include "@lib/core.qasm";',
+                includes={"@lib/core.qasm": "OPENQASM 3.1;"},
+                name="root.qasm",
+            )
+
+    def test_library_declaration_may_precede_root(self):
+        program = parse(
+            'OPENQASM 3.1; include "@lib/core.qasm";',
+            includes={"@lib/core.qasm": "OPENQASM 3.0;"},
+            name="root.qasm",
+        )
+        assert program.sources[1].version == "3.0"
+        assert program.sources[1].effective_version == "3.1"
+
+    def test_library_feature_uses_root_effective_version(self):
+        program = parse(
+            'OPENQASM 3.1; include "@lib/core.qasm";',
+            includes={"@lib/core.qasm": "OPENQASM 3.1; switch (0) { case 0 {} }"},
+            name="root.qasm",
+        )
+        assert program.sources[1].effective_version == "3.1"

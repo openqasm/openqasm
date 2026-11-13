@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    Defined :ref:`version-string` as one program-wide version contract. A
+    root without a header defaults to OpenQASM 3.0, implementations should
+    diagnose the default, and implementations without 3.0 support must reject
+    the program. The root effective version governs language features and the
+    standard library throughout the include graph. Included headers remain
+    author-intent metadata: their normalized values cannot exceed the root and
+    never change interpretation; headerless includes inherit the root
+    effective version.

@@ -658,6 +658,7 @@ def flatten_includes(program: ast.Program) -> ast.Program:
     lose information the caller has and this function does not.
 
     The nodes of the returned program are shared with ``program``; only the statement lists are new.
+    Root version and effective-version metadata are preserved.
     """
     by_index = {index: unit for index, unit in enumerate(program.sources)}
     incorporated: Set[str] = {program.sources[0].canonical_name} if program.sources else set()
@@ -680,7 +681,11 @@ def flatten_includes(program: ast.Program) -> ast.Program:
             result.extend(splice(unit.statements or []))
         return result
 
-    flattened = ast.Program(statements=splice(program.statements), version=program.version)
+    flattened = ast.Program(
+        statements=splice(program.statements),
+        version=program.version,
+        effective_version=program.effective_version,
+    )
     flattened.span = program.span
     flattened.sources = list(program.sources)
     return flattened

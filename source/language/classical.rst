@@ -433,6 +433,9 @@ it is called from.
 The Switch statement
 --------------------
 
+.. versionadded:: 3.1
+   The entire ``switch`` statement, including the ``case`` and ``default`` labels.
+
 A ``switch`` statement is a form of flow control that provides for a predicated selection of zero, one or more statements to be executed based on a discriminating controlling value. The discriminating controlling value can be either *explicit* - as it is the case for ``case`` statements - or *none of the above* - which is the case for ``default`` statements.
 
 A ``switch`` statement is not a loop. It does not iterate over a sequence of values.
