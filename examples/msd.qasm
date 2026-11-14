@@ -22,6 +22,7 @@ def ymeasure(qubit q) -> bit {
 def distill(qubit[10] magic, qubit[3] scratch) -> bool {
   bit temp;
   bit[3] checks;
+  bool success;
   // Encode two magic states in the [[4,2,2]] code
   reset scratch[0: 1];
   h scratch[1];
@@ -83,7 +84,7 @@ def distill(qubit[10] magic, qubit[3] scratch) -> bool {
 
 // Repeat level-0 distillation until success
 def rus_level_0(qubit[10] magic, qubit[3] scratch) {
-  bool success;
+  bool success = false;
   while(~success) {
     reset magic;
     ry(pi / 4) magic;
@@ -101,7 +102,7 @@ def rus_level_0(qubit[10] magic, qubit[3] scratch) {
  * Put the requested even number of copies into the buffer.
  */
 def distill_and_buffer(int[32] num, qubit[33] work, qubit[buffer_size] buffer) {
-  int[32] index;
+  int[32] index = 0;
   bit success_0;
   bit success_1;
   let magic_lvl0 = work[0: 9];
@@ -146,7 +147,7 @@ qubit[buffer_size] buffer;
 
 qubit[5] q;
 bit[5] c;
-int[32] address;
+int[32] address = 0;
 
 // initialize
 reset workspace;
