@@ -862,6 +862,8 @@ def test_unary_expression():
     ~b;
     !b;
     -i;
+    +i;
+    -+i;
     """.strip()
 
     program = parse(p)
@@ -883,6 +885,21 @@ def test_unary_expression():
                 expression=UnaryExpression(
                     op=UnaryOperator["-"],
                     expression=Identifier(name="i"),
+                )
+            ),
+            ExpressionStatement(
+                expression=UnaryExpression(
+                    op=UnaryOperator["+"],
+                    expression=Identifier(name="i"),
+                )
+            ),
+            ExpressionStatement(
+                expression=UnaryExpression(
+                    op=UnaryOperator["-"],
+                    expression=UnaryExpression(
+                        op=UnaryOperator["+"],
+                        expression=Identifier(name="i"),
+                    ),
                 )
             ),
         ]

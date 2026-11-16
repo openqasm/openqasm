@@ -13,3 +13,6 @@ x@x;
 0x12g;
 0X12g;
 12af;
+// `++` is the alias concatenation token, not two unary plus operators.
+++a;
+1 ++ a;
