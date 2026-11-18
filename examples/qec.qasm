@@ -20,7 +20,7 @@ reset a;
 x q[0]; // insert an error
 barrier q;
 syn = syndrome(q, a);
-if(int[2](syn)==1) x q[0];
-if(int[2](syn)==2) x q[2];
-if(int[2](syn)==3) x q[1];
+if(uint[2](syn)==1) x q[0];
+if(uint[2](syn)==2) x q[2];
+if(uint[2](syn)==3) x q[1];
 c = measure q;
