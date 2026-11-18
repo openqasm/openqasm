@@ -735,8 +735,8 @@ backend-dependent unit equivalent to one waveform sample.
 
 .. code-block::
 
-   duration one_second = 1000ms;
-   duration thousand_cycles = 1000dt;
+   const duration one_second = 1000ms;
+   const duration thousand_cycles = 1000dt;
 
 .. _types-arrays:
 
@@ -821,28 +821,33 @@ Types related to timing
 Duration
 ~~~~~~~~
 
-We introduce a ``duration`` type to express timing.
-Durations can be assigned with expressions including timing literals.
-``durationof()`` is an intrinsic function used to reference the
-duration of a calibrated gate.
+We introduce a ``duration`` type to express timing. Durations can be
+introduced with timing literals and generally manipulated at run time,
+though some language constructs (e.g. ``stretch``, described below)
+require that the durations involved be ``const``. To reference the
+duration of a calibrated gate, the ``durationof()`` operation returns
+a ``const duration``.
 
 .. code-block::
 
-   duration one_second = 1000ms;
-   duration thousand_cycles = 1000dt;
-   duration two_seconds = one_second + 1s;
-   duration c = durationof({x $3;});
+   const duration one_second = 1000ms;
+   const duration thousand_cycles = 1000dt;
+   const duration two_seconds = one_second + 1s;
+   const duration c = durationof({x $3;});
+
+   duration dvar = 0dt;
+   dvar += thousand_cycles;
 
 ``duration`` is further discussed in :any:`duration-and-stretch`
 
 Stretch
 ~~~~~~~
 
-We further introduce a ``stretch`` type which is a sub-type of ``duration``. ``stretch`` types
-have variable non-negative duration that is permitted to grow as necessary
-to satisfy constraints. Stretch variables are resolved at compile time
-into target-appropriate durations that satisfy a user’s specified design
-intent.
+We further introduce a ``stretch`` declaration which is a special
+syntax for introducing a ``const duration`` with an unspecified,
+non-negative duration value determined by constraints in the program.
+Stretch variables are resolved at compile time into target-appropriate
+duration constants that satisfy a user’s specified design intent.
 
 ``stretch`` is further discussed in :any:`duration-and-stretch`
 
