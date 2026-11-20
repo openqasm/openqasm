@@ -307,6 +307,19 @@ my_gate a, b[0:2], c;
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
 
+    def test_gate_duration(self):
+        input_ = """
+h[100.0ns] q;
+U(1, 2, 3)[100.0ns] q;
+""".strip()
+        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
+        assert output == input_
+
+    def test_gphase_duration(self):
+        input_ = "gphase(pi)[100.0ns];"
+        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
+        assert output == input_
+
     def test_gate_modifiers(self):
         input_ = """
 ctrl @ U(1, 2, 3) a, b;
@@ -702,7 +715,6 @@ let q = a ++ (b ++ c);
         assert output == expected
         assert openqasm3.parse(output) == input_
 
-    @pytest.mark.xfail(reason="Currently power is still left-associative in the ANTLR grammar")
     def test_associativity_power(self):
         """Test that the right-associativity of the power expression is respected in the output."""
         input_ = ast.Program(

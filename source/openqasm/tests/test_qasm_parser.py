@@ -2551,6 +2551,14 @@ class TestFailurePaths:
             parse("sizeof(arr, 0, 1);")
 
     @pytest.mark.parametrize(
+        "operator", [op.name for op in AssignmentOperator if op != AssignmentOperator["="]]
+    )
+    def test_compound_assignment_of_measurement(self, operator):
+        message = "measurement results can only be assigned with '='"
+        with pytest.raises(QASM3ParsingError, match=message):
+            parse(f"c {operator} measure q;")
+
+    @pytest.mark.parametrize(
         "scalar",
         ("uint", "uint[32]", "bit", "bit[5]", "bool", "duration", "stretch", "complex[float[64]]"),
     )
