@@ -323,15 +323,22 @@ class Printer(QASMVisitor[PrinterState]):
 
     def visit_BinaryExpression(self, node: ast.BinaryExpression, context: PrinterState) -> None:
         our_precedence = properties.precedence(node)
-        # All AST nodes that are built into BinaryExpression are currently left associative.
-        if properties.precedence(node.lhs) < our_precedence:
+        # `**` is the only right-associative binary operator.
+        right_associative = node.op == ast.BinaryOperator["**"]
+        lhs_precedence = properties.precedence(node.lhs)
+        if lhs_precedence < our_precedence or (
+            right_associative and lhs_precedence == our_precedence
+        ):
             self.stream.write("(")
             self.visit(node.lhs, context)
             self.stream.write(")")
         else:
             self.visit(node.lhs, context)
         self.stream.write(f" {node.op.name} ")
-        if properties.precedence(node.rhs) <= our_precedence:
+        rhs_precedence = properties.precedence(node.rhs)
+        if rhs_precedence < our_precedence or (
+            not right_associative and rhs_precedence == our_precedence
+        ):
             self.stream.write("(")
             self.visit(node.rhs, context)
             self.stream.write(")")
@@ -439,6 +446,10 @@ class Printer(QASMVisitor[PrinterState]):
         self.visit(node.name, context)
         if node.arguments:
             self._visit_sequence(node.arguments, context, start="(", end=")", separator=", ")
+        if node.duration is not None:
+            self.stream.write("[")
+            self.visit(node.duration, context)
+            self.stream.write("]")
         self.stream.write(" ")
         self._visit_sequence(node.qubits, context, separator=", ")
         self._end_statement(context)
@@ -460,6 +471,10 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("gphase(")
         self.visit(node.argument, context)
         self.stream.write(")")
+        if node.duration is not None:
+            self.stream.write("[")
+            self.visit(node.duration, context)
+            self.stream.write("]")
         if node.qubits:
             self._visit_sequence(node.qubits, context, start=" ", separator=", ")
         self._end_statement(context)

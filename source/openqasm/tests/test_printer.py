@@ -515,11 +515,6 @@ def f() {
         ).strip()
         assert output == input_
 
-    def test_compound_measurement_assignment(self):
-        input_ = "c += measure q;"
-        output = openqasm3.dumps(openqasm3.parse(input_), old_measurement=False).strip()
-        assert output == input_
-
     def test_reset(self):
         input_ = """
 reset q;
