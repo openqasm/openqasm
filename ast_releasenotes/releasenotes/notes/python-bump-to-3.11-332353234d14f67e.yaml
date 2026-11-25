@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Updates minimum python version for reference parser to 3.11.
