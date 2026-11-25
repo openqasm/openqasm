@@ -184,6 +184,8 @@ hardware providers.
 Classical scalar types
 ----------------------
 
+.. _bit-type:
+
 Classical bits and registers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1042,128 +1044,191 @@ Standard and special classical types
 may only mix in expressions with operators defined for those mixed types,
 otherwise explicit casts must be provided, unless otherwise noted (such as for
 assigning float values or expressions to angles).
-Additionally, angle values will be implicitly promoted or converted in the same manner as
-unsigned integers when mixed with or assigned to angle values with differing
-precision.
+Additionally, ``angle`` values of differing precision do not implicitly convert
+to one another; an explicit cast must be used, see rule R4 in
+:ref:`castTableLegend`.
 
 In general, for any cast between standard types that results in loss of
 precision, if the source value is larger than can be represented in the target
 type, the exact behavior is implementation specific and must be documented by
 the vendor.
 
-Allowed casts
-~~~~~~~~~~~~~
+Explicit cast table
+~~~~~~~~~~~~~~~~~~~
 
 .. role:: rbg
 .. role:: gbg
 .. role:: center
 
-+--------------+--------------------------------------------------------------------------------------------------------+
-|              |                                       :center:`Casting To`                                             |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| Casting From | bool       | int        | uint       | float       | angle      | bit        | duration   | qubit      |
-+==============+============+============+============+=============+============+============+============+============+
-| **bool**     | :center:`-`| :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **int**      | :gbg:`Yes` | :center:`-`| :gbg:`Yes` | :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **uint**     | :gbg:`Yes` | :gbg:`Yes` | :center:`-`| :gbg:`Yes`  | :rbg:`No`  | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **float**    | :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes` | :center:`-` | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **angle**    | :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  | :rbg:`No`   | :center:`-`| :gbg:`Yes` | :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **bit**      | :gbg:`Yes` | :gbg:`Yes` | :gbg:`Yes` | :rbg:`No`   | :gbg:`Yes` | :center:`-`| :rbg:`No`  | :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **duration** | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :rbg:`No*`  | :rbg:`No`  | :rbg:`No`  | :center:`-`| :rbg:`No`  |
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
-| **qubit**    | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :rbg:`No`   | :rbg:`No`  | :rbg:`No`  | :rbg:`No`  | :center:`-`|
-+--------------+------------+------------+------------+-------------+------------+------------+------------+------------+
+In the tables below, ``bool/bit`` stands for ``bool`` and the scalar ``bit``
+type, ``int/uint`` stands for the signed and unsigned integer types, and ``n``
+is a positive integer.  Sized and unsized variants of a type share a cell; the
+rule named in the cell specifies how the sizes interact.  Each cell names the
+rule from :ref:`castTableLegend` that governs the cast, or ``N`` when the cast
+is disallowed.
 
-\*Note: ``duration`` values can be converted to ``float`` using the division operator. See :ref:`divideDuration`
++--------------+-----------------------------------------------------------------------+
+|              |                         :center:`Casting To`                          |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| Casting From | bool/bit  | bit[n]    | int/uint  | float     | angle     | complex   |
++==============+===========+===========+===========+===========+===========+===========+
+| **bool/bit** | :gbg:`R1` | :gbg:`R6` | :gbg:`R7` | :gbg:`R7` | :rbg:`N`  | :rbg:`N`  |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **bit[n]**   | :gbg:`R5` | :gbg:`R3` | :gbg:`R3` | :rbg:`N`  | :gbg:`R3` | :rbg:`N`  |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **int/uint** | :gbg:`R5` | :gbg:`R3` | :gbg:`R2` | :gbg:`R2` | :rbg:`N`  | :rbg:`N`  |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **float**    | :gbg:`R5` | :rbg:`N`  | :gbg:`R2` | :gbg:`R2` | :gbg:`R4` | :gbg:`R2` |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **angle**    | :gbg:`R5` | :gbg:`R3` | :rbg:`N`  | :rbg:`N`  | :gbg:`R4` | :rbg:`N`  |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **complex**  | :rbg:`R5` | :rbg:`N`  | :rbg:`N`  | :rbg:`N`  | :rbg:`N`  | :gbg:`R2` |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
 
-Casting from bool
-~~~~~~~~~~~~~~~~~
+Implicit cast table
+~~~~~~~~~~~~~~~~~~~
 
-``bool`` values cast from ``false`` to ``0.0`` and from ``true`` to ``1.0`` or
-an equivalent representation.
-``bool`` values are interchangeable with scalar ``bit`` values.
-Because of this, a ``bool`` can be assigned to a single index of a ``bit[]`` register type, or an explicit cast can be used to convert a ``bool`` into a ``bit[n]`` value for any ``n``, where all bits are ``0`` except for the low bit, which has the same value as the Boolean.
+This table only fills in the behavior that is different from the explicit cast
+table.
 
-Casting from int/uint
-~~~~~~~~~~~~~~~~~~~~~
++--------------+-----------------------------------------------------------------------+
+|              |                         :center:`Casting To`                          |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| Casting From | bool/bit  | bit[n]    | int/uint  | float     | angle     | complex   |
++==============+===========+===========+===========+===========+===========+===========+
+| **bool/bit** |           | :rbg:`N`  |           |           |           |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **bit[n]**   |           |           | :rbg:`N`  |           | :rbg:`N`  |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **int/uint** |           | :rbg:`N`  |           |           |           |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **float**    |           |           |           |           |           |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **angle**    |           |           |           |           | :rbg:`N`  |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
+| **complex**  |           |           |           |           |           |           |
++--------------+-----------+-----------+-----------+-----------+-----------+-----------+
 
-``int[n]`` and ``uint[n]`` values cast to the standard types mimicking C99
-behavior. Casting to ``bool`` values follows the convention ``val != 0``.
-As noted above, if the value is too large to be represented in the
-target type the result is implementation-specific. However,
-casting between ``int[n]`` and ``uint[n]`` is expected to preserve the bit
-ordering, specifically it should be the case that ``x == int[n](uint[n](x))``
-and vice versa. Casting to ``bit[m]`` is only allowed when ``m==n``. If the target
-``bit[]`` has more or less precision, then explicit slicing syntax must be given.
-As noted, the conversion is done assuming a little-endian 2's complement
-representation.
+.. _castTableLegend:
 
-Casting from float
-~~~~~~~~~~~~~~~~~~
+Legend for the explicit and implicit cast tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``float[n]`` values cast to the standard types mimicking C99 behavior (*e.g.*
-discarding the fractional part for integer-type targets). As noted above,
-if the value is too large to be represented in the
-target type the result is implementation-specific.
+The following rules specify the semantics of the allowed explicit and implicit
+casts.
 
-Casting a ``float[n]`` value to an ``angle[m]`` involves finding the nearest
-representable value modulo :math:`\text{float}_n(2\pi)`, where ties between two
-possible representations are resolved by choosing to have zero in the
-least-significant bit (*i.e.* round to nearest, ties to even).  Casting the
-floating-point values ``inf``, ``-inf`` and all representations of ``NaN`` to
-``angle[m]`` is not defined.
+**N**
+   Cast is disallowed.
 
-For example, given the double-precision floating-point value::
+**R1 (Scalar bit equivalence)**
+   Scalar ``bit`` is interchangeable with ``bool`` for value casts, so wherever
+   a rule or table cell mentions ``bool``, scalar ``bit`` behaves identically.
+   Scalar ``bit`` is *not* the register type ``bit[1]``: :ref:`the two are
+   distinct types <bit-type>`.  Scalar ``bit`` casts like ``bool``, whereas
+   ``bit[1]`` casts by width match (R3).
 
-   // The closest double-precision representation of 2*pi.
-   const float[64] two_pi = 6.283185307179586
-   // For double precision, we have
-   //   (two_pi * (127./512.)) / two_pi == (127./512.)
-   // exactly.
-   float[64] f = two_pi * (127. / 512.)
+   .. code-block::
 
-the result of the cast ``angle[8](f)`` should have the bitwise representation
-``"01000000"`` (which represents the exact angle
-:math:`2\pi\cdot\frac{64}{256} = \frac\pi2`), despite ``"00111111"``
-(:math:`2\pi\cdot\frac{63}{256}`) being equally close, because of the
-round-to-nearest ties-to-even behaviour.
+      bit b = 1;
+      bool flag = bool(b);          // allowed: scalar bit and bool are interchangeable
+      int[32] n = int[32](b);       // allowed: b acts as bool, and bool -> int is allowed
+      bit[2] pair = bit[2](b);      // allowed: bool -> bit[n] of any width (see R6)
+      angle[1] ang = angle[1](b);   // not allowed: scalar bit is bool, not bit[1], and bool -> angle is N
 
-Casting from angle
-~~~~~~~~~~~~~~~~~~
+**R2 (C99 casts)**
+   Within ``int``, ``uint``, ``float``, and ``complex``, all size variants
+   (sized or unsized) cast freely in both directions, mimicking C99 semantics;
+   except for ``complex`` to ``int``, ``uint``, or ``float``.  Casting a
+   floating-point value to an integer type discards the fractional part.
+   Casting between ``int[n]`` and ``uint[n]`` preserves the bit ordering,
+   specifically it should be the case that ``x == int[n](uint[n](x))`` and
+   vice versa.
 
-``angle[n]`` values cast to ``bool`` using the convention ``val != 0``.  Casting
-to ``bit[m]`` values is only allowed when ``n==m``, otherwise explicit slicing
-syntax must be provided.  When casting to ``bit[m]``, the value is a direct
-copy of the bit pattern using the same little-endian ordering :ref:`as described
-above <angle-type>`.
+   .. code-block::
 
-When casting between angles of differing precisions (``n!=m``): if the target
-has more significant bits, then the value is padded with ``m-n`` least
-significant bits of ``0``; if the target has fewer significant bits, then
-there are two acceptable behaviors that can be supported by compilers:
-rounding and truncation. For rounding the value is rounded to the nearest
-value, with ties going to the value with the even least significant bit.
-Trunction is likely to have more hardware support. This behavior can be
-controlled by the use of a ``#pragma``.
+      float[32] f = 3.14;
+      float[64] g = float[64](f);                      // allowed: widen within float
+      float[16] h = float[16](g);                      // allowed: narrow within float
+      complex[float[32]] c = complex[float[32]](2.0);
+      float[32] back = float[32](c);                   // not allowed: no cast from complex to int/uint/float
 
-Casting from bit
-~~~~~~~~~~~~~~~~
+**R3 (Width-matched bit bridge)**
+   ``bit[k]`` casts to and from ``int[k]``, ``uint[k]``, ``angle[k]``, and
+   other ``bit[k]`` only when the widths are equal, using an exact
+   little-endian bit copy.  Width mismatches require explicit slicing.
+   Casts involving ``int[k]`` and ``uint[k]`` assume a little-endian 2's
+   complement representation, and casts involving ``angle[k]`` use the
+   little-endian ordering :ref:`described for the angle type <angle-type>`.
 
-``bit[n]`` values cast to ``bool`` using the convention ``val != 0``. Casting to
-``int[m]`` or ``uint[m]`` is done assuming a little endian 2's complement
-representation, and is only allowed when ``n==m``, otherwise explicit slicing
-syntax must be given. Likewise, ``bit[n]`` can only be cast to ``angle[m]``
-when ``n==m``, in which case an exact per-bit copy is done using little-endian
-bit order. Finally, casting between bits of differing precisions is not
-allowed, explicit slicing syntax must be given.
+   .. code-block::
 
-The scalar ``bit`` is implicitly interchangeable with ``bool``.
+      bit[4] bits = "1010";
+      int[4]   i = int[4](bits);    // allowed: equal width, little-endian bit copy
+      angle[4] a = angle[4](bits);  // allowed: equal width
+      bit[4]   c = bit[4](bits);    // allowed: bit[k] <-> bit[k] at equal width
+      int[8]   j = int[8](bits);    // not allowed: 4 != 8, slice explicitly first
+
+**R4 (Angle casts)**
+   - ``float[*]`` casts to ``angle[*]`` one way only, for any source and target
+     size.  The result is the nearest value representable in the target
+     ``angle[m]``, modulo :math:`\text{float}_n(2\pi)`, where ties between two
+     possible representations are resolved by choosing to have zero in the
+     least-significant bit (*i.e.* round to nearest, ties to even).  Casting
+     the floating-point values ``inf``, ``-inf`` and all representations of
+     ``NaN`` to ``angle[m]`` is not defined.
+   - ``angle[n]`` to ``angle[m]`` widening (``m > n``) zero-pads the least
+     significant bits.  ``angle[m]`` to ``angle[n]`` narrowing has two
+     acceptable behaviors that can be supported by compilers: rounding to the
+     nearest value, with ties going to the value with the even least
+     significant bit; and truncation, which is likely to have more hardware
+     support.  Which of the two is used is controlled by a ``#pragma``.
+   - Unsized ``angle`` does not cast to or from sized ``angle[k]``.
+
+   .. code-block::
+
+      angle[20] a = angle[20](3.14);    // allowed: float -> angle (one way only)
+      float[64] f = float[64](a);       // not allowed: angle -> float
+      angle[32] wide = angle[32](a);    // allowed: widen, zero-pads least significant bits
+      angle[10] narrow = angle[10](a);  // allowed: narrow, rounds or truncates (#pragma)
+      angle un;
+      angle[16] s = angle[16](un);      // not allowed: unsized angle does not cast to or from angle[k]
+
+   For example, given the double-precision floating-point value::
+
+      // The closest double-precision representation of 2*pi.
+      const float[64] two_pi = 6.283185307179586
+      // For double precision, we have
+      //   (two_pi * (127./512.)) / two_pi == (127./512.)
+      // exactly.
+      float[64] g = two_pi * (127. / 512.)
+
+   the result of the cast ``angle[8](g)`` should have the bitwise
+   representation ``"01000000"`` (which represents the exact angle
+   :math:`2\pi\cdot\frac{64}{256} = \frac\pi2`), despite ``"00111111"``
+   (:math:`2\pi\cdot\frac{63}{256}`) being equally close, because of the
+   round-to-nearest ties-to-even behaviour.
+
+**R5 (Truthy and falsy values)**
+   Zero values cast to ``false``/``0``, and non-zero values cast to
+   ``true``/``1``.
+
+**R6 (bool/bit to bit[n])**
+   ``bool`` (and scalar ``bit``) casts to ``bit[n]`` of any width: the low bit
+   takes the value, the rest are zero.
+
+   .. code-block::
+
+      bool flag = true;
+      bit[4] bits = bit[4](flag);   // allowed: low bit takes the value -> "0001", rest zero
+
+**R7 (bool/bit to int/uint/float)**
+   ``false``/``0`` and ``true``/``1`` cast to the zero and one values of
+   ``int``, ``uint``, and ``float`` respectively.
+
+**Note: duration**
+   Casts between ``duration`` and other types are not allowed.  ``duration``
+   values can be converted to ``float`` using the division operator, see
+   :ref:`divideDuration`.
 
 .. _divideDuration:
 
