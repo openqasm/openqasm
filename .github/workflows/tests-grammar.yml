@@ -14,9 +14,9 @@ jobs:
             # Build on the oldest and latest supported Pythons
             # and on the oldest and latest ANTLR version supported
             # by each of those Pythons:
-            - python-version: '3.9'
+            - python-version: '3.11'
               antlr-version: '4.7.2'
-            - python-version: '3.9'
+            - python-version: '3.11'
               antlr-version: '4.13.2'
             - python-version: '3.15'
               antlr-version: '4.9.3'
