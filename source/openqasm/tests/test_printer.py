@@ -152,12 +152,20 @@ def f(readonly array[int[32], 2] a, mutable array[uint, #dim=2] b) {
         input_ = """
 !a;
 -a;
++a;
+-(+a);
 ~(a + a);
 -a ** 2;
 !true;
 """.strip()
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
+
+    def test_repeated_unary_plus_is_not_printed_as_double_plus(self):
+        # `++` lexes as the alias-concatenation token, so the printer must not emit it.
+        output = openqasm3.dumps(openqasm3.parse("+ +a;")).strip()
+        assert output == "+(+a);"
+        assert openqasm3.parse(output) == openqasm3.parse("+ +a;")
 
     def test_binary_expression(self):
         input_ = """
