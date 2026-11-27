@@ -736,11 +736,23 @@ let q = a ++ (b ++ c);
                         ),
                     ),
                 ),
+                ast.ExpressionStatement(
+                    ast.BinaryExpression(
+                        lhs=ast.Identifier("a"),
+                        op=ast.BinaryOperator["**"],
+                        rhs=ast.BinaryExpression(
+                            lhs=ast.Identifier("b"),
+                            op=ast.BinaryOperator["*"],
+                            rhs=ast.Identifier("c"),
+                        ),
+                    ),
+                ),
             ],
         )
         expected = f"""
 (a ** b) ** c;
 a ** b ** c;
+a ** (b * c);
 """.strip()
         output = openqasm3.dumps(input_).strip()
         assert output == expected
