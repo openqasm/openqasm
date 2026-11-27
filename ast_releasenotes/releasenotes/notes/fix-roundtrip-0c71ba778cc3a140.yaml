@@ -1,18 +1,16 @@
 ---
-features:
-  - |
-    Added the optional field ``duration`` to ``QuantumPhase``, holding the
-    designator of ``gphase(pi)[100ns];``.
 upgrade:
   - |
     Assigning a measurement with a compound operator, such as
     ``c += measure q;``, now raises ``QASM3ParsingError``.  The specification
     only defines ``c = measure q;`` and ``measure q -> c;``.
+  - |
+    Giving ``gphase`` a duration, such as ``gphase(pi)[100ns];``, now raises
+    ``QASM3ParsingError``.  Previously the duration was silently dropped.
 fixes:
   - |
-    The parser no longer drops the designator of ``gphase``, and the printer no
-    longer drops the designator of gate calls: ``h[100ns] q;`` was printed as
-    ``h q;``.
+    The printer no longer drops the designator of gate calls: ``h[100ns] q;``
+    was printed as ``h q;``.
   - |
     The parser no longer turns ``c += measure q;`` into ``c = measure q;``.
   - |

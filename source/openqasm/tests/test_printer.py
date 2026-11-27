@@ -315,11 +315,6 @@ U(1, 2, 3)[100.0ns] q;
         output = openqasm3.dumps(openqasm3.parse(input_)).strip()
         assert output == input_
 
-    def test_gphase_duration(self):
-        input_ = "gphase(pi)[100.0ns];"
-        output = openqasm3.dumps(openqasm3.parse(input_)).strip()
-        assert output == input_
-
     def test_gate_modifiers(self):
         input_ = """
 ctrl @ U(1, 2, 3) a, b;

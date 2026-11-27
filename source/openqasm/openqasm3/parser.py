@@ -606,22 +606,21 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             if ctx.gateOperandList()
             else []
         )
-        duration = self.visit(ctx.designator()) if ctx.designator() else None
         if ctx.GPHASE():
             if len(arguments) != 1:
                 _raise_from_context(
                     ctx,
                     f"'gphase' takes exactly one argument, but received {arguments}",
                 )
-            return ast.QuantumPhase(
-                modifiers=modifiers, argument=arguments[0], qubits=qubits, duration=duration
-            )
+            if ctx.designator():
+                _raise_from_context(ctx.designator(), "'gphase' cannot have a duration")
+            return ast.QuantumPhase(modifiers=modifiers, argument=arguments[0], qubits=qubits)
         return ast.QuantumGate(
             modifiers=modifiers,
             name=_visit_identifier(ctx.Identifier()),
             arguments=arguments,
             qubits=qubits,
-            duration=duration,
+            duration=self.visit(ctx.designator()) if ctx.designator() else None,
         )
 
     @span

@@ -2550,6 +2550,11 @@ class TestFailurePaths:
         with pytest.raises(QASM3ParsingError, match=message):
             parse("sizeof(arr, 0, 1);")
 
+    @pytest.mark.parametrize("statement", ("gphase(pi)[100ns];", "ctrl @ gphase(pi)[100ns] q;"))
+    def test_gphase_with_duration(self, statement):
+        with pytest.raises(QASM3ParsingError, match="'gphase' cannot have a duration"):
+            parse(statement)
+
     @pytest.mark.parametrize(
         "operator", [op.name for op in AssignmentOperator if op != AssignmentOperator["="]]
     )

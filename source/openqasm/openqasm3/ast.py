@@ -553,10 +553,6 @@ class QuantumPhase(QuantumStatement):
 
         ctrl @ gphase(λ) a;
 
-        or
-
-        gphase(λ)[dur];
-
         ctrl @ // <- quantumGateModifier
         λ // <- argument
         a // <- qubit
@@ -566,7 +562,6 @@ class QuantumPhase(QuantumStatement):
     modifiers: List[QuantumGateModifier]
     argument: Expression
     qubits: List[Union[IndexedIdentifier, Identifier]]
-    duration: Optional[Expression] = None
 
 
 @dataclass

@@ -471,10 +471,6 @@ class Printer(QASMVisitor[PrinterState]):
         self.stream.write("gphase(")
         self.visit(node.argument, context)
         self.stream.write(")")
-        if node.duration is not None:
-            self.stream.write("[")
-            self.visit(node.duration, context)
-            self.stream.write("]")
         if node.qubits:
             self._visit_sequence(node.qubits, context, start=" ", separator=", ")
         self._end_statement(context)
