@@ -76,6 +76,27 @@ const uint[32] second_dimension = sizeof(my_doubles, 1);  // returns 4
 const uint[32] first_dimension = sizeof(my_doubles);  // still 8.
 
 
+// ===================
+// Array concatenation
+// ===================
+
+array[int[8], 2] first = {0, 1};
+array[int[8], 3] second = {2, 3, 4};
+
+array[int[8], 5] concat = first ++ second;
+array[int[8], 4] selfConcat = first ++ first;
+
+array[int[8], 2] secondSlice = second[1:2]; // {3, 4}
+
+// slicing with assignment
+second[1:2] = first[0:1]; // second == {2, 0, 1}
+
+array[int[8], 4] third = {5, 6, 7, 8};
+// combined slicing and concatenation
+selfConcat[0:3] = first[0:1] ++ third[1:2];
+// selfConcat == {0, 1, 6, 7}
+
+
 // =====================
 // Arrays in subroutines
 // =====================
