@@ -25,8 +25,8 @@ jobs:
 
       - uses: actions/setup-java@v6
         with:
-          java-version: '15'
-          distribution: 'adopt'
+java-version: '17'
+distribution: 'temurin'
 
       - name: Generate all ANTLR files
         run: |
