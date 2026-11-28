@@ -1,0 +1,16 @@
+---
+features:
+  - |
+    Defined a portable contract for resolving ``include`` targets to stable canonical source names
+    within a compilation.  The contract covers host-independent resolution, project-scoped
+    library names, invalid, ambiguous, and cyclic inclusion, textual depth-first incorporation,
+    and at-most-once incorporation by canonical name.  ``stdgates.inc`` is the reserved canonical
+    name of the standard library.  See :ref:`includes`, :ref:`include-candidates`, and
+    :ref:`include-order` for the normative rules.
+upgrade:
+  - |
+    Reaching the same canonical source through multiple ``include`` statements now incorporates it
+    once instead of making the program ill formed.  Implementations must reject nonportable or
+    ambiguous targets and resolve relative names from the including source identity rather than a
+    process working directory.  Authors whose targets depended on host paths or ambiguity must use
+    explicit logical names described in :ref:`include-candidates`.

@@ -32,21 +32,3 @@ number is assumed to be zero.
 
 Multiple occurrences of the version string (outside of comments) are not
 permitted, nor may it appear elsewhere than the first non-comment line.
-
-Included files
-==============
-
-The statement ``include "filename";`` continues parsing ``filename`` as if the
-contents of the file were inserted at the location of the ``include`` statement.
-This statement can only be used at the global scope.
-
-.. code-block::
-
-   // First non-comment is a version string
-   OPENQASM 3.0;
-
-   include "stdgates.inc";
-
-   // Rest of QASM program
-
-The file ``stdgates.inc`` itself is :ref:`the standard library of OpenQASM 3 <standard-library>`.
