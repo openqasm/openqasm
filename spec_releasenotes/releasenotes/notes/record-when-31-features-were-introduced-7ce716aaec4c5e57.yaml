@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    The specification now marks the ``switch`` statement and standalone
+    anonymous scope block as features introduced in OpenQASM 3.1. The
+    :ref:`classical instructions <classical-instructions>` and
+    :ref:`block-scope <scope-block>` sections carry the durable
+    ``versionadded`` metadata; existing control-flow scopes are unchanged.

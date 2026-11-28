@@ -267,6 +267,11 @@ These are sometimes referred to as "anonymous" scope blocks, because they are no
 directly associated with a named entity such as a gate or subroutine, or the global
 scope.
 
+.. versionadded:: 3.1
+   The standalone anonymous scope block, written where a statement is expected and
+   not attached to any other construct.  The local scopes introduced by ``for``,
+   ``while``, ``if``, ``else`` and ``box`` are not new.
+
 Certain control-flow operations rely on the introduction of local scope blocks.
 These operations are
 
@@ -298,7 +303,7 @@ Some further examples:
 .. code-block:: c
    :linenos:
 
-   OPENQASM 3.0
+   OPENQASM 3.1;
 
    int ii = 100;         // 'ii' is declared in the global scope.
    qubit[5] q;           // 'q' is declared in the global scope.

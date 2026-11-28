@@ -17,4 +17,5 @@ __all__ = ["supported_versions"]
 supported_versions = [
     "3.0",
     "3.1",
+    "3.2",
 ]

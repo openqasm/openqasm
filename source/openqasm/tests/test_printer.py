@@ -430,6 +430,7 @@ if (i == 0) {
 
     def test_switch_case(self):
         input_ = """
+OPENQASM 3.1;
 switch (i) {
   case 0 {
     x $0;
@@ -446,6 +447,7 @@ switch (i) {
 
     def test_switch_no_default(self):
         input_ = """
+OPENQASM 3.1;
 switch (i + 1) {
   case 0 {
     x $0;
@@ -540,6 +542,7 @@ delay[100.0ns];
 
     def test_box(self):
         input_ = """
+OPENQASM 3.2;
 box {
   x $0;
 }
