@@ -1,0 +1,6 @@
+{
+  "description": "An explicit files list is exhaustive; a present file that is not listed is not in the project.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": { "canonical_names": ["lib/listed.inc", "main.qasm"], "root_canonical_name": "main.qasm", "programs": null }
+}

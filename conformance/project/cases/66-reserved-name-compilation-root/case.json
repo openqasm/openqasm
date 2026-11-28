@@ -1,0 +1,12 @@
+{
+  "description": "A file selected for compilation may take the reserved standard-library name. It was not reached by resolving an include target, so the rule that forbids the name to a project file does not apply to it.",
+  "class": "loader",
+  "subject": "stdgates.inc",
+  "expect": {
+    "canonical_names": [
+      "stdgates.inc"
+    ],
+    "root_canonical_name": "stdgates.inc",
+    "programs": null
+  }
+}

@@ -1,0 +1,1 @@
+{"name": "first", "libraries": {"shared": {"path": "../second"}}, "programs": []}

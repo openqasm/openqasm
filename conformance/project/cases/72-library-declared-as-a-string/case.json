@@ -1,0 +1,7 @@
+{
+  "description": "A library is declared as an object, so that kinds other than 'path' can be added later.",
+  "class": "loader",
+  "expect": {
+    "error": "library-declaration-invalid"
+  }
+}

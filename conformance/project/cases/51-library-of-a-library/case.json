@@ -1,0 +1,12 @@
+{
+  "description": "A library may declare libraries of its own, which are loaded as projects in turn. Each library's files take canonical names under the name it declares for itself, not under the name the project referencing it wrote.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": {
+    "sources": [
+      "main.qasm",
+      "@vendor/gates.inc",
+      "@deep/base.inc"
+    ]
+  }
+}

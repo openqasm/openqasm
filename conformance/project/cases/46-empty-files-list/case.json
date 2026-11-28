@@ -1,0 +1,9 @@
+{
+  "description": "An explicit empty files list is a valid project with no source files, distinct from an omitted files key.",
+  "class": "loader",
+  "discover_from": "project/main.qasm",
+  "expect": {
+    "canonical_names": [],
+    "programs": null
+  }
+}

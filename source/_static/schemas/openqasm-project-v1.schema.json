@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://openqasm.com/_static/schemas/openqasm-project-v1.schema.json",
+  "title": "OpenQASM project manifest",
+  "description": "Declares which source files take part in an OpenQASM 3 compilation. See https://openqasm.com/project.html. This schema is non-normative and does not constrain conformance to the OpenQASM specification.",
+  "type": "object",
+  "definitions": {
+    "projectRelativeSourceName": {
+      "type": "string",
+      "description": "A project-relative POSIX source name. Square and curly brackets are ordinary name characters; '*' and '?' are not permitted.",
+      "pattern": "^(?!/)(?!\\\\)(?![A-Za-z]:)(?!.*(^|/)\\.{1,2}(/|$))(?!.*(^|/)@)(?!.*//)(?!.*/$)[^\\\\*?]+$",
+      "minLength": 1
+    },
+    "libraryName": {
+      "type": "string",
+      "description": "A library name is a single name component and may not begin with '@'. Square and curly brackets are ordinary name characters; '*' and '?' are not permitted. The same rules apply to both names a library has: the apparent name a libraries key writes for it, which is local to the project that writes it, and the canonical name its own name key declares, which becomes the prefix '@name/' on every canonical name its files take.",
+      "pattern": "^(?!@)(?!\\.{1,2}$)[^/\\\\*?]+$",
+      "minLength": 1
+    },
+    "library": {
+      "type": "object",
+      "description": "Where a library comes from. Declared as an object so that further source kinds can be added later; a loader ignores a key it does not recognize.",
+      "properties": {
+        "$comment": {
+          "type": "string",
+          "description": "Carries no meaning and may be discarded by a loader. A note about one library belongs here rather than in the libraries object, whose keys are library names: a '$comment' there would declare a library called '$comment'."
+        },
+        "path": {
+          "type": "string",
+          "description": "A relative POSIX path to the library root, resolved against the project root, which must resolve outside it.",
+          "pattern": "^(?!/)(?!\\\\)(?![A-Za-z]:)[^\\\\]+$",
+          "minLength": 1
+        }
+      },
+      "required": ["path"],
+      "examples": [{ "path": "../shared/vendor" }]
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "A hint for editors. A loader ignores it.",
+      "format": "uri"
+    },
+    "$comment": {
+      "type": "string",
+      "description": "Carries no meaning and may be discarded by a loader. JSON has no comment syntax, so this key is the conventional place to leave a note."
+    },
+    "name": {
+      "allOf": [{ "$ref": "#/definitions/libraryName" }],
+      "description": "The canonical name this project is known by when another project uses it as a library, which becomes the prefix '@name/' on every canonical name its files take. A project used only on its own needs none. A project used as a library must declare one, because a name chosen by whichever project happens to reference it would make the same library a different library in each. That condition depends on how something outside this document references the project, so it cannot be expressed here; a loader reports it.",
+      "examples": ["vendor"]
+    },
+    "files": {
+      "type": "array",
+      "description": "The exhaustive set of source files, each a project-relative source name. A loader validates each entry and uses it unchanged as that source unit's canonical name; nothing is normalized, so an entry must be written the way the volume stores it. When absent, the file set is produced by walking the project root for .qasm and .inc files. A name must not be absolute, must not contain a backslash, '*' or '?', must have no empty, '.' or '..' component, and must have no component beginning with '@', which is reserved for the canonical names of declared libraries.",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/projectRelativeSourceName"
+      },
+      "examples": [["programs/qec_round.qasm", "lib/gates/helpers.inc"]]
+    },
+    "programs": {
+      "type": "array",
+      "description": "The source units the project offers as roots for compilation, each a project-relative source name that must identify a member of the file set. A loader validates each entry the same way it does a files entry and matches it byte for byte, and no two entries may produce the same canonical name. When absent, a host derives the roots from the include graph. An empty array declares that the project offers none, which is what a library of gate definitions does. A name must not be absolute, must not contain a backslash, '*' or '?', and must have no empty, '.' or '..' component.",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/projectRelativeSourceName"
+      },
+      "examples": [["programs/qec_round.qasm"]]
+    },
+    "libraries": {
+      "type": "object",
+      "description": "Libraries this project depends on, each mapping the name this project writes for a library to where that library comes from. A library is loaded as a project in its own right, from a root that must be disjoint from every other root of the same load, and it must declare a name of its own; its files take canonical names under '@name/' built from that declared name rather than from the key here. The key is local to this project, so two projects may write one word for different libraries and one library may be reached under several keys. A library may declare libraries of its own, and this project reaches only what it declares itself.",
+      "propertyNames": {
+        "$ref": "#/definitions/libraryName"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/library"
+      },
+      "examples": [{ "vendor": { "path": "../shared/vendor" } }]
+    }
+  }
+}

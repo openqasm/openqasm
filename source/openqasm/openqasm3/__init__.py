@@ -31,8 +31,10 @@ __all__ = [
     "dumps",
     "parser",
     "parse",
+    "parse_project",
     "parse_version",
     "IncludeEnvironment",
+    "derive_programs",
     "IncludeResolver",
     "DictResolver",
     "FunctionResolver",
@@ -105,4 +107,4 @@ else:
     # Any import errors in section are of interest to the user, and should be propagated.
     del antlr4
     from . import parser
-    from .parser import parse, parse_version
+    from .parser import derive_programs, parse, parse_project, parse_version

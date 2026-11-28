@@ -1,0 +1,5 @@
+{
+  "description": "A non-JSON numeric constant is rejected even where a parser would accept it.",
+  "class": "loader",
+  "expect": { "error": "manifest-constant-nonstandard" }
+}

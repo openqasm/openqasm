@@ -1,0 +1,6 @@
+{
+  "description": "With no files key the walk collects .qasm and .inc, sorted by UTF-8 code units, skipping hidden entries and other suffixes.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": { "canonical_names": ["lib/b.inc", "main.qasm"], "root_canonical_name": "main.qasm", "programs": null }
+}

@@ -1,0 +1,5 @@
+{
+  "description": "Two file-set entries that produce the same canonical name are refused rather than collapsed.",
+  "class": "loader",
+  "expect": { "error": "canonical-name-duplicate" }
+}

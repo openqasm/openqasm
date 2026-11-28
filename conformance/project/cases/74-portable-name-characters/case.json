@@ -1,0 +1,12 @@
+{
+  "description": "Square and curly brackets are ordinary characters in project source names and in apparent and canonical library names.",
+  "class": "parser",
+  "subject": "main[1]{stable}.qasm",
+  "expect": {
+    "sources": [
+      "main[1]{stable}.qasm",
+      "notes[1]{draft}.inc",
+      "@vendor[1]{stable}/gates{v2}[stable].inc"
+    ]
+  }
+}

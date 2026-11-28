@@ -1,0 +1,5 @@
+{
+  "description": "A project-relative source name may not have a component beginning with the library prefix, which only a libraries declaration mints.",
+  "class": "loader",
+  "expect": { "error": "files-name-invalid" }
+}

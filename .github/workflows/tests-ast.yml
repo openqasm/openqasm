@@ -91,6 +91,18 @@ jobs:
       - name: Check types
         run: mypy --ignore-missing-imports openqasm3 tests
 
+      - name: Check conformance tooling style
+        working-directory: .
+        env:
+          # This job installs the development tools but not openqasm3 itself.
+          # Add the checkout so pylint can resolve the runner's imports.
+          PYTHONPATH: source/openqasm
+        run: |
+          set -e
+          black --check --diff --config source/openqasm/pyproject.toml conformance
+          pylint --rcfile source/openqasm/.pylintrc --recursive=y conformance
+          mypy --ignore-missing-imports conformance
+
   docs:
     name: AST documentation build
     needs: build

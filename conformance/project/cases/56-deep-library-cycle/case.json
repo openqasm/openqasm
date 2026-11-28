@@ -1,0 +1,5 @@
+{
+  "description": "A transitive library edge back to an active library root closes a cycle and is diagnosed.",
+  "class": "loader",
+  "expect": { "error": "library-cycle" }
+}

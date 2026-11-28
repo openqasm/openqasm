@@ -1,0 +1,12 @@
+{
+  "description": "The default file walk does not descend into a directory holding its own manifest, matching the boundary the upward search stops at.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": [
+      "main.qasm"
+    ],
+    "root_canonical_name": "main.qasm",
+    "programs": null
+  }
+}

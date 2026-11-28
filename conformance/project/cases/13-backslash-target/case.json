@@ -1,0 +1,6 @@
+{
+  "description": "An include target containing a backslash is rejected by the project profile.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "error": "include-target-invalid" }
+}

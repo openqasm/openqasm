@@ -1,0 +1,6 @@
+{
+  "description": "A file-valued discovery start does not select a root source when subject is omitted.",
+  "class": "loader",
+  "discover_from": "project/a.qasm",
+  "expect": { "canonical_names": ["a.qasm"], "programs": null }
+}

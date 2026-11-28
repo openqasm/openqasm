@@ -1,0 +1,5 @@
+{
+  "description": "A library that declares the project already being loaded closes a cycle and is diagnosed.",
+  "class": "loader",
+  "expect": { "error": "library-cycle" }
+}

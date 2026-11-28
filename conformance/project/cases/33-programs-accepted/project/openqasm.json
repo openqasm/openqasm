@@ -1,0 +1,4 @@
+{
+  "files": ["a.qasm", "b.qasm", "lib/helper.inc"],
+  "programs": ["b.qasm", "a.qasm"]
+}

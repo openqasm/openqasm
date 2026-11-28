@@ -1,0 +1,7 @@
+{
+  "description": "A declared library whose manifest omits 'name' is diagnosed, on the same ground as one with no manifest at all.",
+  "class": "loader",
+  "expect": {
+    "error": "library-name-undeclared"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "description": "A files entry naming a file that does not exist is an error.",
+  "class": "loader",
+  "expect": { "error": "files-missing" }
+}

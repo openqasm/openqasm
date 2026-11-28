@@ -1,0 +1,10 @@
+{
+  "description": "An explicitly empty programs declaration remains distinct from absence.",
+  "class": "loader",
+  "subject": "main.qasm",
+  "expect": {
+    "canonical_names": ["main.qasm"],
+    "root_canonical_name": "main.qasm",
+    "programs": []
+  }
+}

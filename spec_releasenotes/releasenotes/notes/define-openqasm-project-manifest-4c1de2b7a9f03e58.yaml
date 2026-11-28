@@ -1,0 +1,17 @@
+---
+features:
+  - |
+    Added a nonnormative :ref:`project definition <project>` for interoperable
+    host discovery and loading of directory-based OpenQASM projects. An
+    ``openqasm.json`` manifest can declare the source file set, ordered programs,
+    project identity, and libraries.
+
+    The profile defines upward discovery boundaries, deterministic default file
+    selection, canonical project and library names, root containment, and scoped
+    dependency resolution so independent hosts construct the same compilation
+    inputs. Unknown keys remain available for extensions that add information
+    without changing existing fields.
+
+    This host-integration profile does not change OpenQASM language semantics or
+    include resolution. A program compiled without a manifest behaves as before.
+    See :ref:`project` for the complete contract.

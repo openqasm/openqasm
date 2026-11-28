@@ -1,0 +1,8 @@
+{
+  "description": "A project reaches only the libraries it declares. A library its dependency declares is loaded, but this project has no apparent name for it, so a target naming it resolves to nothing.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": {
+    "error": "include-not-found"
+  }
+}

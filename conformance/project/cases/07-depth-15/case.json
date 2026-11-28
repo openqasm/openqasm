@@ -1,0 +1,6 @@
+{
+  "description": "A chain fifteen deep resolves, which is the minimum an implementation of the project definition supports. The language leaves any depth limit implementation defined; the floor is stated by this project definition.",
+  "class": "parser",
+  "subject": "main.qasm",
+  "expect": { "sources": ["main.qasm", "d01.inc", "d02.inc", "d03.inc", "d04.inc", "d05.inc", "d06.inc", "d07.inc", "d08.inc", "d09.inc", "d10.inc", "d11.inc", "d12.inc", "d13.inc", "d14.inc", "d15.inc"] }
+}

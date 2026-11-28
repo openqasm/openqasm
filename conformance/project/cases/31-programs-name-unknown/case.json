@@ -1,0 +1,5 @@
+{
+  "description": "A programs entry that is not a member of the file set is an error rather than something to ignore.",
+  "class": "loader",
+  "expect": { "error": "programs-name-unknown" }
+}

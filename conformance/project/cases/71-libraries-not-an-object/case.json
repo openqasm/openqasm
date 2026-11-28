@@ -1,0 +1,7 @@
+{
+  "description": "The 'libraries' key must be an object whose keys are apparent library names.",
+  "class": "loader",
+  "expect": {
+    "error": "library-declaration-invalid"
+  }
+}
