@@ -425,6 +425,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
             _raise_from_context(ctx, "cannot assign to classical parameters in a gate")
         measure = ctx.measureExpression() or ctx.quantumCallExpression()
         if measure:
+            if ctx.op.text != "=":
+                _raise_from_context(ctx, "measurement results can only be assigned with '='")
             return ast.QuantumMeasurementStatement(
                 measure=self.visit(measure),
                 target=self.visit(ctx.indexedIdentifier()),
@@ -610,6 +612,8 @@ class QASMNodeVisitor(qasm3ParserVisitor):
                     ctx,
                     f"'gphase' takes exactly one argument, but received {arguments}",
                 )
+            if ctx.designator():
+                _raise_from_context(ctx.designator(), "'gphase' cannot have a duration")
             return ast.QuantumPhase(modifiers=modifiers, argument=arguments[0], qubits=qubits)
         return ast.QuantumGate(
             modifiers=modifiers,
