@@ -581,7 +581,7 @@ class _IncludeResolutionContext:
         )
 
 
-def _validate_include_targets(statements, includer: str) -> None:
+def _validate_include_targets(statements, includer: Optional[str]) -> None:
     for statement in statements:
         if isinstance(statement, ast.Include):
             validate_include_target(statement.target, includer=includer)
@@ -673,9 +673,14 @@ def parse(
 
 
 class _Project(Protocol):
-    sources: Mapping[str, str]
-    environment: IncludeEnvironment
-    compilation_root: Optional[str]
+    @property
+    def sources(self) -> Mapping[str, str]: ...
+
+    @property
+    def environment(self) -> IncludeEnvironment: ...
+
+    @property
+    def compilation_root(self) -> Optional[str]: ...
 
 
 def parse_project(
@@ -713,9 +718,10 @@ def parse_project(
     )
 
 
-def _include_targets(source: str) -> Tuple[str, ...]:
-    """Return the unresolved include targets one source unit writes, in order."""
+def _include_targets(source: str, *, includer: Optional[str] = None) -> Tuple[str, ...]:
+    """Return the validated, unresolved include targets one source unit writes, in order."""
     program = _parse_to_program(source, permissive=False)
+    _validate_include_targets(program.statements, includer)
     return tuple(
         statement.target for statement in program.statements if isinstance(statement, ast.Include)
     )
@@ -757,7 +763,7 @@ def derive_programs(
     own = [name for name in sources if not name.startswith(LIBRARY_PREFIX)]
     included = set()
     for includer in own:
-        for target in _include_targets(sources[includer]):
+        for target in _include_targets(sources[includer], includer=includer):
             if target == STANDARD_LIBRARY_NAME:
                 continue
             for candidate in project.environment.candidates(target, includer):
